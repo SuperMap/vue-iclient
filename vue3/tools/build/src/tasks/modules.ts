@@ -21,6 +21,7 @@ import {
 import { generateExternal, withTaskName, writeBundles } from '../utils'
 import { Alias } from '../plugins/alias'
 import { buildConfigEntries, target } from '../build-info'
+import json from '@rollup/plugin-json';
 import type { TaskFunction } from 'gulp'
 import type { OutputOptions, Plugin } from 'rollup'
 
@@ -68,7 +69,8 @@ const plugins: Plugin[] = [
     loaders: {
       '.vue': 'ts'
     }
-  })
+  }),
+  json()
 ]
 async function buildModulesComponents(root = pkgRoot) {
   const input = excludeFiles(

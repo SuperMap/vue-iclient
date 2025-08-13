@@ -159,7 +159,7 @@ export default class WebMapViewModel extends Events {
 
   mapParams: { title?: string; description?: string };
 
-  eventTypes: string[];
+  // eventTypes: string[];
 
   webMapEventTypes: string[];
 

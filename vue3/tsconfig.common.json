@@ -11,6 +11,7 @@
     "skipLibCheck": true
   },
   "include": [
+    "packages/**/*.json",
     "packages/common",
     "typings/env.d.ts",
   ],

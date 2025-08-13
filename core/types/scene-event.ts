@@ -6,7 +6,7 @@ export class SceneEvent extends Events {
   triggerEvent: (name: string, ...rest: any) => any;
   on: (data: Record<string, (...rest: any) => void>) => void;
   un: (data: Record<string, (...rest: any) => void>) => void;
-  eventTypes: string[];
+  // eventTypes: string[];
   
   constructor() {
     super();

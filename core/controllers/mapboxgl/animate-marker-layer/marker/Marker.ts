@@ -4,6 +4,7 @@ import UniqueId from 'lodash.uniqueid';
 
 interface markerOptions {
   width?: number;
+  height?: number;
   colors?: [string, string];
   textField?: string;
   textColor?: string;

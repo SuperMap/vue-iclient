@@ -5,7 +5,7 @@ export default class GlobalEvent<T = Record<string, any>> extends Events {
   on: (data: Record<string, (...rest: any) => void>) => void;
   un: (data: Record<string, (...rest: any) => void>) => void;
   triggerEvent: (name: string, ...rest: any) => any;
-  eventTypes: string[];
+  // eventTypes: string[];
   
   constructor(theme?: T) {
     super();

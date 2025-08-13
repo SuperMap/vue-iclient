@@ -19,6 +19,7 @@ import glob from 'fast-glob'
 import { Alias } from '../plugins/alias'
 import { formatBundleFilename, generateExternal, withTaskName, writeBundles } from '../utils'
 import { target } from '../build-info'
+import json from '@rollup/plugin-json';
 import type { TaskFunction } from 'gulp'
 import type { Plugin } from 'rollup'
 
@@ -80,7 +81,8 @@ async function buildFullEntry(minify: boolean, banner: string) {
     replace({
       'process.env.NODE_ENV': JSON.stringify('production'),
       preventAssignment: true
-    })
+    }),
+    json()
   ]
   if (minify) {
     plugins.push(

@@ -11,7 +11,7 @@ interface markerOptions {
 }
 
 export default class RotatingTextBorderMarker extends Marker {
-  options: markerOptions;
+  // options: markerOptions;
 
   constructor(features: FeatureCollection, options: markerOptions = {}) {
     super(features, options);

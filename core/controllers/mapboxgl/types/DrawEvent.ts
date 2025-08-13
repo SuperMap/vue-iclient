@@ -76,7 +76,7 @@ export class DrawEvent extends Events {
   mapList: Record<string, Map> = {};
   drawList: Record<string, InstanceType<typeof MapboxDraw>> = {};
   drawStates: Record<string, Record<string, boolean>> = {};
-  eventTypes: string[];
+  // eventTypes: string[];
 
   triggerEvent: (name: string, ...rest: any) => any;
   on: (data: Record<string, (...rest: any) => void>) => void;

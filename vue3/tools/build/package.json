@@ -20,6 +20,7 @@
     "@pnpm/logger": "^4.0.0",
     "@rollup/plugin-alias": "^5.1.1",
     "@rollup/plugin-commonjs": "^22.0.1",
+    "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@rollup/plugin-replace": "^5.0.5",
     "@supermapgis/build-utils": "workspace:*",
