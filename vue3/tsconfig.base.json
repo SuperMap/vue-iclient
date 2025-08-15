@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "./dist",
-    "target": "esnext",
+    "target": "es2020",
     "module": "esnext",
     "sourceMap": false,
     "moduleResolution": "node",
