@@ -7,6 +7,14 @@ import cloneDeep from 'lodash.clonedeep';
 describe('SmBaseLayerSwitcher', () => {
   let wrapper;
   let mapWrapper;
+  const layerToAdd = {
+    type: 'raster',
+    id: 'China',
+    source: {
+      type: 'raster',
+      tiles: ['http://test']
+    }
+  };
   const layers = [
     {
       thumbnail: './static/material/image/image112.png',
@@ -89,6 +97,7 @@ describe('SmBaseLayerSwitcher', () => {
 
   it('render default correctly', async done => {
     mapWrapper = await createEmptyMap();
+    mapWrapper.vm.viewModel.map.addLayer(layerToAdd);
     wrapper = mount(SmBaseLayerSwitcher, {
       propsData: {
         layers: cloneDeep(layers),
@@ -104,6 +113,7 @@ describe('SmBaseLayerSwitcher', () => {
 
   it('change baseLayer', async done => {
     mapWrapper = await createEmptyMap();
+    mapWrapper.vm.viewModel.map.addLayer(layerToAdd);
     wrapper = mount(SmBaseLayerSwitcher, {
       propsData: {
         layers: cloneDeep(layers)
@@ -118,8 +128,9 @@ describe('SmBaseLayerSwitcher', () => {
     done();
   });
 
-  it('change layers', async done => {
+  it('change layers when otherlayer is selected', async done => {
     mapWrapper = await createEmptyMap();
+    mapWrapper.vm.viewModel.map.addLayer(layerToAdd);
     wrapper = mount(SmBaseLayerSwitcher, {
       propsData: {
         layers: cloneDeep(layers),
@@ -130,6 +141,7 @@ describe('SmBaseLayerSwitcher', () => {
     let layerItems = wrapper.findAll('.layer-item');
     expect(layerItems.length).toBe(3);
     expect(layerItems.at(1).contains('.active-item')).toBe(true);
+    expect(wrapper.vm.selectedId).toBe(layers[0].id);
     const nextLayers = cloneDeep(layers.slice(1));
     wrapper.setProps({
       layers: nextLayers
@@ -138,15 +150,46 @@ describe('SmBaseLayerSwitcher', () => {
     layerItems = wrapper.findAll('.layer-item');
     expect(layerItems.length).toBe(2);
     expect(layerItems.at(0).contains('.active-item')).toBe(true);
+    expect(wrapper.vm.selectedId).toBe(wrapper.vm.baseLayer.id);
+    done();
+  });
+
+  it('change layers when baselayer is selected', async done => {
+    mapWrapper = await createEmptyMap();
+    mapWrapper.vm.viewModel.map.addLayer(layerToAdd);
+    wrapper = mount(SmBaseLayerSwitcher, {
+      propsData: {
+        layers: cloneDeep(layers)
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    let layerItems = wrapper.findAll('.layer-item');
+    expect(layerItems.length).toBe(3);
+    expect(layerItems.at(0).contains('.active-item')).toBe(true);
+    expect(wrapper.vm.selectedId).toBe(wrapper.vm.baseLayer.id);
+    const nextLayers = cloneDeep(layers.slice(1));
+    wrapper.setProps({
+      layers: nextLayers
+    });
+    await wrapper.vm.$nextTick();
+    layerItems = wrapper.findAll('.layer-item');
+    expect(layerItems.length).toBe(2);
+    expect(layerItems.at(0).contains('.active-item')).toBe(true);
+    expect(wrapper.vm.selectedId).toBe(wrapper.vm.baseLayer.id);
     done();
   });
 
   it ('not show origin layer', async (done) => {
     mapWrapper = await createEmptyMap();
+    mapWrapper.vm.viewModel.map.addLayer(layerToAdd);
     wrapper = mount(SmBaseLayerSwitcher, {
       propsData: {
         layers: cloneDeep(layers),
-        showOriginLayer: false
+        baseLayerInfo: {
+          show: false,
+          title: '',
+          thumbnail: ''
+        }
       }
     });
     await mapSubComponentLoaded(wrapper);
@@ -165,6 +208,99 @@ describe('SmBaseLayerSwitcher', () => {
     expect(nextLayerItems.at(0).contains('.active-item')).toBe(false);
     expect(wrapper.vm.selectedId).toBe(wrapper.vm.baseLayer.id);
     done();
-  })
+  });
+
+  it ('empty layers', async (done) => {
+    mapWrapper = await createEmptyMap();
+    wrapper = mount(SmBaseLayerSwitcher, {
+      propsData: {
+        layers: cloneDeep(layers),
+        baseLayerInfo: {
+          show: false,
+          title: '',
+          thumbnail: ''
+        }
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    const layerItems = wrapper.findAll('.layer-item');
+    expect(layerItems.length).toBe(2);
+    done();
+  });
+
+  it ('set baselayer thumbnail', async (done) => {
+    mapWrapper = await createEmptyMap();
+    mapWrapper.vm.viewModel.map.addLayer(layerToAdd);
+    wrapper = mount(SmBaseLayerSwitcher, {
+      propsData: {
+        baseLayerInfo: {
+          show: true,
+          title: 'custom-title',
+          thumbnail: 'http://fake.png'
+        }
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    const layerItems = wrapper.findAll('.layer-item');
+    expect(layerItems.length).toBe(1);
+    expect(wrapper.vm.displayLayers.length).toBe(1);
+    expect(wrapper.vm.displayLayers[0].thumbnail).toBe('http://fake.png');
+    done();
+  });
+
+  it ('set baselayer title', async (done) => {
+    mapWrapper = await createEmptyMap();
+    mapWrapper.vm.viewModel.map.addLayer(layerToAdd);
+    wrapper = mount(SmBaseLayerSwitcher, {
+      propsData: {
+        baseLayerInfo: {
+          show: true,
+          title: 'custom-title',
+          thumbnail: 'http://fake.png'
+        }
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    const layerItems = wrapper.findAll('.layer-item');
+    expect(layerItems.length).toBe(1);
+    expect(wrapper.vm.displayLayers.length).toBe(1);
+    expect(wrapper.vm.displayLayers[0].title).toBe('custom-title');
+    expect(wrapper.vm.baseLayer.title).toBe('custom-title');
+    wrapper.vm.viewModel.baseLayer.layers = [
+      {
+        id: 'custom-layer',
+        type: 'raster',
+        metadata: {
+          title: 'title1'
+        }
+      }
+    ];
+    wrapper.setProps({
+      baseLayerInfo: {
+        show: false,
+        title: 'custom-title',
+        thumbnail: 'http://fake.png'
+      }
+    });
+    await wrapper.vm.$nextTick();
+    expect(wrapper.findAll('.layer-item').length).toBe(0);
+    expect(wrapper.vm.displayLayers.length).toBe(0);
+    expect(wrapper.vm.baseLayer.title).not.toBe('custom-title');
+    expect(wrapper.vm.baseLayer.layers[0].metadata.title).not.toBe('custom-title');
+    expect(wrapper.vm.baseLayer.layers[0].metadata.title).toBe('title1');
+    wrapper.setProps({
+      baseLayerInfo: {
+        show: true,
+        title: 'custom-title',
+        thumbnail: 'http://fake.png'
+      }
+    });
+    await wrapper.vm.$nextTick();
+    expect(wrapper.findAll('.layer-item').length).toBe(1);
+    expect(wrapper.vm.displayLayers.length).toBe(1);
+    expect(wrapper.vm.baseLayer.title).toBe('custom-title');
+    expect(wrapper.vm.baseLayer.layers[0].metadata.title).toBe('custom-title');
+    done();
+  });
 });
 

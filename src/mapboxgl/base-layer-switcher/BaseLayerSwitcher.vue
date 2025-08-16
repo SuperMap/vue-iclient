@@ -16,7 +16,7 @@
         <div class="sm-component-base-layer-switcher__content-holder">
           <div class="sm-component-base-layer-switcher__layers">
             <div
-              v-for="(layer) in displayLayers"
+              v-for="layer in displayLayers"
               :key="layer.id"
               :class="['layer-item', { 'active-item': selectedId === layer.id }]"
               @click="changeBaseLayer(layer)"
@@ -63,9 +63,15 @@ export default {
         return [];
       }
     },
-    showOriginLayer: {
-      type: Boolean,
-      default: true
+    baseLayerInfo: {
+      type: Object,
+      default: () => {
+        return {
+          show: true,
+          title: '',
+          thumbnail: ''
+        };
+      }
     },
     defaultLayer: {
       type: String
@@ -78,10 +84,19 @@ export default {
     };
   },
   computed: {
+    showOriginLayer() {
+      return this.baseLayerInfo.show;
+    },
+    baseTitle() {
+      return this.baseLayerInfo.title;
+    },
+    baseThumbnail() {
+      return this.baseLayerInfo.thumbnail;
+    },
     displayLayers() {
       const layerList = [];
       if (this.showOriginLayer && this.baseLayer) {
-        layerList.unshift({ ...this.baseLayer });
+        layerList.unshift({ ...this.baseLayer, thumbnail: this.baseThumbnail });
       }
       return layerList.concat(this.layers).map(item => {
         return {
@@ -93,12 +108,31 @@ export default {
   },
   watch: {
     layers(next, prev) {
-      if (isEqual(next, prev) || !this.selectedId) {
+      if (isEqual(next, prev) || !this.selectedId || this.selectedId === this.baseLayer?.id) {
         return;
       }
       const isExist = next.some(layer => layer.id === this.selectedId);
       if (!isExist) {
         this.changeBaseLayer({ ...this.baseLayer });
+      }
+    },
+    baseTitle(next) {
+      this.setBaseLayerTitle(
+        next,
+        this.showOriginLayer && this.selectedId === this.baseLayer?.id
+      );
+    },
+    showOriginLayer(next) {
+      if (!next && this.selectedId === this.baseLayer?.id) {
+        this.selectedId = '';
+        this.setBaseLayerTitle('', true);
+        return;
+      }
+      if (next && !this.selectedId) {
+        this.selectedId = this.baseLayer?.id;
+      }
+      if (next && this.baseTitle) {
+        this.setBaseLayerTitle(this.baseTitle, this.selectedId === this.baseLayer?.id);
       }
     }
   },
@@ -108,9 +142,20 @@ export default {
     this.viewModel.on('baselayerchanged', this.onBaseLayerChanged);
   },
   loaded() {
+    if (this.baseTitle && this.showOriginLayer) {
+      this.setBaseLayerTitle(this.baseTitle, !this.selectedId);
+    }
     if (this.selectedId) {
-      const matchLayer = this.layers.find(layer => layer.id === this.selectedId);
+      const matchLayer = this.displayLayers.find(layer => layer.id === this.selectedId);
       matchLayer && this.changeBaseLayer(matchLayer);
+    }
+  },
+  removed() {
+    if (this.baseLayer) {
+      if (this.selectedId === this.baseLayer.id) {
+        this.selectedId = '';
+      }
+      this.baseLayer = null;
     }
   },
   methods: {
@@ -118,11 +163,14 @@ export default {
       this.viewModel.changeBaseLayer(layer);
       this.selectedId = layer.id;
     },
-    onBaseLayerChanged(baseLayer) {
+    onBaseLayerChanged({ baseLayer }) {
       this.baseLayer = cloneDeep(baseLayer);
       if (this.showOriginLayer && !this.selectedId) {
         this.selectedId = baseLayer.id;
       }
+    },
+    setBaseLayerTitle(baseTitle, isChangeBaseLayer) {
+      this.viewModel.setBaseTitle(baseTitle, isChangeBaseLayer);
     }
   },
   beforeDestory() {
