@@ -15,11 +15,16 @@ const handleMousedown = (params: Record<string, any>) => {
 const handleLoad = (params: Record<string, any>) => {
   console.log('load', params);
 }
+const zoomControl = {
+  show: true,
+  position: "top-left",
+  showZoomSlider: false
+}
 </script>
 <template>
   <div>
     <div><Button @click="changeMapId(1641486307)">切换地图</Button></div>
-    <WebMap serverUrl="http://172.16.14.44:8190/iportal" :map-id="mapId" target="map" @mousedown="handleMousedown" @load="handleLoad"></WebMap>
+    <WebMap serverUrl="http://172.16.14.44:8190/iportal" :map-id="mapId" target="map" @mousedown="handleMousedown" @load="handleLoad" :zoomControl="zoomControl"></WebMap>
   </div>
 </template>
 <style>

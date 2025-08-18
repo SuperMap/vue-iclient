@@ -6,6 +6,7 @@ import { SmIndicator } from '@supermapgis/common/components/indicator'
 import { SmText } from '@supermapgis/common/components/text'
 import { SmImage } from '@supermapgis/common/components/image'
 import { SmBorder } from '@supermapgis/common/components/border'
+import { SmIframe } from '@supermapgis/common/components/iframe'
 
 import { SmAttributes } from '@supermapgis/mapboxgl/components/attributes'
 import { SmWebMap } from '@supermapgis/mapboxgl/components/web-map'
@@ -56,5 +57,6 @@ export default [
   SmWebScene,
   SmTextList,
   SmImage,
-  SmBorder
+  SmBorder,
+  SmIframe
 ] as Plugin[]

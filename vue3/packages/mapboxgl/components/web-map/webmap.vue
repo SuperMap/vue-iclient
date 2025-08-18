@@ -11,6 +11,17 @@ import { onBeforeUnmount, onMounted, onUnmounted, ref, watch, computed, useTempl
 import { message } from 'ant-design-vue'
 import SmSpin from '@supermapgis/common/components/spin/Spin'
 import { webMapPropsDefault } from './types'
+import SmZoom from '@supermapgis/mapboxgl/components/zoom/zoom.vue'
+import SmCompass from '@supermapgis/mapboxgl/components/compass/compass.vue'
+import SmDraw from '@supermapgis/mapboxgl/components/draw/draw.vue'
+import SmIdentify from '@supermapgis/mapboxgl/components/identify/identify.vue'
+import SmPan from '@supermapgis/mapboxgl/components/pan/pan.vue'
+import SmLayerList from '@supermapgis/mapboxgl/components/layer-list/layer-list.vue'
+import SmMeasure from '@supermapgis/mapboxgl/components/measure/measure.vue'
+import SmQuery from '@supermapgis/mapboxgl/components/query/query.vue'
+import SmSearch from '@supermapgis/mapboxgl/components/search/search.vue'
+import SmScale from '@supermapgis/mapboxgl/components/scale/scale.vue'
+import SmMiniMap from '@supermapgis/mapboxgl/components/mini-map/mini-map.vue'
 
 const viewModelProps = [
   'mapId',
@@ -41,6 +52,20 @@ const emit = defineEmits</* @vue-ignore */WebMapEvents>()
 
 const el = useTemplateRef('el')
 const spinning = ref(props.defaultLoading)
+
+const componentMap: Record<string, any> = {
+  SmZoom,
+  SmCompass,
+  SmDraw,
+  SmIdentify,
+  SmPan,
+  SmLayerList,
+  SmMeasure,
+  SmQuery,
+  SmSearch,
+  SmScale,
+  SmMiniMap
+};
 
 const controlComponents = computed(() => {
   const controls: Control = {}
@@ -240,7 +265,7 @@ onUnmounted(() => {
   <div ref="el" :id="target" class="sm-component-web-map" :style="{ background: background, height: '100%', width:'100%', position: 'absolute' }">
     <slot></slot>
     <template v-for="(controlProps, controlName) in controlComponents" :key="controlName">
-      <component :is="controlName" v-bind="controlProps"></component>
+      <component :is="componentMap[controlName]" v-bind="controlProps"></component>
     </template>
     <sm-spin v-if="spinning" size="large" :spinning="spinning" :tip="t('webmap.loadingTip')" />
   </div>
