@@ -1,6 +1,24 @@
 import LayerHighlightViewModel from '../LayerHighlightViewModel';
 import Map from '@mocks/map';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import { XMLParser } from 'fast-xml-parser';
 
+jest.mock('fast-xml-parser', () => ({
+  XMLParser: jest.fn().mockImplementation(() => ({
+    parse: jest.fn(() => ({
+      'wfs:WFS_Capabilities': {
+        'wfs:FeatureTypeList': {
+          'wfs:FeatureType': [
+            {
+              'wfs:Name': "Country_R@Population_0.0",
+              'wfs:DefaultCRS': 'EPSG::3857'
+            }
+          ]
+        }
+      }
+    }))
+  }))
+}));
 describe('LayerHighlightViewModel', () => {
   const highlightStyle = {
     line: {
@@ -48,7 +66,7 @@ describe('LayerHighlightViewModel', () => {
     });
 
     viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle });
-    const webmap = { copyLayer: copyLayerSpy };
+    const webmap = { copyLayer: copyLayerSpy, getAppreciableLayers: jest.fn().mockReturnValue([]) };
     viewModel.setMap({ map, webmap });
   });
 
@@ -92,7 +110,7 @@ describe('LayerHighlightViewModel', () => {
       }
     ]);
     const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle, layerIds: ['动画点'] });
-    const webmap = { copyLayer: copyLayerSpy };
+    const webmap = { copyLayer: copyLayerSpy, getAppreciableLayers: jest.fn().mockReturnValue([]) };
     viewModel.setMap({ map, webmap });
     
     viewModel.once('mapselectionchanged', ({ features }) => {
@@ -126,7 +144,7 @@ describe('LayerHighlightViewModel', () => {
       }
     ]);
     const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle, layerIds: ['3d填充面'] });
-    const webmap = { copyLayer: copyLayerSpy };
+    const webmap = { copyLayer: copyLayerSpy, getAppreciableLayers: jest.fn().mockReturnValue([]) };
     viewModel.setMap({ map, webmap });
     
     viewModel.once('mapselectionchanged', () => {
@@ -390,6 +408,287 @@ describe('LayerHighlightViewModel', () => {
     expect(canvaStyle.cursor).toBe('pointer');
     events.mouseleave();
     expect(canvaStyle.cursor).toBe('');
+    done();
+  });
+});
+
+describe('LayerHighlightViewModel', () => {
+  const highlightStyle = {
+    line: {
+      paint: {
+        'line-width': 3,
+        'line-color': '#01ffff',
+        'line-opacity': 1
+      }
+    },
+    circle: {
+      paint: {
+        'circle-color': '#01ffff',
+        'circle-opacity': 0.6,
+        'circle-radius': 8,
+        'circle-stroke-width': 2,
+        'circle-stroke-color': '#01ffff',
+        'circle-stroke-opacity': 1
+      }
+    },
+    fill: {
+      paint: {
+        'fill-color': '#01ffff',
+        'fill-opacity': 0.6,
+        'fill-outline-color': '#01ffff'
+      }
+    },
+    stokeLine: {
+      paint: {
+        'line-width': 3,
+        'line-color': '#01ffff',
+        'line-opacity': 1
+      }
+    }
+  };
+
+  let map;
+  const uniqueName = 'Test';
+  const mockLayerName = 'China';
+  const copyLayerSpy = jest.fn();
+  let viewModel;
+  const sourceLayers = [{
+      "id": "CHINA_DARK",
+      "title": "中国暗色地图",
+      "type": "raster",
+      "visible": true,
+      "renderSource": {
+        "id": "CHINA_DARK",
+        "type": "raster"
+      },
+      "renderLayers": [
+        "CHINA_DARK"
+      ],
+      "dataSource": {},
+      "themeSetting": {},
+      "layerOrder": "auto"
+    },
+    {
+      "id": "Country_R@Population_0.0",
+      "title": "Country_R@Population",
+      "type": "raster",
+      "visible": true,
+      "renderSource": {
+        "id": "ms_wms_1755486958842_80",
+        "type": "raster"
+      },
+      "renderLayers": [
+        "Country_R@Population_0.0"
+      ],
+      "dataSource": {
+        "type": "WFS",
+        "datasetName": "Population:Country_R",
+        "url": "http://172.16.14.77:8090/iserver/services/data-Population-2/wfs200/gb18030"
+      },
+      "themeSetting": {},
+      "layerOrder": "auto"
+    },
+    {
+      "id": "Province_L@Population_0.3",
+      "title": "Province_L@Population",
+      "type": "raster",
+      "visible": true,
+      "renderSource": {
+        "id": "ms_wms_1755229357371_19",
+        "type": "raster"
+      },
+      "renderLayers": [
+        "Province_L@Population_0.3"
+      ],
+      "dataSource": {
+        "type": "WFS",
+        "datasetName": "Population:Province_L",
+        "url": "http://172.16.14.77:8090/iserver/services/data-Population-2/wfs200/gb18030"
+      },
+      "themeSetting": {},
+      "layerOrder": "auto"
+    },
+    {
+      "id": "ProvinceCapital_P@Population_0.6",
+      "title": "ProvinceCapital_P@Population",
+      "type": "raster",
+      "visible": true,
+      "renderSource": {
+        "id": "ms_wms_1755486175351_24",
+        "type": "raster"
+      },
+      "renderLayers": [
+        "ProvinceCapital_P@Population_0.6"
+      ],
+      "dataSource": {
+        "type": "WFS",
+        "datasetName": "Population:ProvinceCapital_P",
+        "url": "http://172.16.14.77:8090/iserver/services/data-Population-2/wfs200/gb18030"
+      },
+      "themeSetting": {},
+      "layerOrder": "auto"
+    },
+    {
+      "id": "中国有观测记录6级以上地震",
+      "title": "中国有观测记录6级以上地震",
+      "type": "circle",
+      "visible": true,
+      "renderSource": {
+        "id": "ms_1394230036_1755239496437_5",
+        "type": "vector",
+        "sourceLayer": "1394230036$msgeometry"
+      },
+      "renderLayers": [
+        "中国有观测记录6级以上地震"
+      ],
+      "dataSource": {
+        "serverId": "1394230036",
+        "type": "STRUCTURE_DATA"
+      },
+      "themeSetting": {},
+      "layerOrder": "auto"
+    }
+  ];
+  const layers = [{
+      "id": "CHINA_DARK",
+      "type": "raster",
+      "source": "CHINA_DARK",
+      "minzoom": 0,
+      "maxzoom": 12
+    },
+    {
+      "id": "Country_R@Population_0.0",
+      "type": "raster",
+      "source": "ms_wms_1755486958842_80",
+      "metadata": {},
+      "layout": {
+        "visibility": "visible"
+      }
+    },
+    {
+      "id": "Province_L@Population_0.3",
+      "type": "raster",
+      "source": "ms_wms_1755229357371_19",
+      "metadata": {}
+    },
+    {
+      "id": "ProvinceCapital_P@Population_0.6",
+      "type": "raster",
+      "source": "ms_wms_1755486175351_24",
+      "metadata": {},
+      "layout": {
+        "visibility": "visible"
+      }
+    },
+    {
+      "id": "中国有观测记录6级以上地震",
+      "type": "circle",
+      "source": "ms_1394230036_1755239496437_5",
+      "source-layer": "1394230036$msgeometry",
+      "metadata": {},
+      "minzoom": 0,
+      "maxzoom": 24,
+      "paint": {
+        "circle-color": "#EE4D5A",
+        "circle-opacity": 0.9,
+        "circle-translate-anchor": "map",
+        "circle-radius": 4,
+        "circle-translate": [
+          0,
+          0
+        ]
+      }
+    }
+  ];
+  beforeEach(() => {
+    map = new Map({
+      style: {
+        center: [0, 0],
+        zoom: 1,
+        layers,
+        sources: {}
+      }
+    });
+
+    viewModel = new LayerHighlightViewModel({
+      name: uniqueName,
+      style: highlightStyle
+    });
+    const webmap = {
+      copyLayer: copyLayerSpy,
+      getAppreciableLayers: jest.fn().mockReturnValue(sourceLayers)
+    };
+    viewModel.setMap({
+      map,
+      webmap
+    });
+    const xml = `
+      <wfs:FeatureCollection
+        xmlns:wfs="http://www.opengis.net/wfs"
+        xmlns:gml="http://www.opengis.net/gml"
+        xmlns:feature="http://example.com/feature"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://example.com/feature feature.xsd">
+        <gml:featureMember>
+          <feature:SampleFeature>
+            <feature:geometry>
+              <gml:Point srsName="EPSG:3857">
+                <gml:coordinates>100,0</gml:coordinates>
+              </gml:Point>
+            </feature:geometry>
+            <feature:name>test</feature:name>
+          </feature:SampleFeature>
+        </gml:featureMember>
+      </wfs:FeatureCollection>
+    `
+    mapboxgl.supermap = {
+      FetchRequest: {
+        get: jest.fn().mockResolvedValue({
+          text: jest.fn().mockResolvedValue(xml)
+        })
+      }
+    }
+  });
+
+  afterEach(() => {
+    viewModel.removed();
+  });
+  it('queryWFSFeatures', async done => {
+    const wfsLayers = [{
+      "id": "Province_L@Population_0.3",
+      "title": "Province_L@Population",
+      "type": "raster",
+      "visible": true,
+      "renderSource": {
+        "id": "ms_wms_1755229357371_19",
+        "type": "raster"
+      },
+      "renderLayers": [
+        "Province_L@Population_0.3"
+      ],
+      "dataSource": {
+        "type": "WFS",
+        "datasetName": "Population:Province_L",
+        "url": "http://172.16.14.77:8090/iserver/services/data-Population-2/wfs200/gb18030"
+      },
+      "themeSetting": {},
+      "layerOrder": "auto"
+    }];
+    const e = {
+      point: {
+        x: 500,
+        u: 500
+      },
+      target: {
+        unproject: jest.fn().mockReturnValue({
+          toArray: jest.fn().mockReturnValue([90, 90])
+        }),
+        getLayer: jest.fn().mockReturnValue({
+          type: 'circle',
+        })
+      }
+    }
+    await viewModel.queryWFSFeatures(wfsLayers, e);
     done();
   });
 });
