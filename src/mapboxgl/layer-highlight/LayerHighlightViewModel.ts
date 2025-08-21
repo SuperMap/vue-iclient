@@ -697,8 +697,9 @@ export default class HighlightLayer extends mapboxgl.Evented {
 
   private async getWfsGeojson(url, datasetName, proj, filter) {
     const COUNT = 1000; // 限制1000条数据
-    const getFeaturesUrl = `${url}?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&COUNT=${COUNT}&FILTER=${filter}&TYPENAMES=${datasetName}`;
-    const featureResponse = await mapboxgl.supermap.FetchRequest.get(getFeaturesUrl, null);
+    const separator = url.includes('?') ? '&' : '?';
+    const getFeaturesUrl = `${url}${separator}SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&COUNT=${COUNT}&FILTER=${filter}&TYPENAMES=${datasetName}`;
+    const featureResponse = await mapboxgl.supermap.FetchRequest.get(getFeaturesUrl, null, { withoutFormatSuffix: true });
     const featureXml = await featureResponse.text();
     const geojsonData = this.transformXML2Geojson(featureXml, proj);
     return geojsonData;
@@ -721,8 +722,9 @@ export default class HighlightLayer extends mapboxgl.Evented {
       parseAttributeValue: false,
       attributeNamePrefix: ''
     });
-    const requestUrl = `${url}?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetCapabilities`;
-    const featureResponse = await mapboxgl.supermap.FetchRequest.get(requestUrl, null);
+    const separator = url.includes('?') ? '&' : '?';
+    const requestUrl = `${url}${separator}SERVICE=WFS&VERSION=2.0.0&REQUEST=GetCapabilities`;
+    const featureResponse = await mapboxgl.supermap.FetchRequest.get(requestUrl, null, { withoutFormatSuffix: true });
     const featureXml = await featureResponse.text();
     if (!featureXml) return null;
     const data = parser.parse(featureXml)['wfs:WFS_Capabilities'];
