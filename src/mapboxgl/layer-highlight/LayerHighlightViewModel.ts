@@ -705,11 +705,11 @@ export default class HighlightLayer extends mapboxgl.Evented {
     return geojsonData;
   }
 
-  private getFilter(bbox: number[], epsgCode: number, typeNames: string[] | string): string {
+  private getFilter(bbox: number[], epsgCode: number): string {
     const srcName = `urn:ogc:def:crs:EPSG::${epsgCode}`;
     const lowerCorner = `${bbox[0]} ${bbox[1]}`;
     const upperCorner = `${bbox[2]} ${bbox[3]}`;
-    return `<Filter xmlns="http://www.opengis.net/fes/2.0"><BBOX><PropertyName>${typeNames}</PropertyName><Envelope srsName="${srcName}" xmlns="http://www.opengis.net/gml/3.2"><lowerCorner>${lowerCorner}</lowerCorner><upperCorner>${upperCorner}</upperCorner></Envelope></BBOX></Filter>`;
+    return `<Filter xmlns="http://www.opengis.net/fes/2.0"><BBOX><Envelope srsName="${srcName}" xmlns="http://www.opengis.net/gml/3.2"><lowerCorner>${lowerCorner}</lowerCorner><upperCorner>${upperCorner}</upperCorner></Envelope></BBOX></Filter>`;
   }
 
   // xml中多个返回数组格式，单个返回对象，此方法统一转化成数组
@@ -773,7 +773,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
           Math.max(transLngLat1[0], transLngLat2[0]),
           Math.max(transLngLat1[1], transLngLat2[1])
         ];
-        const filter = this.getFilter(wfsBbox, +proj.split(':')[1], datasetName);
+        const filter = this.getFilter(wfsBbox, +proj.split(':')[1]);
         const geojson = await this.getWfsGeojson(url, datasetName, proj, filter);
         const mapLayer = map.getLayer(l.id) as any;
         const wfsFeatures = geojson.features.map(f => {
