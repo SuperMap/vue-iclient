@@ -353,8 +353,8 @@ export default class HighlightLayer extends mapboxgl.Evented {
 
   addNormalHighlightLayers(layer: mapboxglTypes.Layer, features: GeoJSON.Feature[], filter: any) {
     let type = layer.type as unknown as StyleTypes[number];
-    const isRaster = layer.type === 'raster' && !!features.length;
-    if (isRaster) {
+    const isWFSLayer = (layer.source as any)?.includes(rasterSourceIdPrefix) && !!features.length;
+    if (isWFSLayer) {
       type = this.convertToMapboxType(features[0].geometry.type);
       const sourceConfig = {
         type: 'geojson',
@@ -366,7 +366,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
       const layerSource = layer.source as string;
       layerSource && !this.map.getSource(layerSource) && this.map.addSource(layerSource, sourceConfig as any);
     }
-    let paint = isRaster ? {} : layer.paint;
+    let paint = isWFSLayer ? {} : layer.paint;
     const id = layer.id;
     // 如果是面的strokline，处理成面
     if (id.includes('-strokeLine') && type === 'line') {
@@ -377,7 +377,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
     if (type === 'fill') {
       types.push('strokeLine');
     }
-    const layerHighlightStyle = this.createLayerHighlightStyle(types, id, isRaster);
+    const layerHighlightStyle = this.createLayerHighlightStyle(types, id, isWFSLayer);
     if (['circle', 'line', 'fill', 'fill-extrusion'].includes(type)) {
       const layerStyle = layerHighlightStyle[type];
       const highlightLayer = Object.assign({}, layer, {
@@ -527,7 +527,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
     }, filter);
   }
 
-  private createLayerHighlightStyle(types: StyleTypes, layerId: string, isRaster) {
+  private createLayerHighlightStyle(types: StyleTypes, layerId: string, isWFSLayer) {
     const highlightStyle: HighlightStyle = JSON.parse(JSON.stringify(this.highlightOptions.style));
     types
       .filter(type => PAINT_BASIC_ATTRS[type])
@@ -540,7 +540,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
         paintBasicAttrs.forEach(paintType => {
           if (!highlightStyle[type].paint?.[paintType]) {
             const originPaintValue =
-              !isRaster && type !== 'strokeLine' && this.map.getLayer(layerId) && this.map.getPaintProperty(layerId, paintType);
+              !isWFSLayer && type !== 'strokeLine' && this.map.getLayer(layerId) && this.map.getPaintProperty(layerId, paintType);
             highlightStyle[type].paint = Object.assign({}, highlightStyle[type].paint, {
               [paintType]: originPaintValue || PAINT_DEFAULT_STYLE[paintType]
             });
@@ -804,13 +804,15 @@ export default class HighlightLayer extends mapboxgl.Evented {
       [e.point.x - this.highlightOptions.clickTolerance, e.point.y - this.highlightOptions.clickTolerance],
       [e.point.x + this.highlightOptions.clickTolerance, e.point.y + this.highlightOptions.clickTolerance]
     ] as unknown as [mapboxglTypes.PointLike, mapboxglTypes.PointLike];
-    const features = map.queryRenderedFeatures(bbox, {
-      layers: this.activeTargetId
-        ? [this.activeTargetId]
-        : this.highlightOptions.layerIds.filter(item => !!this.map.getLayer(item))
-    }) as unknown as LayerClickedFeature[];
     const sourceLayers = this.webmap.getAppreciableLayers();
     const wfsLayers = sourceLayers.filter(sl => sl.dataSource.type === 'WFS' && this.highlightOptions.layerIds.includes(sl.id));
+    const wfsLayerIds = wfsLayers.map(wfsLayer => wfsLayer.id);
+    const layerIds = this.activeTargetId
+      ? [this.activeTargetId]
+      : this.highlightOptions.layerIds.filter(item => !!this.map.getLayer(item));
+    const features = map.queryRenderedFeatures(bbox, {
+      layers: layerIds.filter(id => !wfsLayerIds.includes(id))
+    }) as unknown as LayerClickedFeature[];
     if (wfsLayers?.length) {
       const wfsFeatures = await this.queryWFSFeatures(wfsLayers, e);
       features.push(...wfsFeatures);
