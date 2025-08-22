@@ -805,7 +805,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
       [e.point.x + this.highlightOptions.clickTolerance, e.point.y + this.highlightOptions.clickTolerance]
     ] as unknown as [mapboxglTypes.PointLike, mapboxglTypes.PointLike];
     const sourceLayers = this.webmap.getAppreciableLayers();
-    const wfsLayers = sourceLayers.filter(sl => sl.dataSource.type === 'WFS' && this.highlightOptions.layerIds.includes(sl.id));
+    const wfsLayers = sourceLayers.filter(sl => sl.dataSource.type === 'WFS' && sl.visible && this.highlightOptions.layerIds.includes(sl.id));
     const wfsLayerIds = wfsLayers.map(wfsLayer => wfsLayer.id);
     const layerIds = this.activeTargetId
       ? [this.activeTargetId]
