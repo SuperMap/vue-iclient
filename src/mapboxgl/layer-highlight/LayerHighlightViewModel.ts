@@ -5,6 +5,12 @@ import FillStyle from 'vue-iclient/src/mapboxgl/_types/FillStyle';
 import WebMapViewModel from 'vue-iclient/src/mapboxgl/web-map/WebMapViewModel';
 import { getFeatureCenter, getValueCaseInsensitive } from 'vue-iclient/src/common/_utils/util';
 import isEqual from 'lodash.isequal';
+import WFS from 'ol/format/WFS';
+import GML32 from 'ol/format/GML32';
+import GeoJSON from 'ol/format/GeoJSON';
+import UniqueId from 'lodash.uniqueid';
+import { XMLParser } from 'fast-xml-parser';
+import { transformCoodinates, transformCoordinate } from 'vue-iclient/src/common/_utils/epsg-define';
 
 interface HighlightStyle {
   circle: InstanceType<typeof CircleStyle>;
@@ -174,6 +180,8 @@ const HIGHLIGHT_DEFAULT_STYLE: HighlightStyle = {
   strokeLine: new LineStyle()
 };
 
+const rasterSourceIdPrefix = 'sm_hightlight_source_';
+
 export default class HighlightLayer extends mapboxgl.Evented {
   private dataSelectorMode: DataSelectorMode = DataSelectorMode.SINGLE;
   private activeTargetId: string | null = null;
@@ -327,13 +335,38 @@ export default class HighlightLayer extends mapboxgl.Evented {
     if (l7layer) {
       this.highlightL7Layer({ layer, features, filter });
     } else {
-      this.addNormalHighlightLayers(layer, filter);
+      this.addNormalHighlightLayers(layer, features, filter);
     }
   }
 
-  addNormalHighlightLayers(layer: mapboxglTypes.Layer, filter: any) {
+  convertToMapboxType(geoJsonType) {
+    const typeMap = {
+      Point: 'circle',
+      MultiPoint: 'circle',
+      LineString: 'line',
+      MultiLineString: 'line',
+      Polygon: 'fill',
+      MultiPolygon: 'fill'
+    };
+    return typeMap[geoJsonType] || null;
+  }
+
+  addNormalHighlightLayers(layer: mapboxglTypes.Layer, features: GeoJSON.Feature[], filter: any) {
     let type = layer.type as unknown as StyleTypes[number];
-    let paint = layer.paint;
+    const isWFSLayer = (layer.source as any)?.includes(rasterSourceIdPrefix) && !!features.length;
+    if (isWFSLayer) {
+      type = this.convertToMapboxType(features[0].geometry.type);
+      const sourceConfig = {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features
+        }
+      };
+      const layerSource = layer.source as string;
+      layerSource && !this.map.getSource(layerSource) && this.map.addSource(layerSource, sourceConfig as any);
+    }
+    let paint = isWFSLayer ? {} : layer.paint;
     const id = layer.id;
     // 如果是面的strokline，处理成面
     if (id.includes('-strokeLine') && type === 'line') {
@@ -344,7 +377,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
     if (type === 'fill') {
       types.push('strokeLine');
     }
-    const layerHighlightStyle = this.createLayerHighlightStyle(types, id);
+    const layerHighlightStyle = this.createLayerHighlightStyle(types, id, isWFSLayer);
     if (['circle', 'line', 'fill', 'fill-extrusion'].includes(type)) {
       const layerStyle = layerHighlightStyle[type];
       const highlightLayer = Object.assign({}, layer, {
@@ -401,6 +434,9 @@ export default class HighlightLayer extends mapboxgl.Evented {
         this.map.removeLayer(layerId);
       }
     });
+    Object.keys(this.map.getStyle().sources).forEach((s) => {
+      s.includes(rasterSourceIdPrefix) && this.map.removeSource(s);
+    });
   }
 
   createPopupFeatureInfo(feature: LayerClickedFeature, targetId: string) {
@@ -451,7 +487,8 @@ export default class HighlightLayer extends mapboxgl.Evented {
       geometry.type === 'MultiPolygon' ||
       geometry.type === 'Polygon' ||
       geometry.type === 'LineString' ||
-      geometry.type === 'MultiLineString'
+      geometry.type === 'MultiLineString' ||
+      geometry.type === 'MultiPoint'
     ) {
       return getFeatureCenter(feature);
     }
@@ -505,7 +542,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
     }, filter);
   }
 
-  private createLayerHighlightStyle(types: StyleTypes, layerId: string) {
+  private createLayerHighlightStyle(types: StyleTypes, layerId: string, isWFSLayer) {
     const highlightStyle: HighlightStyle = JSON.parse(JSON.stringify(this.highlightOptions.style));
     types
       .filter(type => PAINT_BASIC_ATTRS[type])
@@ -518,7 +555,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
         paintBasicAttrs.forEach(paintType => {
           if (!highlightStyle[type].paint?.[paintType]) {
             const originPaintValue =
-              type !== 'strokeLine' && this.map.getLayer(layerId) && this.map.getPaintProperty(layerId, paintType);
+              !isWFSLayer && type !== 'strokeLine' && this.map.getLayer(layerId) && this.map.getPaintProperty(layerId, paintType);
             highlightStyle[type].paint = Object.assign({}, highlightStyle[type].paint, {
               [paintType]: originPaintValue || PAINT_DEFAULT_STYLE[paintType]
             });
@@ -572,8 +609,8 @@ export default class HighlightLayer extends mapboxgl.Evented {
     return `${highlightLayerId}-StrokeLine`;
   }
 
-  private handleMapClick(e: mapboxglTypes.MapLayerMouseEvent) {
-    const features = this.queryLayerFeatures(e as mapboxglTypes.MapLayerMouseEvent);
+  private async handleMapClick(e: mapboxglTypes.MapLayerMouseEvent) {
+    const features = await this.queryLayerFeatures(e as mapboxglTypes.MapLayerMouseEvent);
     if (this.dataSelectorMode !== DataSelectorMode.MULTIPLE) {
       this.dataSelectorMode = DataSelectorMode.SINGLE;
     }
@@ -584,7 +621,14 @@ export default class HighlightLayer extends mapboxgl.Evented {
   private handleMapSelections(features: LayerClickedFeature[]) {
     this.removeHighlightLayers();
     let popupDatas: PopupFeatureInfo[] = [];
-    const matchTargetFeature = features[0];
+    let topLayerIndex = 0;
+    const layers = this.map.getStyle().layers;
+    features.forEach((f) => {
+      const idx = layers.findIndex(l => l.id === f.layer.id);
+      idx > topLayerIndex && (topLayerIndex = idx);
+    });
+    const topLayerId = layers?.[topLayerIndex]?.id;
+    const matchTargetFeature = features.find(f => f.layer?.id === topLayerId) ?? features[0];
     let activeTargetLayer = matchTargetFeature?.layer;
     if (activeTargetLayer) {
       switch (this.dataSelectorMode) {
@@ -650,17 +694,144 @@ export default class HighlightLayer extends mapboxgl.Evented {
     this.map.getCanvas().style.cursor = '';
   }
 
-  private queryLayerFeatures(e: mapboxglTypes.MapLayerMouseEvent) {
+  private transformXML2Geojson(xml, dataProjection) {
+    const wfsFormat = new WFS({
+      version: '2.0.0',
+      gmlFormat: new GML32()
+    });
+    const geoJsonFormat = new GeoJSON();
+    const options = dataProjection === 'EPSG:4326' ? undefined : {
+      dataProjection,
+      featureProjection: 'EPSG:4326'
+    };
+    const features = wfsFormat.readFeatures(xml, options);
+    const geoJson = geoJsonFormat.writeFeatures(features);
+    const geojsonData = JSON.parse(geoJson);
+    return geojsonData;
+  }
+
+  private async getWfsGeojson(url, datasetName, proj, filter) {
+    const COUNT = 1000; // 限制1000条数据
+    const separator = url.includes('?') ? '&' : '?';
+    const getFeaturesUrl = `${url}${separator}SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&COUNT=${COUNT}&FILTER=${filter}&TYPENAMES=${datasetName}`;
+    const featureResponse = await mapboxgl.supermap.FetchRequest.get(getFeaturesUrl, null, { withoutFormatSuffix: true });
+    const featureXml = await featureResponse.text();
+    const geojsonData = this.transformXML2Geojson(featureXml, proj);
+    return geojsonData;
+  }
+
+  private getFilter(bbox: number[], epsgCode: number): string {
+    const srcName = `urn:ogc:def:crs:EPSG::${epsgCode}`;
+    const lowerCorner = `${bbox[0]} ${bbox[1]}`;
+    const upperCorner = `${bbox[2]} ${bbox[3]}`;
+    return `<Filter xmlns="http://www.opengis.net/fes/2.0"><BBOX><Envelope srsName="${srcName}" xmlns="http://www.opengis.net/gml/3.2"><lowerCorner>${lowerCorner}</lowerCorner><upperCorner>${upperCorner}</upperCorner></Envelope></BBOX></Filter>`;
+  }
+
+  // xml中多个返回数组格式，单个返回对象，此方法统一转化成数组
+  private transformData(value: any | any[]): any[] {
+    return Array.isArray(value) ? value : [value];
+  }
+
+  private async getWFSCapability(url: string): Promise<any> {
+    const parser = new XMLParser({
+      parseAttributeValue: false,
+      attributeNamePrefix: ''
+    });
+    const separator = url.includes('?') ? '&' : '?';
+    const requestUrl = `${url}${separator}SERVICE=WFS&VERSION=2.0.0&REQUEST=GetCapabilities`;
+    const featureResponse = await mapboxgl.supermap.FetchRequest.get(requestUrl, null, { withoutFormatSuffix: true });
+    const featureXml = await featureResponse.text();
+    if (!featureXml) return null;
+    const data = parser.parse(featureXml)['wfs:WFS_Capabilities'];
+    return data;
+  }
+
+  private async getDatasetProjection(
+    datasetNames: string[],
+    url: string
+  ): Promise<Record<string, string>> {
+    const capability = await this.getWFSCapability(url);
+    let featureTypeElements = capability['wfs:FeatureTypeList']['wfs:FeatureType'];
+    featureTypeElements = this.transformData(featureTypeElements);
+    const result = {};
+    datasetNames.forEach((d) => {
+      const target = featureTypeElements.find((f) => f['wfs:Name'] === d);
+      const projection = target ? `EPSG:${target['wfs:DefaultCRS'].split('EPSG::')[1]}` : 'EPSG:3857';
+      result[d] = projection;
+    });
+    return result;
+  }
+
+  private async queryWFSFeatures(wfsLayers, e) {
+    const map = e.target;
+    const pointBbox = [
+      [e.point.x - this.highlightOptions.clickTolerance, e.point.y - this.highlightOptions.clickTolerance],
+      [e.point.x + this.highlightOptions.clickTolerance, e.point.y + this.highlightOptions.clickTolerance]
+    ];
+    const features = [];
+    if (wfsLayers?.length) {
+      for (let i = 0; i < wfsLayers.length; i++) {
+        const l = wfsLayers[i];
+        const url = l.dataSource.url;
+        const datasetName = l.dataSource.datasetName;
+        const point1 = pointBbox[0];
+        const point2 = pointBbox[1];
+        const lnglat1 = e.target.unproject(point1).toArray();
+        const lnglat2 = e.target.unproject(point2).toArray();
+        const prjInfo = await this.getDatasetProjection([datasetName], url);
+        const proj = prjInfo[datasetName];
+        const transLngLat1 = transformCoordinate('EPSG:4326', proj, lnglat1);
+        const transLngLat2 = transformCoordinate('EPSG:4326', proj, lnglat2);
+        const wfsBbox = [
+          Math.min(transLngLat1[0], transLngLat2[0]),
+          Math.min(transLngLat1[1], transLngLat2[1]),
+          Math.max(transLngLat1[0], transLngLat2[0]),
+          Math.max(transLngLat1[1], transLngLat2[1])
+        ];
+        const filter = this.getFilter(wfsBbox, +proj.split(':')[1]);
+        const geojson = await this.getWfsGeojson(url, datasetName, proj, filter);
+        const mapLayer = map.getLayer(l.id) as any;
+        const wfsFeatures = geojson.features.map(f => {
+          const newF = {
+            ...f,
+            layer: {
+              id: l.id,
+              type: mapLayer?.type,
+              metadata: mapLayer?.metadata || {},
+              minzoom: mapLayer?.minzoom || 0,
+              maxzoom: mapLayer?.maxzoom || 24,
+              paint: mapLayer?.paint || {},
+              layout: mapLayer?.layout || {},
+              source: `${UniqueId(rasterSourceIdPrefix)}-SM-highlighted`
+            }
+          };
+          return newF;
+        });
+        features.push(...wfsFeatures);
+      }
+    }
+    return features;
+  }
+
+  private async queryLayerFeatures(e: mapboxglTypes.MapLayerMouseEvent) {
     const map = e.target;
     const bbox = [
       [e.point.x - this.highlightOptions.clickTolerance, e.point.y - this.highlightOptions.clickTolerance],
       [e.point.x + this.highlightOptions.clickTolerance, e.point.y + this.highlightOptions.clickTolerance]
     ] as unknown as [mapboxglTypes.PointLike, mapboxglTypes.PointLike];
+    const sourceLayers = this.webmap.getAppreciableLayers();
+    const wfsLayers = sourceLayers.filter(sl => sl.dataSource.type === 'WFS' && sl.visible && this.highlightOptions.layerIds.includes(sl.id));
+    const wfsLayerIds = wfsLayers.map(wfsLayer => wfsLayer.id);
+    const layerIds = this.activeTargetId
+      ? [this.activeTargetId]
+      : this.highlightOptions.layerIds.filter(item => !!this.map.getLayer(item));
     const features = map.queryRenderedFeatures(bbox, {
-      layers: this.activeTargetId
-        ? [this.activeTargetId]
-        : this.highlightOptions.layerIds.filter(item => !!this.map.getLayer(item))
+      layers: layerIds.filter(id => !wfsLayerIds.includes(id))
     }) as unknown as LayerClickedFeature[];
+    if (wfsLayers?.length) {
+      const wfsFeatures = await this.queryWFSFeatures(wfsLayers, e);
+      features.push(...wfsFeatures);
+    }
     return features;
   }
 

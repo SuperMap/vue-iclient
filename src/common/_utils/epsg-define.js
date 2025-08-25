@@ -67,3 +67,28 @@ export function transformCoodinates({ coordinates, sourceProjection, destProject
     throw errorMsg;
   }
 }
+
+export function transformCoordinate(fromProjection, toProjection, coordinates) {
+  if (fromProjection === toProjection) return coordinates;
+  if (
+    (fromProjection === 'EPSG:4490' && toProjection === 'EPSG:4326') ||
+    (fromProjection === 'EPSG:4326' && toProjection === 'EPSG:4490')
+  ) {
+    return coordinates;
+  }
+  // proj4缺陷，EPSG:4214的坐标x为180，转换后变成-179.
+  if (fromProjection === 'EPSG:4214' && toProjection === 'EPSG:4326' && coordinates[0] === 180) {
+    const newCoordinate = transformCoodinates({
+      coordinates,
+      sourceProjection: fromProjection,
+      destProjection: toProjection
+    });
+    newCoordinate[0] = 180;
+    return newCoordinate;
+  }
+  return transformCoodinates({
+    coordinates,
+    sourceProjection: fromProjection,
+    destProjection: toProjection
+  });
+}
