@@ -1,7 +1,6 @@
 import LayerHighlightViewModel from '../LayerHighlightViewModel';
 import Map from '@mocks/map';
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
-import { XMLParser } from 'fast-xml-parser';
 
 jest.mock('fast-xml-parser', () => ({
   XMLParser: jest.fn().mockImplementation(() => ({
@@ -653,6 +652,7 @@ describe('LayerHighlightViewModel', () => {
   afterEach(() => {
     viewModel.removed();
   });
+
   it('queryWFSFeatures', async done => {
     const wfsLayers = [{
       "id": "Province_L@Population_0.3",
@@ -689,6 +689,53 @@ describe('LayerHighlightViewModel', () => {
       }
     }
     await viewModel.queryWFSFeatures(wfsLayers, e);
+    done();
+  });
+
+  it('queryWFSFeatures - error', async done => {
+    const wfsLayers = [{
+      "id": "Province_L@Population_0.3",
+      "title": "Province_L@Population",
+      "type": "raster",
+      "visible": true,
+      "renderSource": {
+        "id": "ms_wms_1755229357371_19",
+        "type": "raster"
+      },
+      "renderLayers": [
+        "Province_L@Population_0.3"
+      ],
+      "dataSource": {
+        "type": "WFS",
+        "datasetName": "Population:Province_L",
+        "url": "http://172.16.14.77:8090/iserver/services/data-Population-2/wfs200/gb18030"
+      },
+      "themeSetting": {},
+      "layerOrder": "auto"
+    }];
+    mapboxgl.supermap = {
+      FetchRequest: {
+        get: jest.fn().mockResolvedValue({
+          text: jest.fn().mockResolvedValue(null)
+        })
+      }
+    }
+    const e = {
+      point: {
+        x: 500,
+        u: 500
+      },
+      target: {
+        unproject: jest.fn().mockReturnValue({
+          toArray: jest.fn().mockReturnValue([90, 90])
+        }),
+        getLayer: jest.fn().mockReturnValue({
+          type: 'circle',
+        })
+      }
+    }
+    const res = await viewModel.queryWFSFeatures(wfsLayers, e);
+    expect(res.length).toBe(0);
     done();
   });
 });
