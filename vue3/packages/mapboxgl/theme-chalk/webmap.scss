@@ -4,7 +4,7 @@
 @include b(web-map) {
   width: 100%;
   height: 100%;
-  & > .#{$ant-prefix}-spin {
+  & > .#{$ant-prefix}-spin-nested-loading {
     position: absolute;
     top: 0;
     left: 0;
@@ -16,6 +16,14 @@
     flex-direction: column;
     z-index: 100;
     background: rgba(0, 0, 0, 0.8);
+    & > div {
+      & > .#{$ant-prefix}-spin {
+        max-height: 100%;
+        .sm-component-spin-text {
+          text-shadow: none;
+        }
+      }
+    }
   }
   // 为了echarts的resize
   .echartMap {
