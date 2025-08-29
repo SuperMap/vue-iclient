@@ -16,7 +16,7 @@ import { webScenePropsDefault } from './types'
 import WebSceneViewModel from 'vue-iclient-core/controllers/mapboxgl/WebSceneViewModel';
 import { isEqual } from 'lodash-es';
 import sceneEvent from 'vue-iclient-core/types/scene-event';
-import { watch, onMounted, onBeforeUnmount, defineProps, defineEmits } from 'vue';
+import { watch, onMounted, onBeforeUnmount } from 'vue';
 
 defineOptions({
   name: 'SmWebScene'

@@ -518,7 +518,7 @@ onBeforeMount(() => {
   );
   rowStyleData.value = merge(
     {
-      oddStyle: { background: getColorWithOpacity(gisControlBgStyle.value, 0.4) },
+      oddStyle: { background: getColorWithOpacity(gisControlBgStyle.value.background, 0.4) },
       evenStyle: { background: getColorWithOpacity(colorPrimary.value, 0.4) }
     },
     props.rowStyle

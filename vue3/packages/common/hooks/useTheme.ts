@@ -111,7 +111,6 @@ export function useTheme(props: ThemeProps, themeAliasToken: AliasToken = global
   })
 
   onMounted(() => {
-    changeThemeCallback({ themeStyle: themeAliasToken })
     globalEvent.on({
       'change-theme': changeThemeCallback
     })

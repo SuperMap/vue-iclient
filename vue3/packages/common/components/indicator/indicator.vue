@@ -38,7 +38,7 @@
 
 <script lang="ts" setup>
 import type { IndicatorProps, IndicatorEvents } from './types'
-import { ref, computed, watch, onMounted, onBeforeUnmount, defineProps, defineEmits } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { indicatorPropsDefault } from './types'
 import { useTimer, useTheme } from '@supermapgis/common/hooks/index.common'
 import RestService from 'vue-iclient-core/utils/RestService'
