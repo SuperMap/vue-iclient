@@ -15,6 +15,11 @@ export const setTheme = (options: SetThemeOptions) => {
     const acceptedThemeType = nextThemeStyle.themeType;
     const themeType = acceptedThemeType ?? 'light';
     const customThemeToken = acceptedThemeType === 'dark' ? darkAlgorithm(customStyle) : defaultAlgorithm(customStyle);
+    for (const key in nextThemeStyle) {
+      if (nextThemeStyle[key] === '') {
+        customThemeToken[key] = '';
+      }
+    }
     acceptedThemeStyle = Object.assign({}, themeTokenMapping[themeType], customThemeToken)
   }
   globalEvent.changeTheme(acceptedThemeStyle, triggerEvent !== false)

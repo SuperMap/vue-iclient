@@ -58,7 +58,7 @@ export function useTheme(props: ThemeProps, themeAliasToken: AliasToken = global
   function changeThemeCallback(changedTheme: { themeStyle?: AliasToken }) {
     const { themeStyle } = changedTheme
     if (themeStyle) {
-      themeToken.value = Object.assign({}, themeStyle)
+      themeToken.value = themeStyle;
       Object.assign(themePropDatas, onThemePropChanged())
     }
   }

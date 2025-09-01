@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-text" :style="[customStyle, textColorStyle, gisControlBgStyle]">
+  <div class="sm-component-text" :style="[customStyle, textColorStyle, containerBgStyle]">
     <span v-if="href">
       <a
         :target="target"
@@ -25,7 +25,7 @@ defineOptions({
 const props = withDefaults(defineProps<TextProps>(), textPropsDefault)
 const finalValue = ref(props.title);
 
-const { textColorStyle, gisControlBgStyle } = useTheme(props)
+const { textColorStyle, containerBgStyle } = useTheme(props)
 const { restService, getData } = useThirdService(props, finalValue);
 useTimer(props, { timing });
 
