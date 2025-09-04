@@ -34,9 +34,9 @@ export function useMapGetter<M>({ viewModel, loaded, removed }: MapGetterOptions
     })
   }
   function _onHookRemoved({ map, mapTarget }) {
+    removed?.(map, mapTarget)
     map = null
     webmap = null
-    removed?.(map, mapTarget)
   }
 
   function mapNotLoadedTip() {
@@ -47,7 +47,7 @@ export function useMapGetter<M>({ viewModel, loaded, removed }: MapGetterOptions
     }
     return false
   }
-
+``
   function setViewModel(vm: InstanceType<any>) {
     viewModelInstance = vm
   }
