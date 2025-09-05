@@ -749,8 +749,9 @@ export default class HighlightLayer extends mapboxgl.Evented {
   private async getDatasetProjection(
     datasetNames: string[],
     url: string
-  ): Promise<Record<string, string>> {
+  ): Promise<Record<string, string> | null> {
     const capability = await this.getWFSCapability(url);
+    if (!capability) return null;
     let featureTypeElements = capability['wfs:FeatureTypeList']['wfs:FeatureType'];
     featureTypeElements = this.transformData(featureTypeElements);
     const result = {};
@@ -779,6 +780,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
         const lnglat1 = e.target.unproject(point1).toArray();
         const lnglat2 = e.target.unproject(point2).toArray();
         const prjInfo = await this.getDatasetProjection([datasetName], url);
+        if (prjInfo === null) continue;
         const proj = prjInfo[datasetName];
         const transLngLat1 = transformCoordinate('EPSG:4326', proj, lnglat1);
         const transLngLat2 = transformCoordinate('EPSG:4326', proj, lnglat2);
