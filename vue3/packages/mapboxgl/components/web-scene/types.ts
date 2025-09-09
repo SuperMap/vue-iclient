@@ -27,6 +27,9 @@ export const webSceneProps = () => ({
   cesiumPath: {
     type: String
   },
+  openConfigPath: {
+    type: String
+  },
   options: {
     type: Object as PropType<cesiumOptions>
   },
@@ -47,9 +50,11 @@ export type WebSceneProps = {
   sceneUrl?: string
   widgetsPath?: string
   cesiumPath?: string
+  openConfigPath?: string
   options?: cesiumOptions
   target?: string
   flyAnimation?: boolean
+  sceneLayerListControl?: Object
 }
 
 export const webScenePropsDefault = getPropsDefaults<WebSceneProps>(webSceneProps())

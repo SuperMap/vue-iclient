@@ -157,8 +157,7 @@ const viewModelProps = [
 ]
 
 defineOptions({
-  name: 'SmAttributes',
-  inheritAttrs: false
+  name: 'SmAttributes'
 })
 
 const props = withDefaults(defineProps<AttributesProps>(), attributesPropsDefault)

@@ -1,26 +1,9 @@
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { watch, onMounted, onBeforeUnmount } from 'vue';
 import sceneEvent from 'vue-iclient-core/types/scene-event';
 
-interface LayerTreeAlias {
-  s3mLayer: object,
-  imgLayer: object,
-  mvtLayer: object,
-  terrainLayer: object
-}
-export function useSceneGetter(sceneTarget: string) {
-  const layerTreeAlias = ref<LayerTreeAlias>({});
-  const viewer = ref(null);
 
-  const setViewer = (target) => {
-    const { viewer: sceneViewer, content } = sceneEvent.getScene(target);
-    if (!sceneViewer || !content) {
-      return;
-    }
-    viewer.value = sceneViewer;
-    const layers = content.layers;
-    layerTreeAlias.value = layers.layerTreeAlias;
-  };
-
+export function useSceneGetter(sceneTarget: string, setViewer: any) {
+  
   const loadedHandler = (e: { sceneTarget: string }) => {
     const { sceneTarget: target } = e;
     if (target === sceneTarget) {
@@ -48,9 +31,4 @@ export function useSceneGetter(sceneTarget: string) {
       'load-scene': loadedHandler
     });
   });
-
-  return {
-    layerTreeAlias,
-    viewer
-  };
 }

@@ -146,7 +146,8 @@ watch(
       if (!isEqual(newVal.getContainer, oldVal.getContainer)) {
         removeAttributes()
         const container = newVal?.getContainer() || document.getElementById(getTargetName())
-        container.appendChild(attributesEl.value)
+        // @ts-ignore
+        container.appendChild(attributesEl.value.$el)
         displayAttributes.value = !displayAttributes.value
       }
       const newProps = { ...newVal }
@@ -217,8 +218,9 @@ function toggleAttributesVisibility(e: MouseEvent & { target: Element }, item) {
   removeAttributes()
   handleAttributesProps(item)
   e.target.setAttribute('class', `${attributesIconClass.value} sm-components-icon-attribute-open`)
-  attributesContainer.value.appendChild(attributesEl.value)
   displayAttributes.value = !displayAttributes.value
+  // @ts-ignore
+  attributesContainer.value.appendChild(attributesEl.value.$el)
 }
 
 async function handleAttributesProps(item: Record<string, any>) {
@@ -352,9 +354,11 @@ function closeAttributesIconClass() {
 
 function removeAttributes() {
   if (attributesEl.value && displayAttributes.value) {
-    const attributesParentDom = attributesEl.value.parentElement
+    // @ts-ignore
+    const attributesParentDom = attributesEl.value.$el.parentElement
     displayAttributes.value = !displayAttributes.value
-    attributesParentDom.removeChild(attributesEl.value)
+    // @ts-ignore
+    attributesParentDom.removeChild(attributesEl.value.$el)
   }
 }
 </script>

@@ -1,6 +1,9 @@
 <template>
   <div :id="target" class="sm-component-web-scene">
     <slot></slot>
+    <template v-for="(controlProps, controlName) in controlComponents" :key="controlName">
+      <component :is="componentMap[controlName]" v-bind="controlProps"></component>
+    </template>
     <div class="scene-control-container">
       <div class="scene-control-top-right"></div>
       <div class="scene-control-top-left"></div>
@@ -16,7 +19,8 @@ import { webScenePropsDefault } from './types'
 import WebSceneViewModel from 'vue-iclient-core/controllers/mapboxgl/WebSceneViewModel';
 import { isEqual } from 'lodash-es';
 import sceneEvent from 'vue-iclient-core/types/scene-event';
-import { watch, onMounted, onBeforeUnmount } from 'vue';
+import { watch, computed, onMounted, onBeforeUnmount } from 'vue';
+import SmSceneLayerList from '@supermapgis/mapboxgl/components/scene-layer-list/scene-layer-list.vue'
 
 defineOptions({
   name: 'SmWebScene'
@@ -25,6 +29,25 @@ defineOptions({
 const props = withDefaults(defineProps<WebSceneProps>(), webScenePropsDefault)
 const emit = defineEmits<WebSceneEvents>()
 
+const componentMap: Record<string, any> = {
+  SmSceneLayerList,
+};
+const controlComponents: Record<string, any> = computed(() => {
+  const controls = {}
+  for (let key in props) {
+    if (key.includes('Control') && props[key].show) {
+      const controlName = key.replace('Control', '')
+      const firstLetter = controlName[0]
+      const newProps = {
+        ...props[key],
+        sceneTarget: props.target
+      }
+      controls[`Sm${controlName.replace(firstLetter, firstLetter.toUpperCase())}`] = newProps
+    }
+  }
+  return controls
+})
+
 let webSceneViewModel: WebSceneViewModel | null = null;
 
 const changeViewerPositionFn = (e: any) => {
@@ -32,7 +55,7 @@ const changeViewerPositionFn = (e: any) => {
 };
 
 const changeScanPositionFn = (e: any) => {
-  emit('viewer-scan-position-changed', e.centerPosition);
+  emit('viewer-scan-position-changed', e.centerPostion);
 };
 
 const instanceDidLoadFn = (e: any) => {
@@ -75,7 +98,8 @@ watch(() => props.options.tiandituOptions, (newVal, oldVal) => {
 
 onMounted(() => {
   sceneEvent.setScene(props.target, {});
-  webSceneViewModel = new WebSceneViewModel(props.target, props.sceneUrl, props.options, props.widgetsPath, props.cesiumPath);
+  const { target, sceneUrl, options, widgetsPath, cesiumPath, openConfigPath } = props;
+  webSceneViewModel = new WebSceneViewModel(target, sceneUrl, options, widgetsPath, cesiumPath, openConfigPath);
   registerEvents();
 });
 

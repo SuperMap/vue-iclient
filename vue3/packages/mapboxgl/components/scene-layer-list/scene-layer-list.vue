@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, toRaw, useTemplateRef, onMounted, onBeforeUnmount, watch } from 'vue';
+import { ref, useTemplateRef, onMounted, onBeforeUnmount } from 'vue';
 import type {
   SceneLayerListProps
 } from './types'
@@ -86,8 +86,7 @@ import { message } from 'ant-design-vue'
 import sceneEvent from 'vue-iclient-core/types/scene-event';
 
 defineOptions({
-  name: 'SmSceneLayerList',
-  inheritAttrs: false
+  name: 'SmSceneLayerList'
 })
 
 // Props
@@ -95,19 +94,33 @@ const props = withDefaults(defineProps<SceneLayerListProps>(), sceneLayerListPro
 
 const { t } = useLocale()
 const { textColorHeadingStyle } = useTheme(props)
-const { viewer, layerTreeAlias } = useSceneGetter(props.sceneTarget);
+let viewer = null;
+let intervalID;
+
+const setViewer = (target) => {
+  const { viewer: sceneViewer } = sceneEvent.getScene(target);
+  if (!sceneViewer) {
+    return;
+  }
+  viewer = sceneViewer;
+  getTreeData();
+};
+useSceneGetter(props.sceneTarget, setViewer);
 const rootEl = useTemplateRef('layerListRef')
 
 onMounted(() => {
+  getTreeData();
   useSceneControl(rootEl.value.$el)
-  sceneEvent.on({
-    'update-layers': updateLayersListener
-  });
+  // s3m加载很慢，一开始没获取到对应图层，看iEarth也是2s定时刷新
+  intervalID = setInterval(() => {
+    getTreeData();
+  }, 2000)
 })
+
 onBeforeUnmount(() => {
-  sceneEvent.un({
-    'update-layers': updateLayersListener
-  });
+  if(intervalID) {
+    clearInterval(intervalID);
+  }
 })
 
 // Data
@@ -123,10 +136,6 @@ const onlineBaseLayerList = [
     name: 'BingMap'
   },
   {
-    url: 'https://[subdomain].tianditu.gov.cn/img_w/wmts',
-    name: 'TIANDITU'
-  },
-  {
     name: 'GRIDIMAGERY',
     thumbnail: './images/baseMap/grad.png'
   },
@@ -137,24 +146,14 @@ const onlineBaseLayerList = [
 ];
 let currentTerrainProvider = null;
 
-const layersCatalog = computed(() => {
-  if (!viewer.value) {
-    return null;
+const getTiandituName = (imageUrl) => {
+  const layerTypeKey = imageUrl.split('/')[3];
+  const labelArrs = ['cva_w', 'cva_c', 'cta_w', 'cta_c', 'cia_w', 'cia_c']
+  if (labelArrs.includes(layerTypeKey)) {
+    return t('sceneLayerList.TIANDITU') + '_label';
   }
-  return {
-    s3mLayer: viewer.value.scene.layers._layerQueue,
-    imageryLayer: viewer.value.imageryLayers._layers,
-    MVTLayer: viewer.value.scene._vectorTileMaps._layerQueue
-  };
-});
-
-// Watchers
-watch(() => layersCatalog, (val) => {
-  if (val) {
-    getTreeData();
-  }
-}, {deep: true});
-
+  return t('sceneLayerList.TIANDITU');
+}
 
 // Methods
 const getImageryLayerName = (imageryLayer) => {
@@ -163,6 +162,11 @@ const getImageryLayerName = (imageryLayer) => {
 
   if (imageUrl.indexOf('earth-skin2.jpg') !== -1) {
     return t('sceneLayerList.defaultImage');
+  }
+
+  // 天地图底图
+  if (imageUrl.includes('tianditu.gov.cn')) {
+    return getTiandituName(imageUrl);
   }
 
   // 项目底图
@@ -210,8 +214,8 @@ const getImageryLayerName = (imageryLayer) => {
 };
 
 const getTerrainLayerName = () => {
-  if (viewer.value.terrainProvider._baseUrl) {
-    let baseUrl = viewer.value.terrainProvider._baseUrl;
+  if (viewer.terrainProvider._baseUrl) {
+    let baseUrl = viewer.terrainProvider._baseUrl;
     if (baseUrl.indexOf('3D-stk_terrain') !== -1) {
       return t('sceneLayerList.stkTerrain');
     } else {
@@ -231,8 +235,8 @@ const getTerrainLayerName = () => {
         return 'invisible';
       }
     }
-  } else if (viewer.value.terrainProvider._urls) {
-    let url0 = viewer.value.terrainProvider._urls[0];
+  } else if (viewer.terrainProvider._urls) {
+    let url0 = viewer.terrainProvider._urls[0];
     if (url0.indexOf('supermapol.com') !== -1) {
       return t('sceneLayerList.superMapTerrain');
     } else {
@@ -248,20 +252,20 @@ const toggleItemVisibility = (option) => {
   let index = option.key.split('-')[1];
   switch (option.type) {
     case 's3m':
-      viewer.value.scene.layers._layerQueue[index].visible = !option.visible;
+      viewer.scene.layers._layerQueue[index].visible = !option.visible;
       break;
     case 'imagery':
-      viewer.value.imageryLayers._layers[index].show = !option.visible;
+      viewer.imageryLayers._layers[index].show = !option.visible;
       break;
     case 'mvt':
-      viewer.value.scene._vectorTileMaps._layerQueue[index].show = !option.visible;
+      viewer.scene._vectorTileMaps._layerQueue[index].show = !option.visible;
       break;
     case 'terrain':
       if (!currentTerrainProvider) {
-        currentTerrainProvider = viewer.value.terrainProvider;
-        viewer.value.terrainProvider = new window.SuperMap3D.EllipsoidTerrainProvider();
+        currentTerrainProvider = viewer.terrainProvider;
+        viewer.terrainProvider = new window.SuperMap3D.EllipsoidTerrainProvider();
       } else {
-        viewer.value.terrainProvider = currentTerrainProvider;
+        viewer.terrainProvider = currentTerrainProvider;
         currentTerrainProvider = null;
       }
       break;
@@ -283,19 +287,18 @@ const changeIconsStatus = (val) => {
 };
 
 const zoomToBounds = (option) => {
-  const rawViewer = toRaw(viewer.value);
   if (option.type === 's3m') {
-    let s3mLayer = rawViewer.scene.layers.find(option.aliasKey);
-    if (rawViewer.scene.mode === window.SuperMap3D.SceneMode.SCENE3D) {
+    let s3mLayer = viewer.scene.layers.find(option.aliasKey);
+    if (viewer.scene.mode === window.SuperMap3D.SceneMode.SCENE3D) {
       if (s3mLayer.lon && s3mLayer.lat) {
         // 一些特殊的坐标系，比如ISVJ-7839中的4508+平面场景，直接flyTo不行，这里参考IServer里面的预览，使用此种方式来定位
-        rawViewer.scene.camera.setView({
+        viewer.scene.camera.setView({
           destination: new window.SuperMap3D.Cartesian3.fromDegrees(s3mLayer.lon, s3mLayer.lat, 500)
         });
       } else {
-        rawViewer.flyTo(s3mLayer, { duration: 0 });
+        viewer.flyTo(s3mLayer, { duration: 0 });
       }
-    } else if (rawViewer.scene.mode === window.SuperMap3D.SceneMode.COLUMBUS_VIEW) {
+    } else if (viewer.scene.mode === window.SuperMap3D.SceneMode.COLUMBUS_VIEW) {
       // 哥伦布视图下可能存在问题，比如ISVJ-7839中，用场景打开，定位就不对了
       if (s3mLayer.positionCartographic_for_colubus) {
         // 以场景形式打开时，会给图层绑定一个打开后的相机视图定位
@@ -303,24 +306,24 @@ const zoomToBounds = (option) => {
         let longitude = Number(window.SuperMap3D.Math.toDegrees(positionCartographic.longitude));
         let latitude = Number(window.SuperMap3D.Math.toDegrees(positionCartographic.latitude));
         let height = Number(positionCartographic.height);
-        rawViewer.scene.camera.setView({
+        viewer.scene.camera.setView({
           destination: new window.SuperMap3D.Cartesian3.fromDegrees(longitude, latitude, height)
         });
       } else if (s3mLayer.lon && s3mLayer.lat) {
-        rawViewer.scene.camera.setView({
+        viewer.scene.camera.setView({
           destination: new window.SuperMap3D.Cartesian3.fromDegrees(s3mLayer.lon, s3mLayer.lat, 500)
         });
       } else {
-        rawViewer.flyTo(s3mLayer, { duration: 0 });
+        viewer.flyTo(s3mLayer, { duration: 0 });
       }
     } else {
-      rawViewer.flyTo(s3mLayer, { duration: 0 });
+      viewer.flyTo(s3mLayer, { duration: 0 });
     }
   } else if (option.type === 'mvt') {
     let index = String(option.key).split('-')[1];
-    let mvtLayer = rawViewer.scene._vectorTileMaps._layerQueue[Number(index)];
+    let mvtLayer = viewer.scene._vectorTileMaps._layerQueue[Number(index)];
     var bounds = mvtLayer.rectangle;
-    rawViewer.scene.camera.flyTo({
+    viewer.scene.camera.flyTo({
       destination: new window.SuperMap3D.Cartesian3.fromRadians(
         (bounds.east + bounds.west) * 0.5,
         (bounds.north + bounds.south) * 0.5,
@@ -334,15 +337,12 @@ const zoomToBounds = (option) => {
     });
   } else if (option.type === 'imagery') {
     let index = String(option.key).split('-')[1];
-    let imgLayer = rawViewer.imageryLayers._layers[Number(index)];
-    console.log('viewer', viewer)
-    console.log('imgLayer', imgLayer)
-
+    let imgLayer = viewer.imageryLayers._layers[Number(index)];
     if (!imgLayer.wmtsImageLayerPosition) {
-      rawViewer.flyTo(imgLayer);
+      viewer.flyTo(imgLayer);
     } else {
       let wmtsImageLayerPosition = imgLayer.wmtsImageLayerPosition;
-      rawViewer.scene.camera.flyTo({
+      viewer.scene.camera.flyTo({
         destination: new window.SuperMap3D.Cartesian3.fromDegrees(
           wmtsImageLayerPosition.lng,
           wmtsImageLayerPosition.lat,
@@ -376,16 +376,16 @@ const changeLayerOrderByDrag = (dragIndex, dropIndex) => {
   // 影像图层列表中index从下往上为：0 1 2 .. n,所以drag - target < 0，drag才是raise，反之则亦然
   let gap = dragIndex - dropIndex;
   let changeCount = Math.abs(gap);
-  let dragImgLayer = viewer.value.imageryLayers._layers[dragIndex];
+  let dragImgLayer = viewer.imageryLayers._layers[dragIndex];
   if (gap > 0) {
     // 上 -> 下：lower
     for (let i = 0; i < changeCount; i++) {
-      viewer.value.imageryLayers.lower(dragImgLayer);
+      viewer.imageryLayers.lower(dragImgLayer);
     }
   } else if (gap < 0) {
     // 下 -> 上：raise
     for (let i = 0; i < changeCount; i++) {
-      viewer.value.imageryLayers.raise(dragImgLayer);
+      viewer.imageryLayers.raise(dragImgLayer);
     }
   } else {
     return;
@@ -393,15 +393,15 @@ const changeLayerOrderByDrag = (dragIndex, dropIndex) => {
   getTreeData();
 };
 
-function updateLayersListener(e) {
-  if (e.sceneTarget === props.sceneTarget) {
-    getTreeData()
-  }
-}
-
 function getTreeData() {
-  const layers = layersCatalog.value;
-  console.log('layers', layers);
+  if (!viewer) {
+    return;
+  }
+  const layers = {
+    s3mLayer: viewer.scene.layers._layerQueue,
+    imageryLayer: viewer.imageryLayers._layers,
+    MVTLayer: viewer.scene._vectorTileMaps._layerQueue
+  };
   treeData.value = [
     {
       key: '1',
@@ -433,7 +433,7 @@ function getTreeData() {
   ];
   // S3M图层:
   layers.s3mLayer.forEach((layer, index) => {
-    let title = checkLayerAlias(layer.name, 's3m');
+    let title = layer.name;
     treeData.value[0].children.push({
       title,
       key: '1-' + String(index),
@@ -447,7 +447,7 @@ function getTreeData() {
   layers.imageryLayer.forEach((layer, index) => {
     let imageryLayerName = getImageryLayerName(layer);
     if (imageryLayerName === 'Unnamed') return;
-    let title = checkLayerAlias(imageryLayerName, 'imagery');
+    let title = imageryLayerName;
     treeData.value[1].children.unshift({
       title,
       key: '2-' + String(index),
@@ -458,7 +458,7 @@ function getTreeData() {
   });
   // MVT图层:
   layers.MVTLayer.forEach((layer, index) => {
-    let title = checkLayerAlias(layer.name, 'mvt');
+    let title = layer.name;
     treeData.value[2].children.push({
       title,
       key: '3-' + String(index),
@@ -471,7 +471,7 @@ function getTreeData() {
   // 地形图层:
   let terrainLayerName = getTerrainLayerName();
   if (terrainLayerName !== 'invisible') {
-    let title = checkLayerAlias(terrainLayerName, 'terrain');
+    let title = terrainLayerName;
     treeData.value[3].children.push({
       title,
       key: '4-0',
@@ -481,26 +481,5 @@ function getTreeData() {
     });
   }
 };
-
-const checkLayerAlias = (name, type) => {
-  let aliasResult;
-  switch (type) {
-    case 's3m':
-      aliasResult = layerTreeAlias.value.s3mLayer[name];
-      break;
-    case 'imagery':
-      aliasResult = layerTreeAlias.value.imgLayer[name];
-      break;
-    case 'mvt':
-      aliasResult = layerTreeAlias.value.mvtLayer[name];
-      break;
-    case 'terrain':
-      aliasResult = layerTreeAlias.value.terrainLayer[name];
-      break;
-    default:
-      break;
-  }
-  return aliasResult !== undefined ? aliasResult : name;
-}
 
 </script>
