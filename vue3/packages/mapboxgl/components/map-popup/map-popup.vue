@@ -55,8 +55,7 @@ import { omit } from 'lodash-es'
 import { mapPopupPropsDefault } from './types'
 
 defineOptions({
-  name: 'SmMapPopup',
-  inheritAttrs: false
+  name: 'SmMapPopup'
 })
 
 const props = withDefaults(defineProps<MapPopupProps>(), mapPopupPropsDefault)

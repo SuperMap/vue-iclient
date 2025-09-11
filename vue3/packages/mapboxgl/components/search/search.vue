@@ -133,8 +133,7 @@ import { isEqual } from 'lodash-es'
 import { searchPropsDefault } from './types'
 
 defineOptions({
-  name: 'SmSearch',
-  inheritAttrs: false
+  name: 'SmSearch'
 })
 
 const props = withDefaults(defineProps<SearchProps>(), searchPropsDefault)

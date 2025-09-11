@@ -20,8 +20,7 @@ import { useMapControl } from '@supermapgis/mapboxgl/hooks'
 import SmButton from '@supermapgis/common/components/button/Button'
 
 defineOptions({
-  name: 'SmCompass',
-  inheritAttrs: false
+  name: 'SmCompass'
 })
 
 const props = withDefaults(defineProps<CompassProps>(), compassPropsDefault)

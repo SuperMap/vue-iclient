@@ -40,8 +40,7 @@ import drawEvent from 'vue-iclient-core/controllers/mapboxgl/types/DrawEvent'
 import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'
 
 defineOptions({
-  name: 'SmDraw',
-  inheritAttrs: false
+  name: 'SmDraw'
 })
 const props = withDefaults(defineProps<DrawProps>(), drawPropsDefault)
 const emit = defineEmits<DrawEvents>()

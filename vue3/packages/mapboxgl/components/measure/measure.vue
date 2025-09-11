@@ -82,8 +82,7 @@ import { measurePropsDefault } from './types'
 const COMPONENT_NAME = 'SmMeasure'
 
 defineOptions({
-  name: COMPONENT_NAME,
-  inheritAttrs: false
+  name: COMPONENT_NAME
 })
 
 defineExpose({

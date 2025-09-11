@@ -209,8 +209,7 @@ import omit from 'omit.js'
 import { queryPropsDefault } from './types'
 
 defineOptions({
-  name: 'SmQuery',
-  inheritAttrs: false
+  name: 'SmQuery'
 })
 
 const props = withDefaults(defineProps<QueryProps>(), queryPropsDefault)

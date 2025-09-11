@@ -36,8 +36,7 @@ import PanViewModel from 'vue-iclient-core/controllers/mapboxgl/PanViewModel'
 import { panPropsDefault } from './types'
 
 defineOptions({
-  name: 'SmPan',
-  inheritAttrs: false
+  name: 'SmPan'
 })
 
 const props = withDefaults(defineProps<PanProps>(), panPropsDefault)

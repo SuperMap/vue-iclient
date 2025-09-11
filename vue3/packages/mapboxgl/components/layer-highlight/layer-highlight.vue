@@ -29,8 +29,7 @@ import { isEqual } from 'lodash-es'
 import { layerHighlightPropsDefault } from './types'
 
 defineOptions({
-  name: 'SmLayerHighlight',
-  inheritAttrs: false
+  name: 'SmLayerHighlight'
 })
 
 const props = withDefaults(defineProps<LayerHighlightProps>(), layerHighlightPropsDefault)

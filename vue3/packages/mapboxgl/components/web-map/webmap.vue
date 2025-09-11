@@ -42,8 +42,7 @@ const viewModelProps = [
 ]
 
 defineOptions({
-  name: 'SmWebMap',
-  inheritAttrs: false
+  name: 'SmWebMap'
 })
 
 const props = withDefaults(defineProps<WebMapProps>(), webMapPropsDefault)

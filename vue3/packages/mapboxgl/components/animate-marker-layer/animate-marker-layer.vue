@@ -9,8 +9,7 @@ import { animateMarkerLayerPropsDefault } from './types'
 const componentName = 'SmAnimateMarkerLayer'
 
 defineOptions({
-  name: componentName,
-  inheritAttrs: false
+  name: componentName
 })
 
 const props = withDefaults(defineProps<AnimateMarkerLayerProps>(), animateMarkerLayerPropsDefault)

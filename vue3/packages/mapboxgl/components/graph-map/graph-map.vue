@@ -14,8 +14,7 @@ import { GraphMapPropsDefault } from './types'
 import type { GraphMapEmits, GraphMapProps } from './types'
 
 defineOptions({
-  name: 'SmGraphMap',
-  inheritAttrs: false
+  name: 'SmGraphMap'
 })
 
 const viewModelProps = ['serviceUrl', 'zoom', 'center']

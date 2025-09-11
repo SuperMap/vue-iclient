@@ -29,8 +29,7 @@ import SmSpin from '@supermapgis/common/components/spin/Spin'
 import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'
 
 defineOptions({
-  name: 'SmMiniMap',
-  inheritAttrs: false
+  name: 'SmMiniMap'
 })
 
 const props = withDefaults(defineProps<MiniMapProps>(), miniMapPropsDefault)
