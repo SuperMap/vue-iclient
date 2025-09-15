@@ -7,8 +7,10 @@ import { themeTokenMapping } from '../utils/theme/colors'
 
 export function useTheme(props: ThemeProps, themeAliasToken: AliasToken = globalEvent.theme) {
   const themePropKeys = ['background', 'textColor', 'colorGroup']
+  const defaultTokenMapping = themeTokenMapping[themeAliasToken?.themeType || 'light'];
   const themeToken = ref<AliasToken>({
-    ...themeTokenMapping[themeAliasToken?.themeType || 'light']
+    ...defaultTokenMapping,
+    // ...themeAliasToken
   })
   const specifiedToken = ref<AliasToken>(null)
   const themePropDatas = reactive<AliasToken>(onThemePropChanged(props))
@@ -88,10 +90,11 @@ export function useTheme(props: ThemeProps, themeAliasToken: AliasToken = global
   }
 
   watch(specifiedTheme, (next: ThemeProps, prev: ThemeProps) => {
-    if (isEqual(next, prev)) {
-      return
-    }
-    const changedProps: ThemeProps = {};
+    const changedProps: ThemeProps = {
+      textColor: themePropDatas.colorText,
+      background: themePropDatas.colorBgContainer,
+      colorGroup: themePropDatas.colorPrimary
+    };
     const partsToken: AliasToken = {}
     if (next.background !== prev.background) {
       Object.assign(changedProps, { background: next.background })

@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-image" :style="[textColorStyle, gisControlBgStyle]">
+  <div class="sm-component-image" :style="[textColorStyle, containerBgStyle]">
     <a :class="['sm-component-image__link']" :href="realHref" @click="handleLinkClick" :target="target">
       <div v-if="src" @click="startPreview" class="sm-component-image__content" :style="[repeatStyle, imgUrl]">
         <!-- 用img标签确保没有给定宽高时，能使用src图片的宽高 -->
@@ -28,7 +28,7 @@ defineOptions({
 
 const { t } = useLocale();
 const props = withDefaults(defineProps<ImageProps>(), imagePropsDefault)
-const { textColorStyle, gisControlBgStyle } = useTheme(props)
+const { textColorStyle, containerBgStyle } = useTheme(props)
 
 const previewVisible = ref(false);
 const repeatOption = {

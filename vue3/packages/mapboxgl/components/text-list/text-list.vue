@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-text-list" :style="gisControlBgStyle" @mouseleave="handleMouseLeaveFn({}, null, $event)" ref="textListRef">
+  <div class="sm-component-text-list" :style="containerBgStyle" @mouseleave="handleMouseLeaveFn({}, null, $event)" ref="textListRef">
     <div
       v-if="headerStyleData.show"
       class="sm-component-text-list__header"
@@ -116,7 +116,7 @@ defineOptions({
 const props = withDefaults(defineProps<TextListProps>(), textListPropsDefault)
 const emit = defineEmits<TextListEvents>()
 
-const { textColorStyle, gisControlBgStyle, colorPrimary } = useTheme(props)
+const { textColorStyle, containerBgStyle, colorPrimary } = useTheme(props)
 
 // 响应式数据
 const animate = ref(false);
@@ -518,7 +518,7 @@ onBeforeMount(() => {
   );
   rowStyleData.value = merge(
     {
-      oddStyle: { background: getColorWithOpacity(gisControlBgStyle.value.background, 0.4) },
+      oddStyle: { background: getColorWithOpacity(containerBgStyle.value.background, 0.4) },
       evenStyle: { background: getColorWithOpacity(colorPrimary.value, 0.4) }
     },
     props.rowStyle

@@ -20,7 +20,7 @@ export const textProps = () => ({
 
 export interface TextProps extends ThemeProps, ThirdServiceProps{
   fontStyle?: CSSProperties,
-  title?: string,
+  title?: string | number,
   href?: string,
   target?: string
 }

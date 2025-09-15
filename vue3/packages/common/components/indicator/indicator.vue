@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-indicator" :style="gisControlBgStyle" @click="handleClick">
+  <div class="sm-component-indicator" :style="containerBgStyle" @click="handleClick">
     <div :class="`sm-component-indicator__content sm-component-indicator__content-${mode}`">
       <span
         v-show="showTitleUnit"
@@ -51,7 +51,7 @@ defineOptions({
 const props = withDefaults(defineProps<IndicatorProps>(), indicatorPropsDefault)
 const emit = defineEmits<IndicatorEvents>()
 
-const { textColorStyle, gisControlBgStyle, colorPrimary } = useTheme(props)
+const { textColorStyle, containerBgStyle, colorPrimary } = useTheme(props)
 
 const titleData = ref(props.title)
 const unitData = ref(props.unit)
