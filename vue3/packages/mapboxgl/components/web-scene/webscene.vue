@@ -1,8 +1,8 @@
 <template>
   <div :id="target" class="sm-component-web-scene">
     <slot></slot>
-    <template v-for="(controlProps, controlName) in controlComponents" :key="controlName">
-      <component :is="componentMap[controlName]" v-bind="controlProps"></component>
+    <template v-for="(item, _index) in controlComponents" :key="`${item.name}_${_index}`">
+      <component :is="componentMap[item.name]" v-bind="item.props"></component>
     </template>
     <div class="scene-control-container">
       <div class="scene-control-top-right"></div>
@@ -33,16 +33,18 @@ const componentMap: Record<string, any> = {
   SmSceneLayerList,
 };
 const controlComponents: Record<string, any> = computed(() => {
-  const controls = {}
+  const controls = []
   for (let key in props) {
     if (key.includes('Control') && props[key].show) {
       const controlName = key.replace('Control', '')
       const firstLetter = controlName[0]
-      const newProps = {
-        ...props[key],
-        sceneTarget: props.target
-      }
-      controls[`Sm${controlName.replace(firstLetter, firstLetter.toUpperCase())}`] = newProps
+      controls.push({
+        name: `Sm${controlName.replace(firstLetter, firstLetter.toUpperCase())}`,
+        props: {
+          ...props[key],
+          sceneTarget: props.target
+        }
+      })
     }
   }
   return controls

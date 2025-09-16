@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Map } from 'mapbox-gl'
-import type { WebMapProps, WebMapEvents, Control, MapEventHandler } from './types'
+import type { WebMapProps, WebMapEvents, MapEventHandler } from './types'
 import WebMapViewModel from 'vue-iclient-core/controllers/mapboxgl/WebMapViewModel'
 import mapEvent from 'vue-iclient-core/types/map-event'
 import MapEvents, { MAP_EVENT_NAMES } from 'vue-iclient-core/controllers/mapboxgl/utils/MapEvents'
@@ -67,12 +67,15 @@ const componentMap: Record<string, any> = {
 };
 
 const controlComponents = computed(() => {
-  const controls: Control = {}
+  const controls = []
   for (let key in props) {
     if (key.includes('Control') && props[key].show) {
       const controlName = key.replace('Control', '')
       const firstLetter = controlName[0]
-      controls[`Sm${controlName.replace(firstLetter, firstLetter.toUpperCase())}`] = props[key]
+      controls.push({
+        name: `Sm${controlName.replace(firstLetter, firstLetter.toUpperCase())}`,
+        props: props[key]
+      })
     }
   }
   return controls
@@ -263,8 +266,8 @@ onUnmounted(() => {
 <template>
   <div ref="el" :id="target" class="sm-component-web-map" :style="{ background: background, height: '100%', width:'100%', position: 'absolute' }">
     <slot></slot>
-    <template v-for="(controlProps, controlName) in controlComponents" :key="controlName">
-      <component :is="componentMap[controlName]" v-bind="controlProps"></component>
+    <template v-for="(item, _index) in controlComponents" :key="`${item.name}_${_index}`">
+      <component :is="componentMap[item.name]" v-bind="item.props"></component>
     </template>
     <sm-spin v-if="spinning" size="large" :spinning="spinning" :tip="t('webmap.loadingTip')" />
   </div>
