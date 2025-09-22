@@ -34,11 +34,6 @@
         }
         & > .#{$ant-prefix}-tree-treenode:has(.#{$ant-prefix}-tree-indent-unit) {
           padding-left: 8px;
-          .#{$ant-prefix}-tree-switcher-noop {
-            & + .#{$ant-prefix}-tree-node-content-wrapper-normal {
-              color: $text-color;
-            }
-          }
         }
       }
       .#{$ant-prefix}-tree-switcher {
@@ -157,7 +152,7 @@
       > span, 
       > .#{$ant-prefix}-tree-node-content-wrapper, 
       > .#{$ant-prefix}-tree-node-content-wrapper span {
-        color: $text-color !important;;
+        color: inherit;
         cursor: pointer;
       }
     }
