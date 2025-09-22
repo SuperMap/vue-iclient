@@ -379,9 +379,9 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
     let sc = this.scene.camera;
     this.scene.scanEffect.show = false;
     this.scene.scanEffect.mode = type === 'line' ? window.SuperMap3D.ScanEffectMode.LINE : window.SuperMap3D.ScanEffectMode.CIRCLE;
-    let scanEffectPosition = this.sceneParam.scanEffect.centerPostion || this.scanEffect.centerPostion || {};
+    let scanEffectPosition =  this.scanEffect.centerPostion || this.sceneParam.scanEffect.centerPostion || {};
     if (scanEffectPosition.x) {
-      this.scene.scanEffect.centerPostion = this.sceneParam.scanEffect.centerPostion;
+      this.scene.scanEffect.centerPostion = scanEffectPosition;
     } else {
       this.sceneParam.scanEffect.centerPostion = new window.SuperMap3D.Cartesian3(
         sc.position.x,
