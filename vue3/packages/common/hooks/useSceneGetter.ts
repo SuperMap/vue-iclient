@@ -1,25 +1,51 @@
-import { watch, onMounted, onBeforeUnmount } from 'vue';
+import { watch, onMounted, onBeforeUnmount, getCurrentInstance } from 'vue';
 import sceneEvent from 'vue-iclient-core/types/scene-event';
 
+interface SceneGetterProps {
+  sceneTarget: string;
+}
 
-export function useSceneGetter(sceneTarget: string, setViewer: any) {
+export interface SceneGetterOptions {
+  loaded?: (viewer: any) => void
+  removed?: (viewer: any) => void
+}
+
+export function useSceneGetter({ loaded, removed }: SceneGetterOptions) {
+  const componentInstance = getCurrentInstance()
+  const props = componentInstance.props as unknown as SceneGetterProps
   
+  const getSceneViewer  = (target: string) => {
+    const data = sceneEvent.getScene(target);
+    if (!data) {
+      return;
+    }
+    const { viewer: sceneViewer } = data;
+    return sceneViewer;
+  }
   const loadedHandler = (e: { sceneTarget: string }) => {
     const { sceneTarget: target } = e;
-    if (target === sceneTarget) {
-      setViewer(target);
+    if (target === props.sceneTarget) {
+      loaded(getSceneViewer(target))
     }
   };
 
-  watch(sceneTarget, (newVal, oldVal) => {
+  watch(() => props.sceneTarget, (newVal: string, oldVal: string) => {
     if (newVal && oldVal && newVal !== oldVal) {
-      setViewer(newVal);
+      const prevViewer = getSceneViewer(oldVal);
+      if (prevViewer) {
+        removed(prevViewer);
+      }
+      const nextViewer = getSceneViewer(newVal);
+      if (nextViewer) {
+        loaded(nextViewer);
+      }
     }
   });
 
   onMounted(() => {
-    if (sceneEvent.getScene(sceneTarget)) {
-      setViewer(sceneTarget);
+    const currentViewer = getSceneViewer(props.sceneTarget);
+    if (currentViewer) {
+      loaded(currentViewer);
     }
     sceneEvent.on({
       'load-scene': loadedHandler

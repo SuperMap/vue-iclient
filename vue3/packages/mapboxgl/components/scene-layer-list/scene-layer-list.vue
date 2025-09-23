@@ -79,11 +79,11 @@ import type {
 } from './types'
 import { useSceneGetter, useLocale, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useSceneControl } from '@supermapgis/mapboxgl/hooks'
+import SmCard from '@supermapgis/common/components/card/Card'
 import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'
 import SmTree from '@supermapgis/common/components/tree/Tree'
 import { sceneLayerListPropsDefault } from './types'
 import { message } from 'ant-design-vue'
-import sceneEvent from 'vue-iclient-core/types/scene-event';
 
 defineOptions({
   name: 'SmSceneLayerList'
@@ -97,24 +97,27 @@ const { textColorHeadingStyle } = useTheme(props)
 let viewer = null;
 let intervalID;
 
-const setViewer = (target) => {
-  const { viewer: sceneViewer } = sceneEvent.getScene(target);
-  if (!sceneViewer) {
-    return;
-  }
+const setViewer = (sceneViewer: any) => {
   viewer = sceneViewer;
   getTreeData();
-};
-useSceneGetter(props.sceneTarget, setViewer);
-const rootEl = useTemplateRef('layerListRef')
-
-onMounted(() => {
-  getTreeData();
-  useSceneControl(rootEl.value.$el)
   // s3m加载很慢，一开始没获取到对应图层，看iEarth也是2s定时刷新
   intervalID = setInterval(() => {
     getTreeData();
   }, 2000)
+};
+useSceneGetter({
+  loaded: setViewer,
+  removed: () => {
+    if(intervalID) {
+      clearInterval(intervalID);
+    }
+    treeData.value = [];
+  }
+});
+const rootEl = useTemplateRef('layerListRef')
+
+onMounted(() => {
+  useSceneControl(rootEl.value.$el)
 })
 
 onBeforeUnmount(() => {
