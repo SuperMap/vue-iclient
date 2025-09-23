@@ -171,7 +171,7 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
   removeInputAction() {
     if (!this.handler) return;
     this.handler.removeInputAction(window.SuperMap3D.ScreenSpaceEventType.LEFT_CLICK);
-    window.SuperMap3D = null;
+    // window.SuperMap3D = null;
     this.scene = null;
     this.viewer = null;
     this.handler = null;
