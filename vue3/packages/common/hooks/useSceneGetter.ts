@@ -30,7 +30,7 @@ export function useSceneGetter({ loaded, removed }: SceneGetterOptions) {
   };
 
   watch(() => props.sceneTarget, (newVal: string, oldVal: string) => {
-    if (newVal && oldVal && newVal !== oldVal) {
+    if (newVal && newVal !== oldVal) {
       const prevViewer = getSceneViewer(oldVal);
       if (prevViewer) {
         removed(prevViewer);
