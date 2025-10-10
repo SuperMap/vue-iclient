@@ -108,7 +108,7 @@ describe('LayerManagerViewModel', () => {
 
   it('addLayer and remove', () => {
     let nodeKey = 'key1';
-    const data = { nodeKey, mapId: 123, serviceUrl: 'http://fakeservice' };
+    const data = { nodeKey, mapId: 123, serviceUrl: 'http://fakeservice', mapOptions: { zoom: 10 } };
     expect(viewModel.cacheMaps[nodeKey]).toBeUndefined();
     viewModel.addLayer(data);
     expect(viewModel.cacheMaps[nodeKey]).not.toBeUndefined();
@@ -120,6 +120,7 @@ describe('LayerManagerViewModel', () => {
     viewModel.readyNext = false;
     viewModel.addLayer(data);
     expect(viewModel.mapQuene.length).toBe(1);
+    expect(viewModel.mapQuene[0].mapOptions.zoom).toBe(10);
     expect(viewModel.mapQuene[0].nodeKey).toBe(nodeKey);
     data.nodeKey = nodeKey;
     viewModel.readyNext = false;

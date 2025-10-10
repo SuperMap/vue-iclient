@@ -36,7 +36,8 @@ class LayerManageViewModel extends mapboxgl.Evented {
           serverUrl,
           withCredentials,
           layerFilter,
-          proxy
+          proxy,
+          mapOptions
         });
       }
       return;
@@ -80,8 +81,8 @@ class LayerManageViewModel extends mapboxgl.Evented {
   handleNextMap() {
     this.readyNext = true;
     if (this.mapQuene.length) {
-      const { nodeKey, serverUrl, mapId, withCredentials, layerFilter } = this.mapQuene.shift();
-      this.addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter });
+      const { nodeKey, serverUrl, mapId, withCredentials, layerFilter, mapOptions } = this.mapQuene.shift();
+      this.addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter, mapOptions });
     }
   }
 
