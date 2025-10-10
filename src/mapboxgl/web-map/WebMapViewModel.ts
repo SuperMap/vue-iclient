@@ -54,6 +54,7 @@ const OPACITY_MAP = {
  * @param {boolean} [options.excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。当设置 `id` 时有效。
  * @param {boolean} [options.ignoreBaseProjection =false] - 是否忽略底图坐标系和叠加图层坐标系不一致。
  * @param {String} [options.iportalServiceProxyUrlPrefix] - iportal的代理服务地址前缀。
+ * @param {boolean} [options.preferServer=false] - iServer rest/data服务, 使用服务器直接返回geojson。
  */
 interface webMapOptions {
   target?: string;
@@ -71,6 +72,7 @@ interface webMapOptions {
   zoom?: number;
   proxy?: boolean | string;
   iportalServiceProxyUrlPrefix?: string;
+  preferServer?: boolean;
   checkSameLayer?: boolean;
   map?: mapboxglTypes.Map;
   layerFilter?: () => boolean;
@@ -208,7 +210,8 @@ export default class WebMapViewModel extends Events {
       withCredentials: options.withCredentials || false,
       credentialKey: (options.accessKey && 'key') || (options.accessToken && 'token'),
       credentialValue: options.accessKey || options.accessToken,
-      proj4
+      proj4,
+      preferServer: options.preferServer || false
     };
     this.serverUrl = this.options.server;
     this.mapOptions = mapOptions;

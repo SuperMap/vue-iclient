@@ -95,6 +95,30 @@ describe('WebMap.vue', () => {
     expect(wrapper.vm.panControl.show).toBe(false);
     expect(wrapper.vm.scaleControl.show).toBe(false);
     expect(wrapper.vm.zoomControl.show).toBe(false);
+    expect(wrapper.vm.preferServer).toBe(false);
+    done();
+  });
+
+  it('initial_serverUrl preferServer true', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_point,
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+        layerData_CSV
+    };
+    mockFetch(fetchResource);
+    const spy = jest.spyOn(mapboxgl, 'Map');
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '123',
+        preferServer: true
+      }
+    });
+    await mapWrapperLoaded(wrapper);
+    expect(spy).toBeCalled();
+    expect(wrapper.vm.preferServer).toBe(true);
     done();
   });
 
@@ -774,7 +798,7 @@ describe('WebMap.vue', () => {
         mapId: '249495311'
       },
       mocks: {
-        $t: (msg) => msg
+        $t: msg => msg
       }
     });
     const deleteMap = jest.spyOn(mapEvent.$options, 'deleteMap');
