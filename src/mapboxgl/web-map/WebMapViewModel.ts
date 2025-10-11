@@ -54,7 +54,7 @@ const OPACITY_MAP = {
  * @param {boolean} [options.excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。当设置 `id` 时有效。
  * @param {boolean} [options.ignoreBaseProjection =false] - 是否忽略底图坐标系和叠加图层坐标系不一致。
  * @param {String} [options.iportalServiceProxyUrlPrefix] - iportal的代理服务地址前缀。
- * @param {boolean} [options.preferServer=false] - iServer rest/data服务, 使用服务器直接返回geojson。
+ * @param {boolean} [options.preferServer=false] - 当图层数据来源为SuperMap iServer RestData服务, 使用服务器直接返回geojson。
  */
 interface webMapOptions {
   target?: string;
