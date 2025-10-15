@@ -297,7 +297,8 @@ export default class iServerRestService extends Events {
   _queryDataFeatures(url, queryInfo) {
     const featureService = new FeatureService(url, {
       proxy: this.options.proxy,
-      withCredentials: queryInfo.withCredentials
+      withCredentials: queryInfo.withCredentials,
+      preferServer: this.options.preferServer
     });
     const expectCountOptions = this._calcFeaturesExpectCountOptions(queryInfo);
     const pickedCommonParams = {

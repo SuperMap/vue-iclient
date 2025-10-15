@@ -142,6 +142,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   @Prop({ default: false }) loading: boolean;
   @Prop() background: string;
   @Prop() iportalServiceProxyUrlPrefix: string;
+  @Prop({ default: false }) preferServer: boolean;
   @Prop() mapOptions: any;
   @Prop({ default: true }) autoresize: boolean;
   @Prop({ default: false }) keepBounds: boolean;
@@ -334,6 +335,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
       isSuperMapOnline,
       proxy,
       mapOptions,
+      preferServer,
       iportalServiceProxyUrlPrefix,
       tileTransformRequest
     } = this.$props;
@@ -353,7 +355,8 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
         isSuperMapOnline,
         proxy,
         iportalServiceProxyUrlPrefix,
-        tileTransformRequest
+        tileTransformRequest,
+        preferServer
       },
       mapOptions
     );
