@@ -200,7 +200,22 @@ describe('WebMapViewModel.spec', () => {
     jest.restoreAllMocks();
     jest.useRealTimers();
   });
-
+  it('add uniqueLayer point preferServer true', async done => {
+    const id = {
+      ...uniqueLayer_point,
+      level: '',
+      visibleExtent: [0, 1, 2, 3]
+    };
+    const callback = function (data) {
+      expect(data.map).not.toBeUndefined();
+      done();
+    };
+    const viewModel = new WebMapViewModel(id, { ...commonOption, preferServer: true });
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
+    expect(viewModel.options.preferServer).toBe(true);
+  });
   it('add uniqueLayer point', async done => {
     const id = {
       ...uniqueLayer_point,
@@ -215,6 +230,8 @@ describe('WebMapViewModel.spec', () => {
     viewModel.on({ addlayerssucceeded: callback });
     await flushPromises();
     jest.advanceTimersByTime(0);
+    expect(viewModel.options.preferServer).toBe(false);
+
   });
 
   // public Func

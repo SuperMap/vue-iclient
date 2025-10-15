@@ -1,5 +1,4 @@
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
-import clonedeep from 'lodash.clonedeep';
 import debounce from 'lodash.debounce';
 
 /**
@@ -64,7 +63,7 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
     this._miniMap = new mapboxgl.Map({
       attributionControl: false,
       container: _this._container,
-      style: clonedeep(_this._parentMap.getStyle()),
+      style: _this._parentMap.getStyle(),
       zoom: 1,
       crs: this._parentMap.getCRS(),
       center: [0, 0],
