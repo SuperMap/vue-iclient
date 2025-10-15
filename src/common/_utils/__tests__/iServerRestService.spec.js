@@ -99,7 +99,6 @@ describe('iServerRestService', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
-
   it('getMapFeatures hasGeometry false', done => {
     const service = new iServerRestService('url', { hasGeometry: false, epsgCode: 3857 });
     service.on({
@@ -147,12 +146,27 @@ describe('iServerRestService', () => {
     service.getMapFeatures({ dataUrl: 'http://fakeiserver/rest/map', mapName: 'mockLayer' }, { keyWord: 'A' });
   });
 
+  it('getDataFeatures preferServer true', done => {
+    const service = new iServerRestService('url', { hasGeometry: true, returnFeaturesOnly: true, preferServer: true });
+    service.getDataFeatures(
+      { datasetName: 'District_pt', dataSourceName: 'China', dataUrl: 'http://fakeiserver/rest/data' },
+      {}
+    );
+    expect(service.options.preferServer).toBe(true);
+    service.on({
+      getdatasucceeded: data => {
+        expect(service.options.preferServer).toBe(true);
+        done();
+      }
+    });
+  });
   it('getDataFeatures', done => {
     const service = new iServerRestService('url', { hasGeometry: true });
     service.getDataFeatures(
       { datasetName: 'District_pt', dataSourceName: 'China', dataUrl: 'http://fakeiserver/rest/data' },
       {}
     );
+    expect(service.options.preferServer).toBe(undefined);
     service.on({
       getdatasucceeded: data => {
         expect(data.fields).toEqual(['SMID', 'NAME']);
@@ -222,4 +236,3 @@ describe('iServerRestService', () => {
     done();
   });
 });
-
