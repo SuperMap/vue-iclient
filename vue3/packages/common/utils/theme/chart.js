@@ -1,6 +1,6 @@
 import { getColorWithOpacity } from 'vue-iclient-core/utils/util';
 import cloneDeep from 'lodash.clonedeep';
-import { ColorsPickerUtil } from 'vue-iclient-static/libs/iclient-common/iclient-common'
+import { ColorsPickerUtil } from 'vue-iclient-static/libs/iclient-common/iclient-common';
 
 export const handleMultiGradient = (colorGroupsData, dataLength) => {
   let startColors = [];
@@ -150,7 +150,11 @@ export const chartThemeUtil = (
         // 坐标轴线
         lineStyle: {
           // 属性lineStyle控制线条样式
-          color: [[0.2, colorGroup[0]], [0.8, colorGroup[1]], [1, colorGroup[2]]]
+          color: [
+            [0.2, colorGroup[0]],
+            [0.8, colorGroup[1]],
+            [1, colorGroup[2]]
+          ]
         }
       },
       itemStyle: {
@@ -379,15 +383,21 @@ export const chartThemeUtil = (
       },
       itemStyle: {
         color: '#626c91',
-        borderWidth: 1
+        borderWidth: 1,
+        borderColor: '#626c91' // 显式声明边框色（原隐含于normal）
+      },
+      emphasis: {
+        // 全局emphasis提升到顶层
+        itemStyle: {
+          color: '#626c91'
+        }
       },
       controlStyle: {
         color: '#626c91',
         borderColor: '#626c91',
-        borderWidth: 0.5
-      },
-      emphasis: {
-        controlStyle: {
+        borderWidth: 0.5,
+        // v6中controlStyle的emphasis需单独声明
+        emphasis: {
           color: '#626c91',
           borderColor: '#626c91',
           borderWidth: 0.5
@@ -398,10 +408,8 @@ export const chartThemeUtil = (
         borderColor: 'rgba(63,177,227,0.15)'
       },
       label: {
-        color: '#626c91'
-      },
-      emphasis: {
-        label: {
+        color: '#626c91', // 直接文本颜色声明
+        emphasis: {
           color: '#626c91'
         }
       }

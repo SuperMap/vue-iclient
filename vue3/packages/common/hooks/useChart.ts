@@ -7,7 +7,7 @@ import {
   getMultiColorGroup,
   chartThemeUtil,
   handleMultiGradient
-} from 'vue-iclient-core/utils/style/theme/chart'
+} from '@supermapgis/common/utils/theme/chart'
 import EchartsDataService from 'vue-iclient-core/utils/EchartsDataService'
 import {
   getFeatureCenter,
