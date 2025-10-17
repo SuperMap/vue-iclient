@@ -2,7 +2,8 @@ import { ref, computed, watch, onMounted, onBeforeUnmount, onUpdated, nextTick }
 import { isEqual, debounce, cloneDeep, merge } from 'lodash-es'
 import { addListener, removeListener } from 'resize-detector'
 import type { ChartProps } from '@supermapgis/mapboxgl/components/chart/types'
-import { useTheme, useTimer } from '@supermapgis/common/hooks/index.common'
+import { useTimer } from '@supermapgis/common/hooks/useTimer'
+import { useTheme } from '@supermapgis/common/hooks/useTheme'
 import {
   getMultiColorGroup,
   chartThemeUtil,
