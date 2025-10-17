@@ -7,7 +7,6 @@ import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
 import 'vue-iclient-static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import 'vue-iclient-static/libs/geostats/geostats';
 import 'vue-iclient-static/libs/json-sql/jsonsql';
-import  * as echarts from 'echarts';
 import EchartsLayer from 'vue-iclient-static/libs/echarts-layer/EchartsLayer';
 import iPortalDataService from 'vue-iclient-core/utils/iPortalDataService';
 import proj4 from 'proj4';
@@ -15,8 +14,6 @@ import { getLayerCatalogIds, getGroupChildrenLayers, findLayerCatalog } from 'vu
 import bbox from '@turf/bbox';
 import { points } from '@turf/helpers';
 
-// @ts-ignore
-window.echarts = echarts;
 // @ts-ignore
 window.EchartsLayer = EchartsLayer;
 

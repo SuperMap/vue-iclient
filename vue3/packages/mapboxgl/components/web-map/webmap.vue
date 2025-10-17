@@ -22,6 +22,9 @@ import SmQuery from '@supermapgis/mapboxgl/components/query/query.vue'
 import SmSearch from '@supermapgis/mapboxgl/components/search/search.vue'
 import SmScale from '@supermapgis/mapboxgl/components/scale/scale.vue'
 import SmMiniMap from '@supermapgis/mapboxgl/components/mini-map/mini-map.vue'
+import * as echarts from 'echarts';
+// @ts-ignore
+window.echarts = echarts;
 
 const viewModelProps = [
   'mapId',
