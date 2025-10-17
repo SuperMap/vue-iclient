@@ -1,0 +1,13 @@
+@use './mixins/mixins.scss' as *;
+@use './base/theme.scss' as *;
+@use '@supermapgis/common/theme-chalk/collapse-card.scss';
+
+
+@include b(chart) {
+  & .sm-component-collapse-card__content {
+    width: 100%;
+    height: 100%;
+    /* 去除阴影效果 */
+    box-shadow: none;
+  }
+}

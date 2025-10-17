@@ -2,7 +2,7 @@
 import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
 import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import ChartCommon from 'vue-iclient/src/common/chart/ChartMixin.vue';
-import ChartViewModel from './ChartViewModel';
+import ChartViewModel from 'vue-iclient-core/controllers/mapboxgl/ChartViewModel';
 import 'vue-iclient-core/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 export default {

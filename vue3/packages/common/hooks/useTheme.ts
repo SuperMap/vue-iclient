@@ -57,6 +57,10 @@ export function useTheme(props: ThemeProps, themeAliasToken: AliasToken = global
     return themePropDatas.colorPrimary
   })
 
+  const colorGroup = computed(() => {
+    return themePropDatas.colorGroup
+  })
+
   function changeThemeCallback(changedTheme: { themeStyle?: AliasToken }) {
     const { themeStyle } = changedTheme
     if (themeStyle) {
@@ -78,6 +82,7 @@ export function useTheme(props: ThemeProps, themeAliasToken: AliasToken = global
   function onThemePropChanged(propDatas: ThemeProps = {}): AliasToken {
     const { textColor, background, colorGroup } = propDatas;
     return {
+      colorGroup: colorGroup?.length ? colorGroup : themeToken.value.colorGroup,
       colorPrimary: colorGroup?.[0] ?? themeToken.value.colorPrimary,
       colorBgContainer: background ?? themeToken.value.colorBgContainer,
       colorBgElevated: background ?? themeToken.value.colorBgElevated,
@@ -136,6 +141,7 @@ export function useTheme(props: ThemeProps, themeAliasToken: AliasToken = global
     gisControlBgStyle,
     gisControlBgTertiaryStyle,
     gisControlHeaderBgStyle,
-    colorPrimary
+    colorPrimary,
+    colorGroup
   }
 }

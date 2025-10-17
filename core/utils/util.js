@@ -311,3 +311,10 @@ export function loadLink(src) {
     };
   });
 }
+
+export function getDecimalsFormatterVal(val, decimals) {
+  if (!Number.isFinite(+val)) {
+    return val;
+  }
+  return decimals === -1 || typeof decimals !== 'number' ? val : Number(val).toFixed(decimals);
+}

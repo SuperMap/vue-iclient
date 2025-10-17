@@ -55,7 +55,15 @@ export const themeTokenMapping: ThemeMapping = {
     gisControlItemBgHover: toHex8String('#fff', 0.08),
     gisControlSuffixBg: '#414141',
     compareSwiperColor: "#d9d9d9",
-    compareSwiperBackground: "#d9d9d9"
+    compareSwiperBackground: "#d9d9d9",
+  
+    colorGroup: [
+      "#3499e5",
+      "#759aa0",
+      "#e69d87",
+      "#8dc1a9",
+      "#ea7e53"
+    ]
   },
   light: {
     // antd
@@ -99,5 +107,13 @@ export const themeTokenMapping: ThemeMapping = {
     gisControlSuffixBg: toHex8String('#000', 0.08),
     compareSwiperColor: '#fff',
     compareSwiperBackground: '#0081E2',
+
+    colorGroup: [
+      "#0081e2",
+      "#6be6c1",
+      "#626c91",
+      "#a0a7e6",
+      "#c4ebad"
+    ]
   }
 }

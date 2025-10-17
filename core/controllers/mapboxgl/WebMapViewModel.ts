@@ -7,7 +7,7 @@ import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
 import 'vue-iclient-static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import 'vue-iclient-static/libs/geostats/geostats';
 import 'vue-iclient-static/libs/json-sql/jsonsql';
-import echarts from 'echarts';
+import  * as echarts from 'echarts';
 import EchartsLayer from 'vue-iclient-static/libs/echarts-layer/EchartsLayer';
 import iPortalDataService from 'vue-iclient-core/utils/iPortalDataService';
 import proj4 from 'proj4';

@@ -24,7 +24,8 @@ export type CustonAliasToken = {
   scrollbarBg: string;
   tooltipColor: string;
   compareSwiperColor: string;
-  compareSwiperBackground: string
+  compareSwiperBackground: string;
+  colorGroup: string[]
 }
 
 export interface AliasToken extends AntdAliasToken, Partial<CustonAliasToken> {}

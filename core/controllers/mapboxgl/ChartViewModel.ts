@@ -1,9 +1,13 @@
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
 
 export default class ChartViewModel extends mapboxgl.Evented {
-  constructor(options) {
+  map: any;
+  popup: any;
+  marker: any;
+  
+  constructor() {
     super();
-    this.options = options;
+    // this.options = options;
   }
 
   setMap(mapInfo) {

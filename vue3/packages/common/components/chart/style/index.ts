@@ -1,0 +1,1 @@
+import '@supermapgis/common/theme-chalk/chart.scss'
