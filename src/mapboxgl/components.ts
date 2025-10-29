@@ -9,6 +9,7 @@ import { default as Border } from 'vue-iclient/src/common/border/index.js';
 import { default as Breadcrumb } from 'vue-iclient/src/common/breadcrumb/index.js';
 import { default as Button } from 'vue-iclient/src/common/button/index.js';
 import { default as Card } from 'vue-iclient/src/common/card/index.js';
+import { default as Cascader } from 'vue-iclient/src/common/cascader/index.js';
 import { default as Checkbox } from 'vue-iclient/src/common/checkbox/index.js';
 import { default as Collapse } from 'vue-iclient/src/common/collapse/index.js';
 import { default as CollapseCard } from 'vue-iclient/src/common/collapse-card/index.js';
@@ -101,6 +102,7 @@ import { default as OpenFile } from 'vue-iclient/src/mapboxgl/open-file/index.js
 import { default as Query } from 'vue-iclient/src/mapboxgl/query/index.js';
 import { default as Search } from 'vue-iclient/src/mapboxgl/search/index.js';
 import { default as TextList } from 'vue-iclient/src/mapboxgl/text-list/index.js';
+import { default as FeatureCascader } from 'vue-iclient/src/mapboxgl/feature-cascader/index.js';
 import { default as LayerSelect } from 'vue-iclient/src/mapboxgl/layer-select/index.js';
 import { default as WebMap } from 'vue-iclient/src/mapboxgl/web-map/index.js';
 import { default as WebScene } from 'vue-iclient/src/mapboxgl/web-scene/index.js';
@@ -119,6 +121,8 @@ const components = {
   Breadcrumb,
   Button,
   Card,
+  Cascader,
+  FeatureCascader,
   Checkbox,
   Collapse,
   CollapseCard,
@@ -252,6 +256,8 @@ export {
   Breadcrumb,
   Button,
   Card,
+  Cascader,
+  FeatureCascader,
   Checkbox,
   Collapse,
   CollapseCard,

@@ -337,6 +337,12 @@
       "title": "TextList 文本列表",
       "scrollOneByOne": "逐条滚动",
       "customCell": "自定义单元格"
+    },
+    "cascader": {
+      "title": "Cascader 级联选择器"
+    },
+    "featureCascader": {
+      "title": "FeatureCascader 要素级联选择器"
     }
   },
   "chartComponent": {
