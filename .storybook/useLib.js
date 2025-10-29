@@ -7,6 +7,8 @@ import {
   Breadcrumb,
   Button,
   Card,
+  Cascader,
+  FeatureCascader,
   Checkbox,
   Collapse,
   CollapseCard,
@@ -110,6 +112,8 @@ Vue.use(Border);
 Vue.use(Breadcrumb);
 Vue.use(Button);
 Vue.use(Card);
+Vue.use(Cascader);
+Vue.use(FeatureCascader);
 Vue.use(Checkbox);
 Vue.use(Collapse);
 Vue.use(CollapseCard);
