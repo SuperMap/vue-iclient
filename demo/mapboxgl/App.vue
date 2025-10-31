@@ -189,7 +189,7 @@
         <sm-avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
       </div>
 
-      <div class="empties">
+      <!-- <div class="empties">
         <sm-empty />
       </div>
 
@@ -238,9 +238,9 @@
       <sm-time-range v-bind="timeRange" style="position:absolute; top:500px;left:200px;z-index：100000"></sm-time-range>
       <div class="cascader">
         <sm-cascader :options="cascaderOptions"></sm-cascader>
-      </div>
+      </div> -->
       <div class="feature-cascader">
-        <sm-feature-cascader :config="featureCascaderConfig"></sm-feature-cascader>
+        <sm-feature-cascader :config="featureCascaderConfig" ></sm-feature-cascader>
       </div>
     </template>
 
