@@ -199,6 +199,9 @@ export default {
     keyQueryPlaceholder: 'Please enter the search keyword',
     sqlQueryPlaceholder: 'Please enter the SQL expression'
   },
+  cascader: {
+    placeholder: 'Please select'
+  },
   identify: {
     layerNotExit: "The layer '{layer}' does not exist in the map's style",
     noData: 'no Data'

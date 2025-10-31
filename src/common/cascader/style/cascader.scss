@@ -3,7 +3,9 @@
 
 @include b(cascader) {
     $prefix: &;
-
+    &-menus {
+        background-color: $select-dropdown-bg;
+    }
     @include e(menu, '-') {
         $prefix-menu: &;
 

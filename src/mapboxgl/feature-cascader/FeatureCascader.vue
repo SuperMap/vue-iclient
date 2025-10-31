@@ -3,6 +3,8 @@
     :options="options"
     :popupClassName="popupClassName"
     :changeOnSelect="changeOnSelect"
+    :placeholder="$t('cascader.placeholder')"
+    :popupStyle="popupStyle"
     class="sm-component-feature-cascader"
     @change="onChange"
   />
@@ -41,11 +43,13 @@ export default {
     },
     value: {
       type: Array
+    },
+    popupStyle: {
+      type: Object
     }
   },
   data() {
     return {
-      datas: [],
       options: []
     };
   },
