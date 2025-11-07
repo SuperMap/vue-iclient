@@ -1742,6 +1742,9 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
         if (event === 'click') {
           handleChartClick(params)
         }
+        if (event === 'finished') {
+          emit('load', smChart)
+        }
         emit(event, params)
       })
     })

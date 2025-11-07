@@ -445,6 +445,9 @@ const changeChartType = (type: string) => {
 const handleChartClick = (event: any) => {
   console.log('图表点击事件:', event)
 }
+const handleLoad = (event: any) => {
+  console.log('handleLoad', event)
+}
 </script>
 
 <template>
@@ -500,6 +503,7 @@ const handleChartClick = (event: any) => {
           :datasetOptions="currentChartData.datasetOptions"
           iconClass=""
           @click="handleChartClick"
+          @load="handleLoad"
           style="height: 100%"
         />
       </div>
