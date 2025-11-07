@@ -150,7 +150,10 @@ export default {
       return result[0].children;
     },
     async createOptions() {
-      if(!Object.keys(this.config).length) return [];
+      if(!Object.keys(this.config).length) {
+        this.options = [];
+        return;
+      }
       const allDatas = await this.requestData(this.config);
       this.datas = allDatas;
       const dataOptions = allDatas.map((v) => {
@@ -159,6 +162,7 @@ export default {
       this.options = this.assembleOptions(dataOptions);
     },
     async onChange(value) {
+      if (!value.length) return;
       const lastValue = value[value.length - 1];
       const target = this.datas.find(v => v.value === lastValue);
       const attributeFilter = `("${target.idField}" like '%${lastValue}%')`;
