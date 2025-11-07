@@ -480,7 +480,7 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
         options.legend.data = []
         options.series.forEach((element: any) => {
           if (element.data) {
-            options.legend.data.push(...element.data.map((item: any) => item.name))
+            options.legend.data.push(...element.data.map((item: any) => item.name + ''))
           }
         })
       }
@@ -1186,7 +1186,7 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
       showLoading('default', {
         text: 'info.loading',
         color: colorGroupsData.value[0],
-        textColor: textColorStyle.value,
+        textColor: textColorStyle.value.color,
         maskColor: 'rgba(0,0,0,0.8)',
         zlevel: 0
       })
@@ -1211,7 +1211,7 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
     if (!props.theme) {
       chartTheme.value = chartThemeUtil(
         containerBgStyle.value.background,
-        textColorStyle.value,
+        textColorStyle.value.color,
         colorGroupsData.value,
         colorNumber.value
       )

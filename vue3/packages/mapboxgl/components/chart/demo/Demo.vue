@@ -2,7 +2,7 @@
 import Chart from '../chart.vue'
 import Button from '@supermapgis/common/components/button/Button'
 import { ref, reactive } from 'vue'
-import '../style'
+import '@supermapgis/common/components/chart/style'
 
 const chartType = ref('bar')
 
@@ -285,7 +285,7 @@ const pieChartData = reactive({
   }
 })
 
-// 散点图数据
+// 条形图数据
 const rankChartData = reactive({
   dataset: {
     maxFeatures: 5
@@ -341,7 +341,7 @@ const rankChartData = reactive({
   }
 })
 
-// 散点图数据
+//雷达图数据
 const radarChartData = reactive({
   dataset: {
     maxFeatures: 20,
@@ -509,7 +509,6 @@ const handleChartClick = (event: any) => {
 
 <style lang="scss">
 @use '@supermapgis/common/theme-chalk/button.scss';
-@use '@supermapgis/common/theme-chalk/chart.scss';
 
 .sm-component-web-map {
   height: 500px;

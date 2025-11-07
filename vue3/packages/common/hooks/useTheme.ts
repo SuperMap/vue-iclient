@@ -98,7 +98,7 @@ export function useTheme(props: ThemeProps, themeAliasToken: AliasToken = global
     const changedProps: ThemeProps = {
       textColor: themePropDatas.colorText,
       background: themePropDatas.colorBgContainer,
-      colorGroup: themePropDatas.colorPrimary
+      colorGroup: themePropDatas.colorGroup
     };
     const partsToken: AliasToken = {}
     if (next.background !== prev.background) {
