@@ -228,6 +228,9 @@ export default {
     layerNotExit: "地图上不存在该图层: '{layer}'",
     noData: '无数据'
   },
+  popup: {
+    selectLayer: '选择图层'
+  },
   openFile: {
     fileSizeExceeded: '文件大小超限！文件大小不得超过 10M！',
     fileTypeUnsupported: '不支持该文件格式！',

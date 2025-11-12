@@ -1,4 +1,4 @@
-import type mapboxglTypes from 'mapbox-gl'
+import type mapboxglTypes from 'mapbox-gl';
 import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
 import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/types/CircleStyle';
 import LineStyle from 'vue-iclient-core/controllers/mapboxgl/types/LineStyle';
@@ -70,7 +70,7 @@ interface PopupFeatureInfo {
   info: PopupFieldsInfo[];
 }
 
-enum DataSelectorMode {
+export enum DataSelectorMode {
   SINGLE = 'SINGLE', // 单选
   MULTIPLE = 'MULTIPLE', // 多选
   ALL = 'ALL' // 全选
@@ -96,7 +96,7 @@ interface UpdateHighlightOptions {
   features: LayerClickedFeature[];
 }
 
-interface CreateRelatedDatasParams {
+export interface CreateRelatedDatasParams {
   features: LayerClickedFeature[];
   targetId: string;
   isMultiple?: boolean;
@@ -182,17 +182,18 @@ const HIGHLIGHT_DEFAULT_STYLE: HighlightStyle = {
 };
 
 export default class HighlightLayer extends mapboxgl.Evented {
-  private dataSelectorMode: DataSelectorMode = DataSelectorMode.SINGLE;
-  private activeTargetId: string | null = null;
+  dataSelectorMode: DataSelectorMode = DataSelectorMode.SINGLE;
+  activeTargetId: string | null = null;
   private resultFeatures: LayerClickedFeature[] = [];
   highlightOptions: HighlightLayerOptions;
   map: mapboxglTypes.Map;
   webmap: InstanceType<typeof WebMapViewModel>;
   fire: (type: string, params?: any) => void;
+  handleMapClick: any;
 
   constructor(options: HighlightLayerOptions) {
     super();
-    this.handleMapClick = this.handleMapClick.bind(this);
+    this.handleMapClick = this.handleMapClickFn.bind(this);
     this.handleMapMouseEnter = this.handleMapMouseEnter.bind(this);
     this.handleMapMouseLeave = this.handleMapMouseLeave.bind(this);
     this.handleLayerKeydown = this.handleLayerKeydown.bind(this);
@@ -552,7 +553,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
     return nextHighlightStyle;
   }
 
-  private getHighlightLayerIds(layerIds: string[]) {
+  getHighlightLayerIds(layerIds: string[]) {
     return layerIds.reduce((idList, layerId) => {
       const highlightLayerId = this.createHightlightLayerId(layerId);
       const highlightStrokeLayerId = this.createHighlightStrokeLayerId(layerId);
@@ -579,8 +580,11 @@ export default class HighlightLayer extends mapboxgl.Evented {
     return `${highlightLayerId}-StrokeLine`;
   }
 
-  private handleMapClick(e: mapboxglTypes.MapLayerMouseEvent) {
-    const features = this.queryLayerFeatures(e as mapboxglTypes.MapLayerMouseEvent);
+  handleMapClickFn(e: mapboxglTypes.MapLayerMouseEvent) {
+    const layers = this.activeTargetId
+    ? [this.activeTargetId]
+    : this.highlightOptions.layerIds.filter(item => !!this.map.getLayer(item))
+    const features = this.queryLayerFeatures(e as mapboxglTypes.MapLayerMouseEvent, layers);
     if (this.dataSelectorMode !== DataSelectorMode.MULTIPLE) {
       this.dataSelectorMode = DataSelectorMode.SINGLE;
     }
@@ -588,7 +592,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
     this.handleMapSelections(features);
   }
 
-  private handleMapSelections(features: LayerClickedFeature[]) {
+  handleMapSelections(features: LayerClickedFeature[]) {
     this.removeHighlightLayers();
     let popupDatas: PopupFeatureInfo[] = [];
     const matchTargetFeature = features[0];
@@ -657,21 +661,29 @@ export default class HighlightLayer extends mapboxgl.Evented {
     this.map.getCanvas().style.cursor = '';
   }
 
-  private queryLayerFeatures(e: mapboxglTypes.MapLayerMouseEvent) {
-    const map = e.target;
+  getClickBbox(e: mapboxglTypes.MapLayerMouseEvent) {
     const bbox = [
-      [e.point.x - this.highlightOptions.clickTolerance, e.point.y - this.highlightOptions.clickTolerance],
-      [e.point.x + this.highlightOptions.clickTolerance, e.point.y + this.highlightOptions.clickTolerance]
+      [
+        e.point.x - this.highlightOptions.clickTolerance,
+        e.point.y - this.highlightOptions.clickTolerance
+      ],
+      [
+        e.point.x + this.highlightOptions.clickTolerance,
+        e.point.y + this.highlightOptions.clickTolerance
+      ]
     ] as unknown as [mapboxglTypes.PointLike, mapboxglTypes.PointLike];
-    const features = map.queryRenderedFeatures(bbox, {
-      layers: this.activeTargetId
-        ? [this.activeTargetId]
-        : this.highlightOptions.layerIds.filter(item => !!this.map.getLayer(item))
+    return bbox;
+  }
+
+  queryLayerFeatures(e: mapboxglTypes.MapLayerMouseEvent, layers: string[]) {
+    const map = e.target;
+    const features = map.queryRenderedFeatures(this.getClickBbox(e), {
+      layers
     }) as unknown as LayerClickedFeature[];
     return features;
   }
 
-  private createFilterExps(params: CreateRelatedDatasParams) {
+  createFilterExps(params: CreateRelatedDatasParams) {
     const { features, targetId } = params;
     return features.reduce(
       (filterExps: any[], feature) => {

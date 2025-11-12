@@ -8,6 +8,7 @@ import { SmImage } from '@supermapgis/common/components/image'
 import { SmBorder } from '@supermapgis/common/components/border'
 import { SmIframe } from '@supermapgis/common/components/iframe'
 
+import { SmPopup } from '@supermapgis/mapboxgl/components/Popup'
 import { SmAttributes } from '@supermapgis/mapboxgl/components/attributes'
 import { SmWebMap } from '@supermapgis/mapboxgl/components/web-map'
 import { SmGraphMap } from '@supermapgis/mapboxgl/components/graph-map'
@@ -35,6 +36,7 @@ export default [
   SmConfigProvider,
   SmTimeSlider,
   SmTimeText,
+  SmPopup,
   SmAttributes,
   SmWebMap,
   SmGraphMap,

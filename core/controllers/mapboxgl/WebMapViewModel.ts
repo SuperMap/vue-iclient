@@ -104,6 +104,7 @@ interface MapHandler {
   getLayerCatalog: () => any[];
   getLegends: () => any[];
   getLayers: () => any[];
+  getPopupInfos: () => any[];
   rectifyLayersOrder: (appreciableLayers: any[], topLayerBeforeId?: string) => void;
   getWebMapType: () => any;
   setLayersVisible: (layers: Array<Record<string, any>>, visibility: 'visible' | 'none') => void;
@@ -272,6 +273,9 @@ export default class WebMapViewModel extends Events {
 
   setMapId(mapId: string | number): void {
     this._handler.setMapId(mapId);
+  }
+  getPopupInfos() {
+    return this._handler.getPopupInfos();
   }
 
   getAppreciableLayers() {
@@ -511,6 +515,10 @@ export default class WebMapViewModel extends Events {
 
   get cacheLayerCatalogIds() {
     return this._cacheLayerCatalogIds;
+  }
+
+  get popupInfos() {
+    return this._handler?.getPopupInfos();
   }
 
   private _initWebMap(): void {
