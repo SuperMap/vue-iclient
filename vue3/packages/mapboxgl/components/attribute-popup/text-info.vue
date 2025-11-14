@@ -13,7 +13,6 @@ import { computed } from 'vue'
 import { QuillEditor, Delta } from '@vueup/vue-quill'
 import ConvertUtil from './util/ExpressionConverter'
 import FieldsConverter, { FieldsCaptionsType } from './util/FieldsConverter'
-import '@vueup/vue-quill/dist/vue-quill.snow.css'
 
 const props = defineProps({
   title: {
