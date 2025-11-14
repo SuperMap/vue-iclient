@@ -118,7 +118,7 @@ const data = ref([
   elementss
 ])
 const popupConfig = ref({
-  autoResize: false,
+  autoResize: true,
   keyWordWrap: 'ellipsis',
   valueWordWrap: 'ellipsis',
   color: '#f00',
@@ -134,11 +134,17 @@ const popupControl = reactive({
 </script>
 <template>
   <div>
-    <div>
-      <Button type="primary" @click="changeBg">切换背景</Button>
-    </div>
-    <WebMap serverUrl="http://172.16.14.44:8190/iportal" :map-id="1291742002" target="map1" :attributePopupControl="popupControl">
-      <!-- <AttributePopup
+    <Button type="primary" @click="changeBg" style="position: absolute; top: 10px; right: 10px">
+      切换背景
+    </Button>
+    <div style="display: inline-flex; flex: 1; width: 100%; height: 100%; position: relative">
+      <WebMap
+        serverUrl="http://172.16.14.44:8190/iportal"
+        :map-id="1291742002"
+        target="map1"
+        :attributePopupControl="popupControl"
+      >
+        <!-- <AttributePopup
         :map-target="mapTarget"
         :background="bgColor"
         :popupInfos="data"
@@ -147,23 +153,24 @@ const popupControl = reactive({
         :identifyFields="[{ layerId: '北京市(3)', field: 'name' }]"
         :popup-config="popupConfig"
       /> -->
-    </WebMap>
-    <WebMap serverUrl="http://172.16.14.44:8190/iportal" :map-id="1531336475" target="map2">
-      <AttributePopup
-        map-target="map2"
-        :background="bgColor"
-        :popupInfos="data"
-        :useMapPopup="true"
-        :multi-select="true"
-        :popup-config="popupConfig"
-      />
-    </WebMap>
-    <!-- <WebMap
+      </WebMap>
+      <WebMap serverUrl="http://172.16.14.44:8190/iportal" :map-id="1171931401" target="map2">
+        <AttributePopup
+          map-target="map2"
+          :background="bgColor"
+          :popupInfos="data"
+          :useMapPopup="true"
+          :multi-select="true"
+          :popup-config="popupConfig"
+        />
+      </WebMap>
+      <!-- <WebMap
       serverUrl="http://172.16.14.44:8190/iportal"
       :map-id="1531336475"
       target="map2"
       :popupControl="popupControl"
     ></WebMap> -->
+    </div>
   </div>
 </template>
 <style lang="scss">
@@ -171,13 +178,14 @@ const popupControl = reactive({
 @use '@supermapgis/mapboxgl/theme-chalk/webmap.scss';
 
 .sm-component-web-map {
+  flex: 1;
   margin-right: 10px;
   width: 40% !important;
   height: 80% !important;
+  position: fixed;
   // position: fixed !important;
 }
 #map2 {
-  top: 100px !important;
-  left: 30% !important;
+  left: 40% !important;
 }
 </style>

@@ -64,7 +64,9 @@ export default {
     DMS: '度分秒',
     Mercator: 'Web墨卡托'
   },
-  error: {},
+  error: {
+    loadError: '加载失败',
+  },
   commontypes: {
     restData: 'SuperMap Rest 数据服务',
     restMap: 'SuperMap Rest 地图服务',

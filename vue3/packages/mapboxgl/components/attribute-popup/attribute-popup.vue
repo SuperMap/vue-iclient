@@ -2,7 +2,7 @@
   <div
     ref="popupRef"
     v-show="isRender"
-    class="sm-component-popup"
+    class="sm-component-attribute-popup"
     :style="[popupBgStyle, textColorStyle, popupWidth]"
   >
     <SelectLayer
@@ -105,9 +105,9 @@ const popupInfosValue = computed(() => {
 })
 const popupConfigValue = computed(() => {
   const MSStyle = {
-    width: '300px',
-    height: '300px',
-    autoResize: false
+    maxHeight: '394px',
+    maxWidth: '280px',
+    autoResize: true
   }
   return props.useMapPopup ? MSStyle : props.popupConfig
 })

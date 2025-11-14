@@ -21,7 +21,7 @@ export function usePopupConfigHooks(popupConfig: ComputedRef<PopupConfig>) {
     if (!autoResize) {
       return { width }
     } else {
-      return { maxWidth }
+      return { maxWidth, width }
     }
   })
   const popupHeight = computed(() => {
@@ -29,7 +29,7 @@ export function usePopupConfigHooks(popupConfig: ComputedRef<PopupConfig>) {
     if (!autoResize) {
       return { height }
     } else {
-      return { maxHeight }
+      return { maxHeight, height }
     }
   })
   const ellipsisStyle = {
