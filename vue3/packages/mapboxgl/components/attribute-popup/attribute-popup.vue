@@ -15,7 +15,7 @@
       <div class="header">
         <i
           v-show="currentIndex === 0"
-          class="sm-components-icon-arrow-left"
+          class="sm-components-icon-left"
           @click="handleReturn()"
         ></i>
         <div class="title ellipsis" :title="currentLayerName">{{ currentLayerName }}</div>

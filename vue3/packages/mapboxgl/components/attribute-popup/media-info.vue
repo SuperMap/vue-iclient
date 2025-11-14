@@ -2,12 +2,12 @@
   <div class="sm-media-info">
     <swiper
       v-if="infos.length > 1"
-      :modules="[Navigation]"
       :navigation="true"
+      :modules="[Navigation]"
       @slideChange="onSlideChange"
       style="width: 100%"
     >
-      <template v-for="({ type, title, value }) in infos" :key="index">
+      <template v-for="({ type, title, value }) in infos">
         <swiper-slide>
           <Player :type="type" :value="value" :title="title" />
         </swiper-slide>

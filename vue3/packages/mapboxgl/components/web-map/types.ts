@@ -1,8 +1,12 @@
 import type { PropType } from 'vue'
 import type { Map } from 'mapbox-gl'
 import type { MapOptions } from 'vue-iclient-core/controllers/mapboxgl/WebMapViewModel'
-import type { MapEventName, MapEventHandler } from 'vue-iclient-core/controllers/mapboxgl/utils/MapEvents'
+import type {
+  MapEventName,
+  MapEventHandler
+} from 'vue-iclient-core/controllers/mapboxgl/utils/MapEvents'
 import type { ShortEmits } from '@supermapgis/common/utils/index.common'
+import type { DefaultPopupProps } from '@supermapgis/mapboxgl/components/attribute-popup/types'
 import { getPropsDefaults } from '@supermapgis/common/utils/index.common'
 
 export type { MapEventHandler }
@@ -60,6 +64,9 @@ export interface IdentifyParam {
   fields: Array<string>
   layerStyle: Object
   clickAreaAround: number
+}
+export interface PopupParam extends DefaultPopupProps {
+  show: boolean
 }
 
 export interface LayerManageParam {
@@ -247,6 +254,19 @@ export const webMapProps = () => ({
       }
     }
   },
+  attributePopupControl: {
+    type: Object,
+    default: (): PopupParam => {
+      return {
+        show: false,
+        useMapPopup: false,
+        multiSelect: false,
+        popupInfos: [],
+        layerStyle: {},
+        clickTolerance: 5
+      }
+    }
+  },
   layerManagerControl: {
     type: Object,
     default: (): LayerManageParam => {
@@ -294,6 +314,7 @@ export type WebMapProps = {
   queryControl?: QueryParam
   searchControl?: SearchParam
   identifyControl?: IdentifyParam
+  attributePopupControl?: PopupParam
   layerManagerControl?: LayerManageParam
   tileTransformRequest?: (url: string) => Object
 }

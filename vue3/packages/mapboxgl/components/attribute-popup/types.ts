@@ -15,6 +15,7 @@ import { ExperssionTypes } from './util/CalcExpression'
 export interface Attribute {
   type: 'FIELD'
   fieldName: string
+  fieldCaption?: string
   contentType: 'text' | 'href' | 'image'
   target: '_parent' | '_self' | '_blank' | '_top'
   imgWidth?: number
@@ -39,7 +40,6 @@ interface DividerInfo {
 export interface PopupInfo {
   title?: string
   id?: string
-  fieldCaptions?: Record<string, string>
   identifyField?: string
   elements: (Attribute | TextInfo | MediaInfo | DividerInfo)[]
 }
@@ -54,7 +54,7 @@ export interface PopupConfig {
   valueWordWrap?: 'ellipsis' | 'wrap'
 }
 
-export interface PopupProps extends ThemeProps, MapGetterProps {
+export interface DefaultPopupProps {
   clickTolerance?: Number
   layerStyle?: Object
   useMapPopup: Boolean
@@ -63,6 +63,7 @@ export interface PopupProps extends ThemeProps, MapGetterProps {
   popupInfos?: PopupInfo[]
   popupConfig?: PopupConfig
 }
+export interface PopupProps extends DefaultPopupProps, ThemeProps, MapGetterProps {}
 
 const popupProps = () => ({
   clickTolerance: {

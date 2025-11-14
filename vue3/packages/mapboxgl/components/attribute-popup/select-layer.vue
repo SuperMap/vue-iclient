@@ -9,7 +9,7 @@
       <div class="sm-component-popup__select-layer-item">
         <i :class="['sm-component-layer-type', getTypeIcon(item.type)]" />
         <div class="sm-component-layer-name ellipsis">{{ item.name }}</div>
-        <i class="sm-components-icon-right" @click="handleSelect(item.id)" />
+        <i class="sm-components-icon-arrow-right" @click="handleSelect(item.id)" />
       </div>
     </template>
   </Card>

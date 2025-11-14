@@ -11,12 +11,6 @@
   }
   i {
     cursor: pointer;
-    display: flex;
-    align-items: center;
-  }
-  i:before {
-    font-size: 25px;
-    transform: scale(0.64);
   }
   .header {
     display: inline-flex;
@@ -180,6 +174,15 @@
   }
   
   .sm-component-popup__select-layer {
+    .sm-component-layer-type {
+      display: flex;
+      align-items: center;
+      cursor: auto;
+    }
+    .sm-component-layer-type:before {
+      font-size: 25px;
+      transform: scale(0.64);
+    }
     .ant-card-head {
       min-height: 38px;
       padding: 0 8px;
@@ -192,7 +195,6 @@
     }
     .sm-components-icon-close {
       font-size: 14px;
-      // cursor: pointer;
     }
     .ant-card-body {
       padding: 8px 0;
@@ -203,9 +205,7 @@
         justify-content: space-between;
         padding: 0 16px 0 8px;
         height: 28px;
-        cursor: pointer;
         .sm-component-layer-next {
-          // cursor: pointer;
           font-size: 16px;
           margin-left: 32px;
           transform: rotate(180deg);
@@ -216,11 +216,11 @@
           font-size: 12px;
         }
       }
-      .sm-components-icon-right {
+      .sm-components-icon-arrow-right {
         display: none;
       }
       .sm-component-popup__select-layer-item:hover {
-        .sm-components-icon-right {
+        .sm-components-icon-arrow-right {
           display: block;
         }
       }

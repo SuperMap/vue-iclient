@@ -1,7 +1,11 @@
 <template>
   <div class="sm-component-field-info">
-    <template v-for="{ fieldName, value, contentType, target, imgWidth, imgHeight } in infos">
-      <div class="name" :style="attributeStyle.keyStyle"  :title="getFieldCaption(fieldName)">{{ getFieldCaption(fieldName) }}</div>
+    <template
+      v-for="{ fieldCaption, fieldName, value, contentType, target, imgWidth, imgHeight } in infos"
+    >
+      <div class="name" :style="attributeStyle.keyStyle" :title="fieldCaption || fieldName">
+        {{ fieldCaption || fieldName }}
+      </div>
       <div class="value" :style="attributeStyle.valueStyle" :title="value">
         <a
           v-if="contentType === 'href'"
@@ -35,7 +39,8 @@ import { Image } from 'ant-design-vue'
 import type { Attribute } from './types'
 
 interface Infos {
-  fieldName: string
+  fieldName?: string
+  fieldCaption?: string
   value: string
   contentType: Attribute['contentType']
   target: Attribute['target']
@@ -43,7 +48,7 @@ interface Infos {
   imgHeight: number
 }
 
-const props = defineProps({
+defineProps({
   infos: {
     type: Array as PropType<Infos[]>,
     default: () => ({})
@@ -51,16 +56,8 @@ const props = defineProps({
   attributeStyle: {
     type: Object as PropType<{ keyStyle: string; valueStyle: string }>,
     default: () => ({ keyStyle: '', valueStyle: '' })
-  },
-  fieldCaptions: {
-    type: Object as PropType<Record<string, string>>,
-    default: () => ({})
   }
 })
-
-const getFieldCaption = (fieldName: string) => {
-  return props.fieldCaptions[fieldName] || fieldName
-}
 </script>
 
 <style scoped></style>

@@ -6,7 +6,6 @@
           v-if="type === 'FIELD'"
           :infos="infos"
           :attributeStyle="attributeStyle"
-          :fieldCaptions="popupInfo.fieldCaptions"
         ></FieldInfo>
         <TextInfo v-if="type === 'TEXT'" :infos="infos"></TextInfo>
         <MediaInfo v-if="type === 'MEDIA'" :infos="infos"></MediaInfo>

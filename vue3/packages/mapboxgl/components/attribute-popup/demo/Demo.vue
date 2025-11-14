@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import Popup from '../popup.vue'
+import AttributePopup from '../attribute-popup.vue'
 import WebMap from '@supermapgis/mapboxgl/components/web-map/webmap.vue'
 import Button from '@supermapgis/common/components/button/Button'
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import '../style'
 
-const mapTarget = ref('map1')
+// const mapTarget = ref('map1')
 const bgColor = ref()
 
 const changeBg = () => {
@@ -127,14 +127,18 @@ const popupConfig = ref({
   maxWidth: '320px',
   maxHeight: '400px'
 })
+const popupControl = reactive({
+  show: true,
+  useMapPopup: true
+})
 </script>
 <template>
   <div>
     <div>
       <Button type="primary" @click="changeBg">切换背景</Button>
     </div>
-    <WebMap serverUrl="http://172.16.14.44:8190/iportal" :map-id="1291742002" target="map1">
-      <Popup
+    <WebMap serverUrl="http://172.16.14.44:8190/iportal" :map-id="1291742002" target="map1" :attributePopupControl="popupControl">
+      <!-- <AttributePopup
         :map-target="mapTarget"
         :background="bgColor"
         :popupInfos="data"
@@ -142,10 +146,10 @@ const popupConfig = ref({
         :multi-select="true"
         :identifyFields="[{ layerId: '北京市(3)', field: 'name' }]"
         :popup-config="popupConfig"
-      />
+      /> -->
     </WebMap>
     <WebMap serverUrl="http://172.16.14.44:8190/iportal" :map-id="1531336475" target="map2">
-      <Popup
+      <AttributePopup
         map-target="map2"
         :background="bgColor"
         :popupInfos="data"
@@ -154,6 +158,12 @@ const popupConfig = ref({
         :popup-config="popupConfig"
       />
     </WebMap>
+    <!-- <WebMap
+      serverUrl="http://172.16.14.44:8190/iportal"
+      :map-id="1531336475"
+      target="map2"
+      :popupControl="popupControl"
+    ></WebMap> -->
   </div>
 </template>
 <style lang="scss">
@@ -168,6 +178,6 @@ const popupConfig = ref({
 }
 #map2 {
   top: 100px !important;
-  left: 55% !important;
+  left: 30% !important;
 }
 </style>
