@@ -27,7 +27,6 @@ import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation } from 'swiper/modules'
 import { ref, computed } from 'vue'
 import Player from './player.vue'
-import 'swiper/swiper-bundle.css'
 
 interface Infos {
   value: string
