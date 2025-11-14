@@ -37,7 +37,7 @@ export function useLayerHighlightHooks(props) {
   )
 
   watch(
-    () => props.multiSelection,
+    () => props.multiSelect,
     next => {
       viewModel?.setMultiSelection(next)
       clearPopupData()
