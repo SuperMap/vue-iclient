@@ -6,7 +6,7 @@ import { useMapGetter } from '@supermapgis/common/hooks/index.common'
 import PopupViewModel from 'vue-iclient-core/controllers/mapboxgl/PopupViewModel'
 import { isEqual } from 'lodash-es'
 
-export function useLayerHighlightHooks(props) {
+export function useLayerHighlightHooks(props, layerIds) {
   const { setViewModel } = useMapGetter<Map>({ removed })
   const allPopupDatas = ref<MapSelectionChangedEvent['popupInfos'] & { disabled?: boolean }>([])
   const lnglats = ref<MapSelectionChangedEvent['lnglats'] & { disabled?: boolean }>([])
@@ -20,7 +20,7 @@ export function useLayerHighlightHooks(props) {
 
   // 监听props变化
   watch(
-    () => props.layerIds,
+    () => layerIds,
     (next, prev) => {
       if (!isEqual(next, prev)) {
         clearPopupData()
@@ -64,18 +64,12 @@ export function useLayerHighlightHooks(props) {
       viewModel?.setClickTolerance(next)
     }
   )
-  watch(
-    () => props.layerIds,
-    next => {
-      viewModel?.setTargetLayers(next)
-    }
-  )
 
   // 生命周期钩子
   onBeforeMount(() => {
     viewModel = new PopupViewModel({
       name: 'popup',
-      layerIds: props.layerIds,
+      layerIds: layerIds.value,
       style: props.layerStyle,
       featureFieldsMap: props.featureFieldsMap,
       displayFieldsMap: props.displayFieldsMap,

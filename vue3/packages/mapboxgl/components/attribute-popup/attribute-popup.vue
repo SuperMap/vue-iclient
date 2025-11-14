@@ -13,11 +13,7 @@
     />
     <div v-show="showPopupContent" class="content">
       <div class="header">
-        <i
-          v-show="currentIndex === 0"
-          class="sm-components-icon-left"
-          @click="handleReturn()"
-        ></i>
+        <i v-show="currentIndex === 0" class="sm-components-icon-left" @click="handleReturn()"></i>
         <div class="title ellipsis" :title="currentLayerName">{{ currentLayerName }}</div>
         <!-- 翻页 -->
         <div v-show="isMultipleClick && enablePopupDatasLength > 0" class="switchDataText">
@@ -113,11 +109,6 @@ const popupConfigValue = computed(() => {
 })
 const highlightLayerIds = computed(() => popupInfosValue.value?.map(item => item.id) || [])
 
-const highlightProps = reactive({
-  ...props,
-  layerIds: highlightLayerIds.value,
-  style: props.layerStyle
-})
 const { popupWidth, popupHeight } = usePopupConfigHooks(popupConfigValue)
 
 const {
@@ -131,7 +122,7 @@ const {
   queryFeaturesByLayerId,
   setHighlightLayerFilter,
   removed
-} = useLayerHighlightHooks(highlightProps)
+} = useLayerHighlightHooks(props, highlightLayerIds)
 
 const rootEl = useTemplateRef('popupRef')
 const popupProps = reactive({
