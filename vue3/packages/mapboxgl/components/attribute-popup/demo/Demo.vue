@@ -2,7 +2,7 @@
 import AttributePopup from '../attribute-popup.vue'
 import WebMap from '@supermapgis/mapboxgl/components/web-map/webmap.vue'
 import Button from '@supermapgis/common/components/button/Button'
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import '../style'
 
 // const mapTarget = ref('map1')
@@ -31,9 +31,7 @@ const elements = [
   {
     type: 'FIELD',
     fieldName: 'name',
-    contentType: 'image',
-    imgWidth: 50,
-    imgHeight: 50
+    contentType: 'image'
   },
   {
     type: 'FIELD',
@@ -102,7 +100,47 @@ const elementss = {
     },
     {
       type: 'FIELD',
+      fieldName: 'SmIDxxx',
+      contentType: 'video',
+      contentInfo: {
+        autoplay: true,
+        objectFit: 'fill',
+        loop: false,
+        muted: true,
+        controls: true
+      }
+    },
+    {
+      type: 'FIELD',
+      fieldName: 'SmIDfff',
+      contentType: 'image',
+      contentInfo: {
+        previewMode: 'popup'
+      }
+    },
+    {
+      type: 'FIELD',
       fieldName: '标准名称'
+    },
+    {
+      type: 'IMAGE',
+      title: 'afdfd',
+      value: 'https://iclient.supermap.io/img/whatsNewLandUse.png',
+      options: {
+        previewMode: 'popup'
+      }
+    },
+    {
+      type: 'VIDEO',
+      title: 'afdDDDDDfd',
+      value: 'https://www.w3schools.com/html/movie.mp4',
+      options: {
+        autoplay: true,
+        objectFit: 'fill',
+        loop: false,
+        muted: true,
+        controls: true
+      }
     }
   ],
   id: '北京市轨道交通线路-打印(3)',
@@ -122,15 +160,23 @@ const popupConfig = ref({
   keyWordWrap: 'ellipsis',
   valueWordWrap: 'ellipsis',
   color: '#f00',
-  width: '200px',
+  width: '280px',
   height: '300px',
   maxWidth: '320px',
   maxHeight: '400px'
 })
 const popupControl = reactive({
   show: true,
-  useMapPopup: true
+  useMapPopup: true,
+  multiSelect: false
 })
+onMounted(() => {
+  setTimeout(() => {
+    popupControl.multiSelect = true
+  }, 2000)
+})
+// 1527905551
+// 1291742002
 </script>
 <template>
   <div>
@@ -138,21 +184,15 @@ const popupControl = reactive({
       切换背景
     </Button>
     <div style="display: inline-flex; flex: 1; width: 100%; height: 100%; position: relative">
-      <WebMap
-        serverUrl="http://172.16.14.44:8190/iportal"
-        :map-id="1291742002"
-        target="map1"
-        :attributePopupControl="popupControl"
-      >
-        <!-- <AttributePopup
-        :map-target="mapTarget"
-        :background="bgColor"
-        :popupInfos="data"
-        :useMapPopup="true"
-        :multi-select="true"
-        :identifyFields="[{ layerId: '北京市(3)', field: 'name' }]"
-        :popup-config="popupConfig"
-      /> -->
+      <WebMap serverUrl="http://172.16.14.44:8190/iportal" :map-id="1291742002" target="map1">
+        <AttributePopup
+          map-target="map1"
+          :background="bgColor"
+          :popupInfos="data"
+          :useMapPopup="false"
+          :multi-select="true"
+          :popup-config="popupConfig"
+        />
       </WebMap>
       <WebMap serverUrl="http://172.16.14.44:8190/iportal" :map-id="1171931401" target="map2">
         <AttributePopup
@@ -168,7 +208,7 @@ const popupControl = reactive({
       serverUrl="http://172.16.14.44:8190/iportal"
       :map-id="1531336475"
       target="map2"
-      :popupControl="popupControl"
+      :attributePopupControl="popupControl"
     ></WebMap> -->
     </div>
   </div>

@@ -7,14 +7,14 @@
       @slideChange="onSlideChange"
       style="width: 100%"
     >
-      <template v-for="({ type, title, value }) in infos">
+      <template v-for="({ type, title, value, options}) in infos">
         <swiper-slide>
-          <Player :type="type" :value="value" :title="title" />
+          <Player :type="type" :value="value" :title="title" :options="options"/>
         </swiper-slide>
       </template>
     </swiper>
     <template v-else>
-      <Player :type="infos[0].type" :value="infos[0].value" :title="infos[0].title" />
+      <Player :type="infos[0].type" :value="infos[0].value" :options="infos[0].options"/>
     </template>
     <span v-if="infos.length > 1" class="pagination">{{ currentIndex }} / {{ infos.length }}</span>
     <span class="title">{{ title }}</span>
@@ -23,6 +23,7 @@
 
 <script setup lang="ts">
 import type { PropType } from 'vue'
+import type { imageOptions, videoOptions } from './types'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation } from 'swiper/modules'
 import { ref, computed } from 'vue'
@@ -32,6 +33,7 @@ interface Infos {
   value: string
   title?: string
   type: 'IMAGE' | 'VIDEO'
+  options?: imageOptions | videoOptions
 }
 const props = defineProps({
   infos: {

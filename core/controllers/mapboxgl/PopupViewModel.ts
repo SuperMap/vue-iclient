@@ -5,6 +5,7 @@ import type {
 } from 'vue-iclient-core/controllers/mapboxgl/LayerHighlightViewModel'
 import LayerHighlightViewModel from 'vue-iclient-core/controllers/mapboxgl/LayerHighlightViewModel'
 import { DataSelectorMode } from 'vue-iclient-core/controllers/mapboxgl/LayerHighlightViewModel'
+import uniqBy from 'lodash.uniqby'
 
 export default class PopupLayerHighlightViewModel extends LayerHighlightViewModel {
   private e: mapboxglTypes.MapLayerMouseEvent
@@ -29,7 +30,7 @@ export default class PopupLayerHighlightViewModel extends LayerHighlightViewMode
   private getClickedLayers(features: any[], e: mapboxglTypes.MapLayerMouseEvent) {
     const layers = features.map(item => item.layer)
     this.fire('layerclick', {
-      layers: [...new Set(layers)],
+      layers: uniqBy(layers, 'id'),
       lngLat: e.lngLat,
       isMultipleClick: Boolean(this.dataSelectorMode !== DataSelectorMode.SINGLE),
       isSecMultipleClick: Boolean(

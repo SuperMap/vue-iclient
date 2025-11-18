@@ -60,6 +60,7 @@
         <i class="sm-components-icon-close" @click="handleClose()"></i>
       </div>
       <PopupContent
+        ref="popupContentRef"
         :data="data"
         :popupInfo="popupInfo"
         :popupConfig="popupConfigValue"
@@ -79,15 +80,17 @@ import { PropsDefault } from './types'
 import PopupContent from './popup-content.vue'
 import SelectLayer from './select-layer.vue'
 import { useTheme, useMapGetter } from '@supermapgis/common/hooks/index.common'
-import { usePopup } from './use-popup'
-import { useLayerHighlightHooks } from './use-highlight'
-import { usePopupConfigHooks } from './use-popup-config'
+import { usePopup } from './hooks/use-popup'
+import { useLayerHighlightHooks } from './hooks/use-highlight'
+import { usePopupConfigHooks } from './hooks/use-popup-config'
+import { useResizeHooks } from './hooks/use-resize'
 
 const props = withDefaults(defineProps<PopupProps>(), PropsDefault)
 
 const { textColorStyle, popupBgStyle } = useTheme(props)
 
 const mapPopupInfos = ref([])
+const popupContentRef = useTemplateRef('popupContentRef')
 
 const loaded = (map: Map, webmap) => {
   mapPopupInfos.value = webmap.getPopupInfos()
@@ -105,11 +108,21 @@ const popupConfigValue = computed(() => {
     maxWidth: '280px',
     autoResize: true
   }
-  return props.useMapPopup ? MSStyle : props.popupConfig
+  const propsPopupConfig: any = props.useMapPopup ? MSStyle : props.popupConfig
+  return propsPopupConfig
 })
+const contentHeight = ref('')
+
 const highlightLayerIds = computed(() => popupInfosValue.value?.map(item => item.id) || [])
 
-const { popupWidth, popupHeight } = usePopupConfigHooks(popupConfigValue)
+const resizeCallback = () => {
+  contentHeight.value = popupContentRef.value?.$el.scrollHeight
+    ? popupContentRef.value.$el.scrollHeight + 'px'
+    : ''
+}
+useResizeHooks(popupContentRef, resizeCallback)
+
+const { popupWidth, popupHeight } = usePopupConfigHooks(popupConfigValue, contentHeight)
 
 const {
   isMultipleClick,

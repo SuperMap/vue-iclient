@@ -23,8 +23,8 @@ import { cloneDeep } from 'lodash-es'
 import FieldInfo from './field-info.vue'
 import TextInfo from './text-info.vue'
 import MediaInfo from './media-info.vue'
-import { usePopupConfigHooks } from './use-popup-config'
 import PopupUtil from './util/PopupUtil'
+import { usePopupConfigHooks } from './hooks/use-popup-config'
 
 const props = defineProps({
   data: {

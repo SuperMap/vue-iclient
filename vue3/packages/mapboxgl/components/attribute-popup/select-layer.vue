@@ -1,9 +1,5 @@
 <template>
-  <Card
-    v-show="isShow"
-    :title="t('popup.selectLayer')"
-    class="sm-component-popup__select-layer"
-  >
+  <Card v-show="isShow" :title="t('popup.selectLayer')" class="sm-component-popup__select-layer">
     <template #extra><i class="sm-components-icon-close" @click="handleClose()"></i></template>
     <template v-for="item in layerInfos" :key="item.id">
       <div class="sm-component-popup__select-layer-item">
@@ -30,11 +26,10 @@ interface LayerInfo {
     | 'symbol'
     | 'fill'
     | 'line'
-    | 'raster'
     | 'circle'
+    | 'point-extrusion'
     | 'fill-extrusion'
-    | 'heatmap'
-    | 'hillshade'
+    | 'line-extrusion'
   [key: string]: any
 }
 
@@ -62,12 +57,16 @@ const getTypeIcon = (type: LayerInfo['type']) => {
   switch (type) {
     case 'symbol':
     case 'circle':
+    case 'point-extrusion':
       return 'sm-components-icon-multi-point'
     case 'fill':
     case 'fill-extrusion':
       return 'sm-components-icon-ploygon'
     case 'line':
+    case 'line-extrusion':
       return 'sm-components-icon-line'
+    default:
+      return ''
   }
 }
 const handleClose = () => {

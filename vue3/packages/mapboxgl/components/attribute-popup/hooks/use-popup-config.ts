@@ -1,8 +1,11 @@
+import type { PopupConfig } from '../types'
+import type { CSSProperties, ComputedRef, Ref } from 'vue'
 import { computed } from 'vue'
-import type { PopupConfig } from './types'
-import type { CSSProperties, ComputedRef } from 'vue'
 
-export function usePopupConfigHooks(popupConfig: ComputedRef<PopupConfig>) {
+export function usePopupConfigHooks(
+  popupConfig: ComputedRef<PopupConfig>,
+  contentHeight?: Ref<string>
+) {
   const popupStyle = computed(() => {
     const { autoResize, maxWidth, maxHeight, width, height, color } = popupConfig.value
     const style: CSSProperties = { color }
@@ -29,7 +32,7 @@ export function usePopupConfigHooks(popupConfig: ComputedRef<PopupConfig>) {
     if (!autoResize) {
       return { height }
     } else {
-      return { maxHeight, height }
+      return { maxHeight, height: height || contentHeight?.value }
     }
   })
   const ellipsisStyle = {

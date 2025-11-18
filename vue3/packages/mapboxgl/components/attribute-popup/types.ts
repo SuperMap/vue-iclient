@@ -12,14 +12,27 @@ import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/types/CircleStyle
 import { TextInfosTypes } from './util/ExpressionConverter'
 import { ExperssionTypes } from './util/CalcExpression'
 
+export interface videoOptions {
+  objectFit?: 'contain' | 'fill' | 'unset'
+  autoplay?: boolean
+  loop?: boolean
+  muted?: boolean
+  controls?: boolean
+}
+export interface imageOptions {
+  previewMode?: 'full' | 'popup' | 'none'
+}
+interface hrefContentInfo {
+  target?: '_parent' | '_self' | '_blank' | '_top',
+  text?: string
+}
+export type ContentInfo = videoOptions | imageOptions | hrefContentInfo
 export interface Attribute {
   type: 'FIELD'
   fieldName: string
   fieldCaption?: string
-  contentType: 'text' | 'href' | 'image'
-  target: '_parent' | '_self' | '_blank' | '_top'
-  imgWidth?: number
-  imgHeight?: number
+  contentType: 'text' | 'href' | 'image' | 'video'
+  contentInfo?: ContentInfo
 }
 
 export type TextInfo = {
@@ -40,6 +53,7 @@ interface DividerInfo {
 export interface PopupInfo {
   title?: string
   id?: string
+  fieldCaptions?: Record<string, string>
   identifyField?: string
   elements: (Attribute | TextInfo | MediaInfo | DividerInfo)[]
 }

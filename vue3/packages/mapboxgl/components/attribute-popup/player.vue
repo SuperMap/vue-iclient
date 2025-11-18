@@ -1,16 +1,18 @@
 <template>
   <div class="player">
-    <img
+    <ImagePreview
       v-if="type === 'IMAGE' && loadImg"
       :src="value"
+      :previewMode="options.previewMode"
       width="100%"
       @error="() => handleImageLoad(false)"
       @load="() => handleImageLoad(true)"
     />
     <video
       v-if="type === 'VIDEO' && loadVideo"
+      v-bind="options"
       :src="value"
-      controls
+      :style="{ objectFit: options.objectFit }"
       @error="() => handleVideoLoad(false)"
       @load="() => handleVideoLoad(true)"
     ></video>
@@ -22,8 +24,10 @@
 
 <script setup lang="ts">
 import type { PropType } from 'vue'
+import type { videoOptions, imageOptions } from './types'
 import { ref } from 'vue'
 import { useLocale } from '@supermapgis/common/hooks/index.common'
+import ImagePreview from '@supermapgis/common/components/image/image.vue'
 
 const { t } = useLocale()
 
@@ -36,9 +40,15 @@ defineProps({
     type: String,
     default: ''
   },
-  title: {
-    type: String,
-    default: ''
+  options: {
+    type: Object as PropType<imageOptions | videoOptions>,
+    default: () => ({
+      autoplay: false,
+      objectFit: 'fill',
+      loop: false,
+      muted: true,
+      controls: true
+    })
   }
 })
 const loadVideo = ref(true)
@@ -48,7 +58,6 @@ const handleImageLoad = status => {
   loadImg.value = status
 }
 const handleVideoLoad = status => {
-  console.log('可以播放', status)
   loadVideo.value = status
 }
 </script>
