@@ -7,8 +7,8 @@ export function usePopupConfigHooks(
   contentHeight?: Ref<string>
 ) {
   const popupStyle = computed(() => {
-    const { autoResize, maxWidth, maxHeight, width, height, color } = popupConfig.value
-    const style: CSSProperties = { color }
+    const { autoResize, maxWidth, maxHeight, width, height, keyWordWrap, valueWordWrap, ...params } = popupConfig.value
+    const style: CSSProperties = {  ...params }
     if (!autoResize) {
       style.width = width
       style.height = height

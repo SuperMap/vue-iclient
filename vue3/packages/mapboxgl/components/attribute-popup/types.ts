@@ -1,4 +1,4 @@
-import type { PropType } from 'vue'
+import type { PropType, CSSProperties } from 'vue'
 import type { MapGetterProps, ThemeProps } from '@supermapgis/common/utils/index.common'
 import type { HighlightStyle } from 'vue-iclient-core/controllers/mapboxgl/LayerHighlightViewModel'
 import {
@@ -44,6 +44,8 @@ export interface MediaInfo {
   type: 'IMAGE' | 'VIDEO'
   title?: string
   value: string | ExperssionTypes
+  titleStyle?: CSSProperties
+  options?: imageOptions | videoOptions
 }
 
 interface DividerInfo {
@@ -58,7 +60,7 @@ export interface PopupInfo {
   elements: (Attribute | TextInfo | MediaInfo | DividerInfo)[]
 }
 export interface PopupConfig {
-  color?: string
+  backgroundImage?: string
   autoResize?: boolean
   maxWidth?: string
   maxHeight?: string

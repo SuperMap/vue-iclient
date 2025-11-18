@@ -3,7 +3,7 @@
     ref="popupRef"
     v-show="isRender"
     class="sm-component-attribute-popup"
-    :style="[popupBgStyle, textColorStyle, popupWidth]"
+    :style="[textColorStyle, popupBgStyle, popupWidth]"
   >
     <SelectLayer
       :show="showSelectLayer && isSelectLayer"
