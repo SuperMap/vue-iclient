@@ -31,11 +31,23 @@ useTimer(props, { timing });
 
 const customStyle = computed(() => {
   let style = Object.assign({}, props.fontStyle);
-  if (style.textAlign && !style.justifyContent) {
+  if (style.textAlign && !style.justifyContent && !style.display) {
     style.justifyContent = 
       style.textAlign === 'left' ? 'flex-start' :
       style.textAlign === 'right' ? 'flex-end' : 'center';
-    delete style.textAlign;
+  }
+  if (!style.textAlign) {
+    switch (style.justifyContent) {
+      case 'flex-start':
+        style.textAlign = 'left';
+        break;
+      case 'flex-end':
+        style.textAlign = 'right';
+        break;
+      case 'center':
+        style.textAlign = 'center';
+        break;
+    }
   }
   return style;
 });

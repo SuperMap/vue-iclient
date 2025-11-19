@@ -44,10 +44,22 @@ export default {
   computed: {
     customStyle() {
       let style = Object.assign({}, this.fontStyle);
-      if (style.textAlign && !style.justifyContent) {
+      if (style.textAlign && !style.justifyContent && !style.display) {
         const textAlign = style.textAlign;
         style.justifyContent = textAlign === 'left' ? 'flex-start' : textAlign === 'right' ? 'flex-end' : 'center';
-        delete style.textAlign;
+      }
+      if (!style.textAlign) {
+        switch (style.justifyContent) {
+          case 'flex-start':
+            style.textAlign = 'left';
+            break;
+          case 'flex-end':
+            style.textAlign = 'right';
+            break;
+          case 'center':
+            style.textAlign = 'center';
+            break;
+        }
       }
       return style;
     }
