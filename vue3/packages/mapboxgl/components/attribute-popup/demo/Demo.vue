@@ -143,14 +143,14 @@ const elementss = {
       }
     }
   ],
-  id: '北京市轨道交通线路-打印(3)',
+  layerId: '北京市轨道交通线路-打印(3)',
   title: '北京市轨道交通线路-打印(3)'
 }
 const data = ref([
   {
     elements: elements,
     title: '北京市(3)',
-    id: '北京市(3)',
+    layerId: '北京市(3)',
     identifyField: 'name'
   },
   elementss

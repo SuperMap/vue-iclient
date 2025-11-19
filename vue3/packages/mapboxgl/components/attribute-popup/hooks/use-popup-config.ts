@@ -9,14 +9,6 @@ export function usePopupConfigHooks(
   const popupStyle = computed(() => {
     const { autoResize, maxWidth, maxHeight, width, height, keyWordWrap, valueWordWrap, ...params } = popupConfig.value
     const style: CSSProperties = {  ...params }
-    if (!autoResize) {
-      style.width = width
-      style.height = height
-    } else {
-      style.maxWidth = maxWidth
-      style.maxHeight = maxHeight
-    }
-
     return style
   })
   const popupWidth = computed(() => {

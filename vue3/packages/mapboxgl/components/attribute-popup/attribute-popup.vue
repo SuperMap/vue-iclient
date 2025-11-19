@@ -3,7 +3,7 @@
     ref="popupRef"
     v-show="isRender"
     class="sm-component-attribute-popup"
-    :style="[textColorStyle, popupBgStyle, popupWidth]"
+    :style="[textColorStyle, popupBgStyleValue, popupWidth]"
   >
     <SelectLayer
       :show="showSelectLayer"
@@ -122,7 +122,7 @@ const resizeCallback = () => {
 }
 useResizeHooks(popupContentRef, resizeCallback)
 
-const { popupWidth, popupHeight } = usePopupConfigHooks(popupConfigValue, contentHeight)
+const { popupWidth, popupHeight, popupStyle } = usePopupConfigHooks(popupConfigValue, contentHeight)
 
 const {
   isMultipleClick,
@@ -140,10 +140,11 @@ const {
 const rootEl = useTemplateRef('popupRef')
 const popupProps = reactive({
   coordinates: [],
-  popupBgStyle,
   rootEl
 })
-const { isRender, removePopup } = usePopup(popupProps)
+const popupBgStyleValue = computed(() => ({ ...popupBgStyle.value, ...popupStyle.value }))
+
+const { isRender, removePopup } = usePopup(popupProps, popupBgStyleValue)
 
 const currentIndex = ref(0)
 const currentLayerId = ref('')

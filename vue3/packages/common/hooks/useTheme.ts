@@ -32,25 +32,25 @@ export function useTheme(props: ThemeProps, themeAliasToken: AliasToken = global
   })
 
   const containerBgStyle = computed(() => {
-    return { background: themePropDatas.colorBgContainer }
+    return { backgroundColor: themePropDatas.colorBgContainer }
   })
 
   const popupBgStyle = computed(() => {
     return {
-      background: themePropDatas.colorBgElevated
+      backgroundColor: themePropDatas.colorBgElevated
     }
   })
 
   const gisControlBgStyle = computed(() => {
-    return { background: themePropDatas.gisControlBg }
+    return { backgroundColor: themePropDatas.gisControlBg }
   })
 
   const gisControlBgTertiaryStyle = computed(() => {
-    return { background: themePropDatas.gisControlBgTertiary }
+    return { backgroundColor: themePropDatas.gisControlBgTertiary }
   })
 
   const gisControlHeaderBgStyle = computed(() => {
-    return { background: themePropDatas.gisControlHeaderBg }
+    return { backgroundColor: themePropDatas.gisControlHeaderBg }
   })
 
   const colorPrimary = computed(() => {
