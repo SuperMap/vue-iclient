@@ -6,7 +6,7 @@
     :style="[textColorStyle, popupBgStyle, popupWidth]"
   >
     <SelectLayer
-      :show="showSelectLayer && isSelectLayer"
+      :show="showSelectLayer"
       :layerInfos="selectedLayers"
       @select="handleSelect"
       @close="handleClose"
@@ -73,7 +73,7 @@
 <script setup lang="ts">
 import type { Map } from 'mapbox-gl'
 import type { PopupProps } from './types'
-import { ref, computed, reactive, watch, useTemplateRef, nextTick } from 'vue'
+import { ref, computed, reactive, watch, useTemplateRef, nextTick, watchEffect } from 'vue'
 import { Dropdown, Checkbox, Menu, MenuItem } from 'ant-design-vue'
 import { MenuUnfoldOutlined } from '@ant-design/icons-vue'
 import { PropsDefault } from './types'
@@ -113,7 +113,7 @@ const popupConfigValue = computed(() => {
 })
 const contentHeight = ref('')
 
-const highlightLayerIds = computed(() => popupInfosValue.value?.map(item => item.id) || [])
+const highlightLayerIds = computed(() => popupInfosValue.value?.map(item => item.layerId) || [])
 
 const resizeCallback = () => {
   contentHeight.value = popupContentRef.value?.$el.scrollHeight
@@ -152,7 +152,7 @@ const allPupDatasDisabled = ref([])
 const selectedLayers = computed(() => {
   return clickedLayers.value.map(item => {
     const { id, type } = item
-    const name = popupInfosValue.value?.find(item => item.id === id)?.title
+    const name = popupInfosValue.value?.find(item => item.layerId === id)?.title
     return { id, type, name }
   })
 })
@@ -167,15 +167,10 @@ const isSelectLayer = computed(() => {
 
 const currentLayerName = computed(() => {
   return (
-    popupInfosValue.value?.find(item => item.id === currentLayerId.value)?.title ||
+    popupInfosValue.value?.find(item => item.layerId === currentLayerId.value)?.title ||
     currentLayerId.value
   )
 })
-
-const removeAll = () => {
-  removed()
-  removePopup()
-}
 
 watch(lnglats, () => {
   popupProps.coordinates = enableLngLats.value[currentIndex.value]
@@ -186,37 +181,51 @@ watch(currentIndex, () => {
   popupProps.coordinates = enableLngLats.value[currentIndex.value]
 })
 
-watch(clickedLayers, () => {
+watchEffect(() => {
+  // 如果图层 <= 1 ， 不显示
+  if (clickedLayers.value.length <= 1) {
+    showSelectLayer.value = false
+    return
+  }
+  // 如果是第二次多选不显示
+  if (isMultipleClick.value && isSecMultipleClick.value) {
+    showSelectLayer.value = false
+    return
+  }
+  showSelectLayer.value = true
+})
+
+const getCurrentLayerId = () => {
+  // 如果没有选中
   if (!isSelectLayer.value) {
-    currentLayerId.value = ''
-    removeAll()
+    return ''
   }
-})
-watch(currentLayerId, newVal => {
-  if (newVal) {
-    queryFeaturesByLayerId(newVal)
+  // 如果第二次多选
+  if (isSecMultipleClick.value) {
+    return currentLayerId.value
   }
-})
+  // 如果单选或第一次多选，图层只有一个
+  if (clickedLayers.value.length === 1) {
+    return clickedLayers.value[0].id
+  }
+  // 如果单选或第一次多选，图层有多个
+  return ''
+}
+
 // 每次新点击
-watch(clickedLngLat, (newVal, oldVal) => {
-  showSelectLayer.value = false
-  const oldLayerId = currentLayerId.value
-  currentLayerId.value = ''
-  if (!isMultipleClick.value) {
-    removeAll()
-  }
+watch(clickedLngLat, (newVal) => {
+  removePopup()
   nextTick(() => {
-    if (isSecMultipleClick.value) {
-      currentLayerId.value = oldLayerId
+    currentLayerId.value = getCurrentLayerId()
+    if (currentLayerId.value) {
       queryFeaturesByLayerId(currentLayerId.value)
     }
     popupProps.coordinates = isSelectLayer.value ? newVal : null
-    showSelectLayer.value = !isSecMultipleClick.value
   })
 })
 
 const popupInfo = computed(() => {
-  return popupInfosValue.value?.find(item => item.id === currentLayerId.value)
+  return popupInfosValue.value?.find(item => item.layerId === currentLayerId.value)
 })
 const paginationContent = computed(() => {
   return `${currentIndex.value + 1}/${enablePopupDatasLength.value}`
@@ -248,6 +257,9 @@ watch(enablePopupDatasLength, () => {
 const identifyFieldsOptions = ref([])
 
 watch(allPopupDatas, () => {
+  if (!allPopupDatas.value?.length) {
+    removePopup();
+  }
   allPupDatasDisabled.value =
     allPopupDatas.value?.map((item, index) => allPupDatasDisabled.value[index] || false) || []
   identifyFieldsOptions.value = identifyField.value
@@ -258,7 +270,7 @@ watch(allPopupDatas, () => {
     : []
 })
 const identifyField = computed(() => {
-  return props.popupInfos?.find(item => item.id === currentLayerId.value)?.identifyField
+  return props.popupInfos?.find(item => item.layerId === currentLayerId.value)?.identifyField
 })
 
 const changeIndex = (step: number) => {
@@ -268,6 +280,7 @@ const changeIndex = (step: number) => {
 const handleSelect = (id: string) => {
   currentLayerId.value = id
   showSelectLayer.value = false
+  queryFeaturesByLayerId(currentLayerId.value)
 }
 
 const handleClose = () => {

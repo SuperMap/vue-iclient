@@ -84,9 +84,7 @@ export function useLayerHighlightHooks(props, layerIds) {
   onUnmounted(() => {
     clearPopupData()
   })
-  function removed() {
-    clearPopupData()
-  }
+
 
   function setLayerIds(layerIds: string[]) {
     viewModel?.setTargetLayers(layerIds)
@@ -108,15 +106,9 @@ export function useLayerHighlightHooks(props, layerIds) {
         allPopupDatas.value = e.popupInfos
         lnglats.value = e.lnglats
       }
-
       if (!features[0]) {
         clearPopupData()
       }
-      // mapSelectionsParams = {
-      //   ...e,
-      //   dataSeletionIndex: currentIndex.value,
-      //   layerName: e.targetId
-      // }
       activeTargetName.value = e.targetId
     })
   }
@@ -135,6 +127,10 @@ export function useLayerHighlightHooks(props, layerIds) {
     allPopupDatas.value = []
     lnglats.value = []
     clear && viewModel?.clear()
+  }
+
+  function removed() {
+    viewModel?.clear()
   }
 
   return {

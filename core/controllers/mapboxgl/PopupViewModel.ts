@@ -19,9 +19,11 @@ export default class PopupLayerHighlightViewModel extends LayerHighlightViewMode
   }
 
   handleMapClickCover(e: mapboxglTypes.MapLayerMouseEvent) {
+    this.activeTargetId = this.dataSelectorMode === DataSelectorMode.MULTIPLE ? this.activeTargetId : null
     const layers = this.activeTargetId
       ? [this.activeTargetId]
       : this.highlightOptions.layerIds.filter(item => !!this.map.getLayer(item))
+    this.removeHighlightLayers()
     // @ts-ignore
     const features = this.queryLayerFeatures(e as mapboxglTypes.MapLayerMouseEvent, layers)
     this.getClickedLayers(features, e)
