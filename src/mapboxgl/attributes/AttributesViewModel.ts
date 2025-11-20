@@ -458,17 +458,16 @@ class FeatureTableViewModel extends mapboxgl.Evented {
             this.totalCount = await new iServerRestService(this.dataset.url).getDataFeaturesCount(config);
             // @ts-ignore
             let fieldInfos = await new iServerRestService(this.dataset.url).getFeaturesDatasetInfo(config);
-            let fields = []; let fieldCaptions = []; let fieldTypes = [];
+            let fieldCaptions = []; let fieldTypes = [];
             if(fieldInfos) {
               fieldInfos.forEach(fieldInfo => {
                 if(fieldInfo.name) {
-                  fields.push(fieldInfo.name.toUpperCase());
-                  fieldCaptions.push(fieldInfo.caption.toUpperCase());
+                  fieldCaptions.push(fieldInfo.caption);
                   fieldTypes.push(fieldInfo.type);
                 }
               });
             }
-            datas = statisticsFeatures(features, fields, fieldCaptions, fieldTypes);
+            datas = statisticsFeatures(features, [], fieldCaptions, fieldTypes);
             this.prevDatasetUrl = this.dataset.url;
           }
         }

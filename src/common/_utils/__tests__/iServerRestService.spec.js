@@ -29,7 +29,8 @@ describe('iServerRestService', () => {
                 {
                   fieldInfos: [
                     { name: 'SmID', caption: 'SmID', type: 'INT32' },
-                    { name: 'NAME', caption: '名称', type: 'WTEXT' }
+                    { name: 'NAME', caption: '名称', type: 'WTEXT' },
+                    { name: 'lowercase', caption: 'lowercase', type: 'WTEXT' }
                   ]
                 }
               ])
@@ -39,8 +40,8 @@ describe('iServerRestService', () => {
       }
       const features = [
         {
-          fieldNames: ['SMID', 'NAME'],
-          fieldValues: ['18', 'AAAAA']
+          fieldNames: ['SMID', 'NAME', 'lowercase'],
+          fieldValues: ['18', 'AAAAA', 'test']
         }
       ];
       if (params.includes('ATTRIBUTEANDGEOMETRY')) {
@@ -69,9 +70,9 @@ describe('iServerRestService', () => {
               recordsets: [
                 {
                   features,
-                  fieldCaptions: ['SmID', '名称'],
-                  fieldTypes: ['INT32', 'WTEXT'],
-                  fields: ['SmID', 'NAME']
+                  fieldCaptions: ['SmID', '名称', 'lowercase'],
+                  fieldTypes: ['INT32', 'WTEXT', 'WTEXT'],
+                  fields: ['SmID', 'NAME', 'lowercase']
                 }
               ],
               totalCount: 1
@@ -85,7 +86,8 @@ describe('iServerRestService', () => {
             {
               fieldInfos: [
                 { name: 'SmID', caption: 'SmID', type: 'INT32' },
-                { name: 'NAME', caption: '名称', type: 'WTEXT' }
+                { name: 'NAME', caption: '名称', type: 'WTEXT' },
+                { name: 'lowercase', caption: 'lowercase', type: 'WTEXT' }
               ]
             }
           ],
@@ -169,8 +171,10 @@ describe('iServerRestService', () => {
     expect(service.options.preferServer).toBe(undefined);
     service.on({
       getdatasucceeded: data => {
-        expect(data.fields).toEqual(['SMID', 'NAME']);
-        expect(data.fieldCaptions).toEqual(['SMID', '名称']);
+        expect(data.fields).toEqual(['SMID', 'NAME', 'lowercase']);
+        expect(data.fieldCaptions).toEqual(['SmID', '名称', 'lowercase']);
+        const featureFields = Object.keys(data.features[0].properties);
+        expect(data.fields).toEqual(featureFields);
         done();
       }
     });
@@ -184,8 +188,8 @@ describe('iServerRestService', () => {
     );
     service.on({
       getdatasucceeded: data => {
-        expect(data.fields).toEqual(['SMID', 'NAME']);
-        expect(data.fieldCaptions).toEqual(['SMID', '名称']);
+        expect(data.fields).toEqual(['SMID', 'NAME', 'lowercase']);
+        expect(data.fieldCaptions).toEqual(['SmID', '名称', 'lowercase']);
         expect(mockPostParams).toMatch(/'attributeFilter':"NAME LIKE '%25A%25'/);
         done();
       }
