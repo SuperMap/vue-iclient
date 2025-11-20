@@ -19,15 +19,12 @@ export function useLayerHighlightHooks(props, layerIds) {
   let viewModel: any = null
 
   // 监听props变化
-  watch(
-    () => layerIds,
-    (next, prev) => {
-      if (!isEqual(next, prev)) {
-        clearPopupData()
-        viewModel?.setTargetLayers(next)
-      }
+  watch(layerIds, (next, prev) => {
+    if (!isEqual(next, prev)) {
+      clearPopupData()
+      viewModel?.setTargetLayers(next)
     }
-  )
+  })
 
   watch(
     () => props.highlightStyle,
@@ -84,7 +81,6 @@ export function useLayerHighlightHooks(props, layerIds) {
   onUnmounted(() => {
     clearPopupData()
   })
-
 
   function setLayerIds(layerIds: string[]) {
     viewModel?.setTargetLayers(layerIds)

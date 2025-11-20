@@ -173,6 +173,14 @@ const currentLayerName = computed(() => {
   )
 })
 
+watch(
+  () => props.useMapPopup,
+  () => {
+    removePopup()
+    removed()
+  }
+)
+
 watch(lnglats, () => {
   popupProps.coordinates = enableLngLats.value[currentIndex.value]
   currentIndex.value = enableLngLats.value.length ? enableLngLats.value.length - 1 : 0
@@ -214,7 +222,7 @@ const getCurrentLayerId = () => {
 }
 
 // 每次新点击
-watch(clickedLngLat, (newVal) => {
+watch(clickedLngLat, newVal => {
   removePopup()
   nextTick(() => {
     currentLayerId.value = getCurrentLayerId()
@@ -259,7 +267,7 @@ const identifyFieldsOptions = ref([])
 
 watch(allPopupDatas, () => {
   if (!allPopupDatas.value?.length) {
-    removePopup();
+    removePopup()
   }
   allPupDatasDisabled.value =
     allPopupDatas.value?.map((item, index) => allPupDatasDisabled.value[index] || false) || []
