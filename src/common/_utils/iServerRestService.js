@@ -423,21 +423,20 @@ export default class iServerRestService extends Events {
         });
         return;
       }
-      let fields, fieldCaptions, fieldTypes;
+      let fieldCaptions, fieldTypes;
       if (results.result.datasetInfos) {
-        fields = [];
         fieldCaptions = [];
         fieldTypes = [];
         const fieldInfos = results.result.datasetInfos[0].fieldInfos;
         fieldInfos.forEach(fieldInfo => {
           if (fieldInfo.name) {
-            fields.push(fieldInfo.name.toUpperCase());
-            fieldCaptions.push(fieldInfo.caption.toUpperCase());
+            fieldCaptions.push(fieldInfo.caption);
             fieldTypes.push(fieldInfo.type);
           }
         });
       }
-      data = statisticsFeatures(features, fields, fieldCaptions, fieldTypes);
+      // 因为fieldInfos和features中的字段大小写可能不一致, 所以只传入fieldCaptions，不传入fields，fields从features中去获取
+      data = statisticsFeatures(features, [], fieldCaptions, fieldTypes);
       data.totalCount = results.result.totalCount;
     } else {
       this.triggerEvent('getdatafailed', {
