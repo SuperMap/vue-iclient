@@ -1887,6 +1887,16 @@ const REST_DATA_FIELDS_RESULT = [
     maxLength: 60,
     isZeroLengthAllowed: true,
     isSystemField: false
+  },
+  {
+    isRequired: false,
+    defaultValue: '',
+    name: 'lowercase',
+    caption: 'lowercase',
+    type: 'WTEXT',
+    maxLength: 60,
+    isZeroLengthAllowed: true,
+    isSystemField: false
   }
 ]
 

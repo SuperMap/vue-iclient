@@ -139,6 +139,7 @@ export default class iServerRestService extends Events {
     this.eventTypes = ['getdatasucceeded', 'getdatafailed', 'featureisempty'];
     this._defaultMaxFeatures = 1000;
     this._queryResultHandler = this._queryResultHandler.bind(this);
+    this.fieldInfos = [];
   }
 
   getData(datasetInfo, queryInfo) {
@@ -210,15 +211,17 @@ export default class iServerRestService extends Events {
     queryInfo.name = datasetName + '@' + dataSourceName;
     queryInfo.datasetNames = [dataSourceName + ':' + datasetName];
     this.projectionUrl = Util.urlPathAppend(dataUrl, `datasources/${dataSourceName}/datasets/${datasetName}`);
-    if (queryInfo.keyWord) {
-      let fieldsUrl = Util.urlAppend(Util.urlPathAppend(dataUrl, `datasources/${dataSourceName}/datasets/${datasetName}/fields`), 'returnAll=true');
-      this._getRestDataFields(fieldsUrl, queryInfo, fields => {
+    let fieldsUrl = Util.urlAppend(Util.urlPathAppend(dataUrl, `datasources/${dataSourceName}/datasets/${datasetName}/fields`), 'returnAll=true');
+    this._getRestDataFields(fieldsUrl, queryInfo, (fields, result) => {
+      const fieldInfos = result.filter(field => field.name !== 'SmGeometry');
+      this.fieldInfos = fieldInfos;
+      if (queryInfo.keyWord) {
         const attributeFilter = this._getAttributeFilterByKeywords(fields, queryInfo.keyWord);
         this._queryDataFeatures(dataUrl, { ...queryInfo, attributeFilter });
-      });
-    } else {
-      this._queryDataFeatures(dataUrl, queryInfo);
-    }
+      } else {
+        this._queryDataFeatures(dataUrl, queryInfo);
+      }
+    });
   }
 
   /**
@@ -424,11 +427,10 @@ export default class iServerRestService extends Events {
         return;
       }
       let fieldCaptions, fieldTypes;
-      if (results.result.datasetInfos) {
+      if (this.fieldInfos.length) {
         fieldCaptions = [];
         fieldTypes = [];
-        const fieldInfos = results.result.datasetInfos[0].fieldInfos;
-        fieldInfos.forEach(fieldInfo => {
+        this.fieldInfos.forEach(fieldInfo => {
           if (fieldInfo.name) {
             fieldCaptions.push(fieldInfo.caption);
             fieldTypes.push(fieldInfo.type);
@@ -436,7 +438,7 @@ export default class iServerRestService extends Events {
         });
       }
       // 因为fieldInfos和features中的字段大小写可能不一致, 所以只传入fieldCaptions，不传入fields，fields从features中去获取
-      data = statisticsFeatures(features, [], fieldCaptions, fieldTypes);
+      data = statisticsFeatures(features, undefined, fieldCaptions, fieldTypes);
       data.totalCount = results.result.totalCount;
     } else {
       this.triggerEvent('getdatafailed', {

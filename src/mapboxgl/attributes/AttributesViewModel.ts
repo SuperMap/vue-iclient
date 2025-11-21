@@ -467,7 +467,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
                 }
               });
             }
-            datas = statisticsFeatures(features, [], fieldCaptions, fieldTypes);
+            datas = statisticsFeatures(features, undefined, fieldCaptions, fieldTypes);
             this.prevDatasetUrl = this.dataset.url;
           }
         }
