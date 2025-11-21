@@ -6,13 +6,13 @@ export function statisticsFeatures(features, fields, fieldCaptions, fieldTypes) 
     fieldValues: [],
     fieldTypes
   };
-  if (features && !!features.length && (!data.fieldCaptions.length || !data.fields.length)) {
+  if (features && !!features.length && (!fields || !fieldCaptions)) {
     const properties = Object.assign({}, features[0].properties, features[features.length - 1].properties);
     for (let attr in properties) {
-      if (!data.fieldCaptions.includes(attr)) {
+      if (!fieldCaptions) {
         data.fieldCaptions.push(attr);
       }
-      if (!data.fields.includes(attr)) {
+      if (!fields) {
         data.fields.push(attr);
       }
     }
