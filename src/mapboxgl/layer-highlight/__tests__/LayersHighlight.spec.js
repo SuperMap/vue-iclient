@@ -210,4 +210,34 @@ describe('LayerHighlight.vue', () => {
     expect(wrapper.emitted().mapselectionchanged.length).toBe(1);
     done();
   });
+
+  it('set multiSelection more layers valueRener', done => {
+    const spy = jest.fn();
+    const customColumnRenders = {
+      name: ({ value }) => {
+        return `<img src="${value}" alt="hello" />`;
+      }
+    };
+    wrapper = mount(SmLayerHighlight, {
+      propsData: {
+        mapTarget: 'map',
+        uniqueName: 'Test',
+        highlightStyle: {},
+        multiSelection: true,
+        displayFieldsMap: {
+          layer1: [
+            { title: 'name', field: 'name', slotName: 'name' },
+            { title: 'age', field: 'age', slotName: 'age' }
+          ],
+          layer2: []
+        },
+        customColumnRenders
+      }
+    });
+    const setSpy = jest.spyOn(wrapper.vm.customColumnRenders, 'name');
+    wrapper.setData({ activeTargetName: 'layer1' });
+    wrapper.vm.valueRender('123', { title: 'name', field: 'name', slotName: 'name' });
+    expect(setSpy).toBeCalled();
+    done();
+  });
 });
