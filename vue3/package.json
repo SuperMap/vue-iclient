@@ -38,7 +38,6 @@
     "@types/lodash": "^4.14.182",
     "@types/lodash-es": "^4.17.6",
     "@types/mapbox-gl": "^3.4.1",
-    "@vueup/vue-quill": "^1.2.0",
     "ant-design-vue": "^4.2.6",
     "css-vars-ponyfill": "^2.2.1",
     "dayjs": "^1.11.13",
@@ -57,13 +56,15 @@
     "mapbox-gl-compare-enhanced": "^1.0.0",
     "omit.js": "^2.0.2",
     "proj4": "^2.15.0",
+    "quill": "2",
     "resize-detector": "^0.2.2",
     "simple-statistics": "^7.8.7",
     "swiper": "12.0.2",
     "tinycolor2": "^1.6.0",
     "vue": "3.5.12",
     "vue-echarts": "^8.0.0",
-    "vue3-count-to": "^1.1.2"
+    "vue3-count-to": "^1.1.2",
+    "vue-quilly": "^1.1.5"
   },
   "devDependencies": {
     "@pnpm/find-workspace-packages": "^4.0.16",

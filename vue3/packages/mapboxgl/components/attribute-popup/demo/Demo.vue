@@ -5,7 +5,7 @@ import Button from '@supermapgis/common/components/button/Button'
 import { ref, reactive, onMounted } from 'vue'
 import '../style'
 
-// const mapTarget = ref('map1')
+const mapTarget = ref('map1')
 const bgColor = ref()
 
 const changeBg = () => {
@@ -159,7 +159,7 @@ const popupConfig = ref({
   autoResize: true,
   keyWordWrap: 'ellipsis',
   valueWordWrap: 'ellipsis',
-  color: '#f00',
+  // color: '#f00',
   width: '280px',
   height: '300px',
   maxWidth: '320px',
@@ -177,11 +177,22 @@ onMounted(() => {
 })
 // 1527905551
 // 1291742002
+const mapId = ref(1171931401)
+const changeMap = () => {
+  mapId.value = 1527905551
+}
 </script>
 <template>
   <div>
-    <Button type="primary" @click="changeBg" style="position: absolute; top: 10px; right: 10px">
+    <Button type="primary" @click="changeBg" style="position: absolute; bottom: 10px; right: 10px">
       切换背景
+    </Button>
+    <Button
+      type="primary"
+      @click="changeMap"
+      style="position: absolute; bottom: 100px; left: 300px"
+    >
+      切换地
     </Button>
     <div style="display: inline-flex; flex: 1; width: 100%; height: 100%; position: relative">
       <WebMap serverUrl="http://172.16.14.44:8190/iportal" :map-id="1291742002" target="map1">
@@ -194,7 +205,7 @@ onMounted(() => {
           :popup-config="popupConfig"
         />
       </WebMap>
-      <WebMap serverUrl="http://172.16.14.44:8190/iportal" :map-id="1171931401" target="map2">
+      <WebMap serverUrl="http://172.16.14.44:8190/iportal" :map-id="mapId" target="map2">
         <AttributePopup
           map-target="map2"
           :background="bgColor"

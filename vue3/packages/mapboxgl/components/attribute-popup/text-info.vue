@@ -1,6 +1,6 @@
 <template>
-  <QuillEditor
-    v-model:content="contentDelta"
+  <QuillyEditor
+    ref="editor"
     content-type="delta"
     theme=""
     :options="{ modules: { toolbar: false } }"
@@ -9,8 +9,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { QuillEditor, Delta } from '@vueup/vue-quill'
+import { watch, computed, useTemplateRef, onMounted } from 'vue'
+import { Delta } from 'quill/core'
+import { QuillyEditor } from 'vue-quilly'
+import Quill from 'quill'
 import ConvertUtil from './util/ExpressionConverter'
 
 const props = defineProps({
@@ -37,6 +39,21 @@ const formattedValue = computed(() => {
 const contentDelta = computed<Delta>(() => {
   return new Delta(formattedValue.value)
 })
+
+const editor = useTemplateRef<InstanceType<typeof QuillyEditor>>('editor')
+let quill: Quill | undefined
+
+onMounted(() => {
+  quill = editor.value?.initialize(Quill)
+  quill?.setContents(contentDelta.value)
+})
+
+watch(
+  () => contentDelta.value,
+  newVal => {
+    quill?.setContents(newVal)
+  }
+)
 </script>
 
 <style scoped></style>
