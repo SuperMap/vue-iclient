@@ -127,6 +127,7 @@ export interface ChartEmits {
   (event: 'mouseup', params: any): void
   (event: 'globalout', params: any): void
   (event: 'contextmenu', params: any): void
+  (event: 'load', params: any): void
 }
 
 export const chartEmits = [

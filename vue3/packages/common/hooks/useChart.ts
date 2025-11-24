@@ -221,7 +221,7 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
   })
 
   const xBar = computed(() => {
-    return props.options && props.options.yAxis && props.options.yAxis.type === 'category'
+    return props.options && props.options.yAxis && (props.options.yAxis.type === 'category' || props.options.yAxis[0]?.type === 'category')
   })
 
   const colorNumber = computed(() => {
@@ -415,7 +415,9 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
     let axis = xAxis
     const axisData = dataOptions.xAxis[0]
     let type = 'xAxis'
-
+    if (Array.isArray(yAxis)){
+      yAxis = yAxis[0];
+    }
     if (yAxis && yAxis.type === 'category') {
       // 处理条形图
       type = 'yAxis'

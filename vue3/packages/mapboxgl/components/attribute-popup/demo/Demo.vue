@@ -5,7 +5,6 @@ import Button from '@supermapgis/common/components/button/Button'
 import { ref, reactive, onMounted } from 'vue'
 import '../style'
 
-const mapTarget = ref('map1')
 const bgColor = ref()
 
 const changeBg = () => {
