@@ -2512,6 +2512,49 @@ const fakeQuxianDataServiceResult = {
     }]
 };
 
+const fakeQuxianDataServiceFields = [
+  {
+    isRequired: true,
+    defaultValue: '',
+    name: 'division_n',
+    caption: 'division_n',
+    type: 'WTEXT',
+    maxLength: 4,
+    isZeroLengthAllowed: true,
+    isSystemField: true
+  },
+  {
+    isRequired: true,
+    defaultValue: '',
+    name: 'admin_code',
+    caption: 'admin_code',
+    type: 'WTEXT',
+    maxLength: 4,
+    isZeroLengthAllowed: true,
+    isSystemField: true
+  },
+  {
+    isRequired: true,
+    defaultValue: '',
+    name: 'parent_cod',
+    caption: 'parent_cod',
+    type: 'WTEXT',
+    maxLength: 4,
+    isZeroLengthAllowed: true,
+    isSystemField: true
+  },
+  {
+    isRequired: true,
+    defaultValue: '',
+    name: 'parent_nam',
+    caption: 'parent_nam',
+    type: 'WTEXT',
+    maxLength: 4,
+    isZeroLengthAllowed: true,
+    isSystemField: true
+  }
+];
+
 module.exports = {
   fakeDataServiceResult,
   fakeMapServiceResult,
@@ -2564,7 +2607,8 @@ module.exports = {
   webmap_MAPBOXSTYLE_Tile,
   restMap_Layers_Res,
   restMap_Maps_Res,
-  fakeQuxianDataServiceResult
+  fakeQuxianDataServiceResult,
+  fakeQuxianDataServiceFields
 };
 
 

@@ -4,7 +4,8 @@ import SmCascader from 'vue-iclient/src/common/cascader/Cascader.vue';
 import {FetchRequest} from 'vue-iclient/static/libs/iclient-common/iclient-common';
 import flushPromises from 'flush-promises';
 import {
-  fakeQuxianDataServiceResult
+  fakeQuxianDataServiceResult,
+  fakeQuxianDataServiceFields
 } from '@mocks/services';
 
 describe('FeatureCascader.vue', () => {
@@ -17,32 +18,41 @@ describe('FeatureCascader.vue', () => {
             type: 'iServer',
         },
         // 标识字段
-        idField: "parent_cod",
+        idField: "PARENT_COD",
         // 显示名称字段
-        titleField: "parent_nam",
+        titleField: "PARENT_NAM",
         children: {
             dataset: {
                 url: dataUrl,
                 dataName: ["quxian:quxian"],
                 type: 'iServer',
             },
-            parentField: "parent_cod",
-            idField: "admin_code",
-            titleField: "division_n"
+            parentField: "PARENT_COD",
+            idField: "ADMIN_CODE",
+            titleField: "DIVISION_N"
         }
     }, propsData = {config, changeOnSelect: true};
     beforeEach(() => {
         wrapper = null;
+        jest.spyOn(FetchRequest, 'get').mockImplementation((url, params) => {
+          if (url.includes('fields?returnAll=true')) {
+            return new Promise(resolve => {
+              resolve(new Response(JSON.stringify(fakeQuxianDataServiceFields)));
+            });
+          }
+        });
         jest.spyOn(FetchRequest, 'post').mockImplementation((url, params) => {
             return Promise.resolve(new Response(JSON.stringify(fakeQuxianDataServiceResult)));
         });
     });
 
-    afterEach(() => {
+    afterEach(async () => {
         if (wrapper) {
             wrapper.destroy();
         }
+        await new Promise(resolve => setTimeout(resolve, 0));
         jest.resetAllMocks();
+        jest.clearAllTimers();
     });
 
     it('render default correctly', async () => {
