@@ -69,10 +69,10 @@ export default {
       const { dataset, idField, titleField, parentField, children } = config;
       const data = await getFeatures({ ...dataset, hasGeometry: false });
       const features = data.features;
-      const fieldCaptions = data.fieldCaptions;
-      const keyIndex = fieldCaptions.findIndex(v => v === idField.toUpperCase());
-      const nameIndex = fieldCaptions.findIndex(v => v === titleField.toUpperCase());
-      const parentValueIdx = parentField ? fieldCaptions.findIndex(v => v === parentField.toUpperCase()) : -1;
+      const fields = data.fields;
+      const keyIndex = fields.indexOf(idField);
+      const nameIndex = fields.indexOf(titleField);
+      const parentValueIdx = parentField ? fields.indexOf(parentField) : -1;
 
       const values = data.fieldValues;
       let result = features.map((f, featureIndex) => {
