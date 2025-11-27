@@ -1745,7 +1745,7 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
           handleChartClick(params)
         }
         if (event === 'finished') {
-          emit('load', smChart)
+          emit('load', { chart: smChart, zr: smChart?.getZr() })
         }
         emit(event, params)
       })
