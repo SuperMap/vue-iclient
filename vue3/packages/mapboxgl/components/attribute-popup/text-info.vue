@@ -3,7 +3,7 @@
     ref="editor"
     content-type="delta"
     theme=""
-    :options="{ modules: { toolbar: false } }"
+    :options="{ readOnly: true, modules: { toolbar: false } }"
     class="sm-compoent-ql"
   />
 </template>

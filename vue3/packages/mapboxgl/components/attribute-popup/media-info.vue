@@ -2,8 +2,10 @@
   <div class="sm-media-info">
     <template v-if="infos.length > 1">
       <swiper
+        v-model:activeIndex="sliderIndex"
         :navigation="true"
         :modules="[Navigation]"
+        @swiper="swiperInit"
         @slideChange="onSlideChange"
         style="width: 100%"
       >
@@ -27,7 +29,7 @@ import type { PropType, CSSProperties } from 'vue'
 import type { imageOptions, videoOptions } from './types'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation } from 'swiper/modules'
-import { ref, computed } from 'vue'
+import { ref, computed, watch, shallowRef } from 'vue'
 import Player from './player.vue'
 
 interface Infos {
@@ -44,11 +46,27 @@ const props = defineProps({
   }
 })
 const sliderIndex = ref(0)
+const swiperVal = shallowRef()
 const currentInfo = computed(() => props.infos?.[sliderIndex.value])
 const currentIndex = computed(() => sliderIndex.value + 1)
 const onSlideChange = swiper => {
   sliderIndex.value = swiper.activeIndex
 }
+
+const swiperInit = swiper => {
+  swiperVal.value = swiper
+}
+
+watch(
+  () => props.infos,
+  () => {
+    swiperVal.value?.slideTo(0)
+    sliderIndex.value = 0
+  },
+  {
+    deep: true
+  }
+)
 </script>
 
 <style scoped></style>

@@ -93,6 +93,8 @@ const mapPopupInfos = ref([])
 const popupContentRef = useTemplateRef('popupContentRef')
 
 const loaded = (map: Map, webmap) => {
+  removePopup()
+  removed()
   mapPopupInfos.value = webmap.getPopupInfos()
   setLayerIds(highlightLayerIds.value)
 }

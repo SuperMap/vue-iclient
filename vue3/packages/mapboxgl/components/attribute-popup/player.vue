@@ -26,13 +26,13 @@
 <script setup lang="ts">
 import type { PropType } from 'vue'
 import type { videoOptions, imageOptions } from './types'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useLocale } from '@supermapgis/common/hooks/index.common'
 import ImagePreview from '@supermapgis/common/components/image/image.vue'
 
 const { t } = useLocale()
 
-defineProps({
+const props = defineProps({
   type: {
     type: String as PropType<'IMAGE' | 'VIDEO'>,
     default: ''
@@ -54,6 +54,14 @@ defineProps({
 })
 const loadVideo = ref(true)
 const loadImg = ref(true)
+
+watch(
+  () => props.value,
+  (newVal, oldVal) => {
+    loadImg.value = true
+    loadVideo.value = true
+  }
+)
 
 const handleImageLoad = status => {
   loadImg.value = status
