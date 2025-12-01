@@ -103,6 +103,9 @@
       .ql-editor {
         padding: 0;
       }
+      a:-webkit-any-link {
+        color: inherit;
+      }
     }
     .player {
       display: flex;
