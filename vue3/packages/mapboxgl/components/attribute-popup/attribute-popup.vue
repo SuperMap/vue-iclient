@@ -285,6 +285,9 @@ const identifyField = computed(() => {
 })
 
 const changeIndex = (step: number) => {
+  if (currentIndex.value + step < 0 || currentIndex.value + step >= enablePopupDatasLength.value) {
+    return
+  }
   currentIndex.value += step
 }
 
