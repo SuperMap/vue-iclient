@@ -1212,7 +1212,7 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
   function _setChartTheme() {
     if (!props.theme) {
       chartTheme.value = chartThemeUtil(
-        containerBgStyle.value.background,
+        containerBgStyle.value.backgroundColor,
         textColorStyle.value.color,
         colorGroupsData.value,
         colorNumber.value
