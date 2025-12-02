@@ -11,6 +11,7 @@
         <MediaInfo v-if="type === 'MEDIA'" :infos="infos"></MediaInfo>
         <Divider v-if="type === 'DIVIDER'" dashed></Divider>
       </template>
+      <div v-if="content.length === 0">暂无数据</div>
     </div>
   </div>
 </template>

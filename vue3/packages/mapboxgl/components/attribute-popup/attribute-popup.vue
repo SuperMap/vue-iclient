@@ -192,6 +192,13 @@ watch(currentIndex, () => {
   popupProps.coordinates = enableLngLats.value[currentIndex.value]
 })
 
+watch(
+  currentLayerId,
+  () => {
+    contentHeight.value = ''
+  }
+)
+
 watchEffect(() => {
   // 如果图层 <= 1 ， 不显示
   if (clickedLayers.value.length <= 1) {
