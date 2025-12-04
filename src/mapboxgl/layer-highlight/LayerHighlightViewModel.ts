@@ -724,7 +724,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
     const srcName = `urn:ogc:def:crs:EPSG::${epsgCode}`;
     const lowerCorner = `${bbox[0]} ${bbox[1]}`;
     const upperCorner = `${bbox[2]} ${bbox[3]}`;
-    return `<Filter xmlns="http://www.opengis.net/fes/2.0"><BBOX><Envelope srsName="${srcName}" xmlns="http://www.opengis.net/gml/3.2"><lowerCorner>${lowerCorner}</lowerCorner><upperCorner>${upperCorner}</upperCorner></Envelope></BBOX></Filter>`;
+    return `<Filter xmlns="https://www.opengis.net/fes/2.0"><BBOX><Envelope srsName="${srcName}" xmlns="https://www.opengis.net/gml/3.2"><lowerCorner>${lowerCorner}</lowerCorner><upperCorner>${upperCorner}</upperCorner></Envelope></BBOX></Filter>`;
   }
 
   // xml中多个返回数组格式，单个返回对象，此方法统一转化成数组
