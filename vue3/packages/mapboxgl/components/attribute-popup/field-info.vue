@@ -25,12 +25,12 @@
         <player
           v-else-if="contentType === 'image'"
           :type="'IMAGE'"
-          value="https://pic1.arkoo.com/56D0B40F99F841DF8A2425762AE2565D/picture/o_1i4qop009177v1tgf14db15he1iaj1is.jpg"
+          :value="value"
           :options="contentInfo"
           class="sm-component-field-info-image"
         />
         <template v-else="contentType === 'text'">
-          <div :style="attributeStyle.valueStyle" :title="value">{{ value }}</div>
+          <div :style="attributeStyle.valueStyle" :title="value" class="sm-component-field-info-text">{{ value }}</div>
         </template>
       </div>
     </template>

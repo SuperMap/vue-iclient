@@ -76,24 +76,25 @@
       gap: 16px;
       padding: 4px 0;
       font-size: 12px;
+      word-break: break-all;
+      > div {
+        display: flex;
+        align-items: center;
+      }
+      .sm-component-field-info-text {
+        height: 100%;
+      }
       .name {
         width: 80px;
-        padding-top: 2px;
-        line-height: 16px;
-        min-height: 22px;
-        word-break: break-all;
+
       }
       .value {
-        flex: 1;
-        line-height: 16px;
-        min-height: 22px;
-        min-width: 10px;
-        word-break: break-all;
+        width: calc(100% - 96px);
       }
       .player {
         justify-content: start;
         .sm-player-loade-error{
-          min-height: 100px;
+          height: 100px;
           margin-left: -10px;
         } 
       }

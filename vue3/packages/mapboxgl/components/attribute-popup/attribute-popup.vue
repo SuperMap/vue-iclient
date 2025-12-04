@@ -108,7 +108,8 @@ const popupConfigValue = computed(() => {
   const MSStyle = {
     maxHeight: '394px',
     maxWidth: '280px',
-    autoResize: true
+    autoResize: true,
+    valueWordWrap: 'wrap'
   }
   const propsPopupConfig: any = props.useMapPopup ? MSStyle : props.popupConfig
   return propsPopupConfig
