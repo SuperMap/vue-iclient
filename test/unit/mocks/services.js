@@ -1897,6 +1897,16 @@ const REST_DATA_FIELDS_RESULT = [
     maxLength: 60,
     isZeroLengthAllowed: true,
     isSystemField: false
+  },
+  {
+    isRequired: false,
+    defaultValue: '',
+    name: 'smgeometry',
+    caption: 'smgeometry',
+    type: 'LONGBINARY',
+    maxLength: -1,
+    isZeroLengthAllowed: false,
+    isSystemField: true
   }
 ]
 
