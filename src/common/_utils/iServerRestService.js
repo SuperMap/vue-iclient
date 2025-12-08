@@ -213,8 +213,7 @@ export default class iServerRestService extends Events {
     this.projectionUrl = Util.urlPathAppend(dataUrl, `datasources/${dataSourceName}/datasets/${datasetName}`);
     let fieldsUrl = Util.urlAppend(Util.urlPathAppend(dataUrl, `datasources/${dataSourceName}/datasets/${datasetName}/fields`), 'returnAll=true');
     this._getRestDataFields(fieldsUrl, queryInfo, (fields, result) => {
-      const fieldInfos = result.filter(field => field.name !== 'SmGeometry');
-      this.fieldInfos = fieldInfos;
+      this.fieldInfos = result;
       if (queryInfo.keyWord) {
         const attributeFilter = this._getAttributeFilterByKeywords(fields, queryInfo.keyWord);
         this._queryDataFeatures(dataUrl, { ...queryInfo, attributeFilter });
@@ -420,7 +419,7 @@ export default class iServerRestService extends Events {
       // 数据来自restdata---results.result.features
       this.features = results.result.features;
       features = this.features.features || this.features;
-      if (results.result.totalCount === 0) {
+      if (features.length === 0) {
         this.triggerEvent('featureisempty', {
           results
         });
@@ -428,9 +427,14 @@ export default class iServerRestService extends Events {
       }
       let fieldCaptions, fieldTypes;
       if (this.fieldInfos.length) {
+        // todo 考虑properties不全情况?
+        const properties = Object.assign({}, features[0].properties, features[features.length - 1].properties);
+        const filterFieldInfos = this.fieldInfos.filter(fieldInfo =>
+          Object.keys(properties).some(key => key.toLowerCase() === fieldInfo.name.toLowerCase())
+        );
         fieldCaptions = [];
         fieldTypes = [];
-        this.fieldInfos.forEach(fieldInfo => {
+        filterFieldInfos.forEach(fieldInfo => {
           if (fieldInfo.name) {
             fieldCaptions.push(fieldInfo.caption);
             fieldTypes.push(fieldInfo.type);
