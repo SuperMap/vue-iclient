@@ -1,4 +1,4 @@
-import { ref, computed, watch, onMounted, onBeforeUnmount, onUpdated, nextTick } from 'vue'
+import { shallowRef, ref, computed, watch, onMounted, onBeforeUnmount, onUpdated, nextTick } from 'vue'
 import { isEqual, debounce, cloneDeep, merge } from 'lodash-es'
 import { addListener, removeListener } from 'resize-detector'
 import type { ChartProps } from '@supermapgis/mapboxgl/components/chart/types'
@@ -70,10 +70,10 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
   const startSpin = ref(null)
   const customSeries = ref([])
   const dataZoomHandler = ref<(params: any) => any>()
-  const echartsDataService = ref<any>(null)
   const pieAutoPlay = ref<any>(null)
   const startAngle = ref<any>(null)
   let __resizeHandler: (element: any) => void
+  let echartsDataService = null
 
   useTimer(props, { timing })
   const { textColorStyle, containerBgStyle, colorGroup: colorGroupsData } = useTheme(props)
@@ -288,14 +288,14 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
         _setChartTheme()
         registerShape()
       }
-      if (!echartsDataService.value && _isRequestData.value) {
+      if (!echartsDataService && _isRequestData.value) {
         _setEchartOptions(props.dataset, props.datasetOptions, props.options)
       }
-      if (echartsDataService.value) {
-        echartsDataService.value.setDatasetOptions(props.datasetOptions)
+      if (echartsDataService) {
+        echartsDataService.setDatasetOptions(props.datasetOptions)
       }
-      if (echartsDataService.value && dataSeriesCache.value) {
-        _changeChartData(echartsDataService.value, props.datasetOptions, props.options)
+      if (echartsDataService && dataSeriesCache.value) {
+        _changeChartData(echartsDataService, props.datasetOptions, props.options)
       }
     }
   )
@@ -382,27 +382,26 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
   ) {
     const targetSeries = series || cloneDeep(echartOptions.value?.series) || []
     targetSeries.forEach((serie: any, seriesIndex: number) => {
-      const dataIndexs = highlightOptions.map((item: any) => {
+      const dataIndexs = highlightOptions?.map((item: any) => {
         if (item.seriesIndex && item.seriesIndex.includes(seriesIndex)) {
           return item.dataIndex
         }
       })
-      const colors = highlightOptions.map((item: any) => {
+      const colors = highlightOptions?.map((item: any) => {
         if (item.seriesIndex && item.seriesIndex.includes(seriesIndex)) {
           return item.color || color
         }
       })
-      const serieColor = props.options?.series?.[seriesIndex]?.itemStyle?.color
       serie.itemStyle = serie.itemStyle || { color: '' }
-      serie.itemStyle.color = ({ dataIndex }: any) => {
-        const index = dataIndexs.indexOf(dataIndex)
+      serie.itemStyle.color = ({ dataIndex, color }: any) => {
+        const index = dataIndexs?.indexOf(dataIndex)
         if (index > -1) {
           return colors[index]
         } else if (serie.type === 'pie') {
           const colorGroup = _handlerColorGroup(serie.data.length)
           return colorGroup[dataIndex]
         } else {
-          return serieColor
+          return color
         }
       }
     })
@@ -1167,8 +1166,8 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
   }
 
   function timing() {
-    if (echartsDataService.value) {
-      echartsDataService.value.getDataOption(props.dataset, xBar.value).then((options: any) => {
+    if (echartsDataService) {
+      echartsDataService.getDataOption(props.dataset, xBar.value).then((options: any) => {
         hideLoading()
         // 缓存dataSeriesCache，请求后格式化成echart的数据
         dataSeriesCache.value = Object.assign({}, options)
@@ -1181,7 +1180,7 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
 
   // 请求数据,设置echartOptions
   function _setEchartOptions(dataset: any, datasetOptions: any, echartOptionsParam: any) {
-    echartsDataService.value = null
+    echartsDataService = null
     dataSeriesCache.value = null
 
     if (dataset.type !== 'geoJSON') {
@@ -1194,8 +1193,8 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
       })
     }
 
-    echartsDataService.value = new EchartsDataService(dataset, datasetOptions)
-    echartsDataService.value.getDataOption(dataset, xBar.value).then((options: any) => {
+    echartsDataService = new EchartsDataService(dataset, datasetOptions)
+    echartsDataService.getDataOption(dataset, xBar.value).then((options: any) => {
       hideLoading()
       dataSeriesCache.value = Object.assign({}, options)
       datasetChange.value = false
@@ -1348,8 +1347,8 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
     if (props.associatedMap) {
       const { dataIndex } = params
       let features: Record<string, any>[] = []
-      if (echartsDataService.value && echartsDataService.value.sortDataCache) {
-        features = echartsDataService.value.sortDataCache.features || features
+      if (echartsDataService && echartsDataService.sortDataCache) {
+        features = echartsDataService.sortDataCache.features || features
       }
       const selectedFeature = features[dataIndex]
       showDetailInfo(selectedFeature)
@@ -1736,16 +1735,18 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
   // 初始化
   _setChartTheme()
   registerShape()
+  const smChart = shallowRef()
+  
   onMounted(() => {
-    const smChart = _getEchart().chart
+    smChart.value = _getEchart().chart
     // 派发echart所有事件
     EVENTS.forEach(event => {
-      smChart?.on(event, (params: any) => {
+      smChart.value?.on(event, (params: any) => {
         if (event === 'click') {
           handleChartClick(params)
         }
         if (event === 'finished') {
-          emit('load', { chart: smChart, zr: smChart?.getZr() })
+          emit('load', smChart.value?.getZr())
         }
         emit(event, params)
       })
@@ -1779,6 +1780,14 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
     }
   })
 
+  function getChartFeatures(isStastic: boolean):GeoJSON.Feature[] {
+    const service = echartsDataService;
+    const staticData = service.statisticDataCache;
+    return isStastic
+      ? staticData?.map((item: any) => ({ properties: item }))
+      : service.sortDataCache && service.sortDataCache.features;
+  }
+
   return {
     // 响应式数据
     chartTheme,
@@ -1789,6 +1798,7 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
     _chartOptions,
 
     // 方法
+    getChartFeatures,
     mergeOptions,
     appendData,
     resize,
@@ -1811,6 +1821,7 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
     disconnect,
     registerMap,
     registerTheme,
-    graphic
+    graphic,
+    smChart
   }
 }

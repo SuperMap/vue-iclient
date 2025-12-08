@@ -67,16 +67,20 @@ const {
   _chartStyle,
   tablePopupProps,
   dataZoomHandler,
+  getChartFeatures,
   mergeOptions,
   resize,
   dispatchAction,
-  setItemStyleColor
+  setItemStyleColor,
+  smChart
 } = useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip })
 
 defineExpose({
+  getChartFeatures,
   mergeOptions,
   resize,
   dispatchAction,
-  setItemStyleColor
+  setItemStyleColor,
+  smChart
 })
 </script>
