@@ -425,7 +425,7 @@ export default class iServerRestService extends Events {
         });
         return;
       }
-      let fieldCaptions, fieldTypes;
+      let fieldCaptions, fieldTypes, originalFields;
       if (this.fieldInfos.length) {
         // todo 考虑properties不全情况?
         const properties = Object.assign({}, features[0].properties, features[features.length - 1].properties);
@@ -433,16 +433,18 @@ export default class iServerRestService extends Events {
           Object.keys(properties).some(key => key.toLowerCase() === fieldInfo.name.toLowerCase())
         );
         fieldCaptions = [];
+        originalFields = [];
         fieldTypes = [];
         filterFieldInfos.forEach(fieldInfo => {
           if (fieldInfo.name) {
             fieldCaptions.push(fieldInfo.caption);
             fieldTypes.push(fieldInfo.type);
+            originalFields.push(fieldInfo.name);
           }
         });
       }
       // 因为fieldInfos和features中的字段大小写可能不一致, 所以只传入fieldCaptions，不传入fields，fields从features中去获取
-      data = statisticsFeatures(features, undefined, fieldCaptions, fieldTypes);
+      data = statisticsFeatures(features, undefined, fieldCaptions, fieldTypes, originalFields);
       data.totalCount = results.result.totalCount;
     } else {
       this.triggerEvent('getdatafailed', {

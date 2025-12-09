@@ -1,7 +1,8 @@
-export function statisticsFeatures(features, fields, fieldCaptions, fieldTypes) {
+export function statisticsFeatures(features, fields, fieldCaptions, fieldTypes, originalFields) {
   const data = {
     features,
     fields: fields || [],
+    originalFields: originalFields || [],
     fieldCaptions: fieldCaptions || [],
     fieldValues: [],
     fieldTypes
