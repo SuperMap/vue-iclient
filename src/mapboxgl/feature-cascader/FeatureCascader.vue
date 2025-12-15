@@ -70,7 +70,9 @@ export default {
       const data = await getFeatures({ ...dataset, hasGeometry: false });
       const features = data.features;
       const fields = data.fields;
+      const originalFields = data.originalFields ?? [];
       const keyIndex = fields.indexOf(idField);
+      const originalIdField = originalFields[keyIndex] ?? idField;
       const nameIndex = fields.indexOf(titleField);
       const parentValueIdx = parentField ? fields.indexOf(parentField) : -1;
 
@@ -81,7 +83,8 @@ export default {
           label: values[nameIndex][featureIndex],
           parentValue: parentField ? values[parentValueIdx][featureIndex] : ROOT_VALUE,
           dataset,
-          idField
+          idField,
+          originalIdField
         };
       });
       if(children) {
@@ -165,7 +168,7 @@ export default {
       if (!value.length) return;
       const lastValue = value[value.length - 1];
       const target = this.datas.find(v => v.value === lastValue);
-      const attributeFilter = `("${target.idField}" like '%${lastValue}%')`;
+      const attributeFilter = `("${target.originalIdField}" like '%${lastValue}%')`;
       const data = await getFeatures({ ...target.dataset, attributeFilter });
       this.$emit('change', value, data?.features?.[0]);
     }
