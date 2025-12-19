@@ -408,10 +408,13 @@ export default {
           this.options.series[seriesIndex].itemStyle &&
           this.options.series[seriesIndex].itemStyle.color;
         serie.itemStyle = serie.itemStyle || { color: '' };
-        serie.itemStyle.color = ({ dataIndex }) => {
+        serie.itemStyle.color = (params) => {
+          const { dataIndex } = params;
           const index = dataIndexs.indexOf(dataIndex);
           if (index > -1) {
             return colors[index];
+          } else if (typeof serieColor === 'function') {
+            return serieColor(params);
           } else if (serie.type === 'pie') {
             let colorGroup = this._handlerColorGroup(serie.data.length);
             return colorGroup[dataIndex];
