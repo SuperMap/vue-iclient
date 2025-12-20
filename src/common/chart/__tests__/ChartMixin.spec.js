@@ -775,6 +775,53 @@ describe('Chart Mixin Component', () => {
     expect(wrapper.vm.echartOptions.series[0].isShine).toBeUndefined();
   });
 
+  it('specify itemStyle.color which ring is shine', async () => {
+    const testColor = 'red';
+    const colorFn = jest.fn((params) => {
+      if (!params.name) {
+        return;
+      }
+      return testColor;
+    });
+    const series = [
+      {
+        name: 'demo',
+        type: 'pie',
+        radius: ['75%', '80%'],
+        clockwise: false,
+        avoidLabelOverlap: true,
+        isShine: true,
+        itemStyle: {
+          color: colorFn
+        },
+        outerGap: 0
+      }
+    ];
+    const options = optionFactory(series);
+    wrapper = factory({
+      options,
+      datasetOptions: datasetOptionsFactory(['pie']),
+      dataset: geoJSONDataset,
+      highlightOptions: [{
+        seriesIndex: [0],
+        dataIndex: 0,
+        properties: {
+          date: 'Mon',
+          sale: 500,
+          target: 6000
+        },
+        color: 'blue'
+      }]
+    });
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.echartOptions.series[0].outerGap).toBeUndefined();
+    expect(wrapper.vm.echartOptions.series[0].isShine).toBeUndefined();
+    expect(colorFn).toHaveBeenCalled();
+    expect(wrapper.vm.echartOptions.series[0].data.filter(item => item.name).some((item) => item.itemStyle.color === testColor)).toBeTruthy();
+    expect(wrapper.vm.echartOptions.series[0].data.filter(item => item.name).some((item) => item.itemStyle.color === 'blue')).toBeTruthy();
+  });
+
   it('render special pie chart which is named Rose', async () => {
     const series = [
       {
