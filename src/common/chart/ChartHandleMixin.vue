@@ -426,11 +426,12 @@ export default {
     _createRingShineSeries(series, optionsSeries) {
       if (optionsSeries) {
         this.datasetOptions.forEach((datasetOption, index) => {
-          let { type, outerGap, isShine } = optionsSeries[index] || {};
+          const optionsSerieConfig = optionsSeries[index] || {};
+          let { type, outerGap } = optionsSerieConfig;
           if (type === 'pie' && outerGap >= 0) {
             const data = series[index].data.map(val => val.value);
             outerGap = outerGap || Math.min.apply(null, data) / 5;
-            series[index].data = this._createRingShineDataOption(series[index].data, outerGap, isShine);
+            series[index].data = this._createRingShineDataOption(series[index].data, outerGap, optionsSerieConfig);
             delete optionsSeries[index].outerGap;
             delete optionsSeries[index].isShine;
           }
@@ -438,10 +439,12 @@ export default {
       }
       return series;
     },
-    _createRingShineDataOption(data, outerGap, isShine) {
+    _createRingShineDataOption(data, outerGap, optionSerie) {
       if (!data) {
         return;
       }
+      const { isShine, itemStyle: originItemStyle } = optionSerie;
+      const customColorFn = originItemStyle && typeof originItemStyle.color === 'function' ? originItemStyle.color : undefined;
       const colors = this._handlerColorGroup(data.length);
       const gapItem = {
         value: outerGap,
@@ -467,12 +470,16 @@ export default {
           name: data[i].name
         };
         if (isShine) {
+          let color = colors[i];
+          if (customColorFn) {
+            color = customColorFn({ ...dataItem, dataIndex: i }) || color;
+          }
           dataItem.itemStyle = {
             borderWidth: 5,
             shadowBlur: 10,
-            color: colors[i],
-            borderColor: colors[i],
-            shadowColor: colors[i]
+            color: color,
+            borderColor: color,
+            shadowColor: color
           };
         }
         result.push(dataItem);
