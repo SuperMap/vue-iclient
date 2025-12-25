@@ -896,4 +896,67 @@ describe('Chart Mixin Component', () => {
     });
     expect(options1.radar.indicator[0].text).toBe('1.232');
   });
+
+  describe('misc internal methods coverage', () => {
+    it('showDetailInfo returns early when mapNotLoadedTip is true', () => {
+      wrapper = factory();
+      const spyUnSup = jest.spyOn(wrapper.vm, 'unSupportedFeatureTip');
+      jest.spyOn(wrapper.vm, 'mapNotLoadedTip').mockReturnValue(true);
+      wrapper.vm.showDetailInfo({ geometry: { coordinates: [] }, properties: {} });
+      expect(wrapper.vm.mapNotLoadedTip).toHaveBeenCalled();
+      expect(spyUnSup).not.toHaveBeenCalled();
+    });
+
+    it('_dataZoomChanged does not call _optionsHandler when smart labels not enabled', () => {
+      wrapper = factory();
+      const spy = jest.spyOn(wrapper.vm, '_optionsHandler').mockImplementation(() => ({}));
+      // set options without smart label (include series.type to avoid echarts error)
+      wrapper.setProps({ options: { series: [ { type: 'pie', label: { normal: { show: false, smart: false } } } ] } });
+      wrapper.vm.dataSeriesCache = {};
+      wrapper.vm._dataZoomChanged();
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('delegate methods call through to smChart', () => {
+      wrapper = factory();
+      const mock = {
+        mergeOptions: jest.fn(() => 'merged'),
+        appendData: jest.fn(() => 'appended'),
+        resize: jest.fn(() => 'resized'),
+        dispatchAction: jest.fn(() => 'dispatched'),
+        convertToPixel: jest.fn(() => 'pixel')
+      };
+      wrapper.vm.smChart = mock;
+      expect(wrapper.vm.mergeOptions({ a: 1 }, true, false)).toBeUndefined();
+      expect(mock.mergeOptions).toHaveBeenCalledWith({ a: 1 }, true, false);
+      wrapper.vm.appendData({ b: 2 });
+      expect(mock.appendData).toHaveBeenCalledWith({ b: 2 });
+      wrapper.vm.resize({ width: 100 });
+      expect(mock.resize).toHaveBeenCalledWith({ width: 100 });
+      wrapper.vm.dispatchAction({ type: 'test' });
+      expect(mock.dispatchAction).toHaveBeenCalledWith({ type: 'test' });
+      const cv = wrapper.vm.convertToPixel('finder', [1, 2]);
+      expect(cv).toBe('pixel');
+    });
+
+    it('chart static methods delegate to ECharts when available', () => {
+      // ensure ECharts static functions exist
+      const ECharts = require('vue-echarts');
+      ECharts.connect = jest.fn();
+      ECharts.disConnect = jest.fn();
+      ECharts.registerMap = jest.fn();
+      ECharts.registerTheme = jest.fn();
+
+      wrapper = factory();
+      // static functions are defined on the component export, not instance methods
+      ChartMixin.connect('group1');
+      expect(ECharts.connect).toHaveBeenCalledWith('group1');
+      ChartMixin.disconnect('group1');
+      expect(ECharts.disConnect).toHaveBeenCalledWith('group1');
+      ChartMixin.registerMap('mapName', { foo: 1 }, { special: true });
+      expect(ECharts.registerMap).toHaveBeenCalledWith('mapName', { foo: 1 }, { special: true });
+      ChartMixin.registerTheme('dark', { color: '#000' });
+      expect(ECharts.registerTheme).toHaveBeenCalledWith('dark', { color: '#000' });
+    });
+  });
 });
