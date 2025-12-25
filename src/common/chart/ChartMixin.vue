@@ -40,10 +40,7 @@ import cloneDeep from 'lodash.clonedeep';
 import Card from 'vue-iclient/src/common/_mixin/Card';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import Timer from 'vue-iclient/src/common/_mixin/Timer';
-import {
-  chartThemeUtil,
-  handleMultiGradient
-} from 'vue-iclient/src/common/_utils/style/theme/chart';
+import { chartThemeUtil, handleMultiGradient } from 'vue-iclient/src/common/_utils/style/theme/chart';
 import EchartsDataService from 'vue-iclient/src/common/_utils/EchartsDataService';
 import { getFeatureCenter, setPopupArrowStyle, getDecimalsFormatterVal } from 'vue-iclient/src/common/_utils/util';
 import { ColorsPickerUtil } from 'vue-iclient/static/libs/iclient-common/iclient-common';
@@ -168,13 +165,14 @@ export default {
     return {
       chartId: UniqueId(`${this.$options.name.toLowerCase()}-`),
       chartTheme: {}, // 图表的主题
-      echartOptions: {}, // 最后生成的echart数据
+      echartOptions: null, // 最后生成的echart数据
       datasetChange: false, // dataset是否改变
       dataSeriesCache: {},
       tablePopupProps: {},
       startSpin: null,
       customSeries: [],
-      dataZoomHandler: function () {}
+      dataZoomHandler: function () {},
+      newHighlightOptions: []
     };
   },
   computed: {
@@ -223,7 +221,8 @@ export default {
       };
     },
     _chartOptions() {
-      return (this._isRequestData && this.echartOptions) || this.parseOptions;
+      const data = (this._isRequestData && this.echartOptions) || this.parseOptions;
+      return this.dataZoom && data ? { ...data, dataZoom: this.dataZoom } : data;
     },
     // 是否传入dataset和datasetOptions
     _isRequestData() {
@@ -241,12 +240,23 @@ export default {
     colorNumber() {
       let length =
         (this.datasetOptions && this.datasetOptions.length) ||
-        (this.echartOptions.series && this.echartOptions.series.length);
+        (this.echartOptions?.series && this.echartOptions?.series.length);
       let colorNumber = this.colorGroupsData.length;
       if (length && length > colorNumber) {
         colorNumber = length;
       }
       return colorNumber;
+    },
+    isStastic() {
+      return this.datasetOptions?.[0]?.isStastic ?? false;
+    },
+    dataZoom() {
+      const dataIndx = this.newHighlightOptions?.[0]?.dataIndex;
+      const dataZoom = this.options.dataZoom;
+      if (typeof dataIndx === 'number' && dataZoom) {
+        return this.locativeHighlight(dataIndx);
+      }
+      return dataZoom;
     }
   },
   watch: {
@@ -269,21 +279,22 @@ export default {
       }
     },
     dataset: {
-      handler: function () {
-        this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
+      handler: async function () {
+        this._isRequestData && (await this._setEchartOptions(this.dataset, this.datasetOptions, this.options));
         this.datasetChange = true;
+        this.newHighlightOptions = this.getNewHighlightOptions();
       },
       deep: true
     },
     datasetOptions: {
-      handler: function (newVal, oldVal) {
+      handler: async function (newVal, oldVal) {
         if (!isEqual(newVal, oldVal)) {
           this._setChartTheme();
           this.registerShape();
         }
         !this.echartsDataService &&
           this._isRequestData &&
-          this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
+          (await this._setEchartOptions(this.dataset, this.datasetOptions, this.options));
         this.echartsDataService && this.echartsDataService.setDatasetOptions(this.datasetOptions);
         this.echartsDataService &&
           this.dataSeriesCache &&
@@ -318,13 +329,30 @@ export default {
         this.clearPopup && this.clearPopup();
       }
     },
+    isStastic: {
+      handler() {
+        setTimeout(() => {
+          this.newHighlightOptions = this.getNewHighlightOptions();
+        });
+      },
+      deep: true
+    },
     highlightOptions: {
+      handler() {
+        this.newHighlightOptions = this.getNewHighlightOptions();
+      },
+      deep: true
+    },
+    newHighlightOptions: {
       handler() {
         this.setItemStyleColor();
       },
       deep: true
     }
   },
+  // beforeCreate() {
+  //   this.echartOptions = Object.assign({}, this.options);
+  // },
   created() {
     this._setChartTheme();
     // // 切换主题
@@ -367,6 +395,62 @@ export default {
     }
   },
   methods: {
+    getChartFeatures(isStastic = this.isStastic) {
+      const service = this.echartsDataService;
+      if (service) {
+        return isStastic
+          ? service.statisticDataCache?.map(item => ({ properties: item }))
+          : service.sortDataCache?.features || service.dataset?.geoJSON?.features;
+      }
+    },
+    getNewHighlightOptions(matchFeatures = this.getChartFeatures()) {
+      let seriesIndex = [];
+      let newHighlightOption = [];
+      for (let key = 0; key < this.options.series.length; key++) {
+        seriesIndex.push(key);
+      }
+      this.highlightOptions.forEach(val => {
+        const field = this.datasetOptions?.[0].xField;
+        const dataIndex = this.isStastic
+          ? field && matchFeatures?.findIndex(feature => val.properties[field] === feature.properties[field])
+          : matchFeatures?.findIndex(feature => isEqual(feature.properties, val.properties));
+        if (val && dataIndex > -1) {
+          newHighlightOption.push({ seriesIndex, dataIndex });
+        }
+      });
+      return newHighlightOption;
+    },
+    locativeHighlight(dataIndex) {
+      const dataZoom = this.options.dataZoom;
+      const echartNodes = this.smChart.chart;
+      const { startValue, endValue } =
+        (echartNodes && echartNodes.getOption().dataZoom && echartNodes.getOption().dataZoom[0]) || {};
+      let newDataZoom = cloneDeep(this.options.dataZoom);
+      const seriesType = this.options.series && this.options.series[0] && this.options.series[0].type;
+      if (newDataZoom && newDataZoom[0] && startValue >= 0 && endValue >= 0) {
+        newDataZoom[0].startValue = startValue;
+        newDataZoom[0].endValue = endValue;
+        delete newDataZoom[0].start;
+        delete newDataZoom[0].end;
+        if (dataZoom && dataZoom[0]) {
+          const { start, end } = dataZoom[0];
+          const value = Math.abs(start - end);
+          const chartFeatures = this.getChartFeatures() || [];
+          const length = chartFeatures.length || 0;
+          const notXBar = seriesType !== 'xBar';
+          if (dataIndex < Math.min(startValue, endValue) || dataIndex > Math.max(startValue, endValue)) {
+            if (!notXBar) {
+              newDataZoom[0].startValue = dataIndex - (length / 100) * value;
+              newDataZoom[0].endValue = dataIndex;
+            } else {
+              newDataZoom[0].startValue = dataIndex;
+              newDataZoom[0].endValue = dataIndex + (length / 100) * value;
+            }
+          }
+        }
+        return newDataZoom;
+      }
+    },
     _initAutoResize() {
       this.__resizeHandler = debounce(
         () => {
@@ -389,7 +473,7 @@ export default {
         { leading: true }
       );
     },
-    setItemStyleColor(isSet = true, series, highlightOptions = this.highlightOptions, color = this.highlightColor) {
+    setItemStyleColor(isSet = true, series, highlightOptions = this.newHighlightOptions, color = this.highlightColor) {
       series = series || cloneDeep(this.echartOptions && this.echartOptions.series) || [];
       series.forEach((serie, seriesIndex) => {
         const dataIndexs = highlightOptions.map(item => {
@@ -423,7 +507,7 @@ export default {
           }
         };
       });
-      isSet && this.$set(this.echartOptions, 'series', series);
+      this.echartOptions && isSet && this.$set(this.echartOptions, 'series', series);
     },
     _handlePieAutoPlay() {
       let seriesType = this._chartOptions.series && this._chartOptions.series[0] && this._chartOptions.series[0].type;
@@ -482,7 +566,7 @@ export default {
         });
     },
     // 请求数据,设置echartOptions
-    _setEchartOptions(dataset, datasetOptions, echartOptions) {
+    async _setEchartOptions(dataset, datasetOptions, echartOptions) {
       this.echartsDataService = null;
       this.dataSeriesCache = null;
       if (this.dataset.type !== 'geoJSON') {
@@ -495,14 +579,13 @@ export default {
         });
       }
       this.echartsDataService = new EchartsDataService(dataset, datasetOptions);
-      this.echartsDataService.getDataOption(dataset, this.xBar).then(options => {
-        this.hideLoading();
-        // 缓存dataSeriesCache，请求后格式化成echart的数据
-        this.dataSeriesCache = Object.assign({}, options);
-        this.datasetChange = false;
-        // 设置echartOptions
-        this.echartOptions = this._optionsHandler(echartOptions, options);
-      });
+      const options = await this.echartsDataService.getDataOption(dataset, this.xBar);
+      this.hideLoading();
+      // 缓存dataSeriesCache，请求后格式化成echart的数据
+      this.dataSeriesCache = Object.assign({}, options);
+      this.datasetChange = false;
+      // 设置echartOptions
+      this.echartOptions = this._optionsHandler(echartOptions, options);
     },
     _handlerColorGroup(serielDataLength) {
       if (typeof this.colorGroupsData[0] === 'object') {

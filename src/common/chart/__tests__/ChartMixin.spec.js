@@ -246,7 +246,7 @@ describe('Chart Mixin Component', () => {
             show: true,
             position: 'center',
             xFieldDecimals: 2,
-            originFormatter: "{b}: {c}"
+            originFormatter: '{b}: {c}'
           },
           emphasis: {
             show: true,
@@ -300,7 +300,14 @@ describe('Chart Mixin Component', () => {
     });
     expect(wrapper.vm.parseOptions).not.toStrictEqual(options);
     expect(wrapper.vm.parseOptions.series[0].label.normal.formatter).not.toBeUndefined();
-    expect(wrapper.vm.parseOptions.series[0].label.normal.formatter({ dataIndex: 0, name: 1, value: 1.2547, percent: 125.47 })).toEqual('1.00: 1.3');
+    expect(
+      wrapper.vm.parseOptions.series[0].label.normal.formatter({
+        dataIndex: 0,
+        name: 1,
+        value: 1.2547,
+        percent: 125.47
+      })
+    ).toEqual('1.00: 1.3');
     const spyFn = jest.spyOn(wrapper.vm, '_handlePieAutoPlay');
     jest.useFakeTimers();
     await wrapper.setProps({
@@ -357,6 +364,7 @@ describe('Chart Mixin Component', () => {
         ]
       }
     });
+    await flushPromises();
     expect(wrapper.vm.echartOptions).toStrictEqual(wrapper.vm.parseOptions);
     expect(wrapper.vm.datasetChange).toBeFalsy();
     const spyFn = jest.spyOn(wrapper.vm, '_setEchartOptions');
@@ -369,6 +377,7 @@ describe('Chart Mixin Component', () => {
       ],
       dataset: geoJSONDataset
     });
+    await flushPromises();
     expect(wrapper.vm.datasetChange).toBeTruthy();
     expect(spyFn).toHaveBeenCalled();
     const spyOptionHandlerFn = jest.spyOn(wrapper.vm, '_optionsHandler');
@@ -472,7 +481,7 @@ describe('Chart Mixin Component', () => {
       dataset: geoJSONDataset
     });
     await wrapper.vm.$nextTick();
-    expect(wrapper.vm.echartOptions.series[0].label.normal.formatter({ dataIndex:0, value:1.234 })).toEqual('1.2');
+    expect(wrapper.vm.echartOptions.series[0].label.normal.formatter({ dataIndex: 0, value: 1.234 })).toEqual('1.2');
     done();
   });
 
@@ -777,7 +786,7 @@ describe('Chart Mixin Component', () => {
 
   it('specify itemStyle.color which ring is shine', async () => {
     const testColor = 'red';
-    const colorFn = jest.fn((params) => {
+    const colorFn = jest.fn(params => {
       if (!params.name) {
         return;
       }
@@ -802,24 +811,30 @@ describe('Chart Mixin Component', () => {
       options,
       datasetOptions: datasetOptionsFactory(['pie']),
       dataset: geoJSONDataset,
-      highlightOptions: [{
-        seriesIndex: [0],
-        dataIndex: 0,
-        properties: {
-          date: 'Mon',
-          sale: 500,
-          target: 6000
-        },
-        color: 'blue'
-      }]
+      highlightOptions: [
+        {
+          seriesIndex: [0],
+          dataIndex: 0,
+          properties: {
+            date: 'Mon',
+            sale: 500,
+            target: 6000
+          },
+          color: 'blue'
+        }
+      ]
     });
     await flushPromises();
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.echartOptions.series[0].outerGap).toBeUndefined();
     expect(wrapper.vm.echartOptions.series[0].isShine).toBeUndefined();
     expect(colorFn).toHaveBeenCalled();
-    expect(wrapper.vm.echartOptions.series[0].data.filter(item => item.name).some((item) => item.itemStyle.color === testColor)).toBeTruthy();
-    expect(wrapper.vm.echartOptions.series[0].data.filter(item => item.name).some((item) => item.itemStyle.color === 'blue')).toBeTruthy();
+    expect(
+      wrapper.vm.echartOptions.series[0].data.filter(item => item.name).some(item => item.itemStyle.color === testColor)
+    ).toBeTruthy();
+    expect(
+      wrapper.vm.echartOptions.series[0].data.filter(item => item.name).some(item => item.itemStyle.color === 'blue')
+    ).toBeTruthy();
   });
 
   it('render special pie chart which is named Rose', async () => {
@@ -896,6 +911,114 @@ describe('Chart Mixin Component', () => {
     });
     expect(options1.radar.indicator[0].text).toBe('1.232');
   });
+  it('highlightOptions, dataZoom', async () => {
+    const series = [
+      {
+        name: 'sale',
+        emphasis: {
+          itemStyle: {}
+        },
+        itemStyle: {
+          barBorderRadius: [0, 15, 15, 0]
+        },
+        stack: 0,
+        type: 'bar',
+        barWidth: 10,
+        data: [22, 65, 86, 48, 43, 53, 34, 33, 24]
+      }
+    ];
+    const options = {
+      legend,
+      series
+    };
+    wrapper = factory(
+      {
+        autoPlay: false,
+        options,
+        datasetOptions: datasetOptionsFactory(['bar']),
+        dataset: geoJSONDataset
+      },
+      { localVue }
+    );
+    // wrapper = factory(
+    //   {
+    //     options: { ...optionFactory(), dataZoom: undefined },
+    //     datasetOptions: datasetOptionsFactory(['bar']),
+    //     dataset: geoJSONDataset,
+    //   },
+    //   { localVue }
+    // );
+    jest.useFakeTimers();
+    await flushPromises();
+    expect(wrapper.vm._chartOptions.dataZoom).toEqual(options.dataZoom);
+    await wrapper.setProps({
+      options: {
+        ...options,
+        dataZoom: [
+          {
+            type: 'slider',
+            start: 20,
+            end: 0,
+            xAxisIndex: 0,
+            height: 25
+          },
+          {
+            type: 'inside',
+            xAxisIndex: 0
+          }
+        ]
+      },
+      highlightOptions: [
+        {
+          properties: {
+            date: 'Sat',
+            sale: 4200,
+            target: 6000
+          }
+        }
+      ]
+    });
+    await flushPromises();
+    expect(wrapper.vm.newHighlightOptions).toEqual([{ dataIndex: 0, seriesIndex: [0] }]);
+    expect(wrapper.vm._chartOptions.dataZoom[0]).toEqual({
+      endValue: 1,
+      height: 25,
+      startValue: 0,
+      type: 'slider',
+      xAxisIndex: 0
+    });
+    await wrapper.setProps({
+      options: {
+        legend,
+        series
+      }
+    });
+    await flushPromises();
+
+    expect(wrapper.vm._chartOptions.dataZoom).toEqual(undefined);
+    await wrapper.setProps({
+      datasetOptions: [{ ...datasetOptionsFactory(['pie'])[0], isStatic: true }],
+      dataset: {
+        ...geoJSONDataset,
+        geoJSON: {
+          ...geoJSONDataset.geoJSON,
+          features: geoJSONDataset.geoJSON.features.concat([
+            {
+              type: 'Feature',
+              properties: {
+                date: 'Sat',
+                sale: 4200,
+                target: 6000
+              }
+            }
+          ])
+        }
+      }
+    });
+    await flushPromises();
+    expect(wrapper.vm.newHighlightOptions).toEqual([{ dataIndex: 0, seriesIndex: [0] }]);
+    jest.useRealTimers();
+  });
 
   describe('misc internal methods coverage', () => {
     it('showDetailInfo returns early when mapNotLoadedTip is true', () => {
@@ -911,7 +1034,7 @@ describe('Chart Mixin Component', () => {
       wrapper = factory();
       const spy = jest.spyOn(wrapper.vm, '_optionsHandler').mockImplementation(() => ({}));
       // set options without smart label (include series.type to avoid echarts error)
-      wrapper.setProps({ options: { series: [ { type: 'pie', label: { normal: { show: false, smart: false } } } ] } });
+      wrapper.setProps({ options: { series: [{ type: 'pie', label: { normal: { show: false, smart: false } } }] } });
       wrapper.vm.dataSeriesCache = {};
       wrapper.vm._dataZoomChanged();
       expect(spy).not.toHaveBeenCalled();
