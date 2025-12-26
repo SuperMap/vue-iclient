@@ -296,7 +296,7 @@ export default class EchartsDataService {
           name: XData[index]
         });
       });
-    } else if (chartType === 'radar') {
+    } else if (chartType === 'radar' && YData.length) {
       let yData = [...YData];
       serieData.data.push({
         value: [...YData],
