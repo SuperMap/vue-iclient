@@ -24,7 +24,7 @@ class Popup extends Evented {
         //     this._map.on('click', this._onClickClose);
         // }
         // this._update();
-        // return this;
+        return this;
     }
 
     /**
@@ -58,9 +58,16 @@ class Popup extends Evented {
     setText(text) {
         // return this.setDOMContent(window.document.createTextNode(text));
         this.text = text;
-        console.log("from popup: " + this.text)
+        return this;
     }
-    setDOMContent() {
+
+    setDOMContent(dom) {
+        this._dom = dom;
+        return this;
+    }
+
+    setHTML(html) {
+        this._html = html;
         return this;
     }
 
