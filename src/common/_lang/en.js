@@ -153,6 +153,7 @@ export default {
     opacity: 'Opacity',
     width: 'Width',
     outlineColor: 'Outline Color',
+    outlineWidth: 'Outline Width',
     haloColor: 'Halo Color',
     label: 'Label',
     parentheses: '({tips})',
