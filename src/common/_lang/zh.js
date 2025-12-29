@@ -158,6 +158,7 @@ export default {
     opacity: '不透明度',
     width: '宽度',
     outlineColor: '轮廓色',
+    outlineWidth: '轮廓宽度',
     haloColor: '晕轮颜色',
     label: '标签',
     parentheses: '（{tips}）',

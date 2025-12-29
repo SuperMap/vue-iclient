@@ -39,7 +39,7 @@ export default {
     drawImage(img) {
       const canvas = document.getElementById(this.canvasId);
       const ctx = canvas.getContext('2d');
-      const { opacity, outlineColor } = this.cssStyle;
+      const { opacity, outlineColor, outlineWidth = 0.5, outlineStyle = 'none' } = this.cssStyle;
       const {
         sprite: {
           sdf,
@@ -116,8 +116,9 @@ export default {
         // draw image
         ctx.drawImage(img, sx * pixelRatio, sy * pixelRatio, sWidth, sHeight, 0, 0, displayWidth, displayHeight);
       }
-      if (outlineColor) {
+      if (outlineStyle === 'solid') {
         ctx.strokeStyle = outlineColor;
+        ctx.lineWidth = outlineWidth;
         ctx.strokeRect(0, 0, displayWidth, displayHeight);
       }
     }
