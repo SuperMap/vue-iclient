@@ -10,6 +10,7 @@ const defaultProps = {
     "sceneUrl": "http://localhost:8080/iportal/web/scenes/491256644",
     "widgetsPath": "http://localhost:8080/iportal/apps/earth/v2/SuperMap3D/Widgets/widgets.css",
     "cesiumPath": "http://localhost:8080/iportal/apps/earth/v2/SuperMap3D/SuperMap3D.js",
+    "openConfigPath": "http://localhost:8080/iportal/apps/earth/v2/lib/OpenConfig.js",
     // "target": 'test1',
     "options": {
       "scanEffect": {

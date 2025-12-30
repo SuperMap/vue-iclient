@@ -35,7 +35,7 @@ const componentMap: Record<string, any> = {
 const controlComponents: Record<string, any> = computed(() => {
   const controls = []
   for (let key in props) {
-    if (key.includes('Control') && props[key].show) {
+    if (key.includes('Control') && props[key]?.show) {
       const controlName = key.replace('Control', '')
       const firstLetter = controlName[0]
       controls.push({

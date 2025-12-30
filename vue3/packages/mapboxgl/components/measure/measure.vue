@@ -67,7 +67,7 @@
 import type { Map } from 'mapbox-gl'
 import type { MeasureProps, MeasureEvents } from './types'
 import type { Units } from 'vue-iclient-core/controllers/mapboxgl/MeasureViewModel'
-import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import { useTheme,useMapGetter, useLocale } from '@supermapgis/common/hooks/index.common'
 import { useMapControl } from '@supermapgis/mapboxgl/hooks'
 import SmSelect, { SmSelectOption } from '@supermapgis/common/components/select/Select'
@@ -188,13 +188,27 @@ const unitText = computed(() => {
 })
 
 const popupStyle = computed(() => ({
-  background: popupBgStyle.value.background,
+  background: popupBgStyle.value.backgroundColor,
   color: textColorStyle.value.color
 }))
 
 const unitSelectorDropdownStyle = computed(() => ({
-  background: removeColorOpacity(gisControlHeaderBgStyle.value.background)
+  background: removeColorOpacity(gisControlHeaderBgStyle.value.backgroundColor)
 }))
+
+watch(() => props.distanceDefaultUnit, (newVal: Units) => {
+  unitSelected.value = newVal;
+  updateUnit(newVal);
+});
+
+watch(() => props.areaDefaultUnit, (newVal: Units) => {
+  unitSelected.value = newVal;
+  updateUnit(newVal);
+});
+
+watch(() =>popupStyle.value, (next) => {
+  setPopupStyle(next);
+});
 
 // 生命周期钩子
 onMounted(() => {

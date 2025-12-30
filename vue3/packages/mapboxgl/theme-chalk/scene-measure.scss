@@ -1,0 +1,71 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+@use '@supermapgis/common/theme-chalk/collapse-card.scss';
+@use '@supermapgis/common/theme-chalk/select.scss';
+@use '@supermapgis/common/theme-chalk/table-popup.scss';
+
+@include b(measure) {
+  .disabled-mapCanvas-pointer-events .measureCur {
+    cursor: all-scroll;
+  }
+  .measureCur {
+    cursor: crosshair;
+  }
+  .measure-title,
+  .ans-btn,
+  .btn-secondary,
+  .icon-span,
+  .row-item,
+  .btn-row-item span,
+  .sm-component-select-selection-selected-value {
+    color: $text-color;
+  }
+  .sm-component-measure__content {
+    display: flex;
+
+    &-left {
+      padding-right: 32px;
+    }
+
+    &-right {
+      width: calc(100% - 88px);
+
+      .icon-measure {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        border: 1px solid $border-color-split;
+        border-radius: 4px;
+        margin: 12px 0;
+        height: 30px;
+
+        .icon-span {
+          cursor: pointer;
+        }
+
+        .selected-icon i {
+          color: $primary-color;
+        }
+      }
+
+      .measure-checkbox-group {
+        margin-bottom: 8px;
+      }
+
+      .measure-btn-group {
+        display: flex;
+        justify-content: space-between;
+
+        .ans-btn,
+        .btn-secondary {
+          width: 48%;
+          height: 30px;
+
+          &:focus {
+            border-color: $border-color-split;
+          }
+        }
+      }
+    }
+  }
+}

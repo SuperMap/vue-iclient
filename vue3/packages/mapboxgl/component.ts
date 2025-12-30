@@ -29,6 +29,7 @@ import { SmSceneLayerList } from '@supermapgis/mapboxgl/components/scene-layer-l
 import { SmWebScene } from '@supermapgis/mapboxgl/components/web-scene'
 import { SmTextList } from '@supermapgis/mapboxgl/components/text-list'
 import { SmChart } from '@supermapgis/mapboxgl/components/chart'
+import { SmSceneMeasure } from '@supermapgis/mapboxgl/components/scene-measure'
 
 import type { Plugin } from 'vue'
 
@@ -62,5 +63,6 @@ export default [
   SmImage,
   SmBorder,
   SmIframe,
-  SmChart
+  SmChart,
+  SmSceneMeasure
 ] as Plugin[]

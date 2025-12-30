@@ -95,21 +95,21 @@ export default {
     opacity: '不透明度'
   },
   sceneLayerList: {
-    title: "图层",
-    s3mLayer: "S3M图层",
-    imgLayer: "影像图层",
-    mvtLayer: "MVT图层",
-    terrainLayer: "地形图层",
-    lnglatMap: "经纬底图",
-    defaultImage: "默认影像",
-    stkTerrain: "STK地形",
-    superMapTerrain: "超图在线地形",
-    tiandituTerrain: "天地图地形",
-    LocalImage: "本地图片",
-    BingMap: "必应底图",
-    TIANDITU: "天地图",
-    OSM: "OSM底图",
-    GRIDIMAGERY: "经纬底图"
+    title: '图层',
+    s3mLayer: 'S3M图层',
+    imgLayer: '影像图层',
+    mvtLayer: 'MVT图层',
+    terrainLayer: '地形图层',
+    lnglatMap: '经纬底图',
+    defaultImage: '默认影像',
+    stkTerrain: 'STK地形',
+    superMapTerrain: '超图在线地形',
+    tiandituTerrain: '天地图地形',
+    LocalImage: '本地图片',
+    BingMap: '必应底图',
+    TIANDITU: '天地图',
+    OSM: 'OSM底图',
+    GRIDIMAGERY: '经纬底图'
   },
   slideshow: {
     title: '幻灯片'
@@ -371,6 +371,25 @@ export default {
   },
   animateMarkerlayer: {
     unsupportedData: '当前图层不支持该数据，请重新传入数据！'
+  },
+  sceneMeasure: {
+    measure: '量算',
+    measureMode: '量算模式',
+    pickPoint: '顶点捕捉',
+    contour: '等高线',
+    measureAction: '测量',
+    clear: '清除',
+    mode_space: '空间量算',
+    mode_ground: '贴地量算',
+    mode_projection: '平面投影',
+    measureDistence: '测量距离',
+    measureHeight: '测量高度',
+    measureArea: '测量面积',
+    distence_cl: '距离',
+    area: '面积',
+    spaceDistance: '空间距离',
+    verticalHeight: '垂直高度',
+    horizontalDistance: '水平距离'
   },
   months: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
   weekdays: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
