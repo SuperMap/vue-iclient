@@ -912,53 +912,59 @@ describe('Chart Mixin Component', () => {
     expect(options1.radar.indicator[0].text).toBe('1.232');
   });
   it('highlightOptions, dataZoom', async () => {
-    const series = [
-      {
-        name: 'sale',
-        emphasis: {
-          itemStyle: {}
-        },
-        itemStyle: {
-          barBorderRadius: [0, 15, 15, 0]
-        },
-        stack: 0,
-        type: 'bar',
-        barWidth: 10,
-        data: [22, 65, 86, 48, 43, 53, 34, 33, 24]
-      }
-    ];
-    const options = {
-      legend,
-      series
+    const serieItem = {
+      name: 'sale',
+      emphasis: {
+        itemStyle: {}
+      },
+      itemStyle: {
+        barBorderRadius: [0, 15, 15, 0]
+      },
+      stack: 0,
+      type: 'bar',
+      barWidth: 10,
+      data: []
     };
+    const options = {
+      xAxis: yAxis,
+      yAxis: {
+        ...xAxis
+      },
+      legend,
+      series: [
+        {
+          ...serieItem,
+          label: {
+            normal: {
+              decimals: 1,
+              show: true,
+              position: 'center',
+              smart: true
+            }
+          }
+        }
+      ]
+    };
+
     wrapper = factory(
       {
-        autoPlay: false,
         options,
         datasetOptions: datasetOptionsFactory(['bar']),
         dataset: geoJSONDataset
       },
       { localVue }
     );
-    // wrapper = factory(
-    //   {
-    //     options: { ...optionFactory(), dataZoom: undefined },
-    //     datasetOptions: datasetOptionsFactory(['bar']),
-    //     dataset: geoJSONDataset,
-    //   },
-    //   { localVue }
-    // );
     jest.useFakeTimers();
     await flushPromises();
-    expect(wrapper.vm._chartOptions.dataZoom).toEqual(options.dataZoom);
+    expect(wrapper.vm._chartOptions.dataZoom).toEqual(undefined);
     await wrapper.setProps({
       options: {
         ...options,
         dataZoom: [
           {
             type: 'slider',
-            start: 20,
-            end: 0,
+            start: 0,
+            end: 5,
             xAxisIndex: 0,
             height: 25
           },
@@ -979,9 +985,11 @@ describe('Chart Mixin Component', () => {
       ]
     });
     await flushPromises();
-    expect(wrapper.vm.newHighlightOptions).toEqual([{ dataIndex: 0, seriesIndex: [0] }]);
+    expect(wrapper.vm.newHighlightOptions.length).toEqual(1);
+    expect(wrapper.vm.newHighlightOptions).toEqual([{ seriesIndex: [0], dataIndex: 6 }]);
+
     expect(wrapper.vm._chartOptions.dataZoom[0]).toEqual({
-      endValue: 1,
+      endValue: 210,
       height: 25,
       startValue: 0,
       type: 'slider',
@@ -989,20 +997,20 @@ describe('Chart Mixin Component', () => {
     });
     await wrapper.setProps({
       options: {
-        legend,
-        series
+        ...options,
+        dataZoom: undefined
       }
     });
     await flushPromises();
 
     expect(wrapper.vm._chartOptions.dataZoom).toEqual(undefined);
     await wrapper.setProps({
-      datasetOptions: [{ ...datasetOptionsFactory(['pie'])[0], isStatic: true }],
+      datasetOptions: [{ ...datasetOptionsFactory(['bar'])[0], isStatic: true }],
       dataset: {
         ...geoJSONDataset,
         geoJSON: {
           ...geoJSONDataset.geoJSON,
-          features: geoJSONDataset.geoJSON.features.concat([
+          features: [
             {
               type: 'Feature',
               properties: {
@@ -1011,12 +1019,13 @@ describe('Chart Mixin Component', () => {
                 target: 6000
               }
             }
-          ])
+          ]
         }
       }
     });
     await flushPromises();
-    expect(wrapper.vm.newHighlightOptions).toEqual([{ dataIndex: 0, seriesIndex: [0] }]);
+    expect(wrapper.vm.newHighlightOptions.length).toEqual(1);
+    expect(wrapper.vm.newHighlightOptions[0]).toEqual({ seriesIndex: [0], dataIndex: 0 });
     jest.useRealTimers();
   });
 
