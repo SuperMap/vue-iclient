@@ -976,6 +976,7 @@ describe('Chart Mixin Component', () => {
       },
       highlightOptions: [
         {
+          color: 'red',
           properties: {
             date: 'Sat',
             sale: 4200,
@@ -986,7 +987,9 @@ describe('Chart Mixin Component', () => {
     });
     await flushPromises();
     expect(wrapper.vm.newHighlightOptions.length).toEqual(1);
-    expect(wrapper.vm.newHighlightOptions).toEqual([{ seriesIndex: [0], dataIndex: 6 }]);
+    expect(wrapper.vm.newHighlightOptions[0].seriesIndex).toEqual([0]);
+    expect(wrapper.vm.newHighlightOptions[0].dataIndex).toEqual(6);
+    expect(wrapper.vm.newHighlightOptions[0].color).toEqual('red');
 
     expect(wrapper.vm._chartOptions.dataZoom[0]).toEqual({
       endValue: 210,
@@ -1025,7 +1028,8 @@ describe('Chart Mixin Component', () => {
     });
     await flushPromises();
     expect(wrapper.vm.newHighlightOptions.length).toEqual(1);
-    expect(wrapper.vm.newHighlightOptions[0]).toEqual({ seriesIndex: [0], dataIndex: 0 });
+    expect(wrapper.vm.newHighlightOptions[0].seriesIndex).toEqual([0]);
+    expect(wrapper.vm.newHighlightOptions[0].dataIndex).toEqual(0);
     jest.useRealTimers();
   });
 
