@@ -5,22 +5,32 @@
 @use '@supermapgis/common/theme-chalk/table-popup.scss';
 
 @include b(measure) {
-  .disabled-mapCanvas-pointer-events .measureCur {
-    cursor: all-scroll;
-  }
-  .measureCur {
-    cursor: crosshair;
-  }
+  z-index: 1;
+
   .measure-title,
   .ans-btn,
   .btn-secondary,
   .icon-span,
   .row-item,
   .btn-row-item span,
-  .sm-component-select-selection-selected-value {
-    color: $text-color;
+  .sm-component-card,
+  .sm-component-checkbox-wrapper,
+  .sm-component-select,
+  .sm-component-select-selector {
+    color: inherit;
   }
-  .sm-component-measure__content {
+
+  .sm-component-select .sm-component-select-selector,
+  .measure-btn-group button,
+  .sm-component-measure__a-card {
+    background-color: transparent;
+  }
+
+  @include e(a-card) {
+    background: transparent;
+  }
+
+  @include e(content) {
     display: flex;
 
     &-left {
@@ -60,7 +70,9 @@
         .btn-secondary {
           width: 48%;
           height: 30px;
-
+          > span {
+            white-space: nowrap;
+          }
           &:focus {
             border-color: $border-color-split;
           }
@@ -68,4 +80,11 @@
       }
     }
   }
+}
+
+.disabled-mapCanvas-pointer-events .measureCur {
+  cursor: all-scroll;
+}
+.measureCur {
+  cursor: crosshair;
 }

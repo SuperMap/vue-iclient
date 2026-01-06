@@ -48,7 +48,7 @@
             <!-- 顶点捕捉 -->
             <div v-show="state.measureMode == 'Space'" class="btn-row-item">
               <sm-checkbox
-                v-model:value="state.pickPointEnabled"
+                v-model:checked="state.pickPointEnabled"
                 style="margin-bottom: 0.1rem"
                 @change="openPickPoint"
               >
@@ -59,7 +59,7 @@
             <div v-show="state.currentItemIndex === 2">
               <div class="btn-row-item">
                 <sm-checkbox
-                  v-model:value="state.isShowLine"
+                  v-model:checked="state.isShowLine"
                   style="margin-bottom: 0.1rem"
                   @change="update_showDVH"
                 >
@@ -126,8 +126,8 @@ onMounted(() => {
 
 const state = reactive({
   measureMode: 'Space',
-  clampMode: null as any, // 假设是 Cesium 的 ClampMode
-  Ellipsoid: null as any, // 假设是 Cesium 的 Ellipsoid
+  clampMode: null,
+  Ellipsoid: null,
   contourColor: '#ff7d00',
   isShowLine: true,
   pickPointEnabled: false,
@@ -243,10 +243,10 @@ const state = reactive({
     }
   ]
 })
+let handlerDis = null
+let handlerArea = null
+let handlerHeight = null
 const layers = ref<any>(null)
-const handlerDis = ref<any>(null)
-const handlerArea = ref<any>(null)
-const handlerHeight = ref<any>(null)
 const lineHeight = ref<number | null>(null)
 const setHypFlag = ref<boolean>(false)
 const isoline = ref<any>(null)
@@ -262,7 +262,7 @@ watch(
       case 'Ground':
         state.currentItemOption = state.itemOptions['Ground'];
         break;
-      case 'null': // 使用字符串 'null'
+      case 'null':
         state.currentItemOption = state.itemOptions['null'];
         break;
       default:
@@ -298,12 +298,12 @@ const checkReady = () => {
 
 // 初始化相关
 const initBaseSettings = () => {
-  state.clampMode = (window.SuperMap3D as any).ClampMode.Space;
+  state.clampMode = window.SuperMap3D.ClampMode.Space;
   layers.value = undefined;
-  isoline.value = new (window.SuperMap3D as any).HypsometricSetting();
-  colorTable.value = new (window.SuperMap3D as any).ColorTable();
-  isoline.value.DisplayMode = (window.SuperMap3D as any).HypsometricSettingEnum.DisplayMode.LINE;
-  isoline.value._lineColor = (window.SuperMap3D as any).Color.fromCssColorString(state.contourColor);
+  isoline.value = new window.SuperMap3D.HypsometricSetting();
+  colorTable.value = new window.SuperMap3D.ColorTable();
+  isoline.value.DisplayMode = window.SuperMap3D.HypsometricSettingEnum.DisplayMode.LINE;
+  isoline.value._lineColor = window.SuperMap3D.Color.fromCssColorString(state.contourColor);
   isoline.value.ColorTable = colorTable.value;
   isoline.value.Opacity = 0.6;
   isoline.value.MaxVisibleValue = -100;
@@ -315,22 +315,22 @@ const init = () => {
   layers.value = viewer.scene.layers.layerQueue;
   viewer.scene.globe.HypsometricSetting = {
     hypsometricSetting: isoline.value,
-    analysisMode: (window.SuperMap3D as any).HypsometricSettingEnum.AnalysisRegionMode.ARM_ALL
+    analysisMode: window.SuperMap3D.HypsometricSettingEnum.AnalysisRegionMode.ARM_ALL
   };
 
-  handlerDis.value = new (window.SuperMap3D as any).MeasureHandler(
+  handlerDis = new window.SuperMap3D.MeasureHandler(
     viewer,
-    (window.SuperMap3D as any).MeasureMode.Distance,
+    window.SuperMap3D.MeasureMode.Distance,
     state.clampMode
   );
-  handlerArea.value = new (window.SuperMap3D as any).MeasureHandler(
+  handlerArea = new window.SuperMap3D.MeasureHandler(
     viewer,
-    (window.SuperMap3D as any).MeasureMode.Area,
+    window.SuperMap3D.MeasureMode.Area,
     state.clampMode
   );
-  handlerHeight.value = new (window.SuperMap3D as any).MeasureHandler(viewer, (window.SuperMap3D as any).MeasureMode.DVH);
+  handlerHeight = new window.SuperMap3D.MeasureHandler(viewer, window.SuperMap3D.MeasureMode.DVH);
 
-  handlerDis.value.activeEvt.addEventListener((isActive: boolean) => {
+  handlerDis.activeEvt.addEventListener((isActive: boolean) => {
     if (isActive === true) {
       setMouseCursor('measureCur');
       viewer.scene.pickPointEnabled = state.pickPointEnabled;
@@ -340,18 +340,18 @@ const init = () => {
     }
   });
 
-  handlerDis.value.measureEvt.addEventListener((result: any) => {
+  handlerDis.measureEvt.addEventListener((result: any) => {
     let dis = Number(result.distance);
     let mode = state.measureMode;
     if (mode === 'CGCS2000' || mode === 'XIAN80' || mode === 'WGS84') {
       dis = Number(calcClampDistance(result.positions));
     }
     let distance = dis > 1000 ? (dis / 1000).toFixed(2) + 'km' : dis.toFixed(2) + 'm';
-    handlerDis.value.disLabel.text = t('sceneMeasure.distence_cl') + distance; // 假设 t 可用
+    handlerDis.disLabel.text = t('sceneMeasure.distence_cl') + distance;
   });
 
   // 初始化测量面积
-  handlerArea.value.activeEvt.addEventListener((isActive: boolean) => {
+  handlerArea.activeEvt.addEventListener((isActive: boolean) => {
     if (isActive === true) {
       setMouseCursor('measureCur');
       viewer.scene.pickPointEnabled = state.pickPointEnabled;
@@ -362,7 +362,7 @@ const init = () => {
   });
 
   // 测量面积监听事件
-  handlerArea.value.measureEvt.addEventListener((result: any) => {
+  handlerArea.measureEvt.addEventListener((result: any) => {
     let mj = Number(result.area);
     let mode = state.measureMode;
     if (mode === 'CGCS2000' || mode === 'XIAN80' || mode === 'WGS84') {
@@ -371,11 +371,11 @@ const init = () => {
       mj = Number(calcAreaWithoutHeight(result.positions));
     }
     let area = mj > 1000000 ? (mj / 1000000).toFixed(2) + 'km²' : mj.toFixed(2) + '㎡';
-    handlerArea.value.areaLabel.text = t('sceneMeasure.area') + area; // 假设 t 可用
+    handlerArea.areaLabel.text = t('sceneMeasure.area') + area;
   });
 
   // 初始化测量高度
-  handlerHeight.value.measureEvt.addEventListener((result: any) => {
+  handlerHeight.measureEvt.addEventListener((result: any) => {
     let distance = result.distance > 1000 ? (result.distance / 1000).toFixed(2) + 'km' : result.distance + 'm';
     let vHeight =
       result.verticalHeight > 1000 ? (result.verticalHeight / 1000).toFixed(2) + 'km' : result.verticalHeight + 'm';
@@ -383,16 +383,16 @@ const init = () => {
       result.horizontalDistance > 1000
         ? (result.horizontalDistance / 1000).toFixed(2) + 'km'
         : result.horizontalDistance + 'm';
-    handlerHeight.value.disLabel.text = t('sceneMeasure.spaceDistance') + distance; // 假设 t 可用
-    handlerHeight.value.vLabel.text = t('sceneMeasure.verticalHeight') + vHeight; // 假设 t 可用
-    handlerHeight.value.hLabel.text = t('sceneMeasure.horizontalDistance') + hDistance; // 假设 t 可用
+    handlerHeight.disLabel.text = t('sceneMeasure.spaceDistance') + distance;
+    handlerHeight.vLabel.text = t('sceneMeasure.verticalHeight') + vHeight;
+    handlerHeight.hLabel.text = t('sceneMeasure.horizontalDistance') + hDistance;
     // 实时等高线显示
     lineHeight.value = Number(result.endHeight);
     if (state.isShowLine) updateContourLine(lineHeight.value);
   });
 
   // 测量高度监听事件
-  handlerHeight.value.activeEvt.addEventListener((isActive: boolean) => {
+  handlerHeight.activeEvt.addEventListener((isActive: boolean) => {
     if (isActive === true) {
       setMouseCursor('measureCur');
       viewer.scene.pickPointEnabled = state.pickPointEnabled;
@@ -407,13 +407,13 @@ const init = () => {
 const calcClampDistance = (positions: any[]) => {
   let lonlat: number[] = [];
   for (let i = 0; i < positions.length; i++) {
-    let cartographic = (window.SuperMap3D as any).Cartographic.fromCartesian(positions[i]);
-    let lon = (window.SuperMap3D as any).Math.toDegrees(cartographic.longitude);
-    let lat = (window.SuperMap3D as any).Math.toDegrees(cartographic.latitude);
+    let cartographic = window.SuperMap3D.Cartographic.fromCartesian(positions[i]);
+    let lon = window.SuperMap3D.Math.toDegrees(cartographic.longitude);
+    let lat = window.SuperMap3D.Math.toDegrees(cartographic.latitude);
     lonlat.push(lon, lat);
   }
-  let geometry = new (window.SuperMap3D as any).PolylineGeometry({
-    positions: (window.SuperMap3D as any).Cartesian3.fromDegreesArray(lonlat)
+  let geometry = new window.SuperMap3D.PolylineGeometry({
+    positions: window.SuperMap3D.Cartesian3.fromDegreesArray(lonlat)
   });
   return viewer.scene.globe.computeSurfaceDistance(geometry, state.Ellipsoid);
 };
@@ -422,13 +422,13 @@ const calcClampDistance = (positions: any[]) => {
 const calcClampValue = (positions: any[]) => {
   let lonlat: number[] = [];
   for (let i = 0; i < positions.length; i++) {
-    let cartographic = (window.SuperMap3D as any).Cartographic.fromCartesian(positions[i]);
-    let lon = (window.SuperMap3D as any).Math.toDegrees(cartographic.longitude);
-    let lat = (window.SuperMap3D as any).Math.toDegrees(cartographic.latitude);
+    let cartographic = window.SuperMap3D.Cartographic.fromCartesian(positions[i]);
+    let lon = window.SuperMap3D.Math.toDegrees(cartographic.longitude);
+    let lat = window.SuperMap3D.Math.toDegrees(cartographic.latitude);
     lonlat.push(lon, lat);
   }
-  let geometry = new (window.SuperMap3D as any).PolygonGeometry.fromPositions({
-    positions: (window.SuperMap3D as any).Cartesian3.fromDegreesArray(lonlat)
+  let geometry = new window.SuperMap3D.PolygonGeometry.fromPositions({
+    positions: window.SuperMap3D.Cartesian3.fromDegreesArray(lonlat)
   });
   return viewer.scene.globe.computeSurfaceArea(geometry, state.Ellipsoid);
 };
@@ -437,15 +437,15 @@ const calcClampValue = (positions: any[]) => {
 const calcAreaWithoutHeight = (positions: any[]) => {
   let totalLon = 0;
   for (let i = 0; i < positions.length; i++) {
-    let cartographic = (window.SuperMap3D as any).Cartographic.fromCartesian(positions[i]);
-    let lon = (window.SuperMap3D as any).Math.toDegrees(cartographic.longitude);
+    let cartographic = window.SuperMap3D.Cartographic.fromCartesian(positions[i]);
+    let lon = window.SuperMap3D.Math.toDegrees(cartographic.longitude);
     totalLon += lon;
   }
 
   let dh = Math.round((totalLon / positions.length + 6) / 6); // 带号
   let centralMeridian = dh * 6 - 3;
   // 高斯投影
-  let projection = new (window.SuperMap3D as any).CustomProjection({
+  let projection = new window.SuperMap3D.CustomProjection({
     name: 'tmerc',
     centralMeridian: centralMeridian,
     primeMeridian: 0,
@@ -458,7 +458,7 @@ const calcAreaWithoutHeight = (positions: any[]) => {
   });
   let cartesians: any[] = [];
   for (let i = 0; i < positions.length; i++) {
-    let cartographic = (window.SuperMap3D as any).Cartographic.fromCartesian(positions[i]);
+    let cartographic = window.SuperMap3D.Cartographic.fromCartesian(positions[i]);
 
     let cartesian = projection.project(cartographic);
     cartesians.push(cartesian);
@@ -475,7 +475,7 @@ const setHypsometricSetting = () => {
   for (let i = 0; i < layers.value.length; i++) {
     layers.value[i].hypsometricSetting = {
       hypsometricSetting: isoline.value,
-      analysisMode: (window.SuperMap3D as any).HypsometricSettingEnum.AnalysisRegionMode.ARM_ALL
+      analysisMode: window.SuperMap3D.HypsometricSettingEnum.AnalysisRegionMode.ARM_ALL
     };
   }
   setHypFlag.value = true;
@@ -501,20 +501,20 @@ const updateContourLine = (height: number) => {
 // 更新量算模式
 const update_mode = (val: string) => {
   if (val === 'Space') {
-    state.clampMode = (window.SuperMap3D as any).ClampMode.Space;
-    handlerArea.value.clampMode = (window.SuperMap3D as any).ClampMode.Space;
-    handlerDis.value.clampMode = (window.SuperMap3D as any).ClampMode.Space;
+    state.clampMode = window.SuperMap3D.ClampMode.Space;
+    handlerArea.clampMode = window.SuperMap3D.ClampMode.Space;
+    handlerDis.clampMode = window.SuperMap3D.ClampMode.Space;
   } else {
     state.pickPointEnabled = false;
-    state.clampMode = (window.SuperMap3D as any).ClampMode.Ground;
-    handlerArea.value.clampMode = (window.SuperMap3D as any).ClampMode.Ground;
-    handlerDis.value.clampMode = (window.SuperMap3D as any).ClampMode.Ground;
+    state.clampMode = window.SuperMap3D.ClampMode.Ground;
+    handlerArea.clampMode = window.SuperMap3D.ClampMode.Ground;
+    handlerDis.clampMode = window.SuperMap3D.ClampMode.Ground;
     if (val === 'XIAN80') {
-      state.Ellipsoid = (window.SuperMap3D as any).Ellipsoid.XIAN80;
+      state.Ellipsoid = window.SuperMap3D.Ellipsoid.XIAN80;
     } else if (val === 'CGCS2000') {
-      state.Ellipsoid = (window.SuperMap3D as any).Ellipsoid.CGCS2000;
+      state.Ellipsoid = window.SuperMap3D.Ellipsoid.CGCS2000;
     } else if (val === 'WGS84') {
-      state.Ellipsoid = (window.SuperMap3D as any).Ellipsoid.WGS84;
+      state.Ellipsoid = window.SuperMap3D.Ellipsoid.WGS84;
     } else {
       state.Ellipsoid = null;
     }
@@ -534,7 +534,7 @@ const changleIconItem = (item: any) => {
 };
 
 // 开启顶点捕捉
-const openPickPoint = (e: Event) => {
+const openPickPoint = (e: any) => {
   const val = (e.target as HTMLInputElement).checked;
   state.pickPointEnabled = val;
   viewer.scene.pickPointEnabled = val;
@@ -542,7 +542,7 @@ const openPickPoint = (e: Event) => {
 };
 
 // 开启等高线
-const update_showDVH = (val: boolean) => {
+const update_showDVH = (val: any) => {
   if (!val) {
     updateContourLine(-10000);
   } else {
@@ -551,9 +551,9 @@ const update_showDVH = (val: boolean) => {
 };
 
 const deactiveAll = () => {
-  handlerDis.value && handlerDis.value.deactivate();
-  handlerArea.value && handlerArea.value.deactivate();
-  handlerHeight.value && handlerHeight.value.deactivate();
+  handlerDis && handlerDis.deactivate();
+  handlerArea && handlerArea.deactivate();
+  handlerHeight && handlerHeight.deactivate();
   state.Ellipsoid = null;
   lineHeight.value = -10000;
 };
@@ -561,7 +561,7 @@ const deactiveAll = () => {
 // 测量距离
 const MeasureDistance = () => {
   deactiveAll();
-  handlerDis.value && handlerDis.value.activate();
+  handlerDis && handlerDis.activate();
 };
 
 // 测量高度
@@ -569,13 +569,13 @@ const MeasureHeight = () => {
   !setHypFlag.value && setHypsometricSetting();
   clearLine();
   deactiveAll();
-  handlerHeight.value && handlerHeight.value.activate();
+  handlerHeight && handlerHeight.activate();
 };
 
 // 测量面积
 const MeasureArea = () => {
   deactiveAll();
-  handlerArea.value && handlerArea.value.activate();
+  handlerArea && handlerArea.activate();
 };
 
 // 开始测量
@@ -605,9 +605,9 @@ const clearLine = () => {
 const clear = () => {
   removeMeasureCurClass();
   deactiveAll();
-  if (handlerDis.value) handlerDis.value.clear();
-  if (handlerArea.value) handlerArea.value.clear();
-  if (handlerHeight.value) handlerHeight.value.clear();
+  if (handlerDis) handlerDis.clear();
+  if (handlerArea) handlerArea.clear();
+  if (handlerHeight) handlerHeight.clear();
   clearLine();
   viewer.scene.pickPointEnabled = false;
 };

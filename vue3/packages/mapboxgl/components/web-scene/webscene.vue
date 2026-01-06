@@ -21,6 +21,7 @@ import { isEqual } from 'lodash-es';
 import sceneEvent from 'vue-iclient-core/types/scene-event';
 import { watch, computed, onMounted, onBeforeUnmount } from 'vue';
 import SmSceneLayerList from '@supermapgis/mapboxgl/components/scene-layer-list/scene-layer-list.vue'
+import SmSceneMeasure from '@supermapgis/mapboxgl/components/scene-measure/scene-measure.vue'
 
 defineOptions({
   name: 'SmWebScene'
@@ -31,6 +32,7 @@ const emit = defineEmits<WebSceneEvents>()
 
 const componentMap: Record<string, any> = {
   SmSceneLayerList,
+  SmSceneMeasure
 };
 const controlComponents: Record<string, any> = computed(() => {
   const controls = []

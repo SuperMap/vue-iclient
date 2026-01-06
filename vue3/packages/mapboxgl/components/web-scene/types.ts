@@ -42,6 +42,9 @@ export const webSceneProps = () => ({
   },
   sceneLayerListControl: {
     type: Object, 
+  },
+  sceneMeasureControl: {
+    type: Object, 
   }
 })
 
@@ -55,6 +58,7 @@ export type WebSceneProps = {
   target?: string
   flyAnimation?: boolean
   sceneLayerListControl?: Object
+  sceneMeasureControl?: Object
 }
 
 export const webScenePropsDefault = getPropsDefaults<WebSceneProps>(webSceneProps())
