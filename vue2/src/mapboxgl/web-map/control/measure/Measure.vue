@@ -69,11 +69,11 @@ import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import Card from 'vue-iclient/src/common/_mixin/Card';
 import SmSelect from 'vue-iclient/src/common/select/Select.vue';
 import SmSelectOption from 'vue-iclient/src/common/select/Option.vue';
-import MeasureViewModel from 'vue-iclient-core/controllers/mapboxgl/MeasureViewModel';
-import drawEvent from 'vue-iclient-core/controllers/mapboxgl/types/DrawEvent';
+import MeasureViewModel from 'vue-iclient-controllers-mapboxgl/src/MeasureViewModel';
+import drawEvent from 'vue-iclient-controllers-mapboxgl/src/types/DrawEvent';
 import uniqueId from 'lodash.uniqueid';
 import { setPopupArrowStyle } from 'vue-iclient-core/utils/util';
-import 'vue-iclient-core/libs/mapbox-gl-draw/mapbox-gl-draw.css';
+import 'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw.css';
 import Message from 'vue-iclient/src/common/message/Message.js';
 import { geti18n } from 'vue-iclient/src/common/_lang/index';
 

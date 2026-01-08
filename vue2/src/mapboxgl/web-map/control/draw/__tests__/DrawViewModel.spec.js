@@ -1,5 +1,5 @@
 import DrawViewModel from '../DrawViewModel';
-import drawEvent from 'vue-iclient-core/controllers/mapboxgl/types/DrawEvent';
+import drawEvent from 'vue-iclient-controllers-mapboxgl/src/types/DrawEvent';
 
 describe('DrawViewModel', () => {
   it('setMap', done => {

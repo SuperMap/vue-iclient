@@ -1,5 +1,5 @@
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
-import 'vue-iclient-core/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import mapboxgl from 'mapbox-gl';
+import { FetchRequest } from '@supermapgis/iclient-common/util/FetchRequest';
 import isEqual from 'lodash.isequal';
 
 interface scanEffect {
@@ -117,7 +117,7 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
   }
 
   private _getSceneInfo(url) {
-    SuperMap.FetchRequest.get(url + '.json', {}, { withCredentials: this.withCredentials })
+    FetchRequest.get(url + '.json', {}, { withCredentials: this.withCredentials })
       .then(response => {
         return response.json();
       })

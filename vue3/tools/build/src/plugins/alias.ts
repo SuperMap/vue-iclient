@@ -26,8 +26,6 @@ export function Alias(): Plugin {
 export const copyCoreLibs = {
   mapboxgl: [
     'Cesium',
-    'iclient-common',
-    'iclient-mapboxgl',
     'mapboxgl',
     'mapbox-gl-draw',
     'deckgl',
@@ -35,5 +33,5 @@ export const copyCoreLibs = {
     'geostats',
     'json-sql'
   ],
-  leaflet: ['iclient-leaflet', 'iclient-common']
+  leaflet: []
 }

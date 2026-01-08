@@ -1,4 +1,4 @@
-import type { ControlPosition } from 'vue-iclient-core/controllers/mapboxgl/utils/MapControl'
+import type { ControlPosition } from 'vue-iclient-controllers-mapboxgl/src/utils/MapControl'
 import { watch, getCurrentInstance, nextTick } from 'vue'
 
 interface SceneControlProps {

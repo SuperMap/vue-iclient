@@ -28,16 +28,16 @@
 </template>
 
 <script lang="ts">
-import type { DrawGetOptions } from 'vue-iclient-core/controllers/mapboxgl/types/DrawEvent';
-import drawEvent from 'vue-iclient-core/controllers/mapboxgl/types/DrawEvent';
+import type { DrawGetOptions } from 'vue-iclient-controllers-mapboxgl/src/types/DrawEvent';
+import drawEvent from 'vue-iclient-controllers-mapboxgl/src/types/DrawEvent';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import Card from 'vue-iclient/src/common/_mixin/Card';
 import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
-import DrawViewModel from 'vue-iclient-core/controllers/mapboxgl/DrawViewModel';
+import DrawViewModel from 'vue-iclient-controllers-mapboxgl/src/DrawViewModel';
 import uniqueId from 'lodash.uniqueid';
 import { Component, Prop, Mixins } from 'vue-property-decorator';
-import 'vue-iclient-core/libs/mapbox-gl-draw/mapbox-gl-draw.css';
+import 'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw.css';
 import { geti18n } from 'vue-iclient/src/common/_lang/index';
 
 @Component({

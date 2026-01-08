@@ -5,3 +5,4 @@ packages:
   - tools/*
   - ../core
   - ../static
+  - ../controllers/mapboxgl

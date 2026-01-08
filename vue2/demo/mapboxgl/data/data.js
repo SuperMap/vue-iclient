@@ -7,6 +7,8 @@ import deckglLayerData from '../../data/sf-bike-parking.json';
 import axios from 'axios';
 import proj4 from 'proj4';
 import { getProjection } from 'vue-iclient-core/utils/epsg-define';
+import mapboxgl from 'mapbox-gl';
+import { ThemeFeature } from '@supermapgis/iclient-mapboxgl';
 
 export default {
   data() {
@@ -153,11 +155,11 @@ export default {
     //   var param = new SuperMap.QueryBySQLParameters({
     //     queryParams: { name: "Capitals@World#3", attributeFilter: "SMID > 0" }
     //   });
-    //   var queryService = new mapboxgl.supermap.QueryService(
+    //   var queryService = new QueryService(
     //     "http://support.supermap.com.cn:8090/iserver/services/map-world/rest/maps/World"
     //   ).queryBySQL(param, function(serviceResult) {
     //     featureResult = serviceResult.result.recordsets[0].features.features;
-    //     dataFlowBroadcast = new mapboxgl.supermap.DataFlowService(
+    //     dataFlowBroadcast = new DataFlowService(
     //       "ws://iclsvrws.supermap.io/iserver/services/dataflowTest/dataflow"
     //     ).initBroadcast();
     //     dataFlowBroadcast.on("broadcastSocketConnected", function(e) {
@@ -175,7 +177,7 @@ export default {
       var attrs = {};
       attrs.NAME = provinceInfo[0];
       attrs.CON2009 = provinceInfo[3];
-      var fea = new mapboxgl.supermap.ThemeFeature(geo, attrs);
+      var fea = new ThemeFeature(geo, attrs);
       rankFeatures.push(fea);
     }
     const tdtKey = '1d109683f4d84198e37a38c442d68311';

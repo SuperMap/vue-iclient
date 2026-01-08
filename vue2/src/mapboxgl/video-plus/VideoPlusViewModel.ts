@@ -1,4 +1,4 @@
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'mapbox-gl';
 import uniqueId from 'lodash.uniqueid';
 import cloneDeep from 'lodash.clonedeep';
 import videojs from 'video.js';

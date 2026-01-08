@@ -16,7 +16,7 @@ import {
   getColorWithOpacity,
   getDecimalsFormatterVal
 } from 'vue-iclient-core/utils/util'
-import { ColorsPickerUtil } from 'vue-iclient-static/libs/iclient-common/iclient-common'
+import { ColorsPickerUtil } from '@supermapgis/iclient-common/util/ColorsPickerUtil';
 import { message as Message } from 'ant-design-vue'
 import * as ECharts from 'echarts'
 

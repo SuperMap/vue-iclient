@@ -201,7 +201,7 @@ function _cssjs(file, encoding) {
       )
       .replace(/vue-iclient\/src\/mapboxgl/, `@supermapgis/vue-iclient-${type}/lib`)
       .replace(/vue-iclient\/src\/common\//g, `@supermapgis/vue-iclient-${type}/lib/`)
-      .replace(/vue-iclient-core\/libs\//g, `@supermapgis/vue-iclient-${type}/static/libs/`)
+      .replace(/vue-iclient-static\/libs\//g, `@supermapgis/vue-iclient-${type}/static/libs/`)
       .replace(/vue-iclient-core\/assets\//g, `@supermapgis/vue-iclient-${type}/lib/_assets/`)
       .replace(/\.less/g, '.css')
       .replace(/\.scss/g, '.css')

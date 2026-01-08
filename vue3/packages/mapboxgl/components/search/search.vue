@@ -120,10 +120,10 @@ import {
   useTemplateRef,
   onBeforeUnmount
 } from 'vue'
-import type { FeatureResult } from 'vue-iclient-core/controllers/mapboxgl/SearchViewModel'
+import type { FeatureResult } from 'vue-iclient-controllers-mapboxgl/src/SearchViewModel'
 import { useTheme,useMapGetter, useLocale } from '@supermapgis/common/hooks/index.common'
 import { useMapControl } from '@supermapgis/mapboxgl/hooks'
-import SearchViewModel from 'vue-iclient-core/controllers/mapboxgl/SearchViewModel'
+import SearchViewModel from 'vue-iclient-controllers-mapboxgl/src/SearchViewModel'
 import { SearchOutlined, LoadingOutlined } from '@ant-design/icons-vue'
 import SmInput from '@supermapgis/common/components/input/Input'
 import { message as Message } from 'ant-design-vue'

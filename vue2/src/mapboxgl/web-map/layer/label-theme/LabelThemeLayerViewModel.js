@@ -1,5 +1,5 @@
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
-import 'vue-iclient-core/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import mapboxgl from 'mapbox-gl';
+import { LabelThemeLayer } from '@supermapgis/iclient-mapboxgl';
 
 export default class LabelThemeLayerViewModel extends mapboxgl.Evented {
   constructor(themeProps) {
@@ -34,7 +34,7 @@ export default class LabelThemeLayerViewModel extends mapboxgl.Evented {
   }
 
   _init() {
-    this.themeLayer = new mapboxgl.supermap.LabelThemeLayer(this.layerName, this.options);
+    this.themeLayer = new LabelThemeLayer(this.layerName, this.options);
     this.map.addLayer(this.themeLayer);
     this.themeLayer.addFeatures(this.data);
   }

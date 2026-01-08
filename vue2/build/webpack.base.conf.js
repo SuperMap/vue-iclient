@@ -71,8 +71,8 @@ module.exports = {
         include: [
           resolve('src'),
           resolve('test'),
-          (filePath) => filePath.startsWith(path.resolve(__dirname, '../../core')) && !filePath.startsWith(path.resolve(__dirname, '../../core/libs')),
-          path.resolve(__dirname, '../../core/libs/json-sql'),
+          (filePath) => filePath.startsWith(path.resolve(__dirname, '../../static')) && !filePath.startsWith(path.resolve(__dirname, '../../static/libs')),
+          path.resolve(__dirname, '../../static/libs/json-sql'),
           // resolve('node_modules/webpack-dev-server/client'),
           resolve('node_modules/vue-echarts'),
           resolve('node_modules/resize-detector'),

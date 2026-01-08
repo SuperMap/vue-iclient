@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import { Component } from 'vue-property-decorator';
-import MapEvents, { MAP_EVENT_NAMES } from 'vue-iclient-core/controllers/mapboxgl/utils/MapEvents';
+import MapEvents, { MAP_EVENT_NAMES } from 'vue-iclient-controllers-mapboxgl/src/utils/MapEvents';
 
 @Component
 export default class MapEventsMixin extends Vue {

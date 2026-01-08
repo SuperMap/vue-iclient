@@ -1,6 +1,6 @@
 import type { ComputedRef } from 'vue'
 import { watch, ref, computed } from 'vue'
-import MapPopupViewModel from 'vue-iclient-core/controllers/mapboxgl/MapPopupViewModel'
+import MapPopupViewModel from 'vue-iclient-controllers-mapboxgl/src/MapPopupViewModel'
 import { setPopupArrowStyle } from 'vue-iclient-core/utils/util'
 import { useMapGetter } from '@supermapgis/common/hooks/index.common'
 

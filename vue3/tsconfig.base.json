@@ -25,14 +25,20 @@
         "node_modules/*",
         ".pnpm/*",
       ],
-      "@supermapgis/": [
-        "packages/"
+      "@supermapgis/common/": [
+        "packages/common/"
+      ],
+      "@supermapgis/mapboxgl/": [
+        "packages/mapboxgl/"
       ],
       "vue-iclient-core/": [
         "../core/"
       ],
       "vue-iclient-static/": [
         "../static/"
+      ],
+      "vue-iclient-controllers-mapboxgl/": [
+        "../controllers/mapboxgl/"
       ]
     },
     "types": [

@@ -21,7 +21,7 @@
 <script>
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
-import LayerHighlightViewModel from 'vue-iclient-core/controllers/mapboxgl/LayerHighlightViewModel';
+import LayerHighlightViewModel from 'vue-iclient-controllers-mapboxgl/src/LayerHighlightViewModel';
 import SmMapPopup from 'vue-iclient/src/mapboxgl/map-popup/MapPopup.vue';
 import isEqual from 'lodash.isequal';
 

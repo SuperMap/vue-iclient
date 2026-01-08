@@ -1,7 +1,7 @@
 import type { PropType } from 'vue'
 import type mapboxglTypes from 'mapbox-gl'
 import type { ShortEmits }  from '@supermapgis/common/utils/index.common'
-import type { LayerEventName, MapEventHandler } from 'vue-iclient-core/controllers/mapboxgl/utils/MapEvents'
+import type { LayerEventName, MapEventHandler } from 'vue-iclient-controllers-mapboxgl/src/utils/MapEvents'
 import { getPropsDefaults } from '@supermapgis/common/utils/index.common'
 
 export type LayerLayout =

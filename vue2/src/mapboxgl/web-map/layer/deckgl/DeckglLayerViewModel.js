@@ -1,6 +1,6 @@
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
-import 'vue-iclient-core/libs/iclient-mapboxgl/iclient-mapboxgl.min';
-import 'vue-iclient-core/libs/deckgl/deck.gl.min';
+import mapboxgl from 'mapbox-gl';
+import { DeckglLayer } from '@supermapgis/iclient-mapboxgl';
+import 'vue-iclient-static/libs/deckgl/deck.gl.min';
 
 export default class DeckglLayerViewModel extends mapboxgl.Evented {
   constructor(deckglProps) {
@@ -37,7 +37,7 @@ export default class DeckglLayerViewModel extends mapboxgl.Evented {
   }
 
   _addDeckglLayer() {
-    const deckglLayer = new mapboxgl.supermap.DeckglLayer(this.layerType, this.options);
+    const deckglLayer = new DeckglLayer(this.layerType, this.options);
     this.map.addLayer(deckglLayer);
   }
 

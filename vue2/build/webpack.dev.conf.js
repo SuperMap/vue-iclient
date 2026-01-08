@@ -58,7 +58,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     // copy custom static assets
     new CopyWebpackPlugin([
       {
-        from: path.resolve(__dirname, '../../core/libs'),
+        from: path.resolve(__dirname, '../../static/libs'),
         to: path.join(config.dev.assetsSubDirectory, 'libs'),
         ignore: ['.*']
       }

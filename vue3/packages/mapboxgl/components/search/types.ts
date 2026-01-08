@@ -1,7 +1,7 @@
 import type { PropType } from 'vue'
 import type { MapGetterProps, MapGetterEvents, ShortEmits, ThemeProps } from '@supermapgis/common/utils/index.common'
 import type { ControlProps } from '@supermapgis/mapboxgl/utils'
-import type { RestMapInfo, RestDataInfo, FetchDataBase, OnlineLocalSearch } from 'vue-iclient-core/controllers/mapboxgl/SearchViewModel'
+import type { RestMapInfo, RestDataInfo, FetchDataBase, OnlineLocalSearch } from 'vue-iclient-controllers-mapboxgl/src/SearchViewModel'
 import { getPropsDefaults, mapGetterProps, themeProps } from '@supermapgis/common/utils/index.common'
 import { controlProps } from '@supermapgis/mapboxgl/utils'
 

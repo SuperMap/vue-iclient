@@ -6,3 +6,4 @@ packages:
   - vue3/site
   - vue3/tools/*
   - vue3/
+  - controllers/mapboxgl

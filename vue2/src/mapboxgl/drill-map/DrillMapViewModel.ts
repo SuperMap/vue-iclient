@@ -1,5 +1,4 @@
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
-import 'vue-iclient-core/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import { WebMapService } from '@supermapgis/iclient-common/mapping/WebMapService';
 import { Events } from 'vue-iclient-core/types/event/Events';
 import bbox from '@turf/bbox';
 import transformScale from '@turf/transform-scale';
@@ -297,7 +296,7 @@ export default class WebMapViewModel extends Events {
     for (let i = 0; i < this.data.length; i++) {
       const item = this.data[i];
       const { serverUrl, mapId } = item;
-      this.webMapService = new mapboxgl.supermap.WebMapService(mapId, item);
+      this.webMapService = new WebMapService(mapId, item);
       const promise = this.getMapInfo(mapId, serverUrl);
       if (promise) {
         if (i === 0) {

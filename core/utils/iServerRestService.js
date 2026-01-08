@@ -1,18 +1,14 @@
-import {
-  QueryBySQLParameters,
-  QueryByGeometryParameters,
-  FilterParameter,
-  QueryBySQLService,
-  FetchRequest,
-  FeatureService,
-  QueryService,
-  GetFeaturesBySQLParameters,
-  GetFeaturesByBoundsParameters,
-  Util,
-  GeometryPolygon,
-  GeometryLinearRing,
-  GeometryPoint
-} from 'vue-iclient-static/libs/iclient-common/iclient-common';
+import { QueryService } from '@supermapgis/iclient-common/iServer/QueryService';
+import { QueryBySQLService } from '@supermapgis/iclient-common/iServer/QueryBySQLService';
+import { FeatureService } from '@supermapgis/iclient-common/iServer/FeatureService';
+import { FetchRequest } from '@supermapgis/iclient-common/util/FetchRequest';
+import { QueryBySQLParameters } from '@supermapgis/iclient-common/iServer/QueryBySQLParameters';
+import { QueryByGeometryParameters } from '@supermapgis/iclient-common/iServer/QueryByGeometryParameters';
+import { FilterParameter } from '@supermapgis/iclient-common/iServer/FilterParameter';
+import { GetFeaturesBySQLParameters } from '@supermapgis/iclient-common/iServer/GetFeaturesBySQLParameters';
+import { GetFeaturesByBoundsParameters } from '@supermapgis/iclient-common/iServer/GetFeaturesByBoundsParameters';
+import { Util } from '@supermapgis/iclient-common/commontypes/Util';
+import { GeometryPolygon, GeometryLinearRing, GeometryPoint } from '@supermapgis/iclient-common/commontypes';
 import { Events } from 'vue-iclient-core/types/event/Events';
 import { getProjection } from 'vue-iclient-core/utils/epsg-define';
 import proj4 from 'proj4';

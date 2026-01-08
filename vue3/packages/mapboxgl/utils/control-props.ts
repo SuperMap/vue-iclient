@@ -1,5 +1,5 @@
 import type { PropType } from 'vue'
-import type { ControlPosition } from 'vue-iclient-core/controllers/mapboxgl/utils/MapControl'
+import type { ControlPosition } from 'vue-iclient-controllers-mapboxgl/src/utils/MapControl'
 import type { MapGetterProps } from '@supermapgis/common/utils/index.common'
 import { getPropsDefaults, mapGetterProps } from '@supermapgis/common/utils/index.common'
 

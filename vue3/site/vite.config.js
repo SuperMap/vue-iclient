@@ -18,8 +18,10 @@ export default defineConfig({
       '@supermapgis/common': fileURLToPath(new URL('../packages/common', import.meta.url)),
       'vue-iclient-core': fileURLToPath(new URL('../../core', import.meta.url)),
       'vue-iclient-static': fileURLToPath(new URL('../../static', import.meta.url)),
+      'vue-iclient-controllers-mapboxgl': fileURLToPath(new URL('../../controllers/mapboxgl', import.meta.url)),
       // static/libs/EchartsLayer.js  require('echarts) 找不到echarts
-      'echarts': fileURLToPath(new URL('../node_modules/echarts', import.meta.url))
+      'echarts': fileURLToPath(new URL('../node_modules/echarts', import.meta.url)),
+      'mapbox-gl': fileURLToPath(new URL('../../static/libs/mapboxgl/mapbox-gl-enhance', import.meta.url)),
       // node_modules: fileURLToPath(new URL('../node_modules', import.meta.url))
     }
   },
@@ -44,19 +46,19 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: [
-      'vue-iclient-static/libs/iclient-common/iclient-common',
       'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance',
       'vue-iclient-static/libs/echarts-layer/EchartsLayer',
-      'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw'
+      'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw',
+      'mapbox-gl'
     ]
   },
   build: {
     commonjsOptions: {
       include: [
-        'vue-iclient-static/libs/iclient-common/iclient-common',
         'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance',
         'vue-iclient-static/libs/echarts-layer/EchartsLayer',
-        'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw'
+        'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw',
+        'mapbox-gl'
       ]
     },
     rollupOptions: {

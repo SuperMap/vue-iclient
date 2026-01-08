@@ -1,5 +1,5 @@
 import type { PropType } from 'vue'
-import type { ControlPosition } from 'vue-iclient-core/controllers/mapboxgl/utils/MapControl'
+import type { ControlPosition } from 'vue-iclient-controllers-mapboxgl/src/utils/MapControl'
 import { getPropsDefaults } from '@supermapgis/common/utils/vue-types'
 
 export const cardProps = () => ({

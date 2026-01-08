@@ -54,10 +54,15 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@supermapgis/iclient-common": "^12.0.1-r",
+    "@supermapgis/iclient-mapboxgl": "^12.0.1-r",
     "@types/geojson": "^7946.0.16",
     "@types/jest": "^29.5.14",
     "husky": "^8.0.0",
     "lint-staged": "^15.4.3",
+    "mapbox-gl": "^1.13.0",
+    "vue": "^3.5.12",
+    "vue-iclient-controllers-mapboxgl": "workspace:*",
     "vue-iclient-core": "workspace:*",
     "vue-iclient-static": "workspace:*"
   },

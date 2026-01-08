@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { Map } from 'mapbox-gl'
 import type { WebMapProps, WebMapEvents, MapEventHandler } from './types'
-import WebMapViewModel from 'vue-iclient-core/controllers/mapboxgl/WebMapViewModel'
+import WebMapViewModel from 'vue-iclient-controllers-mapboxgl/src/WebMapViewModel'
 import mapEvent from 'vue-iclient-core/types/map-event'
-import MapEvents, { MAP_EVENT_NAMES } from 'vue-iclient-core/controllers/mapboxgl/utils/MapEvents'
+import MapEvents, { MAP_EVENT_NAMES } from 'vue-iclient-controllers-mapboxgl/src/utils/MapEvents'
 import { useVmProps, useLocale, useEventListeners } from '@supermapgis/common/hooks/index.common'
 import { addListener, removeListener } from 'resize-detector'
 import { debounce, pick } from 'lodash-es'

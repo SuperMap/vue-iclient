@@ -1,6 +1,6 @@
 import { getColorWithOpacity } from 'vue-iclient-core/utils/util';
 import cloneDeep from 'lodash.clonedeep';
-import { ColorsPickerUtil } from 'vue-iclient-core/libs/iclient-common/iclient-common';
+import { ColorsPickerUtil } from '@supermapgis/iclient-common/util/ColorsPickerUtil';
 
 export const handleMultiGradient = (colorGroupsData, dataLength) => {
   let startColors = [];

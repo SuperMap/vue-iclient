@@ -2,7 +2,6 @@
 import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import ChartCommon from 'vue-iclient/src/common/chart/ChartMixin.vue';
 import ChartViewModel from './ChartViewModel';
-import 'vue-iclient-core/libs/iclient-leaflet/iclient-leaflet.min';
 
 export default {
   name: 'SmChart',

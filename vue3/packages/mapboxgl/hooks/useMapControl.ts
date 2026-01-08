@@ -1,6 +1,6 @@
-import type { ControlPosition } from 'vue-iclient-core/controllers/mapboxgl/utils/MapControl'
+import type { ControlPosition } from 'vue-iclient-controllers-mapboxgl/src/utils/MapControl'
 import { ref, watch, onMounted, onBeforeUnmount, getCurrentInstance } from 'vue'
-import MapControl from 'vue-iclient-core/controllers/mapboxgl/utils/MapControl'
+import MapControl from 'vue-iclient-controllers-mapboxgl/src/utils/MapControl'
 
 interface MapControlProps {
   position: ControlPosition

@@ -11,8 +11,10 @@ export const pathRewriter = (module: Module) => {
 
   return (id: string) => {
     id = id.replaceAll(`${PKG_PREFIX}/theme-chalk`, `${PKG_NAME}/theme-chalk`)
+    id = id.replaceAll(`vue-iclient-controllers-mapboxgl/`, `${PKG_PREFIX}/${config.bundle.path}/controllers/`)
     id = id.replaceAll(`vue-iclient-core/`, `${PKG_PREFIX}/${config.bundle.path}/core/`)
     id = id.replaceAll(`vue-iclient-static/`, `${PKG_PREFIX}/static/`)
+    id = id.replaceAll(`mapbox-gl`, `${PKG_PREFIX}/static/libs/mapboxgl/mapbox-gl-enhance.js`)
     id = id.replaceAll(`${PKG_PREFIX}/common/`, `${PKG_PREFIX}/${config.bundle.path}/`)
     id = id.replaceAll(`${PKG_PREFIX}/${pkgName}/`, `${PKG_PREFIX}/${config.bundle.path}/`)
     return id

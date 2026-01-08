@@ -23,7 +23,6 @@ const generageRoutes = async (pkgName: Pkg | 'common') => {
     onlyFiles: true
   })
   const allPaths = [...paths, ...commonPaths]
-  console.log('path', allPaths)
 
   const TEMPLATE = `
 export default [

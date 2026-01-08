@@ -32,7 +32,7 @@ import { ref } from 'vue';
 import type { PanProps, PanEvents } from './types'
 import { useMapGetter, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useMapControl } from '@supermapgis/mapboxgl/hooks'
-import PanViewModel from 'vue-iclient-core/controllers/mapboxgl/PanViewModel'
+import PanViewModel from 'vue-iclient-controllers-mapboxgl/src/PanViewModel'
 import { panPropsDefault } from './types'
 
 defineOptions({

@@ -14,7 +14,7 @@ import type {
   needleStyleParams
 } from './types'
 import { compassPropsDefault } from './types'
-import CompassViewModel from 'vue-iclient-core/controllers/mapboxgl/CompassViewModel';
+import CompassViewModel from 'vue-iclient-controllers-mapboxgl/src/CompassViewModel';
 import { useMapGetter, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useMapControl } from '@supermapgis/mapboxgl/hooks'
 import SmButton from '@supermapgis/common/components/button/Button'

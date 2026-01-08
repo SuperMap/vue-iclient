@@ -5,13 +5,13 @@ import type {
   HighlightStyle,
   MapSelectionChangedEmit,
   PopupFieldsInfo
-} from 'vue-iclient-core/controllers/mapboxgl/LayerHighlightViewModel'
-import type { QueryResultParams, QueryResultEvent, QueryBoundsType, QueryParameter } from 'vue-iclient-core/controllers/mapboxgl/QueryViewModel'
+} from 'vue-iclient-controllers-mapboxgl/src/LayerHighlightViewModel'
+import type { QueryResultParams, QueryResultEvent, QueryBoundsType, QueryParameter } from 'vue-iclient-controllers-mapboxgl/src/QueryViewModel'
 import type { PopupStyle } from '@supermapgis/mapboxgl/components/layer-highlight/types'
 import { getPropsDefaults, mapGetterProps, themeProps } from '@supermapgis/common/utils/index.common'
-import LineStyle from 'vue-iclient-core/controllers/mapboxgl/types/LineStyle'
-import FillStyle from 'vue-iclient-core/controllers/mapboxgl/types/FillStyle'
-import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/types/CircleStyle'
+import LineStyle from 'vue-iclient-controllers-mapboxgl/src/types/LineStyle'
+import FillStyle from 'vue-iclient-controllers-mapboxgl/src/types/FillStyle'
+import CircleStyle from 'vue-iclient-controllers-mapboxgl/src/types/CircleStyle'
 import { cardProps, controlProps } from '@supermapgis/mapboxgl/utils'
 
 export { PopupStyle, PopupFieldsInfo, MapSelectionChangedEmit, QueryResultParams, QueryResultEvent }

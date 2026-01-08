@@ -44,7 +44,7 @@ import Timer from 'vue-iclient/src/common/_mixin/Timer';
 import { chartThemeUtil, handleMultiGradient, getMultiColorGroup } from 'vue-iclient/src/common/_utils/style/theme/chart';
 import EchartsDataService from 'vue-iclient-core/utils/EchartsDataService';
 import { getFeatureCenter, getColorWithOpacity, setPopupArrowStyle } from 'vue-iclient-core/utils/util';
-import { ColorsPickerUtil } from 'vue-iclient-core/libs/iclient-common/iclient-common';
+import { ColorsPickerUtil } from '@supermapgis/iclient-common/util/ColorsPickerUtil';
 import TablePopup from 'vue-iclient/src/common/table-popup/TablePopup.vue';
 import Message from 'vue-iclient/src/common/message/index.js';
 import { addListener, removeListener } from 'resize-detector';

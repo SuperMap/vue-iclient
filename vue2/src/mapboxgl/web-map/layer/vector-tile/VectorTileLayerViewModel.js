@@ -1,5 +1,4 @@
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
-import 'vue-iclient-core/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import mapboxgl from 'mapbox-gl';
 
 export default class VectorTileLayerViewModel extends mapboxgl.Evented {
   constructor(styleOptions, before) {

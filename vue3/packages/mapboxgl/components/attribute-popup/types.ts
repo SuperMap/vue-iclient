@@ -1,14 +1,14 @@
 import type { PropType, CSSProperties } from 'vue'
 import type { MapGetterProps, ThemeProps } from '@supermapgis/common/utils/index.common'
-import type { HighlightStyle } from 'vue-iclient-core/controllers/mapboxgl/LayerHighlightViewModel'
+import type { HighlightStyle } from 'vue-iclient-controllers-mapboxgl/src/LayerHighlightViewModel'
 import {
   getPropsDefaults,
   mapGetterProps,
   themeProps
 } from '@supermapgis/common/utils/index.common'
-import LineStyle from 'vue-iclient-core/controllers/mapboxgl/types/LineStyle'
-import FillStyle from 'vue-iclient-core/controllers/mapboxgl/types/FillStyle'
-import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/types/CircleStyle'
+import LineStyle from 'vue-iclient-controllers-mapboxgl/src/types/LineStyle'
+import FillStyle from 'vue-iclient-controllers-mapboxgl/src/types/FillStyle'
+import CircleStyle from 'vue-iclient-controllers-mapboxgl/src/types/CircleStyle'
 import { TextInfosTypes } from './util/ExpressionConverter'
 import { ExperssionTypes } from './util/CalcExpression'
 

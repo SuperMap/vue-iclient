@@ -3,11 +3,11 @@ import type { MapGetterProps, MapGetterEvents, ShortEmits, ThemeProps } from '@s
 import type {
   HighlightStyle,
   MapSelectionChangedEmit
-} from 'vue-iclient-core/controllers/mapboxgl/LayerHighlightViewModel'
+} from 'vue-iclient-controllers-mapboxgl/src/LayerHighlightViewModel'
 import { getPropsDefaults, mapGetterProps, themeProps } from '@supermapgis/common/utils/index.common'
-import LineStyle from 'vue-iclient-core/controllers/mapboxgl/types/LineStyle'
-import FillStyle from 'vue-iclient-core/controllers/mapboxgl/types/FillStyle'
-import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/types/CircleStyle'
+import LineStyle from 'vue-iclient-controllers-mapboxgl/src/types/LineStyle'
+import FillStyle from 'vue-iclient-controllers-mapboxgl/src/types/FillStyle'
+import CircleStyle from 'vue-iclient-controllers-mapboxgl/src/types/CircleStyle'
 
 export type { MapSelectionChangedEmit }
 

@@ -12,7 +12,7 @@
 
 <script lang="ts" setup>
 import { withCtx, useSlots, watch, onMounted, onBeforeUnmount, computed } from 'vue'
-import CompareViewModel from 'vue-iclient-core/controllers/mapboxgl/CompareViewModel'
+import CompareViewModel from 'vue-iclient-controllers-mapboxgl/src/CompareViewModel'
 import { useTheme } from '@supermapgis/common/hooks/index.common'
 import { debounce } from 'lodash-es'
 import { addListener, removeListener } from 'resize-detector'
@@ -22,7 +22,7 @@ import type { CompareProps } from './types'
 import type {
   mapType,
   compareOptions
-} from 'vue-iclient-core/controllers/mapboxgl/CompareViewModel'
+} from 'vue-iclient-controllers-mapboxgl/src/CompareViewModel'
 
 defineOptions({
   name: 'SmCompare'

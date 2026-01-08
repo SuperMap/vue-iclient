@@ -3,27 +3,14 @@
   "compilerOptions": {
     "composite": true,
     "jsx": "preserve",
-    "lib": [
-      "ES2018",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "lib": ["ES2018", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
     "paths": {
-      "*": [
-        "node_modules/*",
-        ".pnpm/*"
-      ]
+      "*": ["node_modules/*", ".pnpm/*"]
     },
-    "types": [
-      "mapbox-gl",
-      "vue"
-    ]
+    "types": ["vue", "geojson"]
   },
-  "include": [
-    "packages/mapboxgl",
-    "typings/env.d.ts",
-  ],
+  "include": ["packages/mapboxgl", "typings/env.d.ts", "typings/mapboxgl-global.d.ts"],
   "exclude": [
     "node_modules",
     "**/dist",

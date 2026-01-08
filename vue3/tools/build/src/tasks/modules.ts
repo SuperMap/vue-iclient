@@ -80,11 +80,10 @@ async function buildModulesComponents(root = pkgRoot) {
       onlyFiles: true
     })
   )
-  console.log(input)
   const bundle = await rollup({
     input,
     plugins,
-    external: await generateExternal({ full: false }),
+    external: await generateExternal(),
     treeshake: false
   })
 
@@ -114,7 +113,7 @@ async function buildModulesComponents(root = pkgRoot) {
 //   const bundle = await rollup({
 //     input,
 //     plugins,
-//     external: await generateExternal({ full: false }),
+//     external: await generateExternal(),
 //     treeshake: { moduleSideEffects: false },
 //     onwarn(warning, warn) {
 //       const { code, importer } = warning
@@ -155,7 +154,7 @@ async function buildModulesStyles(rootDir, folder = 'components') {
     input,
     plugins,
     treeshake: false,
-    external: await generateExternal({ full: false })
+    external: await generateExternal()
   })
   await writeBundles(
     bundle,

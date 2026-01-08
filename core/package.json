@@ -2,35 +2,20 @@
   "name": "vue-iclient-core",
   "private": true,
   "license": "MIT",
+  "peerDependencies": {
+    "@supermapgis/iclient-common": "^12.0.1-r",
+    "@turf/center": ">=5.1.5",
+    "lodash.clonedeep": ">=4.0.1",
+    "lodash.max": ">=4.0.1",
+    "lodash.orderby": ">=4.0.1",
+    "lodash.tonumber": ">=4.0.1",
+    "omit.js": ">=2.0.2",
+    "proj4": ">=2.15.0",
+    "simple-statistics": ">=7.8.3",
+    "tinycolor2": ">=1.6.0"
+  },
   "devDependencies": {
     "@types/lodash": "^4.17.15",
     "@types/mapbox-gl": "^1.12.1"
-  },
-  "dependencies": {
-    "@turf/area": "^7.2.0",
-    "@turf/bbox": "^7.2.0",
-    "@turf/center": "^7.2.0",
-    "@turf/envelope": "^5.1.5",
-    "@turf/helpers": "^6.1.4",
-    "@turf/length": "^7.2.0",
-    "@turf/transform-scale": "^7.2.0",
-    "css-vars-ponyfill": "^2.2.1",
-    "lodash.assignin": "^4.2.0",
-    "lodash.clonedeep": "^4.5.0",
-    "lodash.debounce": "^4.0.8",
-    "lodash.difference": "^4.5.0",
-    "lodash.isequal": "^4.5.0",
-    "lodash.max": "^4.0.1",
-    "lodash.merge": "^4.6.1",
-    "lodash.mergewith": "^4.6.2",
-    "lodash.orderby": "^4.6.0",
-    "lodash.tonumber": "^4.0.3",
-    "lodash.uniqueid": "^4.0.1",
-    "lodash.uniqby": "^4.7.0",
-    "mapbox-gl-compare-enhanced": "^1.0.0",
-    "omit.js": "^2.0.2",
-    "proj4": "^2.15.0",
-    "simple-statistics": "^7.8.7",
-    "tinycolor2": "^1.6.0"
   }
 }

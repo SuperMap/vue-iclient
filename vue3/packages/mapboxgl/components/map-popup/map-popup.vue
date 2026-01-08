@@ -49,7 +49,7 @@ import type { AttributeRecord } from '@supermapgis/common/components/attribute-p
 import { ref, computed, watch, useTemplateRef } from 'vue'
 import SmAttributePanel from '@supermapgis/common/components/attribute-panel/attribute-panel.vue'
 import { useTheme, useMapGetter } from '@supermapgis/common/hooks/index.common'
-import MapPopupViewModel from 'vue-iclient-core/controllers/mapboxgl/MapPopupViewModel'
+import MapPopupViewModel from 'vue-iclient-controllers-mapboxgl/src/MapPopupViewModel'
 import { setPopupArrowStyle } from 'vue-iclient-core/utils/util'
 import { omit } from 'lodash-es'
 import { mapPopupPropsDefault } from './types'

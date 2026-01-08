@@ -35,6 +35,7 @@
       // 解决ts文件中的别名问题
       "vue-iclient/*": ["./*"],
       "vue-iclient-core/*": ["../core/*"],
+      "vue-iclient-controllers-mapboxgl/*": ["../controllers/mapboxgl/*"],
       "*.ts": ["*"],
       "*": ["node_modules/*"]
     }

@@ -1,7 +1,8 @@
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'mapbox-gl';
 import { handleMultyPolygon } from 'vue-iclient/src/mapboxgl/_utils/geometry-util';
 import labelPoints from './config/label-points.json';
-import 'vue-iclient-core/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import { FetchRequest } from '@supermapgis/iclient-common/util/FetchRequest';
+import { SourceListModelV2 } from '@supermapgis/iclient-common/mapping/utils/SourceListModelV2';
 
 export interface dataOptions {
   url?: string;
@@ -180,7 +181,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
 
   private _handleLayerInfo(): void {
     if (this.dataUrl) {
-      SuperMap.FetchRequest.get(this.dataUrl, null, { withoutFormatSuffix: true, proxy: this.proxyUrl })
+      FetchRequest.get(this.dataUrl, null, { withoutFormatSuffix: true, proxy: this.proxyUrl })
         .then(response => {
           return response.json();
         })
@@ -223,7 +224,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
 
   private _handleThemeInfo(): void {
     if (this.themeUrl) {
-      SuperMap.FetchRequest.get(this.themeUrl, null, { withoutFormatSuffix: true, proxy: this.proxyUrl })
+      FetchRequest.get(this.themeUrl, null, { withoutFormatSuffix: true, proxy: this.proxyUrl })
         .then(response => {
           return response.json();
         })
@@ -366,7 +367,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   }
 
   private _sendMapToUser(): void {
-    this._sourceListModel = new mapboxgl.supermap.SourceListModelV2({
+    this._sourceListModel = new SourceListModelV2({
       map: this.map,
       layers: this._layers
     });

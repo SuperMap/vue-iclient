@@ -1,5 +1,5 @@
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
-import 'vue-iclient-core/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import mapboxgl from 'mapbox-gl';
+import { MapService } from '@supermapgis/iclient-mapboxgl';
 
 export default class RasterTileLayerViewModel extends mapboxgl.Evented {
   constructor(rasterLayerOptions) {
@@ -63,7 +63,7 @@ export default class RasterTileLayerViewModel extends mapboxgl.Evented {
   }
 
   _addRestMapLayer() {
-    const service = new mapboxgl.supermap.MapService(this.mapUrl);
+    const service = new MapService(this.mapUrl);
     service.getMapInfo(mapObj => {
       if (!this.layerId) {
         this.layerId = mapObj.name;

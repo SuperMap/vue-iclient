@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import WebMapViewModel from 'vue-iclient-core/controllers/mapboxgl/WebMapViewModel';
+import WebMapViewModel from 'vue-iclient-controllers-mapboxgl/src/WebMapViewModel';
 import mapEvent from 'vue-iclient-core/types/map-event';
 import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater';
 import MapEvents from 'vue-iclient/src/mapboxgl/web-map/_mixin/map-events';

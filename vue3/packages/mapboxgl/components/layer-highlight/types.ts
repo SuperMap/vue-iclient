@@ -1,6 +1,6 @@
 import type { PropType, CSSProperties } from 'vue'
 import type { MapGetterProps, MapGetterEvents, ShortEmits, ThemeProps } from '@supermapgis/common/utils/index.common'
-import type { HighlightStyle, LayerEventCursorMap, FieldsDisplayInfo, MapSelectionChangedEmit } from 'vue-iclient-core/controllers/mapboxgl/LayerHighlightViewModel'
+import type { HighlightStyle, LayerEventCursorMap, FieldsDisplayInfo, MapSelectionChangedEmit } from 'vue-iclient-controllers-mapboxgl/src/LayerHighlightViewModel'
 import { getPropsDefaults, mapGetterProps, themeProps } from '@supermapgis/common/utils/index.common'
 
 export interface PopupStyle {

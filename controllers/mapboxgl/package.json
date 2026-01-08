@@ -1,0 +1,34 @@
+{
+  "name": "vue-iclient-controllers-mapboxgl",
+  "private": true,
+  "license": "MIT",
+  "peerDependencies": {
+    "@supermapgis/iclient-common": "^12.0.1-r",
+    "@supermapgis/iclient-mapboxgl": "^12.0.1-r",
+    "@turf/area": ">=5.1.5",
+    "@turf/bbox": ">=5.1.5",
+    "@turf/center": ">=5.1.5",
+    "@turf/envelope": ">=5.1.5",
+    "@turf/helpers": ">=5.1.5",
+    "@turf/transform-scale": ">=5.1.5",
+    "geojson": ">=0.5.0",
+    "lodash.assignin": ">=4.0.1",
+    "lodash.clonedeep": ">=4.0.1",
+    "lodash.debounce": ">=4.0.1",
+    "lodash.isequal": ">=4.0.1",
+    "lodash.mergewith": ">=4.0.1",
+    "lodash.difference": ">=4.0.1",
+    "lodash.uniqueid": ">=4.0.1",
+    "mapbox-gl": "<2.0.0",
+    "mapbox-gl-compare-enhanced": ">=1.0.0",
+    "proj4": ">=2.15.0"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.15",
+    "@types/mapbox-gl": "^1.12.1"
+  },
+  "dependencies": {
+    "@turf/length": "^7.2.0",
+    "lodash.uniqby": "^4.7.0"
+  }
+}

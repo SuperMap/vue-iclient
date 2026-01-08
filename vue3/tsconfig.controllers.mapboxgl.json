@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "../",
+    "composite": true,
+    "checkJs": false,
+    // "declaration": false, 
+    "removeComments": true,
+    "jsx": "preserve",
+    "lib": [
+      "ES2018",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "skipLibCheck": true,
+    "types": ["geojson"],
+  },
+  "include": [
+    "../controllers/mapboxgl/**/*",
+    "../controllers/mapboxgl/typings/mapboxgl-global.d.ts"
+  ],
+  "exclude": [
+    "../controllers/mapboxgl/node_modules"
+  ]
+}

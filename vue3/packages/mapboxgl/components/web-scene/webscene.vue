@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import type { WebSceneProps, WebSceneEvents } from './types'
 import { webScenePropsDefault } from './types'
-import WebSceneViewModel from 'vue-iclient-core/controllers/mapboxgl/WebSceneViewModel';
+import WebSceneViewModel from 'vue-iclient-controllers-mapboxgl/src/WebSceneViewModel';
 import { isEqual } from 'lodash-es';
 import sceneEvent from 'vue-iclient-core/types/scene-event';
 import { watch, computed, onMounted, onBeforeUnmount } from 'vue';

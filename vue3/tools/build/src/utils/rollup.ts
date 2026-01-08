@@ -1,17 +1,19 @@
-import { getPackage, getPackageDependencies, getPkgByCommand } from '@supermapgis/build-utils'
+import { getPackage, getPackageDependencies, getPkgByCommand, type ExternalList } from '@supermapgis/build-utils'
 
 import type { OutputOptions, RollupBuild } from 'rollup'
 
 const pkgName = getPkgByCommand(process.argv)
 const epPackage = getPackage(pkgName)
-export const generateExternal = async (options: { full: boolean }, path = epPackage) => {
+export const generateExternal = async (options: { externals?: ExternalList } = {}, path = epPackage) => {
   const { dependencies, peerDependencies } = getPackageDependencies(path)
   return (id: string) => {
-    const packages: string[] = [...peerDependencies]
-    if (!options.full) {
-      packages.push('@vue', 'vue-iclient-static', ...dependencies)
+    if (!options.externals) {
+      const packages: string[] = [...peerDependencies]
+      packages.push('@vue', 'mapbox-gl', 'vue-iclient-static', ...dependencies)
+      return [...new Set(packages)].some(pkg => id === pkg || id.startsWith(`${pkg}/`));
     }
-    return [...new Set(packages)].some(pkg => id === pkg || id.startsWith(`${pkg}/`))
+    const matchOne = options.externals.some(pkg => pkg.match?.(id, pkg.id) ?? (id === pkg.id || id.startsWith(`${pkg.id}/`)))
+    return matchOne;
   }
 }
 

@@ -1,4 +1,4 @@
-import CompareViewModel from 'vue-iclient-core/controllers/mapboxgl/CompareViewModel';
+import CompareViewModel from 'vue-iclient-controllers-mapboxgl/src/CompareViewModel';
 
 jest.mock('mapbox-gl-compare', () => require('@mocks/compare'));
 

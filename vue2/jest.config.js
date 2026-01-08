@@ -13,7 +13,7 @@ module.exports = {
   moduleNameMapper: {
     '^vue-iclient/(.*)$': '<rootDir>/$1',
     '^vue-iclient-core/(.*)$': '<rootDir>/../core/$1',
-    '^@libs/(.*)$': '<rootDir>/../core/libs/$1',
+    '^@libs/(.*)$': '<rootDir>/../static/libs/$1',
     '^@mocks/(.*)$': '<rootDir>/test/unit/mocks/$1',
     '^@types_mapboxgl/(.*)$': '<rootDir>/src/mapboxgl/_types/$1',
     '^@types_common/(.*)$': '<rootDir>/src/common/_types/$1',
@@ -42,8 +42,9 @@ module.exports = {
     '!src/mapboxgl/web-map/control/fill-extrusion/**',
     '!**/node_modules/**',
     '!mapboxgl/*/__tests__/**/type.{js,jsx}',
-    '<rootDir>/../core/**/!(*libs)/**/!(*.spec).{js,ts}',
-    '!<rootDir>/../core/libs/**' // 排除 core/libs 目录下的所有文
+    '<rootDir>/../core/**/!(*.spec).{js,ts}',
+    '<rootDir>/../controllers/**/!(*.spec).{js,ts}',
+    '!<rootDir>/../static/libs/**' // 排除 core/libs 目录下的所有文
   ],
   transformIgnorePatterns: [
     'node_modules/(?!(mapbox-gl|axios|element-ui|ant-design-vue|geographic-coordinate-converter|videojs-flvjs-es6|vue-videojs7|three)/)'

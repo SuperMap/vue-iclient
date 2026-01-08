@@ -1,5 +1,5 @@
 import L from 'leaflet';
-import 'vue-iclient-core/libs/iclient-leaflet/iclient-leaflet.min';
+import { tiledMapLayer } from '@supermapgis/iclient-leaflet';
 import { capitalizeFirstLetter } from 'vue-iclient/src/leaflet/_utils/props-binder';
 
 export default class RasterTileLayerViewModel extends L.Evented {
@@ -45,7 +45,7 @@ export default class RasterTileLayerViewModel extends L.Evented {
   }
 
   _addLayer() {
-    this.layer = L.supermap.tiledMapLayer(this.defaultOptions.url, this.defaultOptions);
+    this.layer = tiledMapLayer(this.defaultOptions.url, this.defaultOptions);
   }
 
   getLayer() {

@@ -189,11 +189,11 @@ import type {
   QueryFailedEvent,
   QueryResultParams
 } from './types'
-import type { QueryParameter, QueryBoundsType } from 'vue-iclient-core/controllers/mapboxgl/QueryViewModel'
+import type { QueryParameter, QueryBoundsType } from 'vue-iclient-controllers-mapboxgl/src/QueryViewModel'
 import { ref, computed, watch, onMounted, onUnmounted, useTemplateRef, useSlots } from 'vue'
 import { useTheme, useMapGetter, useLocale } from '@supermapgis/common/hooks/index.common'
 import { useMapControl } from '@supermapgis/mapboxgl/hooks'
-import QueryViewModel from 'vue-iclient-core/controllers/mapboxgl/QueryViewModel'
+import QueryViewModel from 'vue-iclient-controllers-mapboxgl/src/QueryViewModel'
 import { LoadingOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import SmInput from '@supermapgis/common/components/input/Input'

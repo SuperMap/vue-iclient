@@ -50,7 +50,6 @@
     "@esbuild-kit/cjs-loader": "^2.2.1",
     "@pnpm/types": "^8.4.0",
     "rollup-plugin-visualizer": "^5.14.0",
-    "unbuild": "^2.0.0",
-    "vue": "^3.2.37"
+    "unbuild": "^2.0.0"
   }
 }

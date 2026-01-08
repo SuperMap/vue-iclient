@@ -2,7 +2,7 @@
 import AnimateMarkerLayer from '../animate-marker-layer.vue'
 import WebMap from '@supermapgis/mapboxgl/components/web-map/webmap.vue'
 import Button from '@supermapgis/common/components/button/Button'
-import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance'
+import { QueryService, QueryBySQLParameters } from '@supermapgis/iclient-mapboxgl'
 import { onBeforeMount, reactive } from 'vue'
 
 const breathingApertureParam = {
@@ -50,13 +50,13 @@ function _unproject(point) {
 
 function getFeatures() {
   const url = 'https://iserver.supermap.io/iserver/services/map-china400/rest/maps/China'
-  const param = new mapboxgl.supermap.QueryBySQLParameters({
+  const param = new QueryBySQLParameters({
     queryParams: {
       name: 'China_provincename_A_txt@China',
       attributeFilter: 'SMID > 0'
     }
   })
-  new mapboxgl.supermap.QueryService(url).queryBySQL(param, function (serviceResult) {
+  new QueryService(url).queryBySQL(param, function (serviceResult) {
     const recordsets = serviceResult && serviceResult.result && serviceResult.result.recordsets
     const featuresCollection = recordsets && recordsets[0] && recordsets[0].features
     featuresCollection.features.forEach(function (feature) {

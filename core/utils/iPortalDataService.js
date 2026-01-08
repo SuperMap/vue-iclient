@@ -1,4 +1,5 @@
-import { FetchRequest, Util } from 'vue-iclient-static/libs/iclient-common/iclient-common';
+import { FetchRequest } from '@supermapgis/iclient-common/util/FetchRequest';
+import { Util } from '@supermapgis/iclient-common/commontypes/Util';
 import iServerRestService, { vertifyEpsgCode, transformFeatures } from 'vue-iclient-core/utils/iServerRestService';
 import { isXField, isYField, handleWithCredentials, handleDataParentRes } from 'vue-iclient-core/utils/util';
 import { Events } from 'vue-iclient-core/types/event/Events';

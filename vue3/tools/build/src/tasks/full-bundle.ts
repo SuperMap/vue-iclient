@@ -12,7 +12,8 @@ import {
   getEpOutput,
   getPkgRoot,
   getPkgByCommand,
-  getLocaleRoot
+  getLocaleRoot,
+  getExternals
 } from '@supermapgis/build-utils'
 import { camelCase, upperFirst } from 'lodash-es'
 import glob from 'fast-glob'
@@ -53,16 +54,13 @@ async function buildFullEntry(minify: boolean, banner: string) {
       sourceMap: false,
       transformMixedEsModules: false,
       exclude: [
-        'vue-icliet-static/libs/iclient-leaflet/iclient-leaflet.min',
-        'vue-icliet-static/libs/iclient-mapboxgl/iclient-mapboxgl.min',
-        'vue-icliet-static/libs/mapboxgl/mapbox-gl-enhance.min',
-        'vue-icliet-static/libs/deckgl/deck.gl.min',
-        'vue-icliet-static/libs/echarts-layer/EchartsLayer',
-        'vue-icliet-static/libs/geostats/geostats',
-        'vue-icliet-static/libs/geostats/geostats',
-        'vue-icliet-static/libs/mapbox-gl-draw/mapbox-gl-draw',
-        'vue-icliet-static/libs/json-sql/json-sql',
-        'vue-icliet-static/libs/Cesium/*/*.js'
+        'vue-iclient-static/libs/deckgl/deck.gl.min',
+        'vue-iclient-static/libs/echarts-layer/EchartsLayer',
+        'vue-iclient-static/libs/geostats/geostats',
+        'vue-iclient-static/libs/geostats/geostats',
+        'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw',
+        'vue-iclient-static/libs/json-sql/json-sql',
+        'vue-iclient-static/libs/Cesium/*/*.js'
       ]
     }),
     esbuild({
@@ -92,11 +90,12 @@ async function buildFullEntry(minify: boolean, banner: string) {
       })
     )
   }
+  const pkgExternals = getExternals(pkgName);
   const bundle = await rollup({
     input: path.resolve(epRoot, 'index.ts'),
     cache: true,
     plugins,
-    external: await generateExternal({ full: true }),
+    external: await generateExternal({ externals: pkgExternals }),
     treeshake: true,
     onwarn(warning, warn) {
       const { code, ids } = warning
@@ -112,8 +111,9 @@ async function buildFullEntry(minify: boolean, banner: string) {
       file: path.resolve(epOutput, 'dist', formatBundleFilename('index', minify, 'js')),
       exports: 'named',
       name: PKG_CAMELCASE_NAME,
-      globals: {
-        vue: 'Vue'
+      globals: function(id) {
+        const matchOne = pkgExternals.find(item => item.match?.(id, item.id) || item.id === id);
+        return matchOne?.root || id;
       },
       sourcemap: minify,
       banner

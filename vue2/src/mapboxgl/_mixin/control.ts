@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
-import MapControl from 'vue-iclient-core/controllers/mapboxgl/utils/MapControl';
+import MapControl from 'vue-iclient-controllers-mapboxgl/src/utils/MapControl';
 
 @Component
 export default class Control extends Vue {

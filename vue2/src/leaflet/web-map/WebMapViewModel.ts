@@ -1,13 +1,26 @@
 import L from '../leaflet-wrapper';
 import { Events } from 'vue-iclient-core/types/event/Events';
-import 'vue-iclient-core/libs/iclient-leaflet/iclient-leaflet.min';
+import {
+  tiledMapLayer,
+  wmtsLayer,
+  tiandituTileLayer,
+  cloudTileLayer,
+  baiduTileLayer,
+  labelThemeLayer,
+  heatMapLayer,
+  echartsLayer,
+  dataFlowLayer,
+  uniqueThemeLayer,
+  rangeThemeLayer,
+  unicodeMarker,
+  themeFeature
+} from '@supermapgis/iclient-leaflet';
+import { createWebMapV2BaseExtending } from '@supermapgis/iclient-common/mapping/WebMapV2Base';
 // import echarts from 'echarts';  // TODO iclient 拿不到 echarts ???
-import 'vue-iclient-core/libs/geostats/geostats';
+import 'vue-iclient-static/libs/geostats/geostats';
 import getCenter from '@turf/center';
 import proj4 from 'proj4';
 import { getProjection, toEpsgCode } from 'vue-iclient-core/utils/epsg-define';
-// @ts-ignore
-import { createWebMapV2BaseExtending } from 'vue-iclient-core/libs/iclient-common/iclient-common-webmapv2base';
 
 interface WebMapOptions {
   target?: string;
@@ -137,7 +150,7 @@ export default class WebMapViewModel extends WebMapV2Base {
   _createMap(mapInfo?): void {
     if (!mapInfo) {
       this.map = L.map(this.target, {
-        center: this.center && (<number[]> this.center).length ? L.latLng(this.center[0], this.center[1]) : [0, 0],
+        center: this.center && (<number[]>this.center).length ? L.latLng(this.center[0], this.center[1]) : [0, 0],
         zoom: this.zoom || 0,
         crs: this.mapOptions.crs || L.CRS.EPSG3857,
         maxZoom: this.mapOptions.maxZoom || 30,
@@ -386,8 +399,7 @@ export default class WebMapViewModel extends WebMapV2Base {
 
   private _createDynamicTiledLayer(layerInfo: any): void {
     let url = layerInfo.url;
-    // @ts-ignore
-    let layer = L.supermap.tiledMapLayer(url, {
+    let layer = tiledMapLayer(url, {
       noWrap: true,
       prjCoordSys: { epsgCode: this.baseProjection.split(':')[1] }
     });
@@ -411,8 +423,7 @@ export default class WebMapViewModel extends WebMapV2Base {
 
   private _createWMTSLayer(layerInfo: any) {
     let { url, tileMatrixSet, name } = layerInfo;
-    // @ts-ignore
-    return L.supermap.wmtsLayer(url, {
+    return wmtsLayer(url, {
       layer: name,
       style: 'default',
       tilematrixSet: tileMatrixSet,
@@ -426,13 +437,11 @@ export default class WebMapViewModel extends WebMapV2Base {
     this.map.setMinZoom(1);
     let layerType = layerInfo.layerType.split('_')[1].toLowerCase();
     let isLabel = Boolean(layerInfo.labelLayerVisible);
-    // @ts-ignore
-    let tiandituLayer = L.supermap.tiandituTileLayer({
+    let tiandituLayer = tiandituTileLayer({
       layerType,
       key: this.tiandituKey
     });
-    // @ts-ignore
-    let tiandituLabelLayer = L.supermap.tiandituTileLayer({
+    let tiandituLabelLayer = tiandituTileLayer({
       layerType,
       isLabel: true,
       key: this.tiandituKey
@@ -447,8 +456,7 @@ export default class WebMapViewModel extends WebMapV2Base {
       this.map.getZoom() < 3 && this.map.setZoom(3);
       this.map.setMinZoom(3);
     }
-    // @ts-ignore
-    return L.supermap.cloudTileLayer(url, { noWrap: true });
+    return cloudTileLayer(url, { noWrap: true });
   }
 
   private _createXYZLayer(url) {
@@ -458,8 +466,7 @@ export default class WebMapViewModel extends WebMapV2Base {
   private _createBaiduTileLayer() {
     this.map.getZoom() < 3 && this.map.setZoom(3);
     this.map.setMinZoom(3);
-    // @ts-ignore
-    return L.supermap.baiduTileLayer('', { noWrap: true });
+    return baiduTileLayer('', { noWrap: true });
   }
 
   private _createUniqueLayer(layerInfo: any, features: any) {
@@ -524,8 +531,7 @@ export default class WebMapViewModel extends WebMapV2Base {
               if ((geomType === 'LINESTRING' && defaultStyle.lineCap) || geomType === 'POLYGON') {
                 resolve(this._createGeojsonLayer([feature], this._getVectorLayerStyle(defaultStyle)));
               } else if (geomType === 'TEXT') {
-                // @ts-ignore
-                let text = new L.supermap.labelThemeLayer(defaultStyle.text + '-text');
+                let text = new labelThemeLayer(defaultStyle.text + '-text');
 
                 text.style = {
                   fontSize: defaultStyle.font.split(' ')[0],
@@ -537,8 +543,7 @@ export default class WebMapViewModel extends WebMapV2Base {
                 };
                 text.themeField = 'text';
                 feature.properties.text = defaultStyle.text;
-                // @ts-ignore
-                let geoTextFeature = new L.supermap.themeFeature(
+                let geoTextFeature = new themeFeature(
                   [feature.geometry.coordinates[1], feature.geometry.coordinates[0], defaultStyle.text],
                   feature.properties
                 );
@@ -609,8 +614,7 @@ export default class WebMapViewModel extends WebMapV2Base {
 
   private _addLabelLayer(layerInfo: any, features: any) {
     let { labelStyle, layerID, featureType } = layerInfo;
-    // @ts-ignore
-    let label = new L.supermap.labelThemeLayer(layerID + '-label');
+    let label = new labelThemeLayer(layerID + '-label');
     labelStyle.fontSize = 14;
     labelStyle.labelRect = true;
     labelStyle.fontColor = labelStyle.fill;
@@ -639,8 +643,7 @@ export default class WebMapViewModel extends WebMapV2Base {
       heatColors[i] = customSettings[i];
     }
 
-    // @ts-ignore
-    let heatMapLayer = L.supermap.heatMapLayer(layerID, {
+    let heatMapLayerInstance = heatMapLayer(layerID, {
       colors: heatColors,
       map: this.map,
       radius: radius * 2,
@@ -667,12 +670,12 @@ export default class WebMapViewModel extends WebMapV2Base {
     //   featureWeight: weight
     // })
 
-    heatMapLayer.addFeatures({
+    heatMapLayerInstance.addFeatures({
       type: 'FeatureCollection',
       features: features
     });
 
-    return heatMapLayer;
+    return heatMapLayerInstance;
   }
 
   private _createSymbolLayer(layerInfo: any, features: any, textSize?) {
@@ -731,8 +734,7 @@ export default class WebMapViewModel extends WebMapV2Base {
     // window['echarts'] = echarts;
     const options = this.getEchartsLayerOptions(layerInfo, features, 'leaflet');
     options.GLMap = { roam: true };
-    // @ts-ignore
-    const layer = L.supermap.echartsLayer(options);
+    const layer = echartsLayer(options);
     this.echartslayer.push(layer);
     return layer;
   }
@@ -741,14 +743,13 @@ export default class WebMapViewModel extends WebMapV2Base {
     this._dataflowFeatureCache = {};
     return new Promise(resolve => {
       this._getDataflowPointLayer(layerInfo).then(pointToLayer => {
-        // @ts-ignore
-        let dataFlowLayer = L.supermap.dataFlowLayer(layerInfo.wsUrl, {
+        let dataFlowLayerInstance = dataFlowLayer(layerInfo.wsUrl, {
           pointToLayer
         });
         this._updateDataFlowFeaturesCallback = this._updateDataFlowFeature.bind(this, layerInfo);
-        dataFlowLayer.on('dataupdated', this._updateDataFlowFeaturesCallback);
-        this._dataFlowLayer = dataFlowLayer;
-        resolve(dataFlowLayer);
+        dataFlowLayerInstance.on('dataupdated', this._updateDataFlowFeaturesCallback);
+        this._dataFlowLayer = dataFlowLayerInstance;
+        resolve(dataFlowLayerInstance);
       });
     });
   }
@@ -843,8 +844,7 @@ export default class WebMapViewModel extends WebMapV2Base {
       let coordinate = this._getLabelLngLat(featureType, feature);
       this._setLabelOffset(featureType, layerStyle, style);
       let properties = feature.properties;
-      // @ts-ignore
-      let geoTextFeature = new L.supermap.themeFeature(
+      let geoTextFeature = new themeFeature(
         [coordinate[1], coordinate[0], properties[themeField]],
         properties
       );
@@ -926,8 +926,8 @@ export default class WebMapViewModel extends WebMapV2Base {
     Object.keys(features[0].properties).forEach(key => {
       key.toLocaleUpperCase() === themeField.toLocaleUpperCase() && (themeField = key);
     });
-    // @ts-ignore
-    let layer = L.supermap[`${type}ThemeLayer`](layerID);
+    const themeLayerFactory = type === 'unique' ? uniqueThemeLayer : rangeThemeLayer;
+    let layer = themeLayerFactory(layerID);
 
     layerStyle.stroke = true;
     layer.style = layerStyle;
@@ -1005,8 +1005,7 @@ export default class WebMapViewModel extends WebMapV2Base {
     symbolStyle.fontFamily = 'supermapol-icons';
     let pointToLayer = (geojson, latlng) => {
       textSize && (symbolStyle.fontSize = textSize[geojson.id - 1 || geojson.properties.index] + 'px');
-      // @ts-ignore
-      return new L.supermap.unicodeMarker(latlng, symbolStyle);
+      return new unicodeMarker(latlng, symbolStyle);
     };
     return pointToLayer;
   }
@@ -1091,8 +1090,7 @@ export default class WebMapViewModel extends WebMapV2Base {
     if (this._dataflowLabelIdCache[geoID]) {
       layer = this._dataFlowLayer.getLayer(this._dataflowLabelIdCache[geoID]);
       let feature = this._dataflowFeatureCache[geoID];
-      // @ts-ignore
-      let geoTextFeature = new L.supermap.themeFeature(
+      let geoTextFeature = new themeFeature(
         [feature.geometry.coordinates[1], feature.geometry.coordinates[0], geoID],
         feature.properties
       );

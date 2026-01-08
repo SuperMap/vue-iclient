@@ -1,9 +1,9 @@
 import type { Map } from 'mapbox-gl'
 import type { LayerProps, LayerEmits, LayerLayout, LayerPaint } from '@supermapgis/mapboxgl/utils'
-import type { MapEventHandler } from 'vue-iclient-core/controllers/mapboxgl/utils/MapEvents'
+import type { MapEventHandler } from 'vue-iclient-controllers-mapboxgl/src/utils/MapEvents'
 import { computed, watch, getCurrentInstance } from 'vue'
 import { isEqual } from 'lodash-es'
-import MapEvents, { LAYER_EVENT_NAMES } from 'vue-iclient-core/controllers/mapboxgl/utils/MapEvents'
+import MapEvents, { LAYER_EVENT_NAMES } from 'vue-iclient-controllers-mapboxgl/src/utils/MapEvents'
 import { useEventListeners } from '@supermapgis/common/hooks/index.common'
 import { uniqueId } from 'lodash-es'
 

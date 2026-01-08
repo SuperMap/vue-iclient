@@ -1,5 +1,5 @@
 import L from 'vue-iclient/src/leaflet/leaflet-wrapper';
-import 'vue-iclient-core/libs/iclient-leaflet/iclient-leaflet.min';
+import { GeoJSONFormat, ServerGeometry } from '@supermapgis/iclient-leaflet';
 import cloneDeep from 'lodash.clonedeep';
 /**
  * @class IdentifyViewModel
@@ -92,8 +92,8 @@ export default class IdentifyViewModel extends L.Evented {
    * @param {Object} themeFeature - themeFeature。
    */
   formatGeoJSON(themeFeature) {
-    let formatObj = new SuperMap.Format.GeoJSON();
-    let serverGeometry = SuperMap.ServerGeometry.fromGeometry(themeFeature.geometry);
+    let formatObj = new GeoJSONFormat();
+    let serverGeometry = ServerGeometry.fromGeometry(themeFeature.geometry);
     let geojson = formatObj.toGeoJSON(serverGeometry);
     geojson.properties = themeFeature.attributes;
     return geojson;

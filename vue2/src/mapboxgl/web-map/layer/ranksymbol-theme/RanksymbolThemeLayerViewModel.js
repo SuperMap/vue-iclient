@@ -1,5 +1,5 @@
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
-import 'vue-iclient-core/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import mapboxgl from 'mapbox-gl';
+import { RankSymbolThemeLayer } from '@supermapgis/iclient-mapboxgl';
 
 export default class RanksymbolThemeLayerViewModel extends mapboxgl.Evented {
   constructor(themeProps) {
@@ -40,7 +40,7 @@ export default class RanksymbolThemeLayerViewModel extends mapboxgl.Evented {
   }
 
   _init() {
-    this.themeLayer = new mapboxgl.supermap.RankSymbolThemeLayer(this.layerName, this.symbolType, this.options);
+    this.themeLayer = new RankSymbolThemeLayer(this.layerName, this.symbolType, this.options);
     this.map.addLayer(this.themeLayer);
     this.themeLayer.addFeatures(this.data);
   }

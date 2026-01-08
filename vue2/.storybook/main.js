@@ -30,7 +30,6 @@ module.exports = {
     '@storybook/addon-toolbars'
   ],
   webpackFinal: async (config, { configType }) => {
-    config.module.noParse = /(mapbox-gl-enhance)\.js$/;
     config.resolve.alias['vue-iclient'] = resolve('./');
     config.resolve.alias['vue-iclient-core'] = resolve('../core');
     config.resolve.alias['@supermapgis/vue-iclient-mapboxgl/static'] = resolve('../core');

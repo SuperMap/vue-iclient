@@ -34,9 +34,9 @@ import type { DrawProps, DrawEvents } from './types'
 import { drawPropsDefault } from './types'
 import { useMapGetter, useLocale, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useMapControl } from '@supermapgis/mapboxgl/hooks'
-import DrawViewModel from 'vue-iclient-core/controllers/mapboxgl/DrawViewModel';
+import DrawViewModel from 'vue-iclient-controllers-mapboxgl/src/DrawViewModel';
 import uniqueId from 'lodash.uniqueid';
-import drawEvent from 'vue-iclient-core/controllers/mapboxgl/types/DrawEvent'
+import drawEvent from 'vue-iclient-controllers-mapboxgl/src/types/DrawEvent'
 import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'
 
 defineOptions({

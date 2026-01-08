@@ -9,7 +9,7 @@ import { debounce } from 'lodash-es'
 import { useVmProps } from '@supermapgis/common/hooks/index.common'
 import GraphMapViewModel, {
   EmitParams
-} from 'vue-iclient-core/controllers/mapboxgl/GraphMapViewModel'
+} from 'vue-iclient-controllers-mapboxgl/src/GraphMapViewModel'
 import { GraphMapPropsDefault } from './types'
 import type { GraphMapEmits, GraphMapProps } from './types'
 

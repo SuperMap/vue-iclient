@@ -16,13 +16,12 @@ export default defineConfig({
       '@supermapgis/mapboxgl': fileURLToPath(new URL('./packages/mapboxgl', import.meta.url)),
       '@supermapgis/common': fileURLToPath(new URL('./packages/common', import.meta.url)),
       'vue-iclient-core': fileURLToPath(new URL('../core', import.meta.url)),
-      'vue-iclient-static': fileURLToPath(new URL('../core', import.meta.url))
+      'vue-iclient-static': fileURLToPath(new URL('../static', import.meta.url)),
+      'vue-iclient-controllers-mapboxgl': fileURLToPath(new URL('../controllers/mapboxgl', import.meta.url)),
     }
   },
   optimizeDeps: {
     include: [
-      'vue-iclient-static/libs/iclient-common/iclient-common',
-      'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance',
       'vue-iclient-static/libs/echarts-layer/EchartsLayer',
       'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw'
     ]
@@ -30,8 +29,6 @@ export default defineConfig({
   build: {
     commonjsOptions: {
       include: [
-        'vue-iclient-static/libs/iclient-common/iclient-common',
-        'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance',
         'vue-iclient-static/libs/echarts-layer/EchartsLayer',
         'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw'
       ]

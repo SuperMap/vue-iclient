@@ -1,4 +1,4 @@
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'mapbox-gl';
 
 export default class GeojsonLayerViewModel extends mapboxgl.Evented {
   constructor(GeojsonLayerOptions) {

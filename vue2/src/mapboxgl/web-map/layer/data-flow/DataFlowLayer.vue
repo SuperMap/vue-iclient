@@ -2,9 +2,9 @@
 import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import Layer from 'vue-iclient/src/mapboxgl/_mixin/layer';
 import DataFlowLayerViewModel from './DataFlowLayerViewModel';
-import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/types/CircleStyle';
-import FillStyle from 'vue-iclient-core/controllers/mapboxgl/types/FillStyle';
-import LineStyle from 'vue-iclient-core/controllers/mapboxgl/types/LineStyle';
+import CircleStyle from 'vue-iclient-controllers-mapboxgl/src/types/CircleStyle';
+import FillStyle from 'vue-iclient-controllers-mapboxgl/src/types/FillStyle';
+import LineStyle from 'vue-iclient-controllers-mapboxgl/src/types/LineStyle';
 import Message from 'vue-iclient/src/common/message/Message.js';
 
 /**

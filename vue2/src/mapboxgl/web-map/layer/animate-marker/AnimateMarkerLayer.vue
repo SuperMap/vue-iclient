@@ -1,10 +1,10 @@
 <script lang="ts">
 import type { FeatureCollection } from 'geojson';
-import type { AnimateMarkerLayerOptions } from 'vue-iclient-core/controllers/mapboxgl/AnimateMarkerLayerViewModel';
+import type { AnimateMarkerLayerOptions } from 'vue-iclient-controllers-mapboxgl/src/AnimateMarkerLayerViewModel';
 import { Component, Mixins, Prop } from 'vue-property-decorator';
 import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import Layer from 'vue-iclient/src/mapboxgl/_mixin/layer';
-import AnimateMarkerLayerViewModel from 'vue-iclient-core/controllers/mapboxgl/AnimateMarkerLayerViewModel';
+import AnimateMarkerLayerViewModel from 'vue-iclient-controllers-mapboxgl/src/AnimateMarkerLayerViewModel';
 import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater';
 
 /**

@@ -1,6 +1,6 @@
 import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'mapbox-gl';
 
 export default {
   title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.slideshow.title')}`,

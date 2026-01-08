@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import WebSceneViewModel from 'vue-iclient-core/controllers/mapboxgl/WebSceneViewModel';
+import WebSceneViewModel from 'vue-iclient-controllers-mapboxgl/src/WebSceneViewModel';
 import isEqual from 'lodash.isequal';
 import sceneEvent from 'vue-iclient-core/types/scene-event';
 

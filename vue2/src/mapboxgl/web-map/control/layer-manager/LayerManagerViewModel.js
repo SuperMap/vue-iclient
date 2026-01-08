@@ -1,5 +1,5 @@
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
-import WebMapViewModel from 'vue-iclient-core/controllers/mapboxgl/WebMapViewModel';
+import mapboxgl from 'mapbox-gl';
+import WebMapViewModel from 'vue-iclient-controllers-mapboxgl/src/WebMapViewModel';
 /**
  * @class LayerManageViewModel
  * @description LayerManage viewModel.

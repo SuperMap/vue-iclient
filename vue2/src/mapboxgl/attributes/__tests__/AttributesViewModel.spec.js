@@ -1,5 +1,5 @@
 import flushPromises from 'flush-promises';
-import AttributesViewModel from 'vue-iclient-core/controllers/mapboxgl/AttributesViewModel.ts';
+import AttributesViewModel from 'vue-iclient-controllers-mapboxgl/src/AttributesViewModel.ts';
 
 describe('AttributesViewModel.ts', () => {
   const options = {

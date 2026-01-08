@@ -3,7 +3,7 @@ import type mapboxglTypes from 'mapbox-gl'
 import type { MapSelectionChangedEvent } from '@supermapgis/mapboxgl/components/layer-highlight/types'
 import { ref, watch, onUnmounted, onBeforeMount } from 'vue'
 import { useMapGetter } from '@supermapgis/common/hooks/index.common'
-import PopupViewModel from 'vue-iclient-core/controllers/mapboxgl/PopupViewModel'
+import PopupViewModel from 'vue-iclient-controllers-mapboxgl/src/PopupViewModel'
 import { isEqual } from 'lodash-es'
 
 export function useLayerHighlightHooks(props, layerIds) {

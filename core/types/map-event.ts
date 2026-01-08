@@ -1,4 +1,4 @@
-import { flattenLayerCatalog, getGroupChildrenLayers, removeLayersByIds, sortLayerCatalog } from 'vue-iclient-core/controllers/mapboxgl/utils/layerCatalogGroupUtil';
+import { flattenLayerCatalog, getGroupChildrenLayers, removeLayersByIds, sortLayerCatalog } from 'vue-iclient-core/utils/layerCatalogGroupUtil';
 import { Events } from 'vue-iclient-core/types/event/Events';
 
 export class MapEvent extends Events {

@@ -1,6 +1,7 @@
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'mapbox-gl';
 import cloneDeep from 'lodash.clonedeep';
-import 'vue-iclient-core/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import { DataFlowService, SecurityManager } from '@supermapgis/iclient-mapboxgl';
+
 /**
  * @class DataFlowLayerViewModel
  * @category ViewModel
@@ -34,7 +35,7 @@ export default class DataFlowLayerViewModel extends mapboxgl.Evented {
     }
     this.map = map;
     if (this.options.registerToken) {
-      SuperMap.SecurityManager.registerToken(this.serviceUrl, this.options.registerToken);
+      SecurityManager.registerToken(this.serviceUrl, this.options.registerToken);
     }
 
     this._initializeDataFlow();
@@ -67,7 +68,7 @@ export default class DataFlowLayerViewModel extends mapboxgl.Evented {
   }
 
   _initializeDataFlow() {
-    let dataService = new mapboxgl.supermap.DataFlowService(this.serviceUrl, {
+    let dataService = new DataFlowService(this.serviceUrl, {
       geometry: this.options.geometry,
       excludeField: this.options.excludeField
     }).initSubscribe();
