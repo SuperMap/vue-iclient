@@ -3,7 +3,8 @@
   "include": [
     "packages",
     "typings/**/*.d.ts",
-    "env.d.ts"
+    "env.d.ts",
+    "test/unit/setup.ts"
   ],
   "exclude": [
     "node_modules",
