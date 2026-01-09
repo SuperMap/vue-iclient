@@ -21,6 +21,7 @@
   }
 
   .sm-component-select .sm-component-select-selector,
+  .sm-component-checkbox:not(.sm-component-checkbox-checked) .sm-component-checkbox-inner,
   .measure-btn-group button,
   .sm-component-measure__a-card {
     background-color: transparent;
@@ -44,7 +45,7 @@
         display: flex;
         justify-content: space-around;
         align-items: center;
-        border: 1px solid $border-color-split;
+        border: 1px solid $border-color-secondary;
         border-radius: 4px;
         margin: 12px 0;
         height: 30px;
