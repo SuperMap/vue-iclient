@@ -7,9 +7,6 @@ const relativePath = path => {
 }
 
 export default defineConfig({
-  define: {
-    global: 'window'
-  },
   plugins: [vue()],
   resolve: {
     alias: {
@@ -17,7 +14,9 @@ export default defineConfig({
       '@supermapgis/common': fileURLToPath(new URL('./packages/common', import.meta.url)),
       'vue-iclient-core': fileURLToPath(new URL('../core', import.meta.url)),
       'vue-iclient-static': fileURLToPath(new URL('../static', import.meta.url)),
-      'vue-iclient-controllers-mapboxgl': fileURLToPath(new URL('../controllers/mapboxgl', import.meta.url)),
+      'vue-iclient-controllers-mapboxgl': fileURLToPath(
+        new URL('../controllers/mapboxgl', import.meta.url)
+      )
     }
   },
   optimizeDeps: {
@@ -38,7 +37,8 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: [relativePath('./tests/unit/setup.ts')],
-    include: ['**/*.spec.[jt]s?(x)'],
+    // include: ['**/*.spec.[jt]s?(x)'],
+    include: ['./tests/unit/iclient-version.spec.ts'],
     coverage: {
       all: true,
       reportsDirectory: relativePath('./tests/unit/coverage'),

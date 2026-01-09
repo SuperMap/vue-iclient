@@ -46,19 +46,15 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: [
-      'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance',
       'vue-iclient-static/libs/echarts-layer/EchartsLayer',
-      'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw',
-      'mapbox-gl'
+      'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw'
     ]
   },
   build: {
     commonjsOptions: {
       include: [
-        'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance',
         'vue-iclient-static/libs/echarts-layer/EchartsLayer',
-        'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw',
-        'mapbox-gl'
+        'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw'
       ]
     },
     rollupOptions: {
