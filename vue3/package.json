@@ -66,6 +66,7 @@
     "@supermapgis/mapboxgl/hooks": "workspace:*",
     "@supermapgis/mapboxgl/theme-chalk": "workspace:*",
     "@supermapgis/mapboxgl/utils": "workspace:*",
+    "@types/jest": "^29.5.14",
     "@tsconfig/node22": "^22.0.0",
     "@types/jsdom": "^21.1.7",
     "@types/node": "^22.10.2",
