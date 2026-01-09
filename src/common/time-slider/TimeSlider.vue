@@ -57,6 +57,7 @@ export default class SmTimeSlider extends Mixins(Theme) {
   namedRafs_: any;
   uniqueId: string = UniqueId(`${this.$options.name.toLowerCase()}-`);
 
+  @Prop({ default: '0%' }) defaultPostion: string;
   @Prop({ default: false }) autoPlay: boolean;
   @Prop({ default: true }) loop: boolean;
   @Prop({ default: 1000 }) playInterval: number;
@@ -222,6 +223,15 @@ export default class SmTimeSlider extends Mixins(Theme) {
       return end - start || 0;
     }
     return 0;
+  }
+
+  @Watch('defaultPostion', { immediate: true })
+  defaultPostionWatcher() {
+    if (this.defaultPostion) {
+      const num = parseFloat(this.defaultPostion.replace('%', ''));
+      this.currentTime = this.isDataDuration ? (num / 100) * this.dataDuration * 1000 : (num / 100) * this.duration;
+      this.sliderBarWidth = this.defaultPostion;
+    }
   }
 
   @Watch('draggable')

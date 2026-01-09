@@ -39,7 +39,7 @@ describe('ChartMixin additional coverage', () => {
     expect(out.formatter({ dataIndex: 2, name: '1.234', value: 1.2547, percent: 125.47 })).toBe('');
   });
 
-  it('setItemStyleColor highlights pie slices and uses serieColor for others', () => {
+  it('setItemStyleColor highlights pie slices and uses serieColor for others', async () => {
     // use shallow mount to avoid echarts initialization
     const wrapper = shallowMount(ChartMixin, {
       propsData: Object.assign({ colorGroup: ['#3fb1e3', '#6be6c1'] }, { options: { series: [ { itemStyle: { color: 'red' }, type: 'pie' }, { itemStyle: { color: 'blue' }, type: 'bar' } ] } })
@@ -47,7 +47,7 @@ describe('ChartMixin additional coverage', () => {
     // prepare echartOptions to be manipulated
     wrapper.vm.echartOptions = { series: [ { type: 'pie', data: [1,2] }, { type: 'bar', data: [3,4] } ] };
     // avoid mutating prop directly: use setProps to set highlightOptions
-    wrapper.setProps({ highlightOptions: [ { seriesIndex: [0], dataIndex: 1, color: 'pink' } ] });
+    await wrapper.setProps({ highlightOptions: [ { seriesIndex: [0], dataIndex: 1, color: 'pink' } ] });
 
     // Ensure ColorPicker used for non-highlight pie
     const spyColors = jest.spyOn(ColorsPickerUtil, 'getGradientColors');
