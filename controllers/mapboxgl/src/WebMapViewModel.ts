@@ -13,7 +13,10 @@ import proj4 from 'proj4';
 import { getLayerCatalogIds, getGroupChildrenLayers, findLayerCatalog } from 'vue-iclient-core/utils/layerCatalogGroupUtil';
 import bbox from '@turf/bbox';
 import { points } from '@turf/helpers';
+import * as echarts from 'echarts';
 
+// @ts-ignore
+window.echarts = echarts;
 // @ts-ignore
 window.EchartsLayer = EchartsLayer;
 

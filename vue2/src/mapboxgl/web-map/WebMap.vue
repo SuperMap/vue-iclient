@@ -18,10 +18,6 @@ import { addListener, removeListener } from 'resize-detector';
 import debounce from 'lodash.debounce';
 import SmSpin from 'vue-iclient/src/common/spin/Spin.vue';
 import Message from 'vue-iclient/src/common/message/Message.js';
-import * as echarts from 'echarts';
-
-// @ts-ignore
-window.echarts = echarts;
 
 interface commonControlParam {
   show?: boolean;

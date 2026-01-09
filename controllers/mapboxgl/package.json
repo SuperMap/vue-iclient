@@ -11,6 +11,7 @@
     "@turf/envelope": ">=5.1.5",
     "@turf/helpers": ">=5.1.5",
     "@turf/transform-scale": ">=5.1.5",
+    "echarts": ">=6.0.0",
     "geojson": ">=0.5.0",
     "lodash.assignin": ">=4.0.1",
     "lodash.clonedeep": ">=4.0.1",
