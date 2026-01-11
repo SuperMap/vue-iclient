@@ -30,6 +30,8 @@
   },
   "dependencies": {
     "@turf/length": "^7.2.0",
-    "lodash.uniqby": "^4.7.0"
+    "lodash.uniqby": "^4.7.0",
+    "fast-xml-parser": "^5.2.5",
+    "ol": "^6.15.1"
   }
 }

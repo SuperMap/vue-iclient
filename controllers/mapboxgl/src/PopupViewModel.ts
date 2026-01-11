@@ -17,14 +17,14 @@ export default class PopupLayerHighlightViewModel extends LayerHighlightViewMode
     this.saveClickedFeatures()
   }
 
-  handleMapClickCover(e: mapboxglTypes.MapLayerMouseEvent) {
+  async handleMapClickCover(e: mapboxglTypes.MapLayerMouseEvent) {
     this.activeTargetId = this.dataSelectorMode === DataSelectorMode.MULTIPLE ? this.activeTargetId : null
     const layers = this.activeTargetId
       ? [this.activeTargetId]
       : this.highlightOptions.layerIds.filter(item => !!this.map.getLayer(item))
     this.removeHighlightLayers()
     // @ts-ignore
-    const features = this.queryLayerFeatures(e as mapboxglTypes.MapLayerMouseEvent, layers)
+    const features = await this.queryLayerFeatures(e as mapboxglTypes.MapLayerMouseEvent, layers)
     this.getClickedLayers(features, e)
     this.e = e
   }
@@ -40,9 +40,9 @@ export default class PopupLayerHighlightViewModel extends LayerHighlightViewMode
     })
     return layers
   }
-  queryFeaturesByLayerId(layerId: string) {
+  async queryFeaturesByLayerId(layerId: string) {
     if (!layerId) return
-    const features = this.queryLayerFeatures(this.e, [layerId])
+    const features = await this.queryLayerFeatures(this.e, [layerId])
     if (this.dataSelectorMode !== DataSelectorMode.MULTIPLE) {
       this.dataSelectorMode = DataSelectorMode.SINGLE
     }
@@ -94,3 +94,4 @@ export default class PopupLayerHighlightViewModel extends LayerHighlightViewMode
     })
   }
 }
+
