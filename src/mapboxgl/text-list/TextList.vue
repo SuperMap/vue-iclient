@@ -14,15 +14,7 @@
               :style="[fontSizeStyle, { flex: getColumnWidth(index) }]"
               :title="item.header"
             >
-              <div
-                @click="
-                  sortByField(
-                    item.field,
-                    index,
-                    !Number.isNaN(+listData[0][item.field]) && item.sort
-                  )
-                "
-              >
+              <div @click="sortByField(item.field, index, !Number.isNaN(+listData[0][item.field]) && item.sort)">
                 {{ item.header }}
               </div>
               <div
@@ -80,12 +72,25 @@
             <div
               v-for="(items, itemIndex) in getColumns"
               :key="itemIndex"
-              :title="(!items.slots && items.field) ? rowData[items.field] : ''"
-              :class="[items.slots && 'sm-component-text-list__slot', getCellStyle(rowData[items.field], itemIndex)['color'] && 'text-list_thresholds']"
-              :style="[listStyle.rowStyle, { flex: getColumnWidth(itemIndex) }, getCellStyle(rowData[items.field], itemIndex)]"
+              :title="!items.slots && items.field ? rowData[items.field] : ''"
+              :class="[
+                items.slots && 'sm-component-text-list__slot',
+                getCellStyle(rowData[items.field], itemIndex)['color'] && 'text-list_thresholds'
+              ]"
+              :style="[
+                listStyle.rowStyle,
+                { flex: getColumnWidth(itemIndex) },
+                getCellStyle(rowData[items.field], itemIndex)
+              ]"
             >
               <span v-if="!items.slots">{{ getText(items, rowData) }}</span>
-              <slot v-else :name="items.slots.customRender" :text="getText(items, rowData)" :record="rowData" :rowIndex="index">
+              <slot
+                v-else
+                :name="items.slots.customRender"
+                :text="getText(items, rowData)"
+                :record="rowData"
+                :rowIndex="index"
+              >
               </slot>
             </div>
           </div>
@@ -220,6 +225,8 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   curRollingStartIndex: number = 0;
 
+  newHighlightOptions: Array<HighlightOption> = [];
+
   @Prop() content: any; // 显示内容（JSON），dataset 二选一
 
   @Prop() dataset: any;
@@ -264,15 +271,16 @@ class SmTextList extends Mixins(Theme, Timer) {
   }
 
   @Watch('dataset', { deep: true })
-  datasetChanged() {
+  async datasetChanged() {
     if (this.dataset && (this.dataset.url || this.dataset.geoJSON)) {
-      this.getFeaturesFromDataset();
+      await this.getFeaturesFromDataset();
     } else {
       this.featuresData = [];
       this.listData = [];
       this.animateContent = [];
       clearInterval(this.startInter);
     }
+    this.newHighlightOptions = this.getNewHighlightOptions();
   }
 
   @Watch('animateContent')
@@ -354,9 +362,14 @@ class SmTextList extends Mixins(Theme, Timer) {
     }
   }
 
-  // 切换自动滚动与排序时重置。。。
   @Watch('highlightOptions', { immediate: true, deep: true })
-  highlightOptionsChanged(newVal) {
+  highlightOptionsChanged() {
+    this.newHighlightOptions = this.getNewHighlightOptions();
+  }
+
+  // 切换自动滚动与排序时重置。。。
+  @Watch('newHighlightOptions', { immediate: true, deep: true })
+  newHighlightOptionsChanged(newVal) {
     let autoBounds = this.getAutoRollingIndexBounds;
     if (!this.autoRolling && newVal && newVal.length) {
       // @ts-ignore
@@ -545,6 +558,19 @@ class SmTextList extends Mixins(Theme, Timer) {
     this.$on('theme-style-changed', this.handleThemeStyleChanged);
   }
 
+  getNewHighlightOptions() {
+    const matchFeatures = this.featuresData?.features || [];
+    const newHighlightOption = [];
+    matchFeatures?.forEach((matchFeature, dataIndex) => {
+      this.highlightOptions?.forEach(val => {
+        if (val && matchFeature && isequal(val.properties, matchFeature.properties)) {
+          newHighlightOption.push({ dataIndex });
+        }
+      });
+    });
+    return newHighlightOption;
+  }
+
   getText(items, rowData) {
     const { fixInfo, field } = items;
     const { prefix = '', suffix = '' } = fixInfo || { prefix: '', suffix: '' };
@@ -585,20 +611,19 @@ class SmTextList extends Mixins(Theme, Timer) {
     }
   }
 
-  getFeaturesFromDataset(initLoading = true) {
+  async getFeaturesFromDataset(initLoading = true) {
     // 如果是geojson就不加loading
     let { url, geoJSON } = this.dataset;
     url && initLoading && (this.spinning = true);
     // 有url或geojson ,dataset才发请求
     if (url || geoJSON) {
       let dataset = clonedeep(this.dataset);
-      getFeatures(dataset).then(data => {
-        this.dataset.url && initLoading && (this.spinning = false);
-        this.featuresData = data;
-        // 对定时刷新数据 按当前选择排序
-        this.listData = this.sortContent(this.handleFeatures(data));
-        this.getListHeightStyle();
-      });
+      const data = await getFeatures(dataset);
+      this.dataset.url && initLoading && (this.spinning = false);
+      this.featuresData = data;
+      // 对定时刷新数据 按当前选择排序
+      this.listData = this.sortContent(this.handleFeatures(data));
+      this.getListHeightStyle();
     }
   }
 
