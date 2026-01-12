@@ -406,6 +406,9 @@ export default {
     getNewHighlightOptions(matchFeatures = this.getChartFeatures()) {
       let seriesIndex = [];
       let newHighlightOption = [];
+      if (!this.options || !this.options.series) {
+        return newHighlightOption;
+      }
       for (let key = 0; key < this.options.series.length; key++) {
         seriesIndex.push(key);
       }
@@ -492,7 +495,7 @@ export default {
           this.options.series[seriesIndex].itemStyle &&
           this.options.series[seriesIndex].itemStyle.color;
         serie.itemStyle = serie.itemStyle || { color: '' };
-        serie.itemStyle.color = (params) => {
+        serie.itemStyle.color = params => {
           const { dataIndex } = params;
           const index = dataIndexs.indexOf(dataIndex);
           if (index > -1) {

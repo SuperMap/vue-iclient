@@ -252,4 +252,52 @@ describe('TimeSlider.vue', () => {
     expect(id).toBe('name');
     done();
   });
+  it('test defaultPostion default value', () => {
+    wrapper = mount(SmTimeSlider);
+    expect(wrapper.vm.defaultPostion).toBe('0%');
+  });
+
+  it('test defaultPostion with duration', () => {
+    wrapper = mount(SmTimeSlider, {
+      propsData: {
+        duration: 10000,
+        defaultPostion: '50%'
+      }
+    });
+    expect(wrapper.vm.currentTime).toBe(5000);
+    expect(wrapper.vm.sliderBarWidth).toBe('50%');
+  });
+
+  it('test defaultPostion with data', () => {
+    const data = [1599810915, 1599810920, 1599810925, 1599810930, 1599810935, 1599810940, 1599810945];
+    wrapper = mount(SmTimeSlider, {
+      propsData: {
+        data: data,
+        defaultPostion: '50%'
+      }
+    });
+    // dataDuration should be 30 seconds (1599810945 - 1599810915)
+    expect(wrapper.vm.dataDuration).toBe(30);
+    // currentTime should be 15 seconds (50% of 30 seconds), but multiplied by 1000 for data mode
+    expect(wrapper.vm.currentTime).toBe(15000);
+    expect(wrapper.vm.sliderBarWidth).toBe('50%');
+  });
+
+  it('test defaultPostion change', async done => {
+    wrapper = mount(SmTimeSlider, {
+      propsData: {
+        duration: 10000,
+        defaultPostion: '0%'
+      }
+    });
+    expect(wrapper.vm.currentTime).toBe(0);
+    expect(wrapper.vm.sliderBarWidth).toBe('0%');
+
+    await wrapper.setProps({
+      defaultPostion: '75%'
+    });
+    expect(wrapper.vm.currentTime).toBe(7500);
+    expect(wrapper.vm.sliderBarWidth).toBe('75%');
+    done();
+  });
 });
