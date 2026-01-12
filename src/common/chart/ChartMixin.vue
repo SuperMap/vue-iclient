@@ -287,14 +287,14 @@ export default {
       deep: true
     },
     datasetOptions: {
-      handler: async function (newVal, oldVal) {
+      handler: function (newVal, oldVal) {
         if (!isEqual(newVal, oldVal)) {
           this._setChartTheme();
           this.registerShape();
         }
         !this.echartsDataService &&
           this._isRequestData &&
-          (await this._setEchartOptions(this.dataset, this.datasetOptions, this.options));
+          this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
         this.echartsDataService && this.echartsDataService.setDatasetOptions(this.datasetOptions);
         this.echartsDataService &&
           this.dataSeriesCache &&
@@ -404,21 +404,28 @@ export default {
       }
     },
     getNewHighlightOptions(matchFeatures = this.getChartFeatures()) {
-      let seriesIndex = [];
+      let newSeriesIndex = [];
       let newHighlightOption = [];
       if (!this.options || !this.options.series) {
         return newHighlightOption;
       }
       for (let key = 0; key < this.options.series.length; key++) {
-        seriesIndex.push(key);
+        newSeriesIndex.push(key);
       }
       this.highlightOptions.forEach(val => {
         const field = this.datasetOptions?.[0].xField;
-        const dataIndex = this.isStastic
-          ? field && matchFeatures?.findIndex(feature => val.properties[field] === feature.properties[field])
-          : matchFeatures?.findIndex(feature => isEqual(feature.properties, val.properties));
-        if (val && dataIndex > -1) {
-          newHighlightOption.push({ seriesIndex, dataIndex });
+        if (!val) return;
+        const { properties, dataIndex: originDataIndex, seriesIndex: originSeriesIndex } = val;
+        if (properties) {
+          const dataIndex = this.isStastic
+            ? field && matchFeatures?.findIndex(feature => properties[field] === feature.properties[field])
+            : matchFeatures?.findIndex(feature => isEqual(feature.properties, properties));
+          if (dataIndex > -1) {
+            newHighlightOption.push({ ...val, seriesIndex: newSeriesIndex, dataIndex });
+          }
+        } else if (originDataIndex > -1) {
+          // 兼容之前的逻辑
+          newHighlightOption.push({ ...val, seriesIndex: originSeriesIndex, dataIndex: originDataIndex });
         }
       });
       return newHighlightOption;

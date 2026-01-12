@@ -115,7 +115,7 @@ export default {
       let colorIndex = 0;
       options.series = options.series.map((serie, index) => {
         if (parallelShowNumber !== 0) {
-          const serieName = serie.name.substring(serie.name.indexOf('-') + 1);
+          const serieName = serie.name?.substring(serie.name?.indexOf('-') + 1);
           if (!seriesNameTag) {
             seriesNameTag = serieName;
             seriesSpace = this.getSericeSpace(parallelShowNumber, baseSpace, seriesSpaceCount);
@@ -326,6 +326,9 @@ export default {
     multipleYField(optionSeries) {
       const series = cloneDeep(optionSeries);
       const nameList = series.map(serie => {
+        if (serie.name === undefined) {
+          return serie.name;
+        }
         if (!serie.name.includes('-')) {
           return serie.name;
         }
@@ -347,7 +350,7 @@ export default {
       const symbolPosition = series[0].name.indexOf('-');
       let firstSeriesName = series[0].name.substring(symbolPosition + 1);
       series.forEach(option => {
-        const optionName = option.name.substring(symbolPosition + 1);
+        const optionName = option.name?.substring(symbolPosition + 1);
         if (firstSeriesName === optionName) {
           parallelShowNumber++;
         }
@@ -605,7 +608,7 @@ export default {
       const firstSeriesName = series[0].name.split('-')[1];
       let seriesCount = 0;
       for (let serie of series) {
-        const serieNname = serie.name.split('-')[1];
+        const serieNname = serie.name?.split('-')[1];
         if (firstSeriesName === serieNname) {
           seriesCount += 1;
         } else {
