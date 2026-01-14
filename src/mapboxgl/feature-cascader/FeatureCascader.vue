@@ -1,5 +1,6 @@
 <template>
   <SmCascader
+    v-model="internalValue"
     :options="options"
     :popupClassName="popupClassName"
     :changeOnSelect="changeOnSelect"
@@ -50,7 +51,8 @@ export default {
   },
   data() {
     return {
-      options: []
+      options: [],
+      internalValue: []
     };
   },
   watch: {
@@ -165,12 +167,23 @@ export default {
       this.options = this.assembleOptions(dataOptions);
     },
     async onChange(value) {
-      if (!value.length) return;
+      this.internalValue = value;
+      if (!value || !value.length) {
+        this.$emit('change', [], null);
+        return;
+      }
       const lastValue = value[value.length - 1];
       const target = this.datas.find(v => v.value === lastValue);
+      if (!target) {
+        this.$emit('change', value, null);
+        return;
+      }
       const attributeFilter = `("${target.originalIdField}" like '%${lastValue}%')`;
       const data = await getFeatures({ ...target.dataset, attributeFilter });
       this.$emit('change', value, data?.features?.[0]);
+    },
+    clearSelectOptions() {
+      this.internalValue = [];
     }
   }
 };
