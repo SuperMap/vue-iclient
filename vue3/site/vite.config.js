@@ -46,6 +46,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: [
+      'mapbox-gl',
       'vue-iclient-static/libs/echarts-layer/EchartsLayer',
       'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw',
       'mapbox-gl'
@@ -54,6 +55,7 @@ export default defineConfig({
   build: {
     commonjsOptions: {
       include: [
+        'mapbox-gl',
         'vue-iclient-static/libs/echarts-layer/EchartsLayer',
         'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw'
       ]
