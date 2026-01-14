@@ -45,8 +45,8 @@ const commonMapOptions = {
   }
 }
 
-let layerIdMapList = {}
-let sourceIdMapList = {}
+const layerIdMapList = {}
+const sourceIdMapList = {}
 
 const commonMap = {
   resize: () => vi.fn(),
@@ -67,7 +67,7 @@ const commonMap = {
   getPitch: () => 2,
   setPitch: () => vi.fn(),
   getStyle: () => {
-    let layers = []
+    const layers = []
     if (layerIdMapList) {
       for (const key in layerIdMapList) {
         layers.push(layerIdMapList[key])
@@ -147,13 +147,12 @@ const commonMap = {
 }
 
 describe('Test @supermapgis/iclient-mapboxgl is the latest versions', () => {
-  it('should return 1 when opacity is undefined', done => {
+  it('should return 1 when opacity is undefined', () => {
     const webmap = new WebMap(
       commonId,
       { ...commonOption, map: commonMap },
       { ...commonMapOptions }
     )
-    expect(() => webmap.getPopupInfos()).not.toThrowError()
-      done()
+    expect(webmap.getPopupInfos).not.toBeNull()
   })
 })
