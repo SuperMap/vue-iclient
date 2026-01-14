@@ -334,7 +334,7 @@ export default class WebMapViewModel extends Events {
     }
     const commonParams = {
       withCredentials: this.options.withCredentials,
-      maxFeatures: 5000
+      maxFeatures: 1000000
     };
     let datasetInfo: Record<string, any> = {};
     switch (item.dataSource.type) {
