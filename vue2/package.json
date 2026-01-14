@@ -27,11 +27,14 @@
     "comp": "webpack --config build/webpack.component.js",
     "gulp": "gulp build --gulpfile build/gulpfile.js"
   },
+  "peerDependencies": {
+    "@supermapgis/iclient-common": "^12.0.1-r",
+    "@supermapgis/iclient-mapboxgl": "^12.0.1-r",
+    "@supermapgis/iclient-leaflet": "^12.0.1-r",
+    "vue": ">=2.5.0"
+  },
   "dependencies": {
     "@mapbox/point-geometry": "^0.1.0",
-    "@supermapgis/iclient-common": "^12.0.1-r",
-    "@supermapgis/iclient-leaflet": "^12.0.1-r",
-    "@supermapgis/iclient-mapboxgl": "^12.0.1-r",
     "@supermapgis/vue-iclient": "file:..",
     "@turf/area": "^6.0.1",
     "@turf/bbox": "^6.0.1",
@@ -236,9 +239,6 @@
     "webpack-dev-server": "^3.7.2",
     "webpack-merge": "^4.2.1",
     "webpack-node-externals": "^2.5.2"
-  },
-  "peerDependencies": {
-    "vue": ">=2.5.0"
   },
   "engines": {
     "node": ">= 6.0.0",
