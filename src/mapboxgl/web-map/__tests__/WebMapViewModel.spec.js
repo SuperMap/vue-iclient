@@ -11,7 +11,6 @@ import restmapLayer from 'vue-iclient/test/unit/mocks/data/WebMap/restmapLayer.j
 import webmap3Datas from 'vue-iclient/test/unit/mocks/data/WebMap/webmap3.json';
 import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
 import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance.js';
-import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import * as getFeaturesUtil from 'vue-iclient/src/common/_utils/get-features';
 
 const CRS = require('vue-iclient/test/unit/mocks/crs');
