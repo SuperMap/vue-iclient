@@ -42,6 +42,10 @@ class LayerListViewModel extends mapboxgl.Evented {
     return this.setDataset(features);
   }
 
+  attributesDataAvailable(item) {
+    return this.webmap.attributesDataAvailable(item);
+  }
+
   // 将features转换成属性表dataset所需的GeoJSONParameter形式
   setDataset(features) {
     let dataset = { type: 'geoJSON', geoJSON: null };

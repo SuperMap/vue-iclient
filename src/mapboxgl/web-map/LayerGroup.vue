@@ -116,7 +116,8 @@ export default {
         return {};
       }
     },
-    dropHandler: Function
+    dropHandler: Function,
+    attributesDataAvailable: Function
   },
   computed: {
     formatOpacity() {
@@ -127,15 +128,13 @@ export default {
     },
     attributesEnabled() {
       return item => {
-        const isGeojson = item.renderSource && item.renderSource.type === 'geojson';
-        const isStructureData = item.dataSource && item.dataSource.type === 'STRUCTURE_DATA';
-        return this.attributes.enabled && (isGeojson || isStructureData) && (item && item.type) !== 'group';
+        return this.attributes.enabled && this.attributesDataAvailable(item) && item.type !== 'group';
       };
     }
   },
   watch: {
     layerCatalog: {
-      handler: function (newVal, oldVal) {
+      handler: function () {
         this.treeData = this.getTreeData(this.layerCatalog);
       },
       deep: true,
