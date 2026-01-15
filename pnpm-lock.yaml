@@ -30,6 +30,9 @@ importers:
       mapbox-gl:
         specifier: ^1.13.0
         version: 1.13.3
+      source-map-js:
+        specifier: 1.0.2
+        version: 1.0.2
       vue:
         specifier: ^3.5.12
         version: 3.5.26(typescript@5.6.3)
@@ -12962,7 +12965,7 @@ snapshots:
       '@yarnpkg/parsers': 3.0.3
       chalk: 4.1.2
       clipanion: 4.0.0-rc.4(typanion@3.14.0)
-      cross-spawn: 7.0.3
+      cross-spawn: 7.0.6
       fast-glob: 3.3.3
       micromatch: 4.0.8
       tslib: 2.8.1
