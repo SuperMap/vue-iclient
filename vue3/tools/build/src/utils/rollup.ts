@@ -9,7 +9,7 @@ export const generateExternal = async (options: { externals?: ExternalList } = {
   return (id: string) => {
     if (!options.externals) {
       const packages: string[] = [...peerDependencies]
-      packages.push('@vue', 'mapbox-gl', 'vue-iclient-static', ...dependencies)
+      packages.push('@vue', 'mapbox-gl', 'vue-iclient-static', 'ol', 'leaflet', ...dependencies)
       return [...new Set(packages)].some(pkg => id === pkg || id.startsWith(`${pkg}/`));
     }
     const matchOne = options.externals.some(pkg => pkg.match?.(id, pkg.id) ?? (id === pkg.id || id.startsWith(`${pkg.id}/`)))
