@@ -334,11 +334,12 @@ export default {
         setTimeout(() => {
           this.newHighlightOptions = this.getNewHighlightOptions();
         });
-      },
-      deep: true
+      }
     },
     highlightOptions: {
-      handler() {
+      async handler() {
+        await this.$nextTick();
+        // 同时触发过滤和高亮， 导致有一瞬间图表还没更新， 亮了新的高亮
         this.newHighlightOptions = this.getNewHighlightOptions();
       },
       deep: true
