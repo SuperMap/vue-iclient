@@ -41,6 +41,11 @@ export default {
         }
       }
       const mergeOptions = merge(options, dataOptions);
+
+      if (this.xBar && this.highlightOptions && this.highlightOptions.length > 0 && mergeOptions.visualMap) {
+        mergeOptions.visualMap = null;
+      }
+
       if (extraSeries.length > 0) {
         mergeOptions.series.push(...extraSeries);
       }
@@ -521,8 +526,8 @@ export default {
       return (params, api) => {
         const location = api.coord([api.value(0), api.value(1)]);
         let fillColor = defaultColor || colorGroup[colorIndex];
-        if (_this.highlightOptions && _this.highlightOptions.length > 0) {
-          const matchData = _this.highlightOptions.find(
+        if (_this.newHighlightOptions && _this.newHighlightOptions.length > 0) {
+          const matchData = _this.newHighlightOptions.find(
             item => item.seriesIndex.includes(params.seriesIndex) && item.dataIndex === params.dataIndex
           );
           if (matchData && (matchData.color || _this.highlightColor)) {

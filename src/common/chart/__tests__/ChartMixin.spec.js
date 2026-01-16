@@ -1095,4 +1095,207 @@ describe('Chart Mixin Component', () => {
       expect(ECharts.registerTheme).toHaveBeenCalledWith('dark', { color: '#000' });
     });
   });
+
+  describe('xBar with visualMap and highlightOptions', () => {
+    it('should disable visualMap when xBar has highlightOptions', async () => {
+      const geoJSONDataset = {
+        maxFeatures: 20,
+        url: '',
+        type: 'geoJSON',
+        geoJSON: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              properties: {
+                name: 'Item 1',
+                value: 100
+              }
+            }
+          ]
+        }
+      };
+
+      // xBar 配置：yAxis 是 category
+      const xBarOptions = {
+        yAxis: {
+          type: 'category',
+          show: true
+        },
+        xAxis: {
+          type: 'value',
+          show: false
+        },
+        series: [
+          {
+            type: 'bar',
+            data: []
+          }
+        ],
+        visualMap: [
+          {
+            show: false,
+            seriesIndex: 0,
+            pieces: [
+              {
+                min: 0,
+                max: 100,
+                color: '#3fb1e3'
+              }
+            ],
+            outOfRange: {
+              color: '#6be6c1'
+            }
+          }
+        ]
+      };
+
+      wrapper = factory({
+        options: xBarOptions,
+        datasetOptions: datasetOptionsFactory(['bar']),
+        dataset: geoJSONDataset,
+        highlightOptions: [
+          {
+            seriesIndex: [0],
+            dataIndex: 0,
+            color: 'red'
+          }
+        ]
+      });
+
+      await flushPromises();
+
+      // visualMap 应该被禁用（设置为 null）
+      expect(wrapper.vm.echartOptions.visualMap).toBeNull();
+    });
+
+    it('should keep visualMap when not xBar chart', async () => {
+      const geoJSONDataset = {
+        maxFeatures: 20,
+        url: '',
+        type: 'geoJSON',
+        geoJSON: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              properties: {
+                name: 'Item 1',
+                value: 100
+              }
+            }
+          ]
+        }
+      };
+
+      // 普通柱状图配置：xAxis 是 category，yAxis 是 value
+      const normalBarOptions = {
+        xAxis: {
+          type: 'category',
+          show: true
+        },
+        yAxis: {
+          type: 'value',
+          show: true
+        },
+        series: [
+          {
+            type: 'bar',
+            data: []
+          }
+        ],
+        visualMap: [
+          {
+            show: false,
+            seriesIndex: 0,
+            pieces: [
+              {
+                min: 0,
+                max: 100,
+                color: '#3fb1e3'
+              }
+            ],
+            outOfRange: {
+              color: '#6be6c1'
+            }
+          }
+        ]
+      };
+
+      wrapper = factory({
+        options: normalBarOptions,
+        datasetOptions: datasetOptionsFactory(['bar']),
+        dataset: geoJSONDataset,
+        highlightOptions: [
+          {
+            seriesIndex: [0],
+            dataIndex: 0,
+            color: 'red'
+          }
+        ]
+      });
+
+      await flushPromises();
+
+      // visualMap 应该保留
+      expect(wrapper.vm.echartOptions.visualMap).not.toBeNull();
+      expect(wrapper.vm.echartOptions.visualMap).toEqual(normalBarOptions.visualMap);
+    });
+
+    it('should keep visualMap when xBar has no highlightOptions', async () => {
+      const geoJSONDataset = {
+        maxFeatures: 20,
+        url: '',
+        type: 'geoJSON',
+        geoJSON: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              properties: {
+                name: 'Item 1',
+                value: 100
+              }
+            }
+          ]
+        }
+      };
+
+      const xBarOptions = {
+        yAxis: {
+          type: 'category',
+          show: true
+        },
+        xAxis: {
+          type: 'value',
+          show: false
+        },
+        series: [
+          {
+            type: 'bar',
+            data: []
+          }
+        ],
+        visualMap: [
+          {
+            show: false,
+            seriesIndex: 0,
+            min: 0,
+            max: 100,
+            color: '#3fb1e3'
+          }
+        ]
+      };
+
+      wrapper = factory({
+        options: xBarOptions,
+        datasetOptions: datasetOptionsFactory(['bar']),
+        dataset: geoJSONDataset,
+        // 没有 highlightOptions
+        highlightOptions: []
+      });
+
+      await flushPromises();
+
+      // visualMap 应该保留
+      expect(wrapper.vm.echartOptions.visualMap).not.toBeNull();
+    });
+  });
 });
