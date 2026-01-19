@@ -587,6 +587,7 @@ describe('Chart Mixin Component', () => {
       await wrapper.setProps({
         highlightOptions: highlightOptions([1])
       });
+      await flushPromises();
       expect(wrapper.vm.echartOptions.series[0].itemStyle.color).not.toStrictEqual(options.series[0].itemStyle.color);
     });
 
