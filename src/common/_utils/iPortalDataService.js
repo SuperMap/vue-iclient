@@ -70,7 +70,7 @@ export default class iPortalDataService extends Events {
    */
   getData(queryInfo = {}, preferContent = false) {
     if (this.dataType === 'STRUCTUREDDATA') {
-      this._getStructureDatafromContent();
+      this._getStructureDatafromContent(queryInfo);
       return;
     }
 
@@ -100,7 +100,7 @@ export default class iPortalDataService extends Events {
           return;
         }
         if (data.type === 'STRUCTUREDDATA') {
-          this._getStructureDatafromContent();
+          this._getStructureDatafromContent(queryInfo);
           return;
         }
         const hasService = data.dataItemServices && data.dataItemServices.length > 0;
@@ -141,16 +141,16 @@ export default class iPortalDataService extends Events {
       });
   }
 
-  _getStructureDatafromContent() {
+  _getStructureDatafromContent(queryInfo) {
     let featureResults = [];
     let url = this.url;
     if (url.includes('?')) {
       url = url.split('?')[0];
     }
-    let formatUrl = url + '/structureddata/ogc-features/collections/all/items.json';
+    let formatUrl = Util.urlPathAppend(url, '/structureddata/ogc-features/collections/all/items.json');
     let maxFeatures = 5000;
     let allRequest = [];
-    this._getStructureData(formatUrl, maxFeatures, 0).then((data) => {
+    this._getStructureData({ url: formatUrl, count: maxFeatures, offset: 0, queryInfo }).then((data) => {
       if (data) {
         featureResults = data.features;
         if (data.numberMatched < maxFeatures) {
@@ -168,7 +168,7 @@ export default class iPortalDataService extends Events {
 
         for (let i = maxFeatures; i < data.numberMatched;) {
           allRequest.push(
-            this._getStructureData(formatUrl, maxFeatures, i)
+            this._getStructureData({ url: formatUrl, count: maxFeatures, offset: i, queryInfo })
           );
           i += maxFeatures;
         }
@@ -192,11 +192,15 @@ export default class iPortalDataService extends Events {
     });
   }
 
-  _getStructureData(url, count, offset) {
-    url = `${url}?limit=${count}`;
+  _getStructureData({ url, count, offset, queryInfo }) {
+    let queryParams = `limit=${count}`;
     if (offset) {
-      url = url + '&offset=' + offset;
+      queryParams += `&offset=${offset}`;
     }
+    if (queryInfo.attributeFilter) {
+      queryParams += `&filter=${queryInfo.attributeFilter}&filter-lang=cql-text`;
+    }
+    url = Util.urlAppend(url, queryParams);
     return FetchRequest.get(url, null, {
       withCredentials: this.withCredentials
     })
@@ -204,6 +208,10 @@ export default class iPortalDataService extends Events {
         return response.json();
       })
       .then(data => {
+        if (!data || data.succeed === false && data.error) {
+          const msg = data ? data.error.errorMsg : 'empty data';
+          throw msg;
+        }
         return data;
       })
       .catch(error => {
