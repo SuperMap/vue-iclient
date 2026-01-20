@@ -19,4 +19,6 @@ export * from './web-scene'
 export * from './text-list'
 export * from './chart'
 export * from './scene-measure'
+export * from './feature-tree'
+export * from './feature-cascader'
 

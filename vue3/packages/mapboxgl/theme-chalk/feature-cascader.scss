@@ -1,0 +1,30 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+
+@include b(feature-cascader) {
+  $prefix: &;
+  &-menus {
+    background-color: $select-dropdown-bg;
+  }
+  @include e(menu, '-') {
+    $prefix-menu: &;
+
+    &-item {
+      color: $text-color-heading;
+
+      &:hover:not(&-disabled) {
+        background-color: $color-fill-secondary;
+      }
+
+      &-active:hover:not(&-disabled),
+      &-active:not(&-disabled) {
+        font-weight: normal;
+        background-color: $color-bg-container;
+        color: $text-color-heading;
+      }
+      &-expand &-expand-icon {
+        color: $text-color-tertiary;
+      }
+    }
+  }
+}

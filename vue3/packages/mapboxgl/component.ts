@@ -30,6 +30,8 @@ import { SmWebScene } from '@supermapgis/mapboxgl/components/web-scene'
 import { SmTextList } from '@supermapgis/mapboxgl/components/text-list'
 import { SmChart } from '@supermapgis/mapboxgl/components/chart'
 import { SmSceneMeasure } from '@supermapgis/mapboxgl/components/scene-measure'
+import { SmFeatureTree } from '@supermapgis/mapboxgl/components/feature-tree'
+import { SmFeatureCascader } from '@supermapgis/mapboxgl/components/feature-cascader'
 
 import type { Plugin } from 'vue'
 
@@ -64,5 +66,7 @@ export default [
   SmBorder,
   SmIframe,
   SmChart,
-  SmSceneMeasure
+  SmSceneMeasure,
+  SmFeatureTree,
+  SmFeatureCascader
 ] as Plugin[]
