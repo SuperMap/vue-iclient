@@ -115,9 +115,10 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
     }
 
     // 高亮选项处理
-    if (options.highlightOptions && options.highlightOptions.length > 0) {
+    if ((options.highlightOptions && options.highlightOptions.length > 0) || (props.highlightOptions && props.highlightOptions.length > 0)) {
+      const highlightOptions = options.highlightOptions && options.highlightOptions.length > 0 ? options.highlightOptions : props.highlightOptions
       if (isRingShine) {
-        dataOptions.series = _createRingShineHighlight(series, options.highlightOptions)
+        dataOptions.series = _createRingShineHighlight(series, highlightOptions)
       } else {
         setItemStyleColor(true, series)
       }
@@ -1198,7 +1199,6 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
       hideLoading()
       dataSeriesCache.value = Object.assign({}, options)
       datasetChange.value = false
-      echartOptionsParam.highlightOptions = props.highlightOptions
       echartOptions.value = _optionsHandler(echartOptionsParam, options)
     })
   }
