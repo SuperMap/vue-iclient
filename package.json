@@ -63,8 +63,9 @@
     "husky": "^8.0.0",
     "lint-staged": "^15.4.3",
     "mapbox-gl": "^1.13.0",
+    "rollup-plugin-esbuild": "^6.1.1",
     "source-map-js": "1.0.2",
-    "vue": "^3.5.12",
+    "vue": "^3.5.26",
     "vue-iclient-controllers-mapboxgl": "workspace:*",
     "vue-iclient-core": "workspace:*",
     "vue-iclient-static": "workspace:*"
