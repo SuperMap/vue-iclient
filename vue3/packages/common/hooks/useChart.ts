@@ -1198,6 +1198,7 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
       hideLoading()
       dataSeriesCache.value = Object.assign({}, options)
       datasetChange.value = false
+      echartOptionsParam.highlightOptions = props.highlightOptions
       echartOptions.value = _optionsHandler(echartOptionsParam, options)
     })
   }
