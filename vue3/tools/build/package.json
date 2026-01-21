@@ -33,7 +33,7 @@
     "components-helper": "^2.1.4",
     "consola": "^2.15.3",
     "cssnano": "^6.0.5",
-    "esbuild": "^0.14.47",
+    "esbuild": "^0.19.12",
     "fast-glob": "^3.2.11",
     "fs-extra": "10.1.0",
     "gulp": "^4.0.2",
@@ -42,7 +42,7 @@
     "gulp-sass": "^6.0.0",
     "postcss": "^8.4.35",
     "rollup": "4.34.6",
-    "rollup-plugin-esbuild": "6.1.1",
+    "rollup-plugin-esbuild": "^6.1.1",
     "sass": "^1.79.3",
     "vinyl": "2.2.1"
   },

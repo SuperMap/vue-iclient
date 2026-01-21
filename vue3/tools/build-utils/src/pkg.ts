@@ -38,8 +38,12 @@ export const getPackageDependencies = (
 export const excludeFiles = (files: string[]) => {
   const excludes = ['node_modules', 'test', 'mock', 'gulpfile', 'dist', 'demo']
   return files.filter(path => {
-    const position = path.startsWith(projRoot) ? projRoot.length : 0
-    return !excludes.some(exclude => path.includes(exclude, position))
+    // 统一使用正斜杠进行路径比较，避免 Windows 反斜杠导致的 startsWith 判断失败
+    const normalizedPath = path.replace(/\\/g, '/')
+    const normalizedRoot = projRoot.replace(/\\/g, '/')
+    const position = normalizedPath.startsWith(normalizedRoot) ? normalizedRoot.length : 0
+    const shouldExclude = excludes.some(exclude => normalizedPath.includes(exclude, position))
+    return !shouldExclude
   })
 }
 export const getPkgByCommand = (processArgv: string[]) => {

@@ -86,7 +86,7 @@ async function buildFullEntry(minify: boolean, banner: string) {
     plugins.push(
       minifyPlugin({
         target,
-        sourceMap: true
+        sourceMap: false
       })
     )
   }
