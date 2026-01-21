@@ -48,7 +48,7 @@ describe('ChartMixin additional coverage', () => {
     wrapper.vm.echartOptions = { series: [ { type: 'pie', data: [1,2] }, { type: 'bar', data: [3,4] } ] };
     // avoid mutating prop directly: use setProps to set highlightOptions
     await wrapper.setProps({ highlightOptions: [ { seriesIndex: [0], dataIndex: 1, color: 'pink' } ] });
-
+    await wrapper.vm.$nextTick();
     // Ensure ColorPicker used for non-highlight pie
     const spyColors = jest.spyOn(ColorsPickerUtil, 'getGradientColors');
     wrapper.vm.setItemStyleColor(true);
