@@ -857,6 +857,47 @@ describe('WebMapViewModel.spec', () => {
     jest.advanceTimersByTime(0);
   });
 
+    it('getLayerDatas - filter', async (done) => {
+        const dataResult = {
+      features: [
+        {
+          geometry: {
+            coordinates: [
+              [116.38050072430798, 39.94888011518407],
+              [116.38050072430798, 39.94888011518407]
+            ],
+            type: 'LineString'
+          },
+          id: '1',
+          type: 'Feature',
+          properties: {
+            SmID: 1,
+            标准名称: '地铁二号线',
+            smpid: 1
+          }
+        }
+      ],
+      type: 'FeatureCollection'
+    };
+    jest.spyOn(getFeaturesUtil, 'default').mockImplementation((dataset => {
+        return dataResult;
+    }));
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+
+    const callback = async function (data) {
+      jest.spyOn(data.map, 'getSource').mockReturnValueOnce({ type: 'vector'});
+      let res;
+      res = await viewModel.getLayerDatas({ renderSource: { type: 'vector' }, dataSource: {type: 'REST_DATA'}});
+      expect(res).toEqual(dataResult.features);
+      res = await viewModel.getLayerDatas({ renderSource: { type: 'vector' }, dataSource: {type: 'STRUCTURE_DATA'}});
+      expect(res).toEqual(dataResult.features);
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
+  });
+
   
   it('mapbeforeremove', async done => {
     const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
