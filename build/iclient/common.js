@@ -11,6 +11,7 @@ import { FeatureService } from '../src/common/iServer/FeatureService';
 import { Util } from '../src/common/commontypes/Util';
 import { ColorsPickerUtil } from '../src/common/util/ColorsPickerUtil';
 import { GeometryPolygon, GeometryLinearRing, GeometryPoint } from '../src/common/commontypes';
+import { mapboxFilterToQueryFilter } from '../src/common/util/FilterCondition';
 
 export {
   QueryBySQLParameters,
@@ -27,5 +28,6 @@ export {
   ColorsPickerUtil,
   GeometryPolygon,
   GeometryLinearRing,
-  GeometryPoint
+  GeometryPoint,
+  mapboxFilterToQueryFilter
 };

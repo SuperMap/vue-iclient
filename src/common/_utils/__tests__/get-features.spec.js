@@ -77,7 +77,7 @@ describe('getFeatures test', () => {
       type: 'FeatureCollection'
     };
     const fetchResource = {
-      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000':
+      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000&filter=SmID>0&filter-lang=cql-text':
         result
     };
     mockFetch(fetchResource);
@@ -130,7 +130,7 @@ describe('getFeatures test', () => {
       type: 'FeatureCollection'
     };
     const fetchResource = {
-      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000':
+      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000&filter=SmID>0&filter-lang=cql-text':
         result
     };
     mockFetch(fetchResource);
@@ -191,9 +191,9 @@ describe('getFeatures test', () => {
       });
     }
     const fetchResource = {
-      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000':
+      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000&filter=SmID>0&filter-lang=cql-text':
         result1,
-      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000&offset=5000':
+      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000&offset=5000&filter=SmID>0&filter-lang=cql-text':
         result2
     };
     mockFetch(fetchResource);
@@ -258,9 +258,9 @@ describe('getFeatures test', () => {
 
     const fetchResource = {
       'https://fakeiportal.supermap.io/web/datas/1832028287?parentResType=DATA&parentResId=1832028287': metadata,
-      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000':
+      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000&filter=SmID>0&filter-lang=cql-text':
         result1,
-      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000&offset=5000':
+      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000&offset=5000&filter=SmID>0&filter-lang=cql-text':
         result2
     };
     mockFetch(fetchResource);
