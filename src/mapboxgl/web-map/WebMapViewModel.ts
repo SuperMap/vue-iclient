@@ -14,8 +14,7 @@ import bbox from '@turf/bbox';
 import { points } from '@turf/helpers';
 import getFeatures from 'vue-iclient/src/common/_utils/get-features';
 // @ts-ignore
-import { Util } from 'vue-iclient/static/libs/iclient-common/iclient-common';
-
+import { Util, mapboxFilterToQueryFilter } from 'vue-iclient/static/libs/iclient-common/iclient-common';
 // @ts-ignore
 window.echarts = echarts;
 // @ts-ignore
@@ -344,7 +343,8 @@ export default class WebMapViewModel extends Events {
           type: 'iPortal',
           id: dataId,
           dataType: 'STRUCTUREDDATA',
-          url: Util.urlPathAppend(this.serverUrl, `web/datas/${dataId}`)
+          url: Util.urlPathAppend(this.serverUrl, `web/datas/${dataId}`),
+          attributeFilter: mapboxFilterToQueryFilter(item.filter)
         };
         break;
       }
@@ -352,12 +352,13 @@ export default class WebMapViewModel extends Events {
       case 'REST_MAP': {
         datasetInfo = {
           type: 'iServer',
-          url: item.dataSource.url
+          url: item.dataSource.url,
+          attributeFilter: mapboxFilterToQueryFilter(item.filter)
         };
         if (item.dataSource.type === 'REST_DATA') {
           datasetInfo.dataName = [item.dataSource.dataSourceName];
         } else {
-          datasetInfo.layerName = item.renderSource.sourceLayer;
+          datasetInfo.layerName = item.dataSource.layerName;
           datasetInfo.url = Util.urlPathAppend(item.dataSource.url, item.dataSource.mapName);
         }
         break;
