@@ -27,4 +27,28 @@
       }
     }
   }
+  &.ant-cascader {
+    .ant-select-selector {
+      height: 100%;
+    }
+    .ant-select-selection-item,
+    .ant-select-selection-placeholder {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    & > div,
+    & > div > div,
+    .sm-component-feature-cascader__dropdown,
+    .ant-select-selector,
+    .ant-select-clear {
+      background: inherit;
+    }
+    .sm-component-feature-cascader__dropdown {
+      .ant-cascader-menu-item-active,
+      .ant-cascader-menu-item-active:hover:not(&-disabled) {
+        background-color: $gis-control-item-bg-hover;
+      }
+    }
+  }
 }

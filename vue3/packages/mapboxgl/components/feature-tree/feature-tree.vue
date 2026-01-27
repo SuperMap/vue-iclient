@@ -5,7 +5,7 @@
       class="treeHolder"
       :expandedKeys="expandedKeys"
       :autoExpandParent="autoExpandParent"
-      :treeData="options"
+      :treeData="treeDatas"
       @expand="onExpand"
       @select="onSelect"
     >
@@ -21,33 +21,52 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import SmTree from '@supermapgis/common/components/tree/Tree'
 import type { FeatureTreeProps, FeatureTreeEvents } from './types'
 import { featureTreePropsDefault } from './types'
 import { InputSearch } from 'ant-design-vue'
 import { useRequest } from '@supermapgis/mapboxgl/hooks'
 import type { TreeData } from '@supermapgis/mapboxgl/hooks'
+import omit from 'omit.js'
 
 const props = withDefaults(defineProps<FeatureTreeProps>(), featureTreePropsDefault)
 const emit = defineEmits<FeatureTreeEvents>()
 
-const { options, datas } = useRequest({ props, type: 'tree' })
+const { options, requestDataByFilter } = useRequest({ props, type: 'tree' })
 
 const searchValue = ref('')
 const expandedKeys = ref<string[]>([])
-const selectedKeys = ref<string[]>([])
 const autoExpandParent = ref(true)
+
+const treeDatas = computed(() => {
+  return options.value.length ? options.value : props.treeData || []
+})
+const dataList = computed(() => {
+  return generateList(treeDatas.value);
+})
+
+const generateList = (data: Array<any>) => {
+  const result = [];
+  for (const node of data) {
+    result.push(omit(node, ['children']));
+    if (node.children) {
+      result.push(...generateList(node.children));
+    }
+  }
+  return result;
+};
+
 
 watch(searchValue, value => {
   if (!value) {
     expandedKeys.value = []
     return
   }
-  const expanded = datas.value
+  const expanded = dataList.value
     .map(item => {
-      if (item.label.indexOf(value) > -1) {
-        return getParentKey(item.value, options.value)
+      if (item.title.indexOf(value) > -1) {
+        return getParentKey(item.key, treeDatas.value)
       }
       return null
     })
@@ -55,10 +74,6 @@ watch(searchValue, value => {
   expandedKeys.value = expanded
   searchValue.value = value
   autoExpandParent.value = true
-})
-
-watch(selectedKeys, () => {
-  handleClick(selectedKeys.value)
 })
 
 function getParentKey(
@@ -88,11 +103,9 @@ function onSearch(value: string) {
   searchValue.value = value
 }
 
-function onSelect(keys: string[]) {
-  selectedKeys.value = keys
-}
-
-const handleClick = (value: string[]) => {
-  emit('click', value)
+const onSelect = async (value: string[] | number[]) => {
+  const feature = await requestDataByFilter(value);
+  const selectedItem = dataList.value.find(item => item.key === value[value.length - 1])
+  emit('select', { value: selectedItem, feature })
 }
 </script>

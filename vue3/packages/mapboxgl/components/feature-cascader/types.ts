@@ -38,7 +38,7 @@ export const featureCascaderPropsDefault = getPropsDefaults<FeatureCascaderProps
 )
 
 export type FeatureCascaderEvents = {
-  change: [Array<string | number>, any]
+  change: [{ value: Array<string | number>, feature: any }]
 }
 
 export type FeatureCascaderEmits = ShortEmits<FeatureCascaderEvents>

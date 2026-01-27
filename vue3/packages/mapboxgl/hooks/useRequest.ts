@@ -3,7 +3,7 @@ import getFeatures from 'vue-iclient-core/utils/get-features'
 import { watch, ref } from 'vue'
 
 export interface TreeData {
-  title: string
+  title?: string
   key: string | number
   children?: TreeData[]
 }
@@ -54,6 +54,11 @@ export function useRequest<T extends 'tree' | 'cascader'>({
   )
 
   async function createOptions(config: DataConfig, hasGeometry: boolean) {
+    if(!config || !Object.keys(config).length) {
+      datas.value = []
+      options.value = []
+      return;
+    }
     datas.value = await requestData(config, hasGeometry)
     options.value = assembleOptions(datas.value)
   }
@@ -168,8 +173,18 @@ export function useRequest<T extends 'tree' | 'cascader'>({
     })
   }
 
+  async function requestDataByFilter(value) {
+    if (!value?.length || !options.value.length) return;
+    const lastValue = value[value.length - 1];
+    const target = datas.value.find(v => v.value === lastValue);
+    const attributeFilter = `("${target.originalIdField}" like '%${lastValue}%')`;
+    const data = await getFeatures({ ...target.dataset, attributeFilter });
+    return data?.features?.[0];
+  }
+
   return {
     options,
-    datas
+    datas,
+    requestDataByFilter
   }
 }
