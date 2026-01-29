@@ -73,7 +73,23 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
   const pieAutoPlay = ref<any>(null)
   const startAngle = ref<any>(null)
   let __resizeHandler: (element: any) => void
+  let __resizeQueued = false
   let echartsDataService = null
+
+  function _queueChartResize() {
+    if (__resizeQueued) return
+    __resizeQueued = true
+    nextTick(() => {
+      __resizeQueued = false
+      const doResize = () => resize({ silent: true })
+      const raf = (globalThis as any).requestAnimationFrame
+      if (typeof raf === 'function') {
+        raf(doResize)
+      } else {
+        doResize()
+      }
+    })
+  }
 
   useTimer(props, { timing })
   const { textColorStyle, containerBgStyle, colorGroup: colorGroupsData } = useTheme(props)
@@ -312,6 +328,7 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
       } else {
         echartOptions.value = Object.assign({}, parseOptions.value)
       }
+      _queueChartResize()
     },
     { deep: true }
   )
@@ -1175,6 +1192,7 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
         datasetChange.value = false
         // 设置echartOptions
         echartOptions.value = _optionsHandler(props.options, options)
+        _queueChartResize()
       })
     }
   }
@@ -1200,6 +1218,7 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
       dataSeriesCache.value = Object.assign({}, options)
       datasetChange.value = false
       echartOptions.value = _optionsHandler(echartOptionsParam, options)
+      _queueChartResize()
     })
   }
 
@@ -1207,6 +1226,7 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
     const options = echartsDataService.formatChartData(datasetOptions, xBar.value)
     dataSeriesCache.value = Object.assign({}, options)
     echartOptions.value = _optionsHandler(echartOptionsParam, options)
+    _queueChartResize()
   }
 
   function _setChartTheme() {
@@ -1232,7 +1252,8 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
    * @param {Boolean} [lazyUpdate = false] - 可选，阻止调用 setOption 时抛出事件，默认为 false，即抛出事件
    */
   const mergeOptions = (options: Record<string, any>, notMerge?: boolean, lazyUpdate?: boolean) => {
-    _delegateMethod('mergeOptions', options, notMerge, lazyUpdate)
+    _delegateMethod('setOption', options, notMerge, lazyUpdate)
+    _queueChartResize()
   }
 
   /**
@@ -1410,6 +1431,7 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
     })
     if (flag) {
       echartOptions.value = _optionsHandler(props.options, dataSeriesCache.value, true)
+      _queueChartResize()
     }
   }
 
