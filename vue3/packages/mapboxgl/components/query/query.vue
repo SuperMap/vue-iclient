@@ -12,147 +12,142 @@
     class="sm-component-query"
   >
     <div class="sm-component-query__body" :style="textColorStyle">
-      <div class="sm-component-query__choose-panel clearfix">
-        <div
-          :class="{
-            'sm-component-query__job-button': true,
-            'is-active': activeTab === 'job',
-            disabled: isQuery
-          }"
-          :title="$t('query.queryJob')"
-          @click="activeTab = 'job'"
-        >
-          {{ $t('query.queryJob') }}
-        </div>
-        <div
-          :class="{
-            'sm-component-query__result-button': true,
-            'is-active': activeTab === 'result'
-          }"
-          :title="$t('query.queryResult')"
-          @click="activeTab = 'result'"
-        >
-          {{ $t('query.queryResult') }}
-        </div>
-      </div>
-      <div v-if="activeTab === 'job'" class="sm-component-query__job-info">
-        <div
-          v-for="(jobInfo, index) in jobInfos"
-          v-show="jobInfos.length > 0"
-          :key="index"
-          :style="textColorHeadingStyle"
-          class="sm-component-query__job-info-panel"
-        >
-          <div
-            class="sm-component-query__job-info-header"
-            @click="activePanelIndex = activePanelIndex === index ? null : index"
+      <div v-if="activeTab === 'job'" class="sm-component-query__form">
+        <div class="sm-component-query__item-holder">
+          <div class="sm-component-query__section-title">{{ $t('query.queryLayer') }}</div>
+          <sm-select
+            v-model:value="activeJobIndex"
+            class="sm-component-query__item-config"
+            :get-popup-container="getPopupContainer"
+            :style="textColorStyle"
+            :placeholder="$t('popup.selectLayer')"
+            :disabled="jobInfos.length === 0"
           >
-            <span :title="jobInfo.queryParameter.name" class="sm-component-query__job-info-name">
+            <sm-select-option
+              v-for="(jobInfo, index) in jobInfos"
+              :key="jobInfo.queryParameter.name"
+              :value="index"
+            >
               {{ jobInfo.queryParameter.name }}
-            </span>
-            <i
-              :class="
-                activePanelIndex !== index
-                  ? 'sm-components-icon-solid-triangle-right'
-                  : 'sm-components-icon-solid-triangle-down'
-              "
-            />
+            </sm-select-option>
+          </sm-select>
+        </div>
+        <div class="sm-component-query__item-holder">
+          <div class="sm-component-query__section-title">{{ $t('query.queryMode') }}</div>
+          <div class="sm-component-query__radio-group">
+            <label :class="['sm-component-query__radio-item', { 'is-disabled': !activeJobInfo }]">
+              <input
+                v-model="queryMode"
+                class="sm-component-query__radio-input"
+                type="radio"
+                value="SQL"
+                :disabled="!activeJobInfo"
+              />
+              <span>{{ $t('query.sqlExpression') }}</span>
+            </label>
+            <label :class="['sm-component-query__radio-item', { 'is-disabled': !activeJobInfo }]">
+              <input
+                v-model="queryMode"
+                class="sm-component-query__radio-input"
+                type="radio"
+                value="KEYWORD"
+                :disabled="!activeJobInfo"
+              />
+              <span>{{ $t('query.keywordQuery') }}</span>
+            </label>
           </div>
-          <div
-            :class="{
-              'sm-component-query__job-info-body': true,
-              hidden: activePanelIndex !== index
-            }"
+          <sm-input
+            v-model:value="queryCondition"
+            allowClear
+            class="sm-component-query__item-config"
+            :style="textColorStyle"
+            :disabled="!activeJobInfo"
+            :placeholder="
+              queryMode === 'KEYWORD' ? $t('query.keyQueryPlaceholder') : $t('query.sqlQueryPlaceholder')
+            "
+          />
+          <div v-if="sqlExpressionInvalid" class="sm-component-query__error">
+            {{ $t('query.sqlExpressionInvalid') }}
+          </div>
+        </div>
+        <div class="sm-component-query__item-holder">
+          <div class="sm-component-query__section-title">{{ $t('query.queryBounds') }}</div>
+          <div class="sm-component-query__radio-group">
+            <label :class="['sm-component-query__radio-item', { 'is-disabled': !activeJobInfo }]">
+              <input
+                v-model="queryBounds"
+                class="sm-component-query__radio-input"
+                type="radio"
+                value="currentMapBounds"
+                :disabled="!activeJobInfo"
+              />
+              <span>{{ $t('query.currentMapBounds') }}</span>
+            </label>
+            <label :class="['sm-component-query__radio-item', { 'is-disabled': !activeJobInfo }]">
+              <input
+                v-model="queryBounds"
+                class="sm-component-query__radio-input"
+                type="radio"
+                value="mapBounds"
+                :disabled="!activeJobInfo"
+              />
+              <span>{{ $t('query.mapBounds') }}</span>
+            </label>
+          </div>
+        </div>
+        <div class="sm-component-query__query-button">
+          <sm-button
+            type="primary"
+            size="small"
+            class="sm-component-query__a-button"
+            :disabled="queryButtonDisabled"
+            @click="queryButtonClicked"
           >
-            <div class="sm-component-query__item-holder">
-              <template v-if="jobInfo.queryParameter.queryMode === 'KEYWORD'">
-                <div>{{ $t('query.keyQueryCondition') }}</div>
-                <sm-input
-                  v-model:value="jobInfo.queryParameter.attributeFilter"
-                  allowClear
-                  class="sm-component-query__item-config"
-                  :style="textColorStyle"
-                  :placeholder="$t('query.keyQueryPlaceholder')"
-                />
-              </template>
-              <template v-else>
-                <div>{{ $t('query.attributeCondition') }}</div>
-                <sm-input
-                  v-model:value="jobInfo.queryParameter.attributeFilter"
-                  allowClear
-                  class="sm-component-query__item-config"
-                  :style="textColorStyle"
-                  :placeholder="$t('query.sqlQueryPlaceholder')"
-                />
-              </template>
-            </div>
-            <div class="sm-component-query__item-holder">
-              <div>{{ $t('query.spatialFilter') }}</div>
-              <sm-select
-                v-model:value="jobInfo.spaceFilter"
-                class="sm-component-query__item-config"
-                :get-popup-container="getPopupContainer"
-                :style="textColorStyle"
-              >
-                <sm-select-option
-                  v-for="item in selectOptions"
-                  :key="item.value"
-                  :value="item.value"
-                >
-                  {{ item.label }}
-                </sm-select-option>
-              </sm-select>
-            </div>
-            <div class="sm-component-query__query-button">
-              <sm-button
-                type="primary"
-                size="small"
-                class="sm-component-query__a-button"
-                @click="queryButtonClicked(jobInfo.queryParameter, jobInfo.spaceFilter)"
-              >
-                {{ $t('query.applicate') }}
-              </sm-button>
-            </div>
-          </div>
+            {{ $t('query.applicate') }}
+          </sm-button>
         </div>
       </div>
       <div v-else class="sm-component-query__result-info">
-        <div v-show="!queryResult && !isQuery" class="sm-component-query__no-result">
-          <sm-empty :description="$t('query.noResult')" />
+        <div class="sm-component-query__result-header" :style="textColorHeadingStyle">
+          <div class="sm-component-query__result-title">
+            <i class="sm-components-icon-arrow-right sm-component-query__back" @click="backToQuery" />
+            <span :title="queryHeaderName" class="sm-component-query__header-name">
+              {{ queryHeaderName }}
+            </span>
+          </div>
+          <i v-if="queryResult" class="sm-components-icon-delete" @click="clearResult" />
         </div>
         <div v-show="isQuery && !queryResult" class="sm-component-query__result-loading">
           <sm-spin :tip="$t('query.querying')">
             <template #indicator>
-              <LoadingOutlined style="font-size: 24px"  />
+              <LoadingOutlined style="font-size: 24px" />
             </template>
           </sm-spin>
         </div>
-        <template v-if="queryResult">
-          <div class="sm-component-query__result-header" :style="textColorHeadingStyle">
-            <span :title="queryResult.name" class="sm-component-query__header-name">
-              {{ queryResult.name }}
-            </span>
-            <i class="sm-components-icon-delete" @click="clearResult" />
-          </div>
-          <div class="sm-component-query__result-body">
-            <ul>
-              <li
-                v-for="(item, index) in queryResult.result"
-                :key="index"
-                :title="resultDisplayTitle(item)"
-                role="option"
-                :aria-selected="activeResultIndexList.includes(index)"
-                @click="queryResultListClicked(index)"
-              >
-                {{ resultDisplayTitle(item) }}
-                <i
-                  v-if="activeResultIndexList.includes(index) && multiSelect"
-                  class="sm-components-icon-complete"
-                />
-              </li>
-            </ul>
-          </div>
-        </template>
+        <div v-if="queryResult && queryResult.result.length === 0" class="sm-component-query__no-result">
+          <sm-empty :description="$t('query.noResult')" />
+        </div>
+        <div v-if="queryResult && queryResult.result.length > 0" class="sm-component-query__result-body">
+          <ul>
+            <li
+              v-for="(item, index) in queryResult.result"
+              :key="index"
+              :title="resultDisplayTitle(item)"
+              role="option"
+              :aria-selected="activeResultIndexList.includes(index)"
+              @click="queryResultListClicked(index)"
+            >
+              {{ resultDisplayTitle(item) }}
+              <i
+                v-if="activeResultIndexList.includes(index) && multiSelect"
+                class="sm-components-icon-complete"
+              />
+            </li>
+          </ul>
+        </div>
+        <div v-if="queryResult" class="sm-component-query__result-count">
+          {{ $t('query.resultCount', { count: queryResult.result.length }) }}
+        </div>
       </div>
     </div>
     <SmLayerHighlight
@@ -217,16 +212,7 @@ const props = withDefaults(defineProps<QueryProps>(), queryPropsDefault)
 const emit = defineEmits<QueryEvents>()
 
 const { t: $t } = useLocale()
-const selectOptions = [
-  {
-    label: $t('query.currentMapBounds'),
-    value: 'currentMapBounds'
-  },
-  {
-    label: $t('query.mapBounds'),
-    value: 'mapBounds'
-  }
-]
+const sqlExpressionPattern = /\S+\s*(=|<>|>=|<=|>|<|\blike\b|\bin\b|\bbetween\b)\s*\S+/i
 const viewModel = new QueryViewModel(props)
 let selectSpaceFilter: QueryBoundsType
 let resultFeatures: QueryResultParams['result']
@@ -243,20 +229,64 @@ const { isShow } = useMapControl()
 
 const queryResult = ref<QueryResult>(null)
 const activeTab = ref<'job' | 'result'>('job')
-const activePanelIndex = ref<number>(null)
 const activeResultIndexList = ref<number[]>([])
 const activeQueryJob = ref<QueryJobItem['queryParameter']>(null)
 const isQuery = ref(false)
 const jobInfos = ref<QueryJobItem[]>([])
+const activeJobIndex = ref(0)
 const resultLayers = ref<string[]>([])
 const highlightCompRef = useTemplateRef('query-highlight')
+
+const activeJobInfo = computed(() => jobInfos.value[activeJobIndex.value] || null)
+
+const queryMode = computed({
+  get: () => activeJobInfo.value?.queryParameter.queryMode || 'SQL',
+  set: (value: QueryParameter['queryMode']) => {
+    if (activeJobInfo.value) {
+      activeJobInfo.value.queryParameter.queryMode = value
+    }
+  }
+})
+
+const queryBounds = computed({
+  get: () => activeJobInfo.value?.spaceFilter || 'currentMapBounds',
+  set: (value: QueryBoundsType) => {
+    if (activeJobInfo.value) {
+      activeJobInfo.value.spaceFilter = value
+    }
+  }
+})
+
+const queryCondition = computed({
+  get: () => activeJobInfo.value?.queryParameter.attributeFilter || '',
+  set: (value: string) => {
+    if (activeJobInfo.value) {
+      activeJobInfo.value.queryParameter.attributeFilter = value
+    }
+  }
+})
+
+const sqlExpressionInvalid = computed(() => {
+  if (queryMode.value !== 'SQL') return false
+  const condition = queryCondition.value?.trim()
+  if (!condition) return false
+  return !sqlExpressionPattern.test(condition)
+})
+
+const queryButtonDisabled = computed(() => {
+  return !activeJobInfo.value || sqlExpressionInvalid.value || isQuery.value
+})
+
+const queryHeaderName = computed(() => {
+  return queryResult.value?.name || activeQueryJob.value?.name || ''
+})
 
 const resultDisplayTitle = computed(() => {
   return (properties: any) => `SmID：${getValueCaseInsensitive(properties, 'smid')}`
 })
 
 const featureFieldsMap = computed(() => {
-  if (resultLayers.value.length > 0) {
+  if (resultLayers.value.length > 0 && queryResult.value) {
     const { fields } = queryResult.value
     return resultLayers.value.reduce((list, layerId) => {
       list[layerId] = fields
@@ -267,7 +297,7 @@ const featureFieldsMap = computed(() => {
 })
 
 const displayFieldsMap = computed(() => {
-  if (resultLayers.value.length > 0) {
+  if (resultLayers.value.length > 0 && activeQueryJob.value) {
     const { fields } = activeQueryJob.value
     return resultLayers.value.reduce((list, layerId) => {
       list[layerId] = fields
@@ -314,12 +344,16 @@ function formatJobInfos() {
       })
     }
   })
+  if (activeJobIndex.value >= jobInfos.value.length) {
+    activeJobIndex.value = 0
+  }
 }
 
-function queryButtonClicked(
-  jobInfo: QueryJobItem['queryParameter'],
-  value: QueryJobItem['spaceFilter']
-) {
+function queryButtonClicked() {
+  const jobInfo = activeJobInfo.value?.queryParameter
+  const value = queryBounds.value
+  if (!jobInfo) return
+  if (sqlExpressionInvalid.value) return
   message.destroy()
   if (
     JSON.stringify(activeQueryJob.value) === JSON.stringify(jobInfo) &&
@@ -327,12 +361,13 @@ function queryButtonClicked(
     queryResult.value
   ) {
     message.warning($t('query.resultAlreadyExists'))
+    activeTab.value = 'result'
     return
   }
   clearResult()
   isQuery.value = true
   activeTab.value = 'result'
-  activeQueryJob.value = jobInfo
+  activeQueryJob.value = JSON.parse(JSON.stringify(jobInfo))
   selectSpaceFilter = value
   query(JSON.parse(JSON.stringify(jobInfo)), selectSpaceFilter)
 }
@@ -342,6 +377,7 @@ function query(parameter: QueryParameter, bounds: QueryBoundsType = 'mapBounds')
 }
 
 function queryResultListClicked(index: number) {
+  if (!resultLayers.value.length || !resultFeatures?.length) return
   if (activeResultIndexList.value.includes(index)) {
     activeResultIndexList.value.splice(activeResultIndexList.value.indexOf(index), 1)
   } else if (props.multiSelect) {
@@ -363,11 +399,29 @@ function registerEvents() {
     }
     resultFeatures = e.result.result
     resultLayers.value = e.layers
+    activeTab.value = 'result'
+    message.destroy()
+    message.success($t('query.querySuccess'))
     emit('query-succeeded', e)
   })
 
   viewModel.on('queryfailed', (e: QueryFailedEvent) => {
     isQuery.value = false
+    message.destroy()
+    if (e.code_name === 'NO_RESULTS') {
+      queryResult.value = {
+        name: activeQueryJob.value?.name,
+        result: [],
+        fields: activeQueryJob.value?.fields || []
+      }
+      resultFeatures = []
+      resultLayers.value = []
+      activeResultIndexList.value = []
+      activeTab.value = 'result'
+      message.warning(getFailedMessage(e))
+      emit('query-failed', e)
+      return
+    }
     clearResult()
     message.warning(getFailedMessage(e))
     emit('query-failed', e)
@@ -389,12 +443,18 @@ function getPopupContainer(triggerNode: HTMLElement) {
   return triggerNode.parentNode as HTMLElement
 }
 
+function backToQuery() {
+  activeTab.value = 'job'
+}
+
 function clearResult() {
   activeTab.value = 'job'
+  isQuery.value = false
   activeResultIndexList.value = []
   resultLayers.value = []
   queryResult.value = null
   activeQueryJob.value = null
+  resultFeatures = []
   viewModel.clear(highlightLayerIds)
 }
 
@@ -402,6 +462,9 @@ function handleMapSeletionChanged(e: MapSelectionChangedEmit) {
   highlightLayerIds = e.highlightLayerIds
   if (e.dataSelectorMode !== 'ALL') {
     activeResultIndexList.value = []
+  }
+  if (!queryResult.value || !activeQueryJob.value) {
+    return
   }
   emit('datachange', {
     ...e,
