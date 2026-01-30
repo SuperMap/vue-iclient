@@ -344,7 +344,7 @@ export default class WebMapViewModel extends Events {
           id: dataId,
           dataType: 'STRUCTUREDDATA',
           url: Util.urlPathAppend(this.serverUrl, `web/datas/${dataId}`),
-          attributeFilter: mapboxFilterToQueryFilter(item.filter)
+          attributeFilter: mapboxFilterToQueryFilter(item.filter, item.dataSource.type)
         };
         break;
       }
