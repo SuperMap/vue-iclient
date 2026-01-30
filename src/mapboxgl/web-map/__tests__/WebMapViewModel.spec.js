@@ -879,7 +879,9 @@ describe('WebMapViewModel.spec', () => {
       ],
       type: 'FeatureCollection'
     };
+    let params
     jest.spyOn(getFeaturesUtil, 'default').mockImplementation((dataset => {
+        params = dataset;
         return dataResult;
     }));
     const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
@@ -887,10 +889,14 @@ describe('WebMapViewModel.spec', () => {
     const callback = async function (data) {
       jest.spyOn(data.map, 'getSource').mockReturnValueOnce({ type: 'vector'});
       let res;
-      res = await viewModel.getLayerDatas({ renderSource: { type: 'vector' }, dataSource: {type: 'REST_DATA'}});
+      let filter = ['==', 'name', 'test'];
+      res = await viewModel.getLayerDatas({ renderSource: { type: 'vector' }, dataSource: {type: 'REST_DATA'}, filter });
       expect(res).toEqual(dataResult.features);
-      res = await viewModel.getLayerDatas({ renderSource: { type: 'vector' }, dataSource: {type: 'STRUCTURE_DATA'}});
+      expect(params.filterConditions).toEqual(filter);
+      filter = ['!=', 'name1', 'test1'];
+      res = await viewModel.getLayerDatas({ renderSource: { type: 'vector' }, dataSource: {type: 'STRUCTURE_DATA'}, filter });
       expect(res).toEqual(dataResult.features);
+      expect(params.filterConditions).toEqual(filter);
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
