@@ -66,6 +66,7 @@ export default class EchartsDataService {
     this.dataCache = null; // 缓存的是请求后的数据
     this.sortDataCache = null;
     this.statisticDataCache = null;
+    this.statisticOriginDataCache = null;
     this.axisDatas = []; // 坐标data
     this.serieDatas = []; // series data
     this.gridAxis = { xAxis: [], yAxis: {} }; // 直角坐标系
@@ -126,9 +127,10 @@ export default class EchartsDataService {
     // 统计后的数据
     let features;
     const isStastic = datasetOptions.length && datasetOptions[0].isStastic;
-    if(isStastic) {
+    if (isStastic) {
       features = this._createStatisticData(data, datasetOptions, xBar);
       this.statisticDataCache = features;
+      this.statisticOriginDataCache = this._createStatisticOriginData(data);
     }
     // 设置this.data
     data = this._setData(data, xBar);
@@ -195,6 +197,25 @@ export default class EchartsDataService {
       features.length = maxLen;
     }
     return features;
+  }
+
+  /**
+   * @function EchartsDataService.prototype._createStatisticOriginData
+   * @description 对相同字段数据进行统计后，对应的原始features
+   * @param {Object} data - 从superMap的iserver,iportal中请求返回的数据
+   * @param {Object} datasetOptions - 数据解析的配置参数
+   * @returns {Map} key为xField的字段对应的值，value为该值对应的原始features
+   */
+  _createStatisticOriginData(data, datasetOptions = this.datasetOptions, features = this.statisticDataCache) {
+    const result = new Map();
+    const xField = datasetOptions[0].xField;
+    const allFeatures = data.features;
+    features?.map(item => {
+      const xFieldValue = item[xField];
+      const originFeatures = allFeatures.filter(originItem => originItem.properties[xField] === xFieldValue);
+      result.set(xFieldValue, originFeatures);
+    });
+    return result;
   }
 
   /**
