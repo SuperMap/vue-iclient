@@ -28,10 +28,12 @@
     "@turf/helpers": "^6.1.4",
     "@turf/length": "^7.2.0",
     "@turf/transform-scale": "^7.2.0",
+    "@videojs-player/vue": "^1.0.0",
     "ant-design-vue": "^4.2.6",
     "css-vars-ponyfill": "^2.2.1",
     "dayjs": "^1.11.13",
     "echarts": "^6.0.0",
+    "flv.js": "^1.6.2",
     "interactjs": "1.9.7",
     "lodash-es": "^4.17.21",
     "lodash.assignin": "^4.2.0",
@@ -55,7 +57,10 @@
     "tinycolor2": "^1.6.0",
     "vue-echarts": "^8.0.0",
     "vue3-count-to": "^1.1.2",
-    "vue-quilly": "^1.1.5"
+    "vue-quilly": "^1.1.5",
+    "vue-video-player": "^6.0.0",
+    "video.js": "~7.20.1",
+    "videojs-flvjs-es6": "^1.0.1"
   },
   "engines": {
     "node": ">= 6.0.0",

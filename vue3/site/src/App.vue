@@ -4,9 +4,9 @@ import { ref, reactive, onBeforeMount } from 'vue'
 import demoRoutes from './router/demoRoutes'
 import { setTheme } from '@supermapgis/common/utils/index.common'
 import Button from '@supermapgis/common/components/button/Button'
-import dayjs from 'dayjs';
-import 'dayjs/locale/zh-cn';
-dayjs.locale('zh-cn');
+import dayjs from 'dayjs'
+import 'dayjs/locale/zh-cn'
+dayjs.locale('zh-cn')
 
 const routes = reactive(demoRoutes)
 const theme = ref('light')
@@ -88,8 +88,8 @@ main {
   margin-bottom: 20px;
 }
 .view {
-  width: 100%;
-  height: 100%;
+  width: 95%;
+  height: 90%;
   border: 1px solid;
   padding: 20px;
 }
