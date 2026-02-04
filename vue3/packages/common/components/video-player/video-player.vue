@@ -40,7 +40,6 @@ import { message, Modal } from 'ant-design-vue'
 import flvjs from 'flv.js'
 import 'videojs-flvjs-es6'
 import { VideoPlayer as VueVideoPlayer } from 'vue-video-player'
-import 'video.js/dist/video-js.css'
 import { useLocale } from '@supermapgis/common/hooks/index.common'
 import { videoPlayerPropsDefault, VideoPlayerProps, PlayerOptions, Ratio, PreviewMode } from './types'
 
