@@ -1,4 +1,4 @@
-import type { PropType, CSSProperties } from 'vue'
+import type { PropType } from 'vue'
 import { getPropsDefaults } from '@supermapgis/common/utils/vue-types'
 import type { ThemeProps } from '@supermapgis/common/utils/index.common'
 import { themeProps } from '@supermapgis/common/utils/index.common'
@@ -27,7 +27,6 @@ export interface PlayerOptions {
 export interface VideoPlayerOptions {
   muted?: boolean
   loop?: boolean
-  popupToPlay?: boolean
   autoplay?: boolean
   controls?: boolean
   poster?: string
@@ -37,15 +36,20 @@ export enum Ratio {
   Ratio = 'ratio',
   Full = 'full'
 }
+export enum PreviewMode {
+  Default ='default',
+  Fullscreen = 'fullScreen',
+  PopupToPlay = 'popupToPlay'
+}
 
 export const videoPlayerProps = () => ({
   url: {
     type: String,
     required: false
   },
-  isFullscreen: {
-    type: Boolean,
-    default: false
+  previewMode: {
+    type: String as PropType<PreviewMode>,
+    default: PreviewMode.Default
   },
   ratio: {
     type: String as PropType<Ratio>,
@@ -57,7 +61,6 @@ export const videoPlayerProps = () => ({
       return {
         muted: true,
         loop: false,
-        popupToPlay: false,
         autoplay: false,
         controls: true,
         fill: false,
@@ -68,10 +71,8 @@ export const videoPlayerProps = () => ({
 })
 
 export interface VideoPlayerProps extends ThemeProps {
-  fontStyle?: CSSProperties
   url: string
-  swf?: string
-  isFullscreen?: boolean
+  previewMode?: string
   ratio?: Ratio
   options?: VideoPlayerOptions
 }

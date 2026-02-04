@@ -42,7 +42,7 @@ import 'videojs-flvjs-es6'
 import { VideoPlayer as VueVideoPlayer } from 'vue-video-player'
 import 'video.js/dist/video-js.css'
 import { useLocale } from '@supermapgis/common/hooks/index.common'
-import { videoPlayerPropsDefault, VideoPlayerProps, PlayerOptions, Ratio } from './types'
+import { videoPlayerPropsDefault, VideoPlayerProps, PlayerOptions, Ratio, PreviewMode } from './types'
 
 const [messageApi] = message.useMessage()
 const { t: $t } = useLocale()
@@ -60,6 +60,12 @@ const modalPlayerOptions = ref<PlayerOptions>({})
 // Computed properties
 const isFullFill = computed(() => {
   return props.ratio === Ratio.Full
+})
+const isFullscreen = computed(() => {
+  return props.previewMode === PreviewMode.Fullscreen
+})
+const popupToPlay = computed(() => {
+  return props.previewMode === PreviewMode.PopupToPlay
 })
 const isFlv = computed(() => {
   if (!flvjs && checkUrl(props.url) && props.url.includes('.flv')) {
@@ -209,21 +215,21 @@ const onPlayerPlay = () => {
   if (!player || !checkUrl(props.url)) {
     return
   }
-  if (isFirst.value && props.options.popupToPlay) {
+  if (isFirst.value && popupToPlay.value) {
     messageApi.info($t('info.pressEscToExit'), 3)
   }
-  if (isFirst.value && !props.options.popupToPlay && !props.options.autoplay) {
+  if (isFirst.value && !popupToPlay.value && !props.options.autoplay) {
     player.currentTime(0)
     isFirst.value = false
   }
-  if (props.options.popupToPlay) {
+  if (popupToPlay.value) {
     player.pause()
     player.currentTime(1)
     player.controlBar.el_.style.visibility = 'hidden'
     modalVisible.value = true
   }
-  modalVisible.value = props.options.popupToPlay
-  if (!props.options.popupToPlay && props.isFullscreen) {
+  modalVisible.value = popupToPlay.value
+  if (!popupToPlay.value && isFullscreen.value) {
     player.requestFullscreen()
   }
 }
@@ -235,7 +241,7 @@ const onFullscreenchange = (e: any) => {
 }
 
 const onPlayerEnded = () => {
-  if (!props.options.autoplay && !props.options.popupToPlay) {
+  if (!props.options.autoplay && !popupToPlay.value) {
     isFirst.value = true
   }
 }
