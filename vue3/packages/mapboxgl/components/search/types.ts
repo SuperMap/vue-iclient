@@ -64,6 +64,9 @@ export const searchProps = () => ({
       return ['control', 'toolBar'].includes(mode)
     }
   },
+  inputPlaceHolder: {
+    type: String
+  },
   openSearchSuggestion: {
     type: Boolean,
     default: false
@@ -120,6 +123,7 @@ export interface SearchProps extends ControlProps, ThemeProps, MapGetterProps {
   iportalData?: FetchDataBase[]
   addressMatch?: FetchDataBase[]
   mode?: 'control' | 'toolBar'
+  inputPlaceHolder?: string
   openSearchSuggestion?: boolean
   alwaysCenter?: boolean
   showTitle?: boolean

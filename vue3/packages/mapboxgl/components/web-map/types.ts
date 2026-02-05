@@ -51,6 +51,7 @@ export interface QueryParam extends CardCommonParam {
 export interface SearchParam extends CommonControlParam {
   maxFeatures?: number
   layerNames?: Array<string>
+  inputPlaceHolder?: string
   onlineLocalSearch?: Object
   iportalData?: Array<Object>
   restData?: Array<Object>

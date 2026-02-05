@@ -56,7 +56,7 @@
           <sm-input
             v-model:value="searchKey"
             :class="['sm-component-search__a-input', { 'toolBar-input': mode === 'toolBar' }]"
-            :placeholder="$t('search.inputPlaceHolder')"
+            :placeholder="inputPlaceHolderText"
             allowClear
             @input="searchInput"
             @compositionstart="handleCompositionTransition(true)"
@@ -229,6 +229,8 @@ const { mapNotLoadedTip } = useMapGetter<Map>({
   viewModel
 })
 useMapControl()
+
+const inputPlaceHolderText = computed(() => props.inputPlaceHolder ?? $t('search.inputPlaceHolder'))
 
 // Refs
 const searchKey = ref<string>(null)
