@@ -1,7 +1,13 @@
 import type { PropType } from 'vue'
 import type { MapGetterProps, MapGetterEvents, ShortEmits, ThemeProps } from '@supermapgis/common/utils/index.common'
 import type { ControlProps } from '@supermapgis/mapboxgl/utils'
-import type { RestMapInfo, RestDataInfo, FetchDataBase, OnlineLocalSearch } from 'vue-iclient-controllers-mapboxgl/src/SearchViewModel'
+import type {
+  RestMapInfo,
+  RestDataInfo,
+  FetchDataBase,
+  OnlineLocalSearch,
+  LayerSearchInfo
+} from 'vue-iclient-controllers-mapboxgl/src/SearchViewModel'
 import { getPropsDefaults, mapGetterProps, themeProps } from '@supermapgis/common/utils/index.common'
 import { controlProps } from '@supermapgis/mapboxgl/utils'
 
@@ -74,6 +80,10 @@ export const searchProps = () => ({
     type: Boolean,
     default: true
   },
+  resultPanelWidth: {
+    type: [Number, String],
+    default: 300
+  },
   resultRender: {
     type: Function
   },
@@ -85,13 +95,25 @@ export const searchProps = () => ({
   splitLine: {
     type: Boolean,
     default: true
+  },
+  showHistory: {
+    type: Boolean,
+    default: true
+  },
+  historyMaxCount: {
+    type: [Number, String],
+    default: 10
+  },
+  historyNewestFirst: {
+    type: Boolean,
+    default: true
   }
 })
 
 // export type SearchProps = Partial<ExtractPropTypes<ReturnType<typeof searchProps>>>
 export interface SearchProps extends ControlProps, ThemeProps, MapGetterProps {
   maxFeatures?: number | string
-  layerNames?: string[]
+  layerNames?: (string | LayerSearchInfo)[]
   onlineLocalSearch?: OnlineLocalSearch
   restMap?: RestMapInfo[]
   restData?: RestDataInfo[]
@@ -102,9 +124,13 @@ export interface SearchProps extends ControlProps, ThemeProps, MapGetterProps {
   alwaysCenter?: boolean
   showTitle?: boolean
   showResult?: boolean
+  resultPanelWidth?: number | string
   resultRender?: ((data: any) => void) | undefined
   collapsed?: boolean
   splitLine?: boolean
+  showHistory?: boolean
+  historyMaxCount?: number | string
+  historyNewestFirst?: boolean
 }
 
 export const searchPropsDefault = getPropsDefaults<SearchProps>(

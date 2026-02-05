@@ -20,14 +20,14 @@
       color: $primary-color;
     }
   }
-  @include e(search-icon arrow-icon) {
-    float: left;
+  @include e(search-icon arrow-icon datasource-icon) {
     height: 32px;
     font-size: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    flex: 0 0 auto;
     > * {
       &:hover {
         color: $primary-color !important;
@@ -36,19 +36,23 @@
   }
   @include e(search-icon) {
     width: 32px;
-    position: relative;
-    &::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      display: block;
-      height: 50%;
-      transform: translateY(-50%);
-    }
+    border-left: 1px solid $border-color-split;
   }
   @include e(arrow-icon) {
-    width: 16px;
+    width: 32px;
+    border-right: 1px solid $border-color-split;
     background: $gis-control-suffix-bg;
+  }
+  @include e(datasource-icon) {
+    width: 32px;
+    border-right: 1px solid $border-color-split;
+    background: $gis-control-suffix-bg;
+    > i {
+      transition: transform .2s ease;
+      &.is-open {
+        transform: rotate(180deg);
+      }
+    }
   }
   @include e(content) {
     transform-origin: top left;
@@ -73,35 +77,12 @@
     }
   }
   @include e(input) {
+    display: flex;
+    align-items: center;
     overflow: hidden;
     &.with-split-line {
       + div {
         border-top: 1px solid $gis-control-header-border
-      }
-    }
-    &[aria-position="left"] {
-      #{$search-prefix}__a-input {
-        &.toolBar-input {
-          margin-right: 0;
-        }
-      }
-      #{$search-prefix}__search-icon {
-        &::after {
-          right: 0;
-          border-right: 1px solid $border-color-split;
-        }
-      }
-      #{$search-prefix}__arrow-icon {
-        float: right;
-      }
-    }
-    &[aria-position="right"] {
-      #{$search-prefix}__search-icon {
-        float: right;
-        &::after {
-          left: 0;
-          border-left: 1px solid $border-color-split;
-        }
       }
     }
     #{$search-prefix}__search-icon {
@@ -114,6 +95,8 @@
     &.#{$input-prefix}-affix-wrapper {
       display: flex;
       width: auto;
+      flex: 1 1 auto;
+      min-width: 0;
       padding: 5px 13px 5px 11px;
       color: inherit;
       background-color: inherit;
@@ -139,8 +122,10 @@
     }
   }
   @include e(result) {
-    overflow: auto;
-    max-width: 300px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: 100%;
+    max-width: 100%;
     max-height: 500px;
     padding-top: 4px;
     
@@ -159,6 +144,34 @@
           background: $gis-control-item-bg-selected;
         }
       }
+    }
+
+    #{$search-prefix}__datasource-item,
+    #{$search-prefix}__history-item {
+      height: 32px;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #{$search-prefix}__datasource-label,
+    #{$search-prefix}__history-text {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    #{$search-prefix}__history-delete {
+      flex: 0 0 auto;
+      font-size: 14px;
+      &:hover {
+        color: $primary-color;
+      }
+    }
+
+    #{$search-prefix}__no-result {
+      padding: 12px 16px;
+      color: $text-color-tertiary;
     }
   }
 

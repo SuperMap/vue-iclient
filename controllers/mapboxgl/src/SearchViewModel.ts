@@ -11,7 +11,7 @@ import { getFeatureCenter } from 'vue-iclient-core/utils/util';
 
 export interface SearchOptions {
   maxFeatures?: number | string;
-  layerNames?: string[];
+  layerNames?: (string | LayerSearchInfo)[];
   restMap?: RestMapInfo[];
   restData?: RestDataInfo[];
   iportalData?: FetchDataBase[];
@@ -19,6 +19,12 @@ export interface SearchOptions {
   onlineLocalSearch?: OnlineLocalSearch;
   alwaysCenter?: boolean;
   resultRender?: (feature: any) => void;
+  /**
+   * Search result event emit mode.
+   * - 'each': Emit `searchsucceeded{taskId}` per datasource (legacy behavior).
+   * - 'all': Emit `searchsucceeded{taskId}` once after all datasources finished.
+   */
+  emitMode?: 'each' | 'all';
   cityGeoCodingConfig?: {
     addressUrl?: string;
     key?: string;
@@ -61,7 +67,24 @@ export interface FetchRequestOptions {
 export interface FetchDataBase extends FetchRequestOptions {
   url: string;
   name?: string;
+  /**
+   * Fields to match `keyWord` when searching this datasource.
+   * If not provided, it will search across all properties.
+   */
+  searchFields?: string[];
+  /**
+   * Fields to display in dropdown results for this datasource.
+   * If not provided, it will display values of all properties.
+   */
+  resultFields?: string[];
   [k: string]: any;
+}
+
+export interface LayerSearchInfo {
+  layerName: string;
+  name?: string;
+  searchFields?: string[];
+  resultFields?: string[];
 }
 
 export interface RestMapInfo extends FetchDataBase {
@@ -110,6 +133,10 @@ export default class SearchViewModel extends mapboxgl.Evented {
   options: SearchOptions;
   searchTaskId = 0;
   searchType = ['layerNames', 'onlineLocalSearch', 'restMap', 'restData', 'iportalData', 'addressMatch'];
+  private activeSearchTaskId: number | null = null;
+  private pendingSearchCount = 0;
+  private hasSearchSuccess = false;
+  private lastSearchError: { sourceName: string; error: string } | null = null;
   markerList: Marker[] = [];
   popupList: Popup[] = [];
   errorSourceList: Record<string, string> = {}
@@ -141,6 +168,11 @@ export default class SearchViewModel extends mapboxgl.Evented {
    * @param {String} keyWord - 搜索关键字。
    */
   search(keyWord: string) {
+    const emitMode = this.options.emitMode || 'each';
+    if (emitMode === 'all') {
+      return this._searchAll(keyWord);
+    }
+
     this.searchCount = 0;
     this.searchResult = {};
     this.errorSourceList = {};
@@ -179,7 +211,9 @@ export default class SearchViewModel extends mapboxgl.Evented {
     const { resultRender } = this.options;
     this.keyWord = searchKey;
     this._reset();
-    this.fire('search-selected-info' + this.searchTaskId, { data });
+    const taskId =
+      this.options.emitMode === 'all' ? this.activeSearchTaskId ?? this.searchTaskId : this.searchTaskId;
+    this.fire('search-selected-info' + taskId, { data });
     if (resultRender) {
       return;
     }
@@ -209,7 +243,9 @@ export default class SearchViewModel extends mapboxgl.Evented {
       pointData.coordinates = (geometry as GeoJSON.Point).coordinates || geometry;
     }
     if (!pointData.coordinates || !pointData.coordinates.length || pointData.coordinates.find(item => isNaN(+item))) {
-      this.fire('addfeaturefailed' + this.searchTaskId, { code_name: 'ILLEGAL_FEATURE' });
+      const taskId =
+        this.options.emitMode === 'all' ? this.activeSearchTaskId ?? this.searchTaskId : this.searchTaskId;
+      this.fire('addfeaturefailed' + taskId, { code_name: 'ILLEGAL_FEATURE' });
       return;
     }
     if (this.keyWord.indexOf('：') < 0) {
@@ -219,7 +255,314 @@ export default class SearchViewModel extends mapboxgl.Evented {
         properties[key] && pointData.info.push({ attribute: key, attributeValue: properties[key] });
       }
     }
-    this.fire('set-popup-content' + this.searchTaskId, { popupData: pointData });
+    const taskId =
+      this.options.emitMode === 'all' ? this.activeSearchTaskId ?? this.searchTaskId : this.searchTaskId;
+    this.fire('set-popup-content' + taskId, { popupData: pointData });
+  }
+
+  private _searchAll(keyWord: string) {
+    // Reserve a stable task id for this search, and keep `searchTaskId` for the next search.
+    const taskId = this.searchTaskId;
+    this.activeSearchTaskId = taskId;
+    this.searchTaskId += 1;
+
+    this.pendingSearchCount = 0;
+    this.hasSearchSuccess = false;
+    this.lastSearchError = null;
+    this.searchResult = {};
+    this.errorSourceList = {};
+    this.keyWord = keyWord;
+
+    const { maxFeatures } = this.options;
+    this.maxFeatures = +maxFeatures >= 100 ? 100 : Math.ceil(+maxFeatures) || 8;
+
+    const { layerNames, onlineLocalSearch, restMap, restData, iportalData, addressMatch } = {
+      ...this.options
+    };
+
+    // Calculate pending task count for final emit.
+    if (layerNames && layerNames.length > 0) this.pendingSearchCount += layerNames.length;
+    if (onlineLocalSearch && onlineLocalSearch.enable) this.pendingSearchCount += 1;
+    if (restMap && restMap.length > 0) this.pendingSearchCount += restMap.length;
+    if (restData && restData.length > 0) {
+      restData.forEach(item => {
+        const datasetCount = Array.isArray(item.dataName) ? item.dataName.length : 0;
+        this.pendingSearchCount += Math.max(datasetCount, 0);
+      });
+    }
+    if (iportalData && iportalData.length > 0) this.pendingSearchCount += iportalData.length;
+    if (addressMatch && addressMatch.length > 0) this.pendingSearchCount += addressMatch.length;
+
+    if (this.pendingSearchCount <= 0) {
+      setTimeout(() => {
+        if (this.activeSearchTaskId !== taskId) return;
+        this.fire('searchfailed' + taskId, { error: 'No search source', sourceName: '' });
+      }, 0);
+      return taskId;
+    }
+
+    layerNames && layerNames.length > 0 && this._searchFromLayerAll(taskId, layerNames);
+    onlineLocalSearch?.enable && this._searchFromPOIAll(taskId, onlineLocalSearch);
+    restMap && restMap.length > 0 && this._searchFromRestMapAll(taskId, restMap);
+    restData && restData.length > 0 && this._searchFromRestDataAll(taskId, restData);
+    iportalData && iportalData.length > 0 && this._searchFromIportalAll(taskId, iportalData);
+    addressMatch && addressMatch.length > 0 && this._searchFromAddressMatchAll(taskId, addressMatch);
+
+    return taskId;
+  }
+
+  private _searchTaskSucceedAll(taskId: number, resultFeature: FeatureResult[], sourceName: string) {
+    if (this.activeSearchTaskId !== taskId) return;
+    this.hasSearchSuccess = true;
+    if (resultFeature && resultFeature.length > 0) {
+      const existing = this.searchResult[sourceName]?.result || [];
+      const next = existing.concat(resultFeature).slice(0, this.maxFeatures);
+      this.searchResult[sourceName] = { source: sourceName, result: next };
+    }
+    this._finishOneSearchTaskAll(taskId);
+  }
+
+  private _searchTaskFailedAll(taskId: number, error: string, sourceName: string) {
+    if (this.activeSearchTaskId !== taskId) return;
+    this.lastSearchError = { sourceName, error };
+    this._finishOneSearchTaskAll(taskId);
+  }
+
+  private _finishOneSearchTaskAll(taskId: number) {
+    if (this.activeSearchTaskId !== taskId) return;
+    this.pendingSearchCount = Math.max(this.pendingSearchCount - 1, 0);
+    if (this.pendingSearchCount !== 0) return;
+
+    const resultList: SearchResultItem[] = [];
+    for (let key in this.searchResult) {
+      resultList.push(this.searchResult[key]);
+    }
+
+    if (this.hasSearchSuccess) {
+      this.fire('searchsucceeded' + taskId, { result: resultList });
+      return;
+    }
+
+    this.fire('searchfailed' + taskId, {
+      error: this.lastSearchError?.error || '',
+      sourceName: this.lastSearchError?.sourceName || ''
+    });
+  }
+
+  private _searchFromLayerAll(taskId: number, layerNames: (string | LayerSearchInfo)[]) {
+    setTimeout(() => {
+      layerNames.forEach(layer => {
+        const sourceName = typeof layer === 'string' ? layer : layer.layerName;
+        const searchFields = typeof layer === 'string' ? undefined : layer.searchFields;
+        const resultFields = typeof layer === 'string' ? undefined : layer.resultFields;
+        const source = this.map.getSource(sourceName);
+        if (source) {
+          // @ts-ignore
+          const features = clonedeep(source._data ? source._data.features : []);
+          const resultFeature = this._getFeaturesByKeyWord(
+            this.keyWord,
+            features,
+            searchFields,
+            resultFields
+          );
+          const results = resultFeature.slice(0, this.maxFeatures);
+          this._searchTaskSucceedAll(taskId, results, sourceName);
+        } else {
+          this._searchTaskFailedAll(taskId, `The ${sourceName} does not exist`, sourceName);
+        }
+      }, this);
+    }, 0);
+  }
+
+  private _searchFromPOIAll(taskId: number, onlineLocalSearch: OnlineLocalSearch) {
+    const sourceName = 'Online 鏈湴鎼滅储';
+    this.geoCodeParam = {
+      pageSize: this.options.pageSize || 10,
+      pageNum: this.options.pageNum || 1,
+      city: onlineLocalSearch.city
+    };
+    this.geoCodeParam.keyWords = this.keyWord;
+    const url = this._getSearchUrl(this.geoCodeParam);
+    FetchRequest.get(url)
+      .then(response => response.json())
+      .then(geocodingResult => {
+        if (this.activeSearchTaskId !== taskId) return;
+        if (geocodingResult.error) {
+          this._searchTaskFailedAll(taskId, geocodingResult.error, sourceName);
+          return;
+        }
+        if (!geocodingResult.poiInfos) {
+          this._searchTaskSucceedAll(taskId, [], sourceName);
+          return;
+        }
+        if (geocodingResult.poiInfos.length === 0) {
+          this._searchTaskSucceedAll(taskId, [], sourceName);
+          return;
+        }
+        const geoJsonResult = this._dataToGeoJson(geocodingResult.poiInfos, this.geoCodeParam);
+        this._searchTaskSucceedAll(taskId, geoJsonResult.slice(0, this.maxFeatures), sourceName);
+      })
+      .catch(error => {
+        this._searchTaskFailedAll(taskId, error, sourceName);
+      });
+  }
+
+  private _searchFromRestMapAll(taskId: number, restMaps: RestMapInfo[]) {
+    const defaultSourceName = 'Rest Map Search';
+    restMaps.forEach(restMap => {
+      const sourceName = restMap.name || defaultSourceName;
+      let finished = false;
+      const finishSucceed = (features: FeatureResult[]) => {
+        if (finished) return;
+        finished = true;
+        this._searchTaskSucceedAll(taskId, features, sourceName);
+      };
+      const finishFailed = (error: string) => {
+        if (finished) return;
+        finished = true;
+        this._searchTaskFailedAll(taskId, error, sourceName);
+      };
+
+      const options: FetchRequestOptions = {};
+      if (restMap.proxy) {
+        options.proxy = restMap.proxy;
+      }
+      restMap.epsgCode && (options.epsgCode = restMap.epsgCode);
+      const iserverService = new iServerRestService(restMap.url, options);
+      iserverService.on({
+        getdatafailed: () => {
+          finishFailed('');
+        },
+        featureisempty: () => {
+          finishSucceed([]);
+        },
+        getdatasucceeded: e => {
+          if (!e.features) {
+            finishSucceed([]);
+            return;
+          }
+          const resultFeatures = this._getFeaturesByKeyWord(
+            this.keyWord,
+            e.features,
+            restMap.searchFields,
+            restMap.resultFields
+          ).slice(0, this.maxFeatures);
+          finishSucceed(resultFeatures);
+        }
+      });
+      iserverService.getMapFeatures(
+        { dataUrl: restMap.url, mapName: restMap.layerName },
+        { maxFeatures: this.maxFeatures, keyWord: this.keyWord }
+      );
+    }, this);
+  }
+
+  private _searchFromRestDataAll(taskId: number, restDatas: RestDataInfo[]) {
+    const defaultSourceName = 'Rest Data Search';
+    restDatas.forEach(restData => {
+      const sourceName = restData.name || defaultSourceName;
+      const dataNames = Array.isArray(restData.dataName) ? restData.dataName : [];
+      dataNames.forEach(fullName => {
+        let finished = false;
+        const finishSucceed = (features: FeatureResult[]) => {
+          if (finished) return;
+          finished = true;
+          this._searchTaskSucceedAll(taskId, features, sourceName);
+        };
+        const finishFailed = (error: string) => {
+          if (finished) return;
+          finished = true;
+          this._searchTaskFailedAll(taskId, error, sourceName);
+        };
+
+        const options: FetchRequestOptions = {};
+        if (restData.proxy) {
+          options.proxy = restData.proxy;
+        }
+        restData.epsgCode && (options.epsgCode = restData.epsgCode);
+        const iserverService = new iServerRestService(restData.url, options);
+        iserverService.on({
+          getdatafailed: () => {
+            finishFailed('');
+          },
+          featureisempty: () => {
+            finishSucceed([]);
+          },
+          getdatasucceeded: e => {
+            if (!e.features) {
+              finishSucceed([]);
+              return;
+            }
+            const resultFeatures = this._getFeaturesByKeyWord(
+              this.keyWord,
+              e.features,
+              restData.searchFields,
+              restData.resultFields
+            ).slice(0, this.maxFeatures);
+            finishSucceed(resultFeatures);
+          }
+        });
+        const [dataSourceName, datasetName] = fullName.split(':');
+        if (!dataSourceName || !datasetName) {
+          finishFailed(`Invalid dataName: ${fullName}`);
+          return;
+        }
+        iserverService.getDataFeatures(
+          { datasetName, dataSourceName, dataUrl: restData.url },
+          { maxFeatures: this.maxFeatures, keyWord: this.keyWord }
+        );
+      });
+    }, this);
+  }
+
+  private _searchFromIportalAll(taskId: number, iportalDatas: FetchDataBase[]) {
+    const defaultSourceName = 'Iportal Search';
+    iportalDatas.forEach(iportal => {
+      const sourceName = iportal.name || defaultSourceName;
+      getFeatures({ ...iportal })
+        .then(data => {
+          if (this.activeSearchTaskId !== taskId) return;
+          const features = data?.features || [];
+          const resultFeatures = this._getFeaturesByKeyWord(
+            this.keyWord,
+            features,
+            iportal.searchFields,
+            iportal.resultFields
+          ).slice(0, this.maxFeatures);
+          this._searchTaskSucceedAll(taskId, resultFeatures, sourceName);
+        })
+        .catch(error => {
+          this._searchTaskFailedAll(taskId, error, sourceName);
+        });
+    }, this);
+  }
+
+  private _searchFromAddressMatchAll(taskId: number, addressMatches: FetchDataBase[]) {
+    const defaultSourceName = 'Address Match Search';
+    addressMatches.forEach(addressMatch => {
+      const sourceName = addressMatch.name || defaultSourceName;
+      const options: FetchRequestOptions = {};
+      if (addressMatch.proxy) {
+        options.proxy = addressMatch.proxy;
+      }
+      this.addressMatchService = new AddressMatchService(addressMatch.url, options);
+      const parm = {
+        address: this.keyWord,
+        fromIndex: 0,
+        toIndex: this.maxFeatures,
+        maxReturn: this.maxFeatures,
+        prjCoordSys: '{epsgcode:4326}'
+      };
+      const geoCodeParam = new GeoCodingParameter(parm);
+      this.addressMatchService.code(geoCodeParam, e => {
+        if (this.activeSearchTaskId !== taskId) return;
+        if (e && e.result) {
+          this._searchTaskSucceedAll(taskId, e.result.slice(0, this.maxFeatures), sourceName);
+        } else {
+          this._searchTaskFailedAll(taskId, '', sourceName);
+        }
+      });
+    }, this);
   }
 
   _addLine() {
@@ -281,14 +624,22 @@ export default class SearchViewModel extends mapboxgl.Evented {
     this.map.flyTo({ center: coordinates as [number, number] });
   }
 
-  _searchFromLayer(layerNames) {
+  _searchFromLayer(layerNames: (string | LayerSearchInfo)[]) {
     setTimeout(() => {
-      layerNames.forEach(sourceName => {
+      layerNames.forEach(layer => {
+        const sourceName = typeof layer === 'string' ? layer : layer.layerName;
+        const searchFields = typeof layer === 'string' ? undefined : layer.searchFields;
+        const resultFields = typeof layer === 'string' ? undefined : layer.resultFields;
         let source = this.map.getSource(sourceName);
         if (source) {
           // @ts-ignore
           let features = clonedeep(source._data ? source._data.features : []);
-          let resultFeature = this._getFeaturesByKeyWord(this.keyWord, features);
+          let resultFeature = this._getFeaturesByKeyWord(
+            this.keyWord,
+            features,
+            searchFields,
+            resultFields
+          );
           const results = resultFeature.slice(0, this.maxFeatures);
           this._searchFeaturesSucceed(results, sourceName);
         } else {
@@ -385,7 +736,12 @@ export default class SearchViewModel extends mapboxgl.Evented {
         },
         getdatasucceeded: e => {
           if (e.features) {
-            let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, e.features);
+            let resultFeatures = this._getFeaturesByKeyWord(
+              this.keyWord,
+              e.features,
+              restMap.searchFields,
+              restMap.resultFields
+            );
             this._searchFeaturesSucceed(resultFeatures, restMap.name || sourceName);
           }
         }
@@ -415,7 +771,12 @@ export default class SearchViewModel extends mapboxgl.Evented {
         },
         getdatasucceeded: e => {
           if (e.features && e.features.length > 0) {
-            let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, e.features);
+            let resultFeatures = this._getFeaturesByKeyWord(
+              this.keyWord,
+              e.features,
+              restData.searchFields,
+              restData.resultFields
+            );
             this._searchFeaturesSucceed(resultFeatures, restData.name || sourceName);
           }
         }
@@ -435,7 +796,12 @@ export default class SearchViewModel extends mapboxgl.Evented {
       getFeatures({ ...iportal })
         .then(data => {
           if (data.features) {
-            let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, data.features);
+            let resultFeatures = this._getFeaturesByKeyWord(
+              this.keyWord,
+              data.features,
+              iportal.searchFields,
+              iportal.resultFields
+            );
             this._searchFeaturesSucceed(resultFeatures, iportal.name || sourceName);
           }
         })
@@ -506,30 +872,78 @@ export default class SearchViewModel extends mapboxgl.Evented {
     return url;
   }
 
-  _getFeaturesByKeyWord(keyWord: string, features: FeatureResult[]) {
-    let resultFeatures = [];
-    let keyReg = new RegExp(keyWord.toLowerCase());
-    let operatingAttributeNames = this._getAttributeNames(features);
+  private _formatResultValue(value: unknown): string {
+    if (value === null || value === undefined) return '';
+    if (typeof value === 'string') return value;
+    if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') return String(value);
+    try {
+      return JSON.stringify(value);
+    } catch (e) {
+      return String(value);
+    }
+  }
+
+  private _getResultDisplayInfo(
+    properties: Record<string, any>,
+    fallbackFields: string[],
+    resultFields?: string[]
+  ): { text: string; primaryValue: string } {
+    const fields = resultFields?.length ? resultFields : fallbackFields?.length ? fallbackFields : Object.keys(properties);
+    const values: string[] = [];
+    for (const field of fields) {
+      if (!field) continue;
+      if (!(field in properties)) continue;
+      const valueText = this._formatResultValue(properties[field]).trim();
+      if (valueText === '') continue;
+      values.push(valueText);
+    }
+    const text = values.join('，');
+    return { text, primaryValue: values[0] || '' };
+  }
+
+  _getFeaturesByKeyWord(
+    keyWord: string,
+    features: FeatureResult[],
+    searchFields?: string[],
+    resultFields?: string[]
+  ) {
+    const resultFeatures: FeatureResult[] = [];
+    const keyReg = new RegExp(keyWord.toLowerCase());
+
+    const defaultFields = this._getAttributeNames(features);
+    const operatingAttributeNames = searchFields?.length ? searchFields : defaultFields;
+
     features.forEach(feature => {
-      if (!feature.properties) {
-        return null;
-      }
-      let fAttr = feature.properties;
-      operatingAttributeNames.forEach(attributeName => {
-        if (fAttr[attributeName] && keyReg.test(fAttr[attributeName].toString().toLowerCase())) {
-          let filterAttributeName = attributeName;
-          let filterAttributeValue = fAttr[attributeName] || 'NUll';
-          if (!feature.filterAttribute) {
-            feature.filterAttribute = {
-              filterAttributeName: filterAttributeName,
-              filterAttributeValue: filterAttributeValue
-            };
-            feature.filterVal = `${filterAttributeName}：${filterAttributeValue}`;
-            resultFeatures.push(feature);
-          }
+      if (!feature.properties) return;
+      const props = feature.properties as Record<string, any>;
+
+      let matchedField: string | null = null;
+      let matchedValue: any = null;
+      const fieldsToSearch = operatingAttributeNames?.length ? operatingAttributeNames : Object.keys(props);
+      for (const field of fieldsToSearch) {
+        const value = props?.[field];
+        if (value === null || value === undefined || value === '') continue;
+        if (keyReg.test(value.toString().toLowerCase())) {
+          matchedField = field;
+          matchedValue = value;
+          break;
         }
-      }, this);
+      }
+
+      if (!matchedField) return;
+
+      const { text, primaryValue } = this._getResultDisplayInfo(props, defaultFields, resultFields);
+      const fallbackDisplay = this._formatResultValue(matchedValue).trim();
+
+      feature.filterAttribute = {
+        filterAttributeName: matchedField,
+        filterAttributeValue: primaryValue || fallbackDisplay || 'NUll'
+      };
+      feature.filterVal = text || fallbackDisplay;
+
+      resultFeatures.push(feature);
     });
+
     return resultFeatures;
   }
 
@@ -584,7 +998,11 @@ export default class SearchViewModel extends mapboxgl.Evented {
   }
 
   removed() {
-    this.searchTaskId = 0;
+    if (this.options.emitMode === 'all') {
+      this.activeSearchTaskId = null;
+    } else {
+      this.searchTaskId = 0;
+    }
     this.searchResult = {};
     this.errorSourceList = {};
     if (!this.options.resultRender) {
