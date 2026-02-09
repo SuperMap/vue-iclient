@@ -941,4 +941,27 @@ describe('WebMap.vue', () => {
     );
     done();
   });
+
+  it('registerEvents addlayerssucceeded -> calls mapEvent.$options.setMap with (target, map, mapData)', async () => {
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        mapId: '249495311',
+        serverUrl: 'https://fakeiportal.supermap.io/iportal'
+      }
+    });
+
+    // ensure viewModel is created and events registered
+    await wrapper.vm.$nextTick();
+
+    const setMapSpy = jest.spyOn(mapEvent.$options, 'setMap');
+
+    const fakeMap = { resize: jest.fn() };
+    const fakeMapData = { mapOptions: { center: [1, 2], zoom: 3 } };
+
+    wrapper.vm.viewModel.triggerEvent('addlayerssucceeded', { map: fakeMap, mapData: fakeMapData });
+
+    expect(setMapSpy).toHaveBeenCalledTimes(1);
+    expect(setMapSpy).toHaveBeenCalledWith(wrapper.vm.target, fakeMap, fakeMapData);
+  });
 });

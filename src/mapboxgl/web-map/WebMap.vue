@@ -383,7 +383,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
     this.viewModel.on({
       addlayerssucceeded: e => {
         this.spinning = false;
-        mapEvent.$options.setMap(this.target, e.map);
+        mapEvent.$options.setMap(this.target, e.map, e.mapData);
         this.viewModel && mapEvent.$options.setWebMap(this.target, this.viewModel);
         mapEvent.$emit('load-map', e.map, this.target);
         e.map.resize();
