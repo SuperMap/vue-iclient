@@ -3,6 +3,7 @@
 @use '@supermapgis/common/theme-chalk/collapse-card.scss';
 @use '@supermapgis/common/theme-chalk/select.scss';
 @use '@supermapgis/common/theme-chalk/table-popup.scss';
+@use '@supermapgis/mapboxgl/theme-chalk/mapbox-gl-draw.css';
 
 @include b(measure) {
 

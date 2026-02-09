@@ -7,6 +7,7 @@ import { SmText } from '@supermapgis/common/components/text'
 import { SmImage } from '@supermapgis/common/components/image'
 import { SmBorder } from '@supermapgis/common/components/border'
 import { SmIframe } from '@supermapgis/common/components/iframe'
+import { SmVideoPlayer }from '@supermapgis/common/components/video-player'
 
 import { SmAttributePopup } from '@supermapgis/mapboxgl/components/attribute-popup'
 import { SmAttributes } from '@supermapgis/mapboxgl/components/attributes'
@@ -65,6 +66,7 @@ export default [
   SmImage,
   SmBorder,
   SmIframe,
+  SmVideoPlayer,
   SmChart,
   SmSceneMeasure,
   SmFeatureTree,

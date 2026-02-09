@@ -152,7 +152,13 @@ const activeMode = ref<(typeof modeGroups)[number]['mode']>()
 const activeModeCache = ref<(typeof modeGroups)[number]['mode']>()
 const result = ref('')
 const measureFinished = ref(false)
-const activeResultUnit = ref<Units>()
+const activeResultUnit = ref<{
+  draw_line_string: Units | '',
+  draw_polygon: Units | ''
+}>({
+  draw_line_string: '',
+  draw_polygon: ''
+})
 
 // 计算属性
 const unitSelectorOptions = computed<Record<string, string>>(
@@ -161,15 +167,15 @@ const unitSelectorOptions = computed<Record<string, string>>(
 const showResultUnitsSelector = computed(() => props.showUnitSelect && !!activeMode.value)
 const unitSelected = computed<Units>({
   get() {
-    if (activeResultUnit.value) {
-      return activeResultUnit.value
+    if (activeResultUnit.value[activeMode.value]) {
+      return activeResultUnit.value[activeMode.value]
     }
     return (
       activeMode.value === 'draw_line_string' ? props.distanceDefaultUnit : props.areaDefaultUnit
     ) as Units
   },
   set(val: Units) {
-    activeResultUnit.value = val
+    activeResultUnit.value[activeMode.value] = val
   }
 })
 
@@ -197,13 +203,17 @@ const unitSelectorDropdownStyle = computed(() => ({
 }))
 
 watch(() => props.distanceDefaultUnit, (newVal: Units) => {
-  unitSelected.value = newVal;
-  updateUnit(newVal);
+  activeResultUnit.value['draw_line_string'] = newVal
+  if (activeMode.value === 'draw_line_string') {
+    updateUnit(newVal);
+  }
 });
 
 watch(() => props.areaDefaultUnit, (newVal: Units) => {
-  unitSelected.value = newVal;
-  updateUnit(newVal);
+  activeResultUnit.value['draw_polygon'] = newVal
+  if (activeMode.value === 'draw_polygon') {
+    updateUnit(newVal);
+  }
 });
 
 watch(() =>popupStyle.value, (next) => {
@@ -274,8 +284,8 @@ function changeMeasureMode(mode: (typeof modeGroups)[number]['mode']) {
       }
 
       if (activeMode.value !== mode || !props.continueDraw) {
-        viewModel.openDraw(mode, unitSelected.value, setPopupStyle)
         activeMode.value = mode
+        viewModel.openDraw(mode, unitSelected.value, setPopupStyle)
         props.continueDraw && drawEvent.notifyResetDraw(componentName)
       } else {
         viewModel.removeDraw(props.continueDraw)

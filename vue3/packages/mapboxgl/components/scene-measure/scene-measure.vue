@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch, useTemplateRef, onMounted } from 'vue'
+import { reactive, watch, useTemplateRef, onMounted } from 'vue'
 import type { SceneMeasureProps } from './types'
 import { useSceneGetter, useLocale } from '@supermapgis/common/hooks/index.common'
 import { useSceneControl } from '@supermapgis/mapboxgl/hooks'
@@ -246,11 +246,11 @@ const state = reactive({
 let handlerDis = null
 let handlerArea = null
 let handlerHeight = null
-const layers = ref<any>(null)
-const lineHeight = ref<number | null>(null)
-const setHypFlag = ref<boolean>(false)
-const isoline = ref<any>(null)
-const colorTable = ref<any>(null)
+let layers = null
+let lineHeight = null
+let setHypFlag = false
+let isoline = null
+let colorTable = null
 
 watch(
   () => state.measureMode,
@@ -278,8 +278,8 @@ watch(
   (val1, val2) => {
     if (val1 !== val2) {
       clear();
-      if (isoline.value) {
-        isoline.value.destroy();
+      if (isoline) {
+        isoline.destroy();
       }
       initBaseSettings();
       init();
@@ -299,22 +299,22 @@ const checkReady = () => {
 // 初始化相关
 const initBaseSettings = () => {
   state.clampMode = window.SuperMap3D.ClampMode.Space;
-  layers.value = undefined;
-  isoline.value = new window.SuperMap3D.HypsometricSetting();
-  colorTable.value = new window.SuperMap3D.ColorTable();
-  isoline.value.DisplayMode = window.SuperMap3D.HypsometricSettingEnum.DisplayMode.LINE;
-  isoline.value._lineColor = window.SuperMap3D.Color.fromCssColorString(state.contourColor);
-  isoline.value.ColorTable = colorTable.value;
-  isoline.value.Opacity = 0.6;
-  isoline.value.MaxVisibleValue = -100;
-  isoline.value.MinVisibleValue = -100;
+  layers = undefined;
+  isoline = new window.SuperMap3D.HypsometricSetting();
+  colorTable = new window.SuperMap3D.ColorTable();
+  isoline.DisplayMode = window.SuperMap3D.HypsometricSettingEnum.DisplayMode.LINE;
+  isoline._lineColor = window.SuperMap3D.Color.fromCssColorString(state.contourColor);
+  isoline.ColorTable = colorTable;
+  isoline.Opacity = 0.6;
+  isoline.MaxVisibleValue = -100;
+  isoline.MinVisibleValue = -100;
 };
 
 const init = () => {
   viewer.scene.pickPointInterval = 20;
-  layers.value = viewer.scene.layers.layerQueue;
+  layers = viewer.scene.layers.layerQueue;
   viewer.scene.globe.HypsometricSetting = {
-    hypsometricSetting: isoline.value,
+    hypsometricSetting: isoline,
     analysisMode: window.SuperMap3D.HypsometricSettingEnum.AnalysisRegionMode.ARM_ALL
   };
 
@@ -387,8 +387,8 @@ const init = () => {
     handlerHeight.vLabel.text = t('sceneMeasure.verticalHeight') + vHeight;
     handlerHeight.hLabel.text = t('sceneMeasure.horizontalDistance') + hDistance;
     // 实时等高线显示
-    lineHeight.value = Number(result.endHeight);
-    if (state.isShowLine) updateContourLine(lineHeight.value);
+    lineHeight = Number(result.endHeight);
+    if (state.isShowLine) updateContourLine(lineHeight);
   });
 
   // 测量高度监听事件
@@ -471,14 +471,14 @@ const calcAreaWithoutHeight = (positions: any[]) => {
 
 // 初始化设置图层等高线
 const setHypsometricSetting = () => {
-  if (!layers.value) return;
-  for (let i = 0; i < layers.value.length; i++) {
-    layers.value[i].hypsometricSetting = {
-      hypsometricSetting: isoline.value,
+  if (!layers) return;
+  for (let i = 0; i < layers.length; i++) {
+    layers[i].hypsometricSetting = {
+      hypsometricSetting: isoline,
       analysisMode: window.SuperMap3D.HypsometricSettingEnum.AnalysisRegionMode.ARM_ALL
     };
   }
-  setHypFlag.value = true;
+  setHypFlag = true;
 };
 
 // 设置等值线
@@ -486,11 +486,11 @@ const updateContourLine = (height: number) => {
   if (!viewer.scene.globe.HypsometricSetting.hypsometricSetting) return;
   viewer.scene.globe.HypsometricSetting.hypsometricSetting.MaxVisibleValue = height;
   viewer.scene.globe.HypsometricSetting.hypsometricSetting.MinVisibleValue = height;
-  if (!setHypFlag.value) return;
-  for (let i = 0; i < (layers.value?.length || 0); i++) {
-    if (layers.value[i].hypsometricSetting.hypsometricSetting) {
-      layers.value[i].hypsometricSetting.hypsometricSetting.MaxVisibleValue = height;
-      layers.value[i].hypsometricSetting.hypsometricSetting.MinVisibleValue = height;
+  if (!setHypFlag) return;
+  for (let i = 0; i < (layers?.length || 0); i++) {
+    if (layers[i].hypsometricSetting.hypsometricSetting) {
+      layers[i].hypsometricSetting.hypsometricSetting.MaxVisibleValue = height;
+      layers[i].hypsometricSetting.hypsometricSetting.MinVisibleValue = height;
     } else {
       setHypsometricSetting();
     }
@@ -546,7 +546,7 @@ const update_showDVH = (val: any) => {
   if (!val) {
     updateContourLine(-10000);
   } else {
-    updateContourLine(lineHeight.value);
+    updateContourLine(lineHeight);
   }
 };
 
@@ -555,7 +555,7 @@ const deactiveAll = () => {
   handlerArea && handlerArea.deactivate();
   handlerHeight && handlerHeight.deactivate();
   state.Ellipsoid = null;
-  lineHeight.value = -10000;
+  lineHeight = -10000;
 };
 
 // 测量距离
@@ -566,7 +566,7 @@ const MeasureDistance = () => {
 
 // 测量高度
 const MeasureHeight = () => {
-  !setHypFlag.value && setHypsometricSetting();
+  !setHypFlag && setHypsometricSetting();
   clearLine();
   deactiveAll();
   handlerHeight && handlerHeight.activate();

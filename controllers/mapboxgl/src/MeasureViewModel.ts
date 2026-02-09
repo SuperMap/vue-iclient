@@ -242,7 +242,8 @@ class MeasureViewModel extends mapboxgl.Evented {
         });
       }
       popup.setLngLat(lastPointPos);
-      let measureNodeList = [].concat(this.measureNodes, [lastPointPos]);
+      // 当要素只有三个坐标点时area求面积，turf/area6.5.0能计算, 7.2.0计算会为0，所以手动封闭
+      let measureNodeList = [].concat(this.measureNodes, [lastPointPos], this.activeMode === 'draw_line_string' ? [] : [this.measureNodes[0]]);
       let feature: GeoJSON.Feature<GeoJSON.LineString | GeoJSON.Polygon> = {
         type: 'Feature',
         geometry: {
