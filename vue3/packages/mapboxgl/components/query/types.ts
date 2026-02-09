@@ -1,6 +1,7 @@
 import type { PropType } from 'vue'
 import type { MapGetterProps, MapGetterEvents, ShortEmits, ThemeProps } from '@supermapgis/common/utils/index.common'
 import type { CardProps, ControlProps } from '@supermapgis/mapboxgl/utils'
+import type { PopupConfig, PopupInfo } from '@supermapgis/mapboxgl/components/attribute-popup/types'
 import type {
   HighlightStyle,
   MapSelectionChangedEmit,
@@ -25,6 +26,8 @@ export interface QueryJobItem {
   spaceFilter: QueryBoundsType
   queryParameter: QueryParameter & {
     fields?: PopupFieldsInfo[]
+    identifyField?: string
+    popupInfo?: PopupInfo
     [K: string]: any
   }
 }
@@ -110,6 +113,15 @@ export const queryProps = () => ({
     type: Boolean,
     default: true
   },
+  popupConfig: {
+    type: Object as PropType<PopupConfig>,
+    default: () => ({
+      maxHeight: '394px',
+      maxWidth: '280px',
+      autoResize: true,
+      valueWordWrap: 'wrap'
+    })
+  },
   popupStyle: {
     type: Object as PropType<PopupStyle>,
     default: () => ({
@@ -138,6 +150,7 @@ export interface QueryProps extends CardProps, ControlProps, ThemeProps, MapGett
   restData?: Record<string, any>[]
   restMap?: Record<string, any>[]
   showPopup?: boolean
+  popupConfig?: PopupConfig
   popupStyle?: PopupStyle
   multiSelect?: boolean
   clickTolerance?: number

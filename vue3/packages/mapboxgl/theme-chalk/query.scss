@@ -158,6 +158,10 @@
     > i {
       color: $error-color !important;
     }
+    > i.is-disabled {
+      color: $text-color-disabled !important;
+      cursor: not-allowed;
+    }
     & > #{$query-prefix}__header-name {
       display: inline-block;
       overflow: hidden;
@@ -173,6 +177,9 @@
     align-items: center;
     gap: 6px;
     min-width: 0;
+    & > i {
+      transform: rotate(180deg);
+    }
   }
 
   @include e(back) {
@@ -208,6 +215,9 @@
       & > li {
         padding: 8px 12px 8px 20px;
         line-height: 18px;
+        min-height: 34px;
+        display: flex;
+        align-items: center;
         cursor: pointer;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -224,7 +234,8 @@
         > i {
           position: absolute;
           right: 12px;
-          top: 0;
+          top: 50%;
+          transform: translateY(-50%);
         }
       }
     }

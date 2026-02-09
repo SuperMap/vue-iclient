@@ -1,6 +1,7 @@
 import type { PropType } from 'vue'
 import type { MapGetterProps, MapGetterEvents, ShortEmits, ThemeProps } from '@supermapgis/common/utils/index.common'
 import type { AttributePanelProps } from '@supermapgis/common/components/attribute-panel/types'
+import type { PopupInfo, PopupConfig } from '@supermapgis/mapboxgl/components/attribute-popup/types'
 import { getPropsDefaults, mapGetterProps, themeProps } from '@supermapgis/common/utils/index.common'
 
 export const mapPopupProps = () => ({
@@ -41,6 +42,13 @@ export const mapPopupProps = () => ({
   showHeader: {
     type: Boolean,
     default: true
+  },
+  popupInfo: {
+    type: Object as PropType<PopupInfo>
+  },
+  popupConfig: {
+    type: Object as PropType<PopupConfig>,
+    default: () => ({})
   }
 })
 
@@ -56,6 +64,8 @@ export interface MapPopupProps extends ThemeProps, MapGetterProps {
   showHeader?: boolean
   titleRender?: Function
   valueRender?: Function
+  popupInfo?: PopupInfo
+  popupConfig?: PopupConfig
 }
 
 export const mapPopupPropsDefault = getPropsDefaults<MapPopupProps>(

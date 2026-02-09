@@ -14,6 +14,8 @@
     :valueRender="valueRender"
     :showHeader="false"
     :title="displayTitle"
+    :popupInfo="activePopupInfo"
+    :popupConfig="popupConfig"
     @change="handleChange"
   />
 </template>
@@ -88,6 +90,8 @@ const columnStyle = computed(() => {
 })
 
 const displayTitle = computed(() => props.title || activeTargetName.value)
+
+const activePopupInfo = computed(() => props.popupInfoMap?.[activeTargetName.value])
 
 // 监听props变化
 watch(
@@ -169,8 +173,9 @@ function titleRender({ text }: ColumnCustomRenderParams) {
 
 function valueRender({ text, record }: ColumnCustomRenderParams) {
   let targetField: any
-  Object.keys(props.displayFieldsMap).forEach(layerID => {
-    targetField = props.displayFieldsMap[layerID]?.find((item) => {
+  const displayFieldsMap = props.displayFieldsMap || {}
+  Object.keys(displayFieldsMap).forEach(layerID => {
+    targetField = displayFieldsMap[layerID]?.find((item) => {
       return item.title === record.title || item.field === record.title
     })
   })

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <sm-collapse-card
     v-show="isShow"
     :icon-class="iconClass"
@@ -108,14 +108,18 @@
         </div>
       </div>
       <div v-else class="sm-component-query__result-info">
-        <div class="sm-component-query__result-header" :style="textColorHeadingStyle">
+          <div class="sm-component-query__result-header" :style="textColorHeadingStyle">
           <div class="sm-component-query__result-title">
             <i class="sm-components-icon-arrow-right sm-component-query__back" @click="backToQuery" />
             <span :title="queryHeaderName" class="sm-component-query__header-name">
               {{ queryHeaderName }}
             </span>
           </div>
-          <i v-if="queryResult" class="sm-components-icon-delete" @click="clearResult" />
+          <i
+            v-if="queryResult"
+            :class="['sm-components-icon-delete', clearDisabled && 'is-disabled']"
+            @click="clearResultClicked"
+          />
         </div>
         <div v-show="isQuery && !queryResult" class="sm-component-query__result-loading">
           <sm-spin :tip="$t('query.querying')">
@@ -131,7 +135,7 @@
           <ul>
             <li
               v-for="(item, index) in queryResult.result"
-              :key="index"
+              :key="resultItemKey(item, index)"
               :title="resultDisplayTitle(item)"
               role="option"
               :aria-selected="activeResultIndexList.includes(index)"
@@ -139,7 +143,7 @@
             >
               {{ resultDisplayTitle(item) }}
               <i
-                v-if="activeResultIndexList.includes(index) && multiSelect"
+                v-if="activeResultIndexList.includes(index)"
                 class="sm-components-icon-complete"
               />
             </li>
@@ -164,6 +168,8 @@
       :mapTarget="mapTarget"
       :customColumnRenders="scopedSlots"
       :showPopup="showPopup"
+      :popupInfoMap="popupInfoMap"
+      :popupConfig="popupConfigValue"
       ref="query-highlight"
       :title="queryResult && queryResult.name"
       @mapselectionchanged="handleMapSeletionChanged"
@@ -173,6 +179,7 @@
 
 <script setup lang="ts">
 import type { Map } from 'mapbox-gl'
+import type { PopupInfo } from '@supermapgis/mapboxgl/components/attribute-popup/types'
 import type {
   QueryProps,
   QueryEvents,
@@ -281,8 +288,24 @@ const queryHeaderName = computed(() => {
   return queryResult.value?.name || activeQueryJob.value?.name || ''
 })
 
+const clearDisabled = computed(() => {
+  return Boolean(queryResult.value && queryResult.value.result?.length === 0)
+})
+
 const resultDisplayTitle = computed(() => {
-  return (properties: any) => `SmID：${getValueCaseInsensitive(properties, 'smid')}`
+  return (properties: any) => {
+    const identifyField = activeQueryJob.value?.identifyField || 'SmID'
+    const value = getValueCaseInsensitive(properties, identifyField)
+    return `${identifyField}: ${value ?? ''}`
+  }
+})
+
+const resultItemKey = computed(() => {
+  return (properties: any, index: number) => {
+    const identifyField = activeQueryJob.value?.identifyField || 'SmID'
+    const value = getValueCaseInsensitive(properties, identifyField)
+    return `${identifyField}-${value ?? index}-${index}`
+  }
 })
 
 const featureFieldsMap = computed(() => {
@@ -296,7 +319,15 @@ const featureFieldsMap = computed(() => {
   return null
 })
 
+const hasRichPopupInfo = computed(() => {
+  return Boolean(activeQueryJob.value?.popupInfo?.elements?.length)
+})
+
 const displayFieldsMap = computed(() => {
+  // `popupInfo` 鍙兘瀛樺湪浣?elements 涓虹┖锛屾鏃朵粛搴旇蛋 key-value 寮圭獥閫昏緫
+  if (hasRichPopupInfo.value) {
+    return null
+  }
   if (resultLayers.value.length > 0 && activeQueryJob.value) {
     const { fields } = activeQueryJob.value
     return resultLayers.value.reduce((list, layerId) => {
@@ -305,6 +336,24 @@ const displayFieldsMap = computed(() => {
     }, {})
   }
   return null
+})
+
+const popupInfoMap = computed(() => {
+  const popupInfo = activeQueryJob.value?.popupInfo
+  if (!hasRichPopupInfo.value || !popupInfo || !resultLayers.value.length) {
+    return null
+  }
+  return resultLayers.value.reduce((list: Record<string, PopupInfo>, layerId) => {
+    list[layerId] = popupInfo
+    return list
+  }, {} as Record<string, PopupInfo>)
+})
+
+const popupConfigValue = computed(() => {
+  if (!hasRichPopupInfo.value) {
+    return null
+  }
+  return props.popupConfig
 })
 
 watch(
@@ -445,6 +494,11 @@ function getPopupContainer(triggerNode: HTMLElement) {
 
 function backToQuery() {
   activeTab.value = 'job'
+}
+
+function clearResultClicked() {
+  if (clearDisabled.value) return
+  clearResult()
 }
 
 function clearResult() {

@@ -1,6 +1,7 @@
 import type { PropType, CSSProperties } from 'vue'
 import type { MapGetterProps, MapGetterEvents, ShortEmits, ThemeProps } from '@supermapgis/common/utils/index.common'
 import type { HighlightStyle, LayerEventCursorMap, FieldsDisplayInfo, MapSelectionChangedEmit } from 'vue-iclient-controllers-mapboxgl/src/LayerHighlightViewModel'
+import type { PopupInfo, PopupConfig } from '@supermapgis/mapboxgl/components/attribute-popup/types'
 import { getPropsDefaults, mapGetterProps, themeProps } from '@supermapgis/common/utils/index.common'
 
 export interface PopupStyle {
@@ -81,6 +82,12 @@ export const layerHighlightProps = () => ({
   customColumnRenders: {
     type: Object as PropType<Record<string, ColumnCustomRender>>
   },
+  popupInfoMap: {
+    type: Object as PropType<Record<string, PopupInfo>>
+  },
+  popupConfig: {
+    type: Object as PropType<PopupConfig>
+  },
   showPopup: {
     type: Boolean,
     default: true
@@ -101,6 +108,8 @@ export interface LayerHighlightProps extends ThemeProps, MapGetterProps {
   eventsCursor?: LayerEventCursorMap
   popupStyle?: PopupStyle
   customColumnRenders?: Record<string, any>
+  popupInfoMap?: Record<string, PopupInfo>
+  popupConfig?: PopupConfig
   showPopup?: boolean
 }
 

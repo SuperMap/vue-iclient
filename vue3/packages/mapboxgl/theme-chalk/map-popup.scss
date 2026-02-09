@@ -30,4 +30,46 @@
       color: $primary-color;
     }
   }
+
+  &.#{$sm-prefix}-component-attribute-popup {
+    width: 280px;
+    padding: 0;
+
+    .header {
+      display: inline-flex;
+      width: 100%;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 38px;
+      padding: 0 8px;
+      font-size: 14px;
+      font-weight: 600;
+      border-bottom: 1px solid $border-color-split;
+
+      .title {
+        width: 100%;
+        margin-left: 4px;
+        font-size: 12px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .switchDataText {
+        padding: 8px 0;
+        margin-right: 10px;
+      }
+
+      .sm-components-icon-close {
+        font-size: 14px;
+        cursor: pointer;
+      }
+    }
+
+    .sm-identify-popup-content {
+      > div {
+        padding: 8px 24px 12px;
+      }
+    }
+  }
 }
