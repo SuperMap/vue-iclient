@@ -443,162 +443,164 @@ describe('EchartsDataService', () => {
     await echartsDataService.getDataOption(dataset);
     expect(echartsDataService.serieDatas).toEqual([]);
   });
-  describe('EchartsDataService._createStatisticOriginData', () => {
-    let echartsDataService;
 
-    beforeEach(() => {
-      // 创建EchartsDataService实例
-      const dataset = {
-        type: 'iServer',
-        url: 'https://example.com/service',
-        queryInfo: {}
-      };
-
-      const datasetOptions = [
-        {
-          seriesType: 'bar',
-          xField: 'country',
-          yField: 'population'
-        }
-      ];
-
-      echartsDataService = new EchartsDataService(dataset, datasetOptions);
-
-      // 设置默认的statisticDataCache
-      echartsDataService.statisticDataCache = [
-        { country: 'China', population: 1400000000 },
-        { country: 'India', population: 1380000000 },
-        { country: 'USA', population: 330000000 }
-      ];
-    });
-
-    it('should create statistic origin data with all parameters provided', () => {
-      // 准备测试数据
-      const data = {
+  it('getStatisticOriginData with isStastic true', async () => {
+    const dataset = {
+      maxFeatures: 10,
+      url: '',
+      type: 'geoJSON',
+      geoJSON: {
+        type: 'FeatureCollection',
         features: [
-          { properties: { country: 'China', population: 1400000000, capital: 'Beijing' } },
-          { properties: { country: 'China', population: 1400000000, capital: 'Beijing' } },
-          { properties: { country: 'India', population: 1380000000, capital: 'New Delhi' } },
-          { properties: { country: 'USA', population: 330000000, capital: 'Washington' } },
-          { properties: { country: 'USA', population: 330000000, capital: 'Washington' } },
-          { properties: { country: 'USA', population: 330000000, capital: 'Washington' } }
+          {
+            type: 'Feature',
+            properties: {
+              国家: '中国',
+              船只数量: '1',
+              区域: '1',
+              区域text: '北京'
+            }
+          },
+          {
+            type: 'Feature',
+            properties: {
+              国家: '中国',
+              船只数量: '2',
+              区域: '2',
+              区域text: '上海'
+            }
+          },
+          {
+            type: 'Feature',
+            properties: {
+              国家: '美国',
+              船只数量: '1',
+              区域: '1',
+              区域text: '纽约'
+            }
+          }
         ]
-      };
+      },
+      withCredentials: false
+    };
 
-      const datasetOptions = [
-        {
-          seriesType: 'bar',
-          xField: 'country',
-          yField: 'population'
-        }
-      ];
+    const datasetOptions = [
+      {
+        seriesType: 'bar',
+        isStastic: true,
+        xField: '国家',
+        yField: '船只数量',
+        sort: 'unsort'
+      }
+    ];
 
-      const features = [
-        { country: 'China', population: 1400000000 },
-        { country: 'India', population: 1380000000 },
-        { country: 'USA', population: 330000000 }
-      ];
+    echartsDataService = new EchartsDataService(dataset, datasetOptions);
+    await echartsDataService.getDataOption(dataset);
 
-      // 调用方法
-      const result = echartsDataService._createStatisticOriginData(data, datasetOptions, features);
+    const result = await echartsDataService.getStatisticOriginData(datasetOptions, dataset);
 
-      // 验证结果
-      expect(result instanceof Map).toBe(true);
-      expect(result.size).toBe(3);
-      expect(result.get('China')).toHaveLength(2);
-      expect(result.get('India')).toHaveLength(1);
-      expect(result.get('USA')).toHaveLength(3);
+    expect(result.get('中国')).toEqual([
+      { properties: { 国家: '中国', 船只数量: '1', 区域: '1', 区域text: '北京' }, type: 'Feature' },
+      { properties: { 国家: '中国', 船只数量: '2', 区域: '2', 区域text: '上海' }, type: 'Feature' }
+    ]);
 
-      // 验证原始features的属性
-      expect(result.get('China')[0].properties.capital).toBe('Beijing');
-      expect(result.get('India')[0].properties.capital).toBe('New Delhi');
-      expect(result.get('USA')[0].properties.capital).toBe('Washington');
-    });
+    expect(result.get('美国')).toEqual([
+      { properties: { 国家: '美国', 船只数量: '1', 区域: '1', 区域text: '纽约' }, type: 'Feature' }
+    ]);
+  });
 
-    it('should use default datasetOptions and statisticDataCache when not provided', () => {
-      // 准备测试数据
-      const data = {
+  it('getStatisticOriginData with isStastic false', async () => {
+    const dataset = {
+      maxFeatures: 10,
+      url: '',
+      type: 'geoJSON',
+      geoJSON: {
+        type: 'FeatureCollection',
         features: [
-          { properties: { country: 'China', population: 1400000000 } },
-          { properties: { country: 'India', population: 1380000000 } },
-          { properties: { country: 'USA', population: 330000000 } }
+          {
+            type: 'Feature',
+            properties: {
+              国家: '中国',
+              船只数量: '1',
+              区域: '1',
+              区域text: '北京'
+            }
+          },
+          {
+            type: 'Feature',
+            properties: {
+              国家: '中国',
+              船只数量: '2',
+              区域: '2',
+              区域text: '上海'
+            }
+          },
+          {
+            type: 'Feature',
+            properties: {
+              国家: '美国',
+              船只数量: '1',
+              区域: '1',
+              区域text: '纽约'
+            }
+          }
         ]
-      };
+      },
+      withCredentials: false
+    };
 
-      // 调用方法，不提供datasetOptions和features
-      const result = echartsDataService._createStatisticOriginData(data);
+    const datasetOptions = [
+      {
+        seriesType: 'bar',
+        isStastic: false,
+        xField: '国家',
+        yField: '船只数量',
+        sort: 'unsort'
+      }
+    ];
 
-      // 验证结果
-      expect(result instanceof Map).toBe(true);
-      expect(result.size).toBe(3);
-      expect(result.get('China')).toHaveLength(1);
-      expect(result.get('India')).toHaveLength(1);
-      expect(result.get('USA')).toHaveLength(1);
-    });
+    echartsDataService = new EchartsDataService(dataset, datasetOptions);
+    const result = await echartsDataService.getStatisticOriginData(datasetOptions, dataset);
 
-    it('should handle null or undefined features parameter', () => {
-      // 准备测试数据
-      const data = {
+    expect(result.size).toBe(0); // No data should be returned since isStastic is false
+  });
+
+  it('getStatisticOriginData with empty datasetOptions', async () => {
+    const dataset = {
+      maxFeatures: 10,
+      url: '',
+      type: 'geoJSON',
+      geoJSON: {
+        type: 'FeatureCollection',
         features: [
-          { properties: { country: 'China', population: 1400000000 } },
-          { properties: { country: 'India', population: 1380000000 } }
+          {
+            type: 'Feature',
+            properties: {
+              国家: '中国',
+              船只数量: '1',
+              区域: '1',
+              区域text: '北京'
+            }
+          },
+          {
+            type: 'Feature',
+            properties: {
+              国家: '美国',
+              船只数量: '1',
+              区域: '1',
+              区域text: '纽约'
+            }
+          }
         ]
-      };
+      },
+      withCredentials: false
+    };
 
-      // 调用方法，features为null
-      const result1 = echartsDataService._createStatisticOriginData(data, undefined, null);
-      expect(result1 instanceof Map).toBe(true);
-      expect(result1.size).toBe(0);
+    const datasetOptions = [];
 
-      // 调用方法，features为undefined
-      const result2 = echartsDataService._createStatisticOriginData(data, undefined, undefined);
-      expect(result2 instanceof Map).toBe(true);
-      expect(result2.size).toBe(3); // 使用默认的statisticDataCache
-    });
+    echartsDataService = new EchartsDataService(dataset, datasetOptions);
+    const result = await echartsDataService.getStatisticOriginData(datasetOptions, dataset);
 
-    it('should handle empty data.features array', () => {
-      // 准备测试数据，data.features为空
-      const data = {
-        features: []
-      };
-
-      const features = [
-        { country: 'China', population: 1400000000 },
-        { country: 'India', population: 1380000000 }
-      ];
-
-      // 调用方法
-      const result = echartsDataService._createStatisticOriginData(data, undefined, features);
-
-      // 验证结果
-      expect(result instanceof Map).toBe(true);
-      expect(result.size).toBe(2);
-      expect(result.get('China')).toHaveLength(0);
-      expect(result.get('India')).toHaveLength(0);
-    });
-
-    it('should handle when xField value not found in data.features', () => {
-      // 准备测试数据
-      const data = {
-        features: [
-          { properties: { country: 'China', population: 1400000000 } },
-          { properties: { country: 'India', population: 1380000000 } }
-        ]
-      };
-
-      const features = [
-        { country: 'China', population: 1400000000 },
-        { country: 'Japan', population: 126000000 } // Japan不存在于data.features中
-      ];
-
-      // 调用方法
-      const result = echartsDataService._createStatisticOriginData(data, undefined, features);
-
-      // 验证结果
-      expect(result instanceof Map).toBe(true);
-      expect(result.size).toBe(2);
-      expect(result.get('China')).toHaveLength(1);
-      expect(result.get('Japan')).toHaveLength(0); // Japan对应的数组为空
-    });
+    expect(result.size).toBe(0); // No data should be returned since datasetOptions is empty
   });
 });

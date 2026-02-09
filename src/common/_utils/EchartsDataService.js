@@ -199,7 +199,7 @@ export default class EchartsDataService {
   }
 
   /**
-   * @function EchartsDataService.prototype._createStatisticOriginData
+   * @function EchartsDataService.prototype.getStatisticOriginData
    * @description 对相同字段数据进行统计后，对应的原始features
    * @param {Object} data - 从superMap的iserver,iportal中请求返回的数据
    * @param {Object} datasetOptions - 数据解析的配置参数
@@ -214,7 +214,7 @@ export default class EchartsDataService {
     const matchItem = datasetOptions.find(item => item.sort !== 'unsort');
     const maxFeatures = matchItem || isStastic ? '' : dataset.maxFeatures;
     const result = new Map();
-    const xField = datasetOptions[0].xField;
+    const xField = datasetOptions[0]?.xField;
     if (isStastic) {
       const data = await getFeatures({ ...dataset, maxFeatures }).then(data => {
         // 兼容三方服务接口返回的一个普通的对象
