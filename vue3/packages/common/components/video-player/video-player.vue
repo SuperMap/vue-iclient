@@ -4,6 +4,7 @@
       v-show="!modalVisible"
       class="sm-component-video-player__player sm-component-video-player__player--main"
       :src="url"
+      :key="url"
       :events="['fullscreenchange']"
       :playsinline="true"
       v-bind="playerOptions"
@@ -25,6 +26,7 @@
       <VueVideoPlayer
         class="sm-component-video-player__player"
         :src="url"
+        :key="url"
         :playsinline="true"
         v-bind="modalPlayerOptions"
         @mounted="setModalPlayer"
@@ -234,8 +236,8 @@ const onPlayerPlay = () => {
 }
 
 const onFullscreenchange = (e: any) => {
-  if (!e.isFullscreen()) {
-    e.pause()
+  if (!e.target.player.isFullscreen_) {
+    e.target.player.pause()
   }
 }
 
