@@ -130,7 +130,6 @@ export default class EchartsDataService {
     if (isStastic) {
       features = this._createStatisticData(data, datasetOptions, xBar);
       this.statisticDataCache = features;
-      this.statisticOriginDataCache = this._createStatisticOriginData(data);
     }
     // 设置this.data
     data = this._setData(data, xBar);
@@ -206,15 +205,32 @@ export default class EchartsDataService {
    * @param {Object} datasetOptions - 数据解析的配置参数
    * @returns {Map} key为xField的字段对应的值，value为该值对应的原始features
    */
-  _createStatisticOriginData(data, datasetOptions = this.datasetOptions, features = this.statisticDataCache) {
+  async getStatisticOriginData(
+    datasetOptions = this.datasetOptions,
+    dataset = this.dataset,
+    features = this.statisticDataCache
+  ) {
+    const isStastic = datasetOptions.length && datasetOptions[0].isStastic;
+    const matchItem = datasetOptions.find(item => item.sort !== 'unsort');
+    const maxFeatures = matchItem || isStastic ? '' : dataset.maxFeatures;
     const result = new Map();
     const xField = datasetOptions[0].xField;
-    const allFeatures = data.features;
-    features?.forEach(item => {
-      const xFieldValue = item[xField];
-      const originFeatures = allFeatures.filter(originItem => originItem.properties[xField] === xFieldValue);
-      result.set(xFieldValue, originFeatures);
-    });
+    if (isStastic) {
+      const data = await getFeatures({ ...dataset, maxFeatures }).then(data => {
+        // 兼容三方服务接口返回的一个普通的对象
+        if (data.transformed && !!data.features.length) {
+          data = tranformSingleToMulti(data);
+        }
+        return data;
+      });
+
+      const allFeatures = data.features;
+      features?.forEach(item => {
+        const xFieldValue = item[xField];
+        const originFeatures = allFeatures.filter(originItem => originItem.properties[xField] === xFieldValue);
+        result.set(xFieldValue, originFeatures);
+      });
+    }
     return result;
   }
 

@@ -183,7 +183,7 @@ describe('EchartsDataService', () => {
     const data = echartsDataService.serieDatas.find(item => item.name === '船只数量');
     expect(data.data).toEqual([1, 6, 7]);
   });
-  it('isStastic with string statisticFunction', async () => {
+  it('isStastic with string getStatisticOriginData', async () => {
     const dataset = {
       maxFeatures: 20,
       url: '',
@@ -262,17 +262,18 @@ describe('EchartsDataService', () => {
     ];
     echartsDataService = new EchartsDataService(dataset, datasetOptions);
     await echartsDataService.getDataOption(dataset);
+    const res = await echartsDataService.getStatisticOriginData(datasetOptions, dataset);
     const data = echartsDataService.serieDatas.find(item => item.name === '船只数量');
     expect(data.data).toEqual([1, 3, 6]);
-    expect(echartsDataService.statisticOriginDataCache.get('美国')).toEqual([
+    expect(res.get('美国')).toEqual([
       { properties: { 区域: '1', 区域text: '纽约', 国家: '美国', 船只数量: '1' }, type: 'Feature' }
     ]);
-    expect(echartsDataService.statisticOriginDataCache.get('中国')).toEqual([
+    expect(res.get('中国')).toEqual([
       { properties: { 区域: '1', 区域text: '北京', 国家: '中国', 船只数量: '1' }, type: 'Feature' },
       { properties: { 区域: '2', 区域text: '上海', 国家: '中国', 船只数量: '2' }, type: 'Feature' },
       { properties: { 区域: '3', 区域text: '成都', 国家: '中国', 船只数量: '3' }, type: 'Feature' }
     ]);
-    expect(echartsDataService.statisticOriginDataCache.get('俄罗斯')).toEqual([
+    expect(res.get('俄罗斯')).toEqual([
       { properties: { 区域: '1', 区域text: '莫斯科', 国家: '俄罗斯', 船只数量: '1' }, type: 'Feature' },
       { properties: { 区域: '2', 区域text: '圣彼得堡', 国家: '俄罗斯', 船只数量: '6' }, type: 'Feature' }
     ]);
