@@ -1289,6 +1289,49 @@ describe('WebMapViewModel.spec', () => {
     expect(viewModel.attributesDataAvailable({ renderSource: { type: 'raster' }, dataSource: { type: 'REST_MAP' } })).toBeFalsy();
     done();
   });
+
+  it('_mapCreateSucceededHandlerHandler should emit addlayerssucceeded with mapData.mapOptions (formatted)', done => {
+    const viewModel = new WebMapViewModel(123, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+
+    const fakeMapparams = { title: 't', description: 'd' };
+    const fakeLayers = [{ id: 'l1' }, { id: 'l2' }];
+
+    const fakeMap = {
+      getCenter: () => ({
+        toArray: () => [120.12345678, 30.98765432]
+      }),
+      getZoom: () => 3.4567,
+      getBearing: () => 10.9876,
+      getPitch: () => 20.1234
+    };
+
+    viewModel.on({
+      addlayerssucceeded: e => {
+        expect(e.mapparams).toBe(fakeMapparams);
+        expect(e.layers).toBe(fakeLayers);
+        expect(e.map).toBe(fakeMap);
+
+        expect(e.mapData).toBeDefined();
+        expect(e.mapData.mapOptions).toEqual({
+          center: [120.1235, 30.9877],
+          zoom: 3.46,
+          bearing: 10.99,
+          pitch: 20.12
+        });
+
+        // also verify internal cache updated
+        expect(viewModel._cacheCleanLayers).toBe(fakeLayers);
+        done();
+      }
+    });
+
+    viewModel._mapCreateSucceededHandlerHandler({
+      mapparams: fakeMapparams,
+      layers: fakeLayers,
+      map: fakeMap,
+      allLoaded: true
+    });
+  });
 });
 
 

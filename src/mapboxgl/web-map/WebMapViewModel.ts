@@ -572,11 +572,20 @@ export default class WebMapViewModel extends Events {
   }
 
   private _mapCreateSucceededHandlerHandler(params: AddlayerssucceededParams) {
-    const { mapparams, layers } = params;
+    const { mapparams, layers, map } = params;
     this.mapParams = mapparams;
     this._cacheCleanLayers = layers;
     this._cacheLayerCatalogIds = getLayerCatalogIds(this.getLayerList());
-    this.triggerEvent('addlayerssucceeded', params);
+    const mapOptions: Partial<mapboxglTypes.MapboxOptions> = {
+      center: map
+        .getCenter()
+        .toArray()
+        .map(item => +item.toFixed(4)) as [number, number],
+      zoom: +map.getZoom().toFixed(2),
+      bearing: +map.getBearing().toFixed(2),
+      pitch: +map.getPitch().toFixed(2)
+    };
+    this.triggerEvent('addlayerssucceeded', Object.assign({}, params, { mapData: { mapOptions } }));
   }
 
   private _layerUpdateChangedHandler(params: LayerUpdateChangedParams) {

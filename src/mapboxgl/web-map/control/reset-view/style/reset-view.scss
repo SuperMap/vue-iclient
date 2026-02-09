@@ -1,0 +1,28 @@
+@import '../../../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../../../common/_utils/style/theme/theme.scss';
+@import '../../../../../common/button/style/button.scss';
+
+@include b(reset-view) {
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  &.mapboxgl-ctrl button:not(:disabled):hover {
+      background: $collapse-card-secondary-bg;
+    }
+  @include e(reset-holder) {
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    border-radius: 2px;
+    box-shadow: 0px 3px 13px 0px $shadow-color;
+    background: $collapse-card-header-bg;
+  }
+  .reset-button {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border-radius: 2px;
+    border: none;
+    color: inherit;
+  }
+}
