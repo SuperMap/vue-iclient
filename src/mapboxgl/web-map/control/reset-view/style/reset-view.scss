@@ -6,9 +6,11 @@
   width: 32px;
   min-width: 32px;
   height: 32px;
+  font-size: 18px;
+
   &.mapboxgl-ctrl button:not(:disabled):hover {
-      background: $collapse-card-secondary-bg;
-    }
+    background: $collapse-card-secondary-bg;
+  }
   @include e(reset-holder) {
     width: 100%;
     height: 100%;
@@ -24,5 +26,10 @@
     border-radius: 2px;
     border: none;
     color: inherit;
+    font-size: inherit;
+
+    i {
+      font-size: inherit;
+    }
   }
 }
