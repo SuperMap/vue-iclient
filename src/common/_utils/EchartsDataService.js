@@ -207,7 +207,7 @@ export default class EchartsDataService {
     const result = new Map();
     const xField = datasetOptions[0]?.xField;
     const allFeatures = data.features;
-    features?.map(item => {
+    features?.forEach(item => {
       const xFieldValue = item[xField];
       const originFeatures = allFeatures.filter(originItem => originItem.properties[xField] === xFieldValue);
       result.set(xFieldValue, originFeatures);
