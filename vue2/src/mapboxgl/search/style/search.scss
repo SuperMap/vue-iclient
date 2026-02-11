@@ -158,6 +158,9 @@
         padding: 6px 16px 6px 24px;
         display: block;
         cursor: pointer;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
         &:hover {
           color: $primary-color;
         }

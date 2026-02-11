@@ -41,7 +41,6 @@
       line-height: 18px;
     }
     .#{$ant-prefix}-input-affix-wrapper {
-      background: $color-bg-container;
       color: inherit;
       border-color: transparent;
       &:hover,
@@ -257,7 +256,6 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         position: relative;
-        border-bottom: 1px solid $border-color-split;
         transition: all 0.2s;
         &:last-child {
           border-bottom: none;
