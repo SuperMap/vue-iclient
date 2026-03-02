@@ -42,7 +42,8 @@ module.exports = {
     extensions: ['.ts', '.js', '.vue', '.json'],
     alias: {
       vue$: 'vue/dist/vue.esm.js',
-      'vue-iclient': path.resolve(__dirname, '../')
+      'vue-iclient': path.resolve(__dirname, '../'),
+      'swiper/modules': path.resolve(__dirname, '../node_modules/swiper/modules/index.mjs')
     }
   },
   module: {
@@ -69,6 +70,21 @@ module.exports = {
         options: vueLoaderConfig
       },
       {
+        test: /\.mjs$/,
+        type: 'javascript/auto',
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: [
+              ['@babel/preset-env', { modules: false }]
+            ]
+          }
+        },
+        include: [
+          resolve('node_modules/swiper')
+        ]
+      },
+      {
         test: /\.js$/,
         loader: 'babel-loader',
         include: [
@@ -84,7 +100,6 @@ module.exports = {
           resolve('node_modules/videojs-flvjs-es6/src'),
           resolve('node_modules/geographic-coordinate-converter'),
           resolve('node_modules/swiper'),
-          resolve('node_modules/vue-awesome-swiper'),
           resolve('node_modules/dom7')
         ]
       },
