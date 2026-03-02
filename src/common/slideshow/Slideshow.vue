@@ -1,7 +1,19 @@
 <script lang="ts">
 import type { CreateElement } from 'vue';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
-import Swiper from './Swiper';
+import Swiper from 'swiper';
+import { SwiperOptions } from 'swiper/types';
+import { 
+  Navigation,
+  Pagination,
+  Mousewheel,
+  Autoplay,
+  Keyboard,
+  Scrollbar,
+  EffectCoverflow,
+  EffectCube,
+  EffectFlip
+ } from 'swiper/modules';
 import BaseCard from 'vue-iclient/src/common/_mixin/Card';
 import { getSlotOptions, filterEmpty } from 'ant-design-vue/es/_util/props-util';
 import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
@@ -9,26 +21,6 @@ import isequal from 'lodash.isequal';
 import debounce from 'lodash.debounce';
 import { addListener, removeListener } from 'resize-detector';
 import 'swiper/swiper-bundle.min.css';
-
-interface swiperOptionsType {
-  initialSlide: number;
-  direction: string;
-  speed: number;
-  loopedSlides: number;
-  loop: boolean;
-  grabCursor: boolean;
-  mousewheel: boolean;
-  keyboard: boolean;
-  autoplay: boolean | Object;
-  effect: string;
-  navigation?: Object;
-  pagination?: Object;
-  scrollbar?: Object;
-  observer: boolean;
-  observeParents: boolean;
-  observeSlideChildren: boolean;
-  on: Object;
-}
 
 @Component({
   name: 'SmSlideshow',
@@ -58,7 +50,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
 
   @Prop() activeIndex: number;
   @Prop({ default: 0 }) defaultActiveIndex: number;
-  @Prop({ default: 'horizontal' }) direction: string;
+  @Prop({ default: 'horizontal' }) direction: 'horizontal' | 'vertical';
   @Prop({ default: 300 }) speed: number;
   @Prop({ default: true }) loop: boolean;
   @Prop({ default: false }) mousewheel: boolean;
@@ -87,12 +79,12 @@ class Slideshow extends Mixins(Theme, BaseCard) {
   }
 
   get swiperOptions() {
-    let options: swiperOptionsType = {
+    let options: SwiperOptions = {
       initialSlide: this.activeIndex ?? this.defaultActiveIndex,
       direction: this.direction,
       speed: this.speed,
       loop: this.loop,
-      loopedSlides: this.loopedSlides,
+      loopAdditionalSlides: this.loopedSlides,
       grabCursor: this.grabCursor,
       mousewheel: this.mousewheel,
       keyboard: this.keyboard,
@@ -137,6 +129,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
   }
 
   mounted() {
+    this.initSwiper();
     this.watchOptions();
     this.autoResizeHandler();
   }
@@ -146,21 +139,52 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     removeListener(this.$el, this.__resizeHandler);
   }
 
+  initSwiper() {
+    this.$nextTick(() => {
+      if (this.swiper) {
+        this.swiper.destroy(true, true);
+      }
+      
+      // 获取容器元素
+      const container = this.$el.querySelector('.swiper');
+      if (container) {
+        this.swiper = new Swiper(container as HTMLElement, {
+          modules: [
+            Navigation,
+            Pagination,
+            Mousewheel,
+            Autoplay,
+            Keyboard,
+            Scrollbar,
+            EffectCoverflow,
+            EffectCube,
+            EffectFlip
+          ],
+          ...this.swiperOptions,
+          on: {
+            init: (s) => this.slideInit(s),
+            slideChange: (s) => this.slideChange(s)
+          }
+        });
+      }
+    })
+  }
+
   slideInit(swiper: any) {
     this.swiper = swiper;
     this.goTo(this.swiperOptions.initialSlide, 0);
     this.$emit('init', swiper);
   }
 
-  slideChange() {
+  slideChange(swiper: any) {
     let changeParameter = {
-      progress: this.swiper.progress,
-      activeIndex: this.swiper.activeIndex,
-      realIndex: this.swiper.realIndex,
-      previousIndex: this.swiper.previousIndex
+      progress: swiper.progress,
+      activeIndex: swiper.activeIndex,
+      realIndex: swiper.realIndex,
+      previousIndex: swiper.previousIndex
     };
     this.$emit('change', changeParameter);
-    this.$emit('indexChange', this.swiper.realIndex);
+    this.$emit('indexChange', swiper.realIndex);
   }
 
   _activeIndexChangedHandler(newIndex: number) {
@@ -236,23 +260,48 @@ class Slideshow extends Mixins(Theme, BaseCard) {
       existSlots ? this.$slots[alias] : ''
     );
   }
+  /*
+    <!-- Slider main container -->
+    <div class="swiper">
+      <!-- Additional required wrapper -->
+      <div class="swiper-wrapper">
+        <!-- Slides -->
+        <div class="swiper-slide">Slide 1</div>
+        <div class="swiper-slide">Slide 2</div>
+        <div class="swiper-slide">Slide 3</div>
+        ...
+      </div>
+      <!-- If we need pagination -->
+      <div class="swiper-pagination"></div>
 
+      <!-- If we need navigation buttons -->
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+
+      <!-- If we need scrollbar -->
+      <div class="swiper-scrollbar"></div>
+    </div>
+  */
   render(h: CreateElement) {
-    let slots = [];
+    let slides = [];
     const children = filterEmpty(this.$slots.default);
     if (children && children.length) {
       children.forEach(element => {
         if (getSlotOptions(element).__SM_SLIDESHOW_ITEM) {
-          slots.push(element);
+          slides.push(element);
         } else {
           console.error("Only accepts Slideshow.Item as Slideshow's children");
         }
       });
     }
-    this.pagination && slots.push(this.handlerNamedSlot('pagination', h));
-    this.scrollbar && slots.push(this.handlerNamedSlot('scrollbar', h));
+    //  准备包装层 .swiper-wrapper
+    const wrapper = h('div', { class: 'swiper-wrapper' }, slides);
+
+    let controls = [];
+    this.pagination && controls.push(this.handlerNamedSlot('pagination', h));
+    this.scrollbar && controls.push(this.handlerNamedSlot('scrollbar', h));
     if (this.navigation) {
-      slots.push(this.handlerNamedSlot('button-prev', h), this.handlerNamedSlot('button-next', h));
+      controls.push(this.handlerNamedSlot('button-prev', h), this.handlerNamedSlot('button-next', h));
     }
     let collapseCardProps = {
       iconClass: this.iconClass,
@@ -264,18 +313,16 @@ class Slideshow extends Mixins(Theme, BaseCard) {
       textColor: this.textColor,
       splitLine: this.splitLine
     };
+
     const SwiperCompt = h(
-      // @ts-ignore
-      Swiper,
+      'div',
       {
-        domProps: { realIndex: this.activeIndex },
-        props: { options: this.swiperOptions },
-        on: {
-          slideChange: this.slideChange
-        },
-        key: this.swiperCmptKey
+        class: 'swiper',
+        ref: 'swiperContainer',
+        key: this.swiperCmptKey,
+        style: { width: '100%', height: '100%' }
       },
-      slots
+      [wrapper, ...controls]
     );
     return h(
       'sm-collapse-card',

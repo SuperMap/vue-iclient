@@ -4,6 +4,39 @@ import SmSlideshowItem from '../SlideshowItem.vue';
 import SmButton from '../../button/Button.vue';
 import Slideshow from '../index';
 
+jest.mock('swiper', () => {
+  return function() {
+    return {
+      init: jest.fn(),
+      destroy: jest.fn(),
+      on: jest.fn(),
+      update: jest.fn(),
+      slideToLoop: jest.fn(),
+      slideTo: jest.fn(),
+      keyboard: {
+        enable: jest.fn(),
+        disable: jest.fn()
+      },
+      mousewheel: {
+        enable: jest.fn(),
+        disable: jest.fn()
+      },
+    };
+  };
+});
+
+jest.mock('swiper/modules', () => ({
+  Navigation: {},
+  Pagination: {},
+  Mousewheel: {},
+  Autoplay: {},
+  Keyboard: {},
+  Scrollbar: {},
+  EffectCoverflow: {},
+  EffectCube: {},
+  EffectFlip: {}
+}));
+
 describe('Slideshow.vue', () => {
   let wrapper;
   beforeEach(() => {
@@ -18,6 +51,7 @@ describe('Slideshow.vue', () => {
 
   it('change props', async () => {
     wrapper = mount(Slideshow);
+    await wrapper.vm.$nextTick();
     expect(wrapper.find('.sm-component-slideshow').exists()).toBe(true);
     expect(wrapper.vm.mousewheel).toBeFalsy();
     await wrapper.setProps({ mousewheel: true });
