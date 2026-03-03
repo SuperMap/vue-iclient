@@ -30,7 +30,7 @@ import { getFeatureCenter } from 'vue-iclient/src/common/_utils/util';
  * @param {Array.<string>} [options.addressMatch] - iServer 地址匹配服务搜索配置。
  * @param {string} options.addressMatch.url - 地址匹配服务地址。
  * @param {string} [options.addressMatch.name] - 搜索结果名称。
- * @param {Object} [options.onlineLocalSearch] - online 本地搜索配置。
+ * @param {Object} [options.onlineLocalSearch] - SuperMap Online 本地搜索配置。
  * @param {Boolean} [options.onlineLocalSearch.enable=true] - 是否开启 online 本地搜索。
  * @fires SearchViewModel#searchsucceeded
  * @fires SearchViewModel#searchfailed
@@ -40,9 +40,10 @@ export default class SearchViewModel extends mapboxgl.Evented {
     super();
     this.options = options || {};
     this.searchTaskId = 0;
+    const onlineLocalSearch = this.options.onlineLocalSearch || {};
     this.options.cityGeoCodingConfig = {
       addressUrl: 'https://www.supermapol.com/iserver/services/localsearch/rest/searchdatas/China/poiinfos',
-      key: options.onlineLocalSearch.key || 'fvV2osxwuZWlY0wJb8FEb2i5'
+      key: onlineLocalSearch.key
     };
     this.searchtType = ['layerNames', 'onlineLocalSearch', 'restMap', 'restData', 'iportalData', 'addressMatch'];
     this.markerList = [];
@@ -53,6 +54,12 @@ export default class SearchViewModel extends mapboxgl.Evented {
   setMap(mapInfo) {
     const { map } = mapInfo;
     this.map = map;
+  }
+
+  _canUseOnlineLocalSearch() {
+    const onlineLocalSearch = this.options.onlineLocalSearch || {};
+    const key = this.options.cityGeoCodingConfig && this.options.cityGeoCodingConfig.key;
+    return onlineLocalSearch.enable !== false && typeof key === 'string' && key.trim() !== '';
   }
 
   /**
@@ -68,7 +75,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
     this.maxFeatures = parseInt(this.options.maxFeatures) >= 100 ? 100 : parseInt(this.options.maxFeatures) || 8;
     this.searchtType.forEach(item => {
       if (this.options[item]) {
-        if (item === 'onlineLocalSearch' && this.options[item].enable) {
+        if (item === 'onlineLocalSearch' && this._canUseOnlineLocalSearch()) {
           this.searchCount += 1;
         } else if (item !== 'onlineLocalSearch') {
           let len = this.options[item].length;
@@ -80,7 +87,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
       ...this.options
     };
     layerNames && this._searchFromLayer(layerNames);
-    onlineLocalSearch.enable && this._searchFromPOI(onlineLocalSearch);
+    this._canUseOnlineLocalSearch() && this._searchFromPOI(onlineLocalSearch);
     restMap && this._searchFromRestMap(restMap);
     restData && this._searchFromRestData(restData);
     iportalData && this._searchFromIportal(iportalData);
@@ -251,7 +258,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
   }
 
   _searchFromPOI(onlineLocalSearch) {
-    const sourceName = 'Online 本地搜索';
+    const sourceName = 'SuperMap Online 本地搜索';
     this.geoCodeParam = {
       pageSize: this.options.pageSize || 10,
       pageNum: this.options.pageNum || 1,

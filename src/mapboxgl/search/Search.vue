@@ -280,9 +280,14 @@ export default {
       const mapNotLoaded = this.mapNotLoadedTip();
       if (mapNotLoaded) return;
       let { layerNames, onlineLocalSearch, restMap, restData, iportalData, addressMatch } = this.$props;
+      const hasOnlineLocalSearch =
+        onlineLocalSearch &&
+        onlineLocalSearch.enable !== false &&
+        typeof onlineLocalSearch.key === 'string' &&
+        onlineLocalSearch.key.trim() !== '';
       if (
         (layerNames && layerNames.length > 0) ||
-        onlineLocalSearch.enable ||
+        hasOnlineLocalSearch ||
         (restMap && restMap.length > 0) ||
         (restData && restData.length > 0) ||
         (iportalData && iportalData.length > 0) ||
