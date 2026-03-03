@@ -153,13 +153,22 @@ export default class SearchViewModel extends mapboxgl.Evented {
     this.options = options || {};
     this.options.cityGeoCodingConfig = {
       addressUrl: 'https://www.supermapol.com/iserver/services/localsearch/rest/searchdatas/China/poiinfos',
-      key: options.onlineLocalSearch.key || 'fvV2osxwuZWlY0wJb8FEb2i5'
+      key: this.options.onlineLocalSearch?.key
     };
   }
 
   setMap(mapInfo: { map: Map }) {
     const { map } = mapInfo;
     this.map = map;
+  }
+
+  private _getOnlineLocalSearchKey(onlineLocalSearch?: OnlineLocalSearch): string {
+    const key = onlineLocalSearch?.key ?? this.options.onlineLocalSearch?.key ?? this.options.cityGeoCodingConfig?.key;
+    return typeof key === 'string' ? key.trim() : '';
+  }
+
+  private _canUseOnlineLocalSearch(onlineLocalSearch?: OnlineLocalSearch): boolean {
+    return !!onlineLocalSearch?.enable && !!this._getOnlineLocalSearchKey(onlineLocalSearch);
   }
 
   /**
@@ -181,7 +190,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
     this.maxFeatures = +maxFeatures >= 100 ? 100 : Math.ceil(+maxFeatures) || 8;
     this.searchType.forEach(item => {
       if (this.options[item]) {
-        if (item === 'onlineLocalSearch' && this.options[item].enable) {
+        if (item === 'onlineLocalSearch' && this._canUseOnlineLocalSearch(this.options[item])) {
           this.searchCount += 1;
         } else if (item !== 'onlineLocalSearch') {
           let len = this.options[item].length;
@@ -193,7 +202,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
       ...this.options
     };
     layerNames && this._searchFromLayer(layerNames);
-    onlineLocalSearch.enable && this._searchFromPOI(onlineLocalSearch);
+    this._canUseOnlineLocalSearch(onlineLocalSearch) && this._searchFromPOI(onlineLocalSearch);
     restMap && this._searchFromRestMap(restMap);
     restData && this._searchFromRestData(restData);
     iportalData && this._searchFromIportal(iportalData);
@@ -282,7 +291,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
 
     // Calculate pending task count for final emit.
     if (layerNames && layerNames.length > 0) this.pendingSearchCount += layerNames.length;
-    if (onlineLocalSearch && onlineLocalSearch.enable) this.pendingSearchCount += 1;
+    if (this._canUseOnlineLocalSearch(onlineLocalSearch)) this.pendingSearchCount += 1;
     if (restMap && restMap.length > 0) this.pendingSearchCount += restMap.length;
     if (restData && restData.length > 0) {
       restData.forEach(item => {
@@ -302,7 +311,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
     }
 
     layerNames && layerNames.length > 0 && this._searchFromLayerAll(taskId, layerNames);
-    onlineLocalSearch?.enable && this._searchFromPOIAll(taskId, onlineLocalSearch);
+    this._canUseOnlineLocalSearch(onlineLocalSearch) && this._searchFromPOIAll(taskId, onlineLocalSearch);
     restMap && restMap.length > 0 && this._searchFromRestMapAll(taskId, restMap);
     restData && restData.length > 0 && this._searchFromRestDataAll(taskId, restData);
     iportalData && iportalData.length > 0 && this._searchFromIportalAll(taskId, iportalData);
@@ -375,14 +384,14 @@ export default class SearchViewModel extends mapboxgl.Evented {
   }
 
   private _searchFromPOIAll(taskId: number, onlineLocalSearch: OnlineLocalSearch) {
-    const sourceName = 'Online 鏈湴鎼滅储';
+    const sourceName = 'SuperMap Online 本地搜索';
     this.geoCodeParam = {
       pageSize: this.options.pageSize || 10,
       pageNum: this.options.pageNum || 1,
       city: onlineLocalSearch.city
     };
     this.geoCodeParam.keyWords = this.keyWord;
-    const url = this._getSearchUrl(this.geoCodeParam);
+    const url = this._getSearchUrl(this.geoCodeParam, onlineLocalSearch);
     FetchRequest.get(url)
       .then(response => response.json())
       .then(geocodingResult => {
@@ -687,14 +696,14 @@ export default class SearchViewModel extends mapboxgl.Evented {
   }
 
   _searchFromPOI(onlineLocalSearch: OnlineLocalSearch) {
-    const sourceName = 'Online 本地搜索';
+    const sourceName = 'SuperMap Online 本地搜索';
     this.geoCodeParam = {
       pageSize: this.options.pageSize || 10,
       pageNum: this.options.pageNum || 1,
       city: onlineLocalSearch.city
     };
     this.geoCodeParam.keyWords = this.keyWord;
-    let url = this._getSearchUrl(this.geoCodeParam);
+    let url = this._getSearchUrl(this.geoCodeParam, onlineLocalSearch);
     FetchRequest.get(url)
       .then(response => {
         return response.json();
@@ -863,12 +872,13 @@ export default class SearchViewModel extends mapboxgl.Evented {
     return features;
   }
 
-  _getSearchUrl(geoCodeParam: GeoCodeParam) {
+  _getSearchUrl(geoCodeParam: GeoCodeParam, onlineLocalSearch?: OnlineLocalSearch) {
+    const onlineSearchKey = this._getOnlineLocalSearchKey(onlineLocalSearch);
     let url =
       this.options.cityGeoCodingConfig.addressUrl +
       `.json?keywords=${geoCodeParam.keyWords}&city=${geoCodeParam.city || '北京市'}&pageSize=${
         geoCodeParam.pageSize
-      }&pageNum=${geoCodeParam.pageNum}&key=${this.options.cityGeoCodingConfig.key}`;
+      }&pageNum=${geoCodeParam.pageNum}&key=${onlineSearchKey}`;
     return url;
   }
 

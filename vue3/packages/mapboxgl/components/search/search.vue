@@ -285,7 +285,7 @@ const datasourceOptions = computed<DatasourceOption[]>(() => {
     options.push({
       id: 'onlineLocalSearch',
       type: 'onlineLocalSearch',
-      label: 'Online 本地搜索',
+      label: 'SuperMap Online 本地搜索',
       payload: null
     })
   }
