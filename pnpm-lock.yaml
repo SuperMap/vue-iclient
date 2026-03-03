@@ -242,8 +242,8 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2
       swiper:
-        specifier: 12.0.2
-        version: 12.0.2
+        specifier: ^12.1.2
+        version: 12.1.2
       video.js:
         specifier: ~7.20.1
         version: 7.20.3
@@ -8045,8 +8045,8 @@ packages:
   sweepline-intersections@1.5.0:
     resolution: {integrity: sha512-AoVmx72QHpKtItPu72TzFL+kcYjd67BPLDoR0LarIk+xyaRg+pDTMFXndIEvZf9xEKnJv6JdhgRMnocoG0D3AQ==}
 
-  swiper@12.0.2:
-    resolution: {integrity: sha512-y8F6fDGXmTVVgwqJj6I00l4FdGuhpFJn0U/9Ucn1MwWOw3NdLV8aH88pZOjyhBgU/6PyBlUx+JuAQ5KMWz906Q==}
+  swiper@12.1.2:
+    resolution: {integrity: sha512-4gILrI3vXZqoZh71I1PALqukCFgk+gpOwe1tOvz5uE9kHtl2gTDzmYflYCwWvR4LOvCrJi6UEEU+gnuW5BtkgQ==}
     engines: {node: '>= 4.7.0'}
 
   symbol-tree@3.2.4:
@@ -18140,7 +18140,7 @@ snapshots:
     dependencies:
       tinyqueue: 2.0.3
 
-  swiper@12.0.2: {}
+  swiper@12.1.2: {}
 
   symbol-tree@3.2.4: {}
 
