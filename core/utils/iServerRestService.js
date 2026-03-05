@@ -135,6 +135,7 @@ export default class iServerRestService extends Events {
     this.eventTypes = ['getdatasucceeded', 'getdatafailed', 'featureisempty'];
     this._defaultMaxFeatures = 1000;
     this._queryResultHandler = this._queryResultHandler.bind(this);
+    this.fieldInfos = [];
   }
 
   getData(datasetInfo, queryInfo) {
@@ -201,24 +202,23 @@ export default class iServerRestService extends Events {
    * @param {Object} queryInfo - 可选参数。
    * @param {Object} [queryInfo.maxFeatures] - 最多可返回的要素数量。
    * @param {Object} [queryInfo.attributeFilter] - 属性过滤条件。
-   * @param {Object} [queryInfo.keyWord] - 筛选关键字
-   * @param {string} [queryInfo.name]
-   * @param {string[]} [queryInfo.datasetNames]
+   * @param {Object} [queryInfo.keyWord] - 筛选关键字。
    */
   getDataFeatures(datasetInfo, queryInfo) {
     let { datasetName, dataSourceName, dataUrl } = datasetInfo;
     queryInfo.name = datasetName + '@' + dataSourceName;
     queryInfo.datasetNames = [dataSourceName + ':' + datasetName];
     this.projectionUrl = Util.urlPathAppend(dataUrl, `datasources/${dataSourceName}/datasets/${datasetName}`);
-    if (queryInfo.keyWord) {
-      let fieldsUrl = Util.urlAppend(Util.urlPathAppend(dataUrl, `datasources/${dataSourceName}/datasets/${datasetName}/fields`), 'returnAll=true');
-      this._getRestDataFields(fieldsUrl, queryInfo, fields => {
+    let fieldsUrl = Util.urlAppend(Util.urlPathAppend(dataUrl, `datasources/${dataSourceName}/datasets/${datasetName}/fields`), 'returnAll=true');
+    this._getRestDataFields(fieldsUrl, queryInfo, (fields, result) => {
+      this.fieldInfos = result;
+      if (queryInfo.keyWord) {
         const attributeFilter = this._getAttributeFilterByKeywords(fields, queryInfo.keyWord);
         this._queryDataFeatures(dataUrl, { ...queryInfo, attributeFilter });
-      });
-    } else {
-      this._queryDataFeatures(dataUrl, queryInfo);
-    }
+      } else {
+        this._queryDataFeatures(dataUrl, queryInfo);
+      }
+    });
   }
 
   /**
@@ -416,27 +416,32 @@ export default class iServerRestService extends Events {
       // 数据来自restdata---results.result.features
       this.features = results.result.features;
       features = this.features.features || this.features;
-      if (results.result.totalCount === 0) {
+      if (features.length === 0) {
         this.triggerEvent('featureisempty', {
           results
         });
         return;
       }
-      let fields, fieldCaptions, fieldTypes;
-      if (results.result.datasetInfos) {
-        fields = [];
+      let fieldCaptions, fieldTypes, originalFields;
+      if (this.fieldInfos.length) {
+        // todo 考虑properties不全情况?
+        const properties = Object.assign({}, features[0].properties, features[features.length - 1].properties);
+        const filterFieldInfos = this.fieldInfos.filter(fieldInfo =>
+          Object.keys(properties).some(key => key.toLowerCase() === fieldInfo.name.toLowerCase())
+        );
         fieldCaptions = [];
+        originalFields = [];
         fieldTypes = [];
-        const fieldInfos = results.result.datasetInfos[0].fieldInfos;
-        fieldInfos.forEach(fieldInfo => {
+        filterFieldInfos.forEach(fieldInfo => {
           if (fieldInfo.name) {
-            fields.push(fieldInfo.name.toUpperCase());
-            fieldCaptions.push(fieldInfo.caption.toUpperCase());
+            fieldCaptions.push(fieldInfo.caption);
             fieldTypes.push(fieldInfo.type);
+            originalFields.push(fieldInfo.name);
           }
         });
       }
-      data = statisticsFeatures(features, fields, fieldCaptions, fieldTypes);
+      // 因为fieldInfos和features中的字段大小写可能不一致, 所以只传入fieldCaptions，不传入fields，fields从features中去获取
+      data = statisticsFeatures(features, undefined, fieldCaptions, fieldTypes, originalFields);
       data.totalCount = results.result.totalCount;
     } else {
       this.triggerEvent('getdatafailed', {

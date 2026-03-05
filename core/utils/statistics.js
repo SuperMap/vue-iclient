@@ -1,16 +1,21 @@
-export function statisticsFeatures(features, fields, fieldCaptions, fieldTypes) {
+export function statisticsFeatures(features, fields, fieldCaptions, fieldTypes, originalFields) {
   const data = {
     features,
     fields: fields || [],
+    originalFields: originalFields || [],
     fieldCaptions: fieldCaptions || [],
     fieldValues: [],
     fieldTypes
   };
-  if (features && !!features.length && !fieldCaptions && !fields) {
+  if (features && !!features.length && (!fields || !fieldCaptions)) {
     const properties = Object.assign({}, features[0].properties, features[features.length - 1].properties);
     for (let attr in properties) {
-      data.fieldCaptions.push(attr);
-      data.fields.push(attr);
+      if (!fieldCaptions) {
+        data.fieldCaptions.push(attr);
+      }
+      if (!fields) {
+        data.fields.push(attr);
+      }
     }
   }
   for (let m in data.fields) {
