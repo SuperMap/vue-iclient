@@ -44,6 +44,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     'autoplay',
     'direction'
   ];
+  lastRealIndex: number;
 
   // 当 loop 为 true && effect 为 cube, 幻灯片页数等于3会出现重叠。
   loopedSlides: number = 3;
@@ -84,7 +85,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
       direction: this.direction,
       speed: this.speed,
       loop: this.loop,
-      loopAdditionalSlides: this.loopedSlides,
+      // loopAdditionalSlides: this.loopedSlides,
       grabCursor: this.grabCursor,
       mousewheel: this.mousewheel,
       keyboard: this.keyboard,
@@ -111,6 +112,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
       return;
     }
     this._activeIndexChangedHandler(newIndex || 0);
+    this.initSwiper();
   }
 
   @Watch('mousewheel')
@@ -137,14 +139,18 @@ class Slideshow extends Mixins(Theme, BaseCard) {
   beforeDestroy() {
     // @ts-ignore
     removeListener(this.$el, this.__resizeHandler);
+    if (this.swiper) {
+      this.swiper.destroy(true, true);
+    }
   }
 
   initSwiper() {
+    if (this.swiper) {
+      this.swiper.destroy(false, false); 
+      this.swiper = null;
+    }
     this.$nextTick(() => {
-      if (this.swiper) {
-        this.swiper.destroy(true, true);
-      }
-      
+
       // 获取容器元素
       const container = this.$el.querySelector('.swiper');
       if (container) {
@@ -177,6 +183,10 @@ class Slideshow extends Mixins(Theme, BaseCard) {
   }
 
   slideChange(swiper: any) {
+    if (swiper.realIndex === this.lastRealIndex) {
+      return;
+    }
+    this.lastRealIndex = swiper.realIndex;
     let changeParameter = {
       progress: swiper.progress,
       activeIndex: swiper.activeIndex,
@@ -231,6 +241,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
         function (newVal, oldVal) {
           if (!isequal(newVal, oldVal)) {
             this.swiperCmptKey = +new Date();
+            this.initSwiper();
           }
         },
         { deep: true }
