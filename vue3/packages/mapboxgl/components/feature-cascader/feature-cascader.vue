@@ -22,13 +22,14 @@ const { t } = useLocale()
 const props = withDefaults(defineProps<FeatureCascaderProps>(), featureCascaderPropsDefault)
 const emit = defineEmits<FeatureCascaderEvents>()
 
-const { options, requestDataByFilter } = useRequest({ props, type: 'cascader' })
+const { datas, options, requestDataByFilter } = useRequest({ props, type: 'cascader' })
 
 const getPopupContainer = (triggerNode) => {
   return triggerNode.parentNode;
 }
 async function onChange(value: string[] | number[]) {
   const feature = await requestDataByFilter(value);
-  emit('change', { value, feature });
+  const dataset = value && datas.value.find(item => item.value === value[value.length - 1])?.dataset;
+  emit('change', { value, feature, dataset });
 }
 </script>

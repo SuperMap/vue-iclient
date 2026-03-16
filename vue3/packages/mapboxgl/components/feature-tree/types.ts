@@ -23,7 +23,7 @@ export const featureTreePropsDefault = getPropsDefaults<FeatureTreeProps>(
 )
 
 export type FeatureTreeEvents = {
-  select: [{ value: object, feature: any }]
+  select: [{ value: object, feature: any, dataset: object }]
 }
 
 export type FeatureTreeEmits = ShortEmits<FeatureTreeEvents>

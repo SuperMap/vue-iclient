@@ -10,7 +10,7 @@
       @select="onSelect"
     >
       <template #title="{ title }">
-        <span v-if="title.includes(searchValue)">
+        <span v-if="title?.includes(searchValue)">
           {{ title.substring(0, title.indexOf(searchValue)) }}
           <span style="color: #f50">{{ searchValue }}</span>
           {{ title.substring(title.indexOf(searchValue) + searchValue.length) }}
@@ -33,7 +33,7 @@ import omit from 'omit.js'
 const props = withDefaults(defineProps<FeatureTreeProps>(), featureTreePropsDefault)
 const emit = defineEmits<FeatureTreeEvents>()
 
-const { options, requestDataByFilter } = useRequest({ props, type: 'tree' })
+const { datas, options, requestDataByFilter } = useRequest({ props, type: 'tree' })
 
 const searchValue = ref('')
 const expandedKeys = ref<string[]>([])
@@ -105,7 +105,9 @@ function onSearch(value: string) {
 
 const onSelect = async (value: string[] | number[]) => {
   const feature = await requestDataByFilter(value);
-  const selectedItem = dataList.value.find(item => item.key === value[value.length - 1])
-  emit('select', { value: selectedItem, feature })
+  const lastSelectKey = value[value.length - 1];
+  const selectedItem = dataList.value.find(item => item.key === lastSelectKey);
+  const dataset = value && datas.value.find(item => item.value === lastSelectKey)?.dataset;
+  emit('select', { value: selectedItem, feature, dataset });
 }
 </script>
