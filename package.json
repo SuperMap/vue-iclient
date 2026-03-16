@@ -101,7 +101,7 @@
     "vue-property-decorator": "^8.5.1",
     "vue-types": "^2.0.2",
     "vue-videojs7": "^0.1.5",
-    "wwobjloader2": "4.0.0",
+    "wwobjloader2": "4.0.1",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.3/xlsx-0.19.3.tgz",
     "xml-js": "1.6.11"
   },
