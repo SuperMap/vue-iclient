@@ -207,9 +207,18 @@ export default class EchartsDataService {
     const result = new Map();
     const xField = datasetOptions[0]?.xField;
     const allFeatures = data.features;
+    // 预先分组allFeatures以提高性能
+    const groupedFeatures = new Map();
+    allFeatures.forEach(feature => {
+      const key = feature.properties[xField];
+      if (!groupedFeatures.has(key)) {
+        groupedFeatures.set(key, []);
+      }
+      groupedFeatures.get(key).push(feature);
+    });
     features?.forEach(item => {
       const xFieldValue = item[xField];
-      const originFeatures = allFeatures.filter(originItem => originItem.properties[xField] === xFieldValue);
+      const originFeatures = groupedFeatures.get(xFieldValue) || [];
       result.set(xFieldValue, originFeatures);
     });
     return result;
