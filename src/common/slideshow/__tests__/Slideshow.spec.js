@@ -316,4 +316,43 @@ describe('Slideshow.vue', () => {
     await wrapper.find('.sm-component-btn').trigger('click');
     expect(wrapper.vm.autoplay.delay).toBe(300);
   });
+
+  it('slideChange emits change and indexChange once for same realIndex', async () => {
+    wrapper = mount(Slideshow);
+    await wrapper.vm.$nextTick();
+
+    const changeSpy = jest.fn();
+    const indexChangeSpy = jest.fn();
+    wrapper.vm.$on('change', changeSpy);
+    wrapper.vm.$on('indexChange', indexChangeSpy);
+
+    const firstSwiperState = {
+      progress: 0.5,
+      activeIndex: 2,
+      realIndex: 1,
+      previousIndex: 0
+    };
+    wrapper.vm.slideChange(firstSwiperState);
+
+    expect(changeSpy).toHaveBeenCalledTimes(1);
+    expect(changeSpy).toHaveBeenLastCalledWith({
+      progress: 0.5,
+      activeIndex: 2,
+      realIndex: 1,
+      previousIndex: 0
+    });
+    expect(indexChangeSpy).toHaveBeenCalledTimes(1);
+    expect(indexChangeSpy).toHaveBeenLastCalledWith(1);
+    expect(wrapper.vm.lastRealIndex).toBe(1);
+
+    wrapper.vm.slideChange({
+      progress: 0.9,
+      activeIndex: 5,
+      realIndex: 1,
+      previousIndex: 4
+    });
+
+    expect(changeSpy).toHaveBeenCalledTimes(1);
+    expect(indexChangeSpy).toHaveBeenCalledTimes(1);
+  });
 });
