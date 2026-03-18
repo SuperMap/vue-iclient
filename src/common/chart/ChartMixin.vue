@@ -220,6 +220,19 @@ export default {
         series
       };
     },
+    maxFeatures() {
+      const maxFeatures = this.dataset?.maxFeatures;
+      const PIE_MAX_FEATURES = 300;
+      return this.isPie && (maxFeatures === '' || maxFeatures > PIE_MAX_FEATURES) ? PIE_MAX_FEATURES : maxFeatures;
+    },
+    _dataset() {
+      if (!this.dataset) {
+        return this.dataset;
+      }
+      return Object.assign({}, this.dataset, {
+        maxFeatures: this.maxFeatures
+      });
+    },
     _chartOptions() {
       const data = (this._isRequestData && this.echartOptions) || this.parseOptions;
       return this.dataZoom && data ? { ...data, dataZoom: this.dataZoom } : data;
@@ -236,6 +249,10 @@ export default {
     },
     xBar() {
       return this.options && this.options.yAxis && this.options.yAxis.type === 'category';
+    },
+    isPie() {
+      const seriesType = this.options?.series?.[0]?.type;
+      return seriesType === 'pie';
     },
     colorNumber() {
       let length =
@@ -278,9 +295,9 @@ export default {
         this._setChartTheme();
       }
     },
-    dataset: {
+    _dataset: {
       handler: async function () {
-        this._isRequestData && (await this._setEchartOptions(this.dataset, this.datasetOptions, this.options));
+        this._isRequestData && (await this._setEchartOptions(this._dataset, this.datasetOptions, this.options));
         this.datasetChange = true;
         this.newHighlightOptions = this.getNewHighlightOptions();
       },
@@ -294,7 +311,7 @@ export default {
         }
         !this.echartsDataService &&
           this._isRequestData &&
-          this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
+          this._setEchartOptions(this._dataset, this.datasetOptions, this.options);
         this.echartsDataService && this.echartsDataService.setDatasetOptions(this.datasetOptions);
         this.echartsDataService &&
           this.dataSeriesCache &&
@@ -383,7 +400,7 @@ export default {
     }
     !this._isRequestData && this.autoPlay && this._handlePieAutoPlay();
     // 请求数据, 合并echartopiton, 设置echartOptions
-    this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
+    this._isRequestData && this._setEchartOptions(this._dataset, this.datasetOptions, this.options);
   },
   updated() {
     this._handlePieAutoPlay(); // 更新自动播放
@@ -567,7 +584,7 @@ export default {
     },
     timing() {
       this.echartsDataService &&
-        this.echartsDataService.getDataOption(this.dataset, this.xBar).then(options => {
+        this.echartsDataService.getDataOption(this._dataset, this.xBar).then(options => {
           this.hideLoading();
           // 缓存dataSeriesCache，请求后格式化成echart的数据
           this.dataSeriesCache = Object.assign({}, options);
