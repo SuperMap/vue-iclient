@@ -59,7 +59,7 @@
           <sm-input
             v-model:value="queryCondition"
             allowClear
-            class="sm-component-query__item-config"
+            class="sm-component-query__item-config sm-component-query__condition-input"
             :style="textColorStyle"
             :disabled="!activeJobInfo"
             :placeholder="
@@ -209,6 +209,7 @@ import { getValueCaseInsensitive } from 'vue-iclient-core/utils/util'
 import { isEqual } from 'lodash-es'
 import omit from 'omit.js'
 import { queryPropsDefault } from './types'
+import { normalizeQueryParameter, switchQueryMode, updateQueryExpression } from './utils'
 
 defineOptions({
   name: 'SmQuery'
@@ -250,7 +251,7 @@ const queryMode = computed({
   get: () => activeJobInfo.value?.queryParameter.queryMode || 'SQL',
   set: (value: QueryParameter['queryMode']) => {
     if (activeJobInfo.value) {
-      activeJobInfo.value.queryParameter.queryMode = value
+      activeJobInfo.value.queryParameter = switchQueryMode(activeJobInfo.value.queryParameter, value)
     }
   }
 })
@@ -268,7 +269,7 @@ const queryCondition = computed({
   get: () => activeJobInfo.value?.queryParameter.attributeFilter || '',
   set: (value: string) => {
     if (activeJobInfo.value) {
-      activeJobInfo.value.queryParameter.attributeFilter = value
+      activeJobInfo.value.queryParameter = updateQueryExpression(activeJobInfo.value.queryParameter, value)
     }
   }
 })
@@ -388,7 +389,7 @@ function formatJobInfos() {
         item.name &&
           jobInfos.value.push({
             spaceFilter: 'currentMapBounds',
-            queryParameter: Object.assign({}, item, { queryMode: item.queryMode || 'SQL' })
+            queryParameter: normalizeQueryParameter(item)
           })
       })
     }

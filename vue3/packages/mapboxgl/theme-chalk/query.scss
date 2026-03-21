@@ -108,7 +108,7 @@
     height: 13px;
     margin: 0;
     border-radius: 50%;
-    border: 1px solid $border-color-secondary;
+    border: 1px solid $border-color-split;
     background-color: transparent;
     display: inline-block;
     position: relative;
@@ -135,6 +135,12 @@
     margin-top: 6px;
     font-size: 12px;
     width: 100%;
+  }
+
+  @include e(condition-input) {
+    &.#{$ant-prefix}-input-affix-wrapper {
+      border-color: $border-color-split !important;
+    }
   }
 
   @include e(error) {

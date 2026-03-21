@@ -10,8 +10,9 @@ import type {
 } from 'vue-iclient-controllers-mapboxgl/src/SearchViewModel'
 import { getPropsDefaults, mapGetterProps, themeProps } from '@supermapgis/common/utils/index.common'
 import { controlProps } from '@supermapgis/mapboxgl/utils'
+import { HISTORY_MAX_COUNT_MAX, isValidHistoryMaxCount } from './history'
 
-
+export { HISTORY_MAX_COUNT_MAX, HISTORY_MAX_COUNT_MIN } from './history'
 
 export interface PointInfo {
   useDefaultAttribute?: boolean
@@ -105,7 +106,10 @@ export const searchProps = () => ({
   },
   historyMaxCount: {
     type: [Number, String],
-    default: 10
+    default: HISTORY_MAX_COUNT_MAX,
+    validator(value) {
+      return isValidHistoryMaxCount(value)
+    }
   },
   historyNewestFirst: {
     type: Boolean,

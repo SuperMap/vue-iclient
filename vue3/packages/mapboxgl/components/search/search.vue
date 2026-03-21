@@ -210,6 +210,7 @@ import { message as Message } from 'ant-design-vue'
 import TablePopup from '@supermapgis/common/components/table-popup/table-popup.vue'
 import { setPopupArrowStyle } from 'vue-iclient-core/utils/util'
 import { isEqual } from 'lodash-es'
+import { getDisplayedHistory, HISTORY_MAX_COUNT_MAX, normalizeHistoryMaxCount } from './history'
 import { searchPropsDefault } from './types'
 
 defineOptions({
@@ -347,18 +348,12 @@ const datasourceIndeterminate = computed(() => {
   return selectedDatasourceIds.value.length > 0 && !allDatasourceSelected.value
 })
 
-const maxHistoryCount = computed(() => {
-  const count = Number(props.historyMaxCount ?? 10)
-  if (Number.isNaN(count)) return 10
-  return Math.min(Math.max(count, 1), 30)
-})
+const maxHistoryCount = computed(() => normalizeHistoryMaxCount(props.historyMaxCount ?? HISTORY_MAX_COUNT_MAX))
 
-const historyStoreMaxCount = 30
+const historyStoreMaxCount = HISTORY_MAX_COUNT_MAX
 
 const displayedHistory = computed(() => {
-  const newestFirst = props.historyNewestFirst
-  const list = newestFirst ? historyRecords.value : historyRecords.value.slice().reverse()
-  return list
+  return getDisplayedHistory(historyRecords.value, props.historyNewestFirst, maxHistoryCount.value)
 })
 
 const showHistoryPanel = computed(() => {
