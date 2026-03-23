@@ -5,15 +5,20 @@ export type QueryParameterWithDefaults = QueryParameter & {
   keywordDefault?: string
 }
 
-export function getQueryExpressionByMode(queryParameter: QueryParameterWithDefaults) {
+type NormalizedQueryParameter = QueryParameterWithDefaults & {
+  queryMode: NonNullable<QueryParameter['queryMode']>
+  attributeFilter: string
+}
+
+export function getQueryExpressionByMode(queryParameter: QueryParameterWithDefaults): string {
   if (queryParameter.queryMode === 'KEYWORD') {
     return queryParameter.keywordDefault ?? queryParameter.attributeFilter ?? ''
   }
   return queryParameter.sqlDefault ?? queryParameter.attributeFilter ?? ''
 }
 
-export function normalizeQueryParameter(queryParameter: QueryParameterWithDefaults) {
-  const queryMode = queryParameter.queryMode || 'SQL'
+export function normalizeQueryParameter(queryParameter: QueryParameterWithDefaults): NormalizedQueryParameter {
+  const queryMode: NormalizedQueryParameter['queryMode'] = queryParameter.queryMode || 'SQL'
   const nextQueryParameter = {
     ...queryParameter,
     queryMode
@@ -27,14 +32,17 @@ export function normalizeQueryParameter(queryParameter: QueryParameterWithDefaul
 export function switchQueryMode(
   queryParameter: QueryParameterWithDefaults,
   queryMode: QueryParameter['queryMode']
-) {
+): NormalizedQueryParameter {
   return normalizeQueryParameter({
     ...queryParameter,
     queryMode
   })
 }
 
-export function updateQueryExpression(queryParameter: QueryParameterWithDefaults, value: string) {
+export function updateQueryExpression(
+  queryParameter: QueryParameterWithDefaults,
+  value: string
+): QueryParameterWithDefaults {
   if (queryParameter.queryMode === 'KEYWORD') {
     return {
       ...queryParameter,
