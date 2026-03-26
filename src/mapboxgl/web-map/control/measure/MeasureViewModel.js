@@ -59,6 +59,8 @@ class MeasureViewModel extends mapboxgl.Evented {
           break;
         case 'draw_polygon':
           this.result = convertMeasureArea(area(e.features[0]), 'meters', this.activeUnit, this.dashboardConfig);
+          this.cachePolygonUnit.value = this.result;
+          this.cachePolygonUnit.unit = this.activeUnit;
           this._updateAreaPopupNodes(this.result, e.features[0]);
           break;
       }
@@ -104,15 +106,17 @@ class MeasureViewModel extends mapboxgl.Evented {
         const tipNodes = this.lenTipNodesList[id];
         if (tipNodes && tipNodes.length && ((this.continueDraw && id !== 'id') || id === 'id')) {
           for (let i = 1; i < tipNodes.length; i++) {
+            const cacheItem = this.cacheLengthUnitList[id][i - 1];
             let transValue = convertMeasureDistance(
-              this.cacheLengthUnitList[id][i - 1].value,
-              this.cacheLengthUnitList[id][i - 1].unit,
+              cacheItem.rawValue ?? cacheItem.value,
+              cacheItem.unit,
               unit,
               this.dashboardConfig
             );
+            cacheItem.rawValue = transValue;
             transValue = this._getFormatResult(transValue);
-            this.cacheLengthUnitList[id][i - 1].value = transValue;
-            this.cacheLengthUnitList[id][i - 1].unit = unit;
+            cacheItem.value = transValue;
+            cacheItem.unit = unit;
             if (this.activeMode === 'draw_line_string') {
               tipNodes[i] && tipNodes[i].setText(`${transValue} ${this.getUnitLabel('distance', unit)}`);
             }
@@ -243,7 +247,7 @@ class MeasureViewModel extends mapboxgl.Evented {
       const formatValue = this._getFormatResult(calcValue);
 
       this.cacheLengthUnitList.id = this.cacheLengthUnitList.id || [];
-      this.cacheLengthUnitList.id.push({ value: formatValue, unit: this.activeUnit });
+      this.cacheLengthUnitList.id.push({ value: formatValue, rawValue: calcValue, unit: this.activeUnit });
       popup.setText(`${formatValue} ${this.getUnitLabel('distance', this.activeUnit)}`);
     } else {
       popup.setText(geti18n().t('measure.startingPoint'));

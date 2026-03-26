@@ -1,5 +1,6 @@
 import MeasureViewModel from '../MeasureViewModel';
 import drawEvent from 'vue-iclient/src/mapboxgl/_types/draw-event';
+import { convertMeasureArea } from '../measure-unit';
 
 const dashboardConfig = {
   measureUnits: {
@@ -72,10 +73,13 @@ describe('MeasureViewModel', () => {
 
     viewModel.updateUnit('chains', 'draw_line_string');
 
-    expect(viewModel.cacheLengthUnitList.id[0]).toEqual({
-      value: '49.7097',
-      unit: 'chains'
-    });
+    expect(viewModel.cacheLengthUnitList.id[0]).toEqual(
+      expect.objectContaining({
+        value: '49.7097',
+        unit: 'chains'
+      })
+    );
+    expect(viewModel.cacheLengthUnitList.id[0].rawValue).toBeCloseTo(49.70969537898652, 10);
     expect(popupNode.setText).toHaveBeenCalledWith('49.7097 Chains');
     expect(viewModel.result).toBeCloseTo(49.70969537898652, 10);
     expect(viewModel.fire).toHaveBeenCalledWith('update-unit', {
@@ -83,6 +87,53 @@ describe('MeasureViewModel', () => {
       mode: 'draw_line_string'
     });
     expect(viewModel.activeUnit).toBe('chains');
+  });
+
+  it('keeps line popup values in sync when switching across extreme custom distance units', () => {
+    const popupNode = {
+      setText: jest.fn()
+    };
+    const extremeDashboardConfig = {
+      measureUnits: {
+        distance: ['kilometers', 'light_year_custom', 'nanometer_custom']
+      },
+      measureUnitConversions: {
+        distance: {
+          light_year_custom: {
+            label: 'Light year',
+            toMeters: 9460730472580800
+          },
+          nanometer_custom: {
+            label: 'Nanometer',
+            toMeters: 0.000000001
+          }
+        }
+      }
+    };
+
+    viewModel.setDashboardConfig(extremeDashboardConfig);
+    viewModel.lenTipNodesList = {
+      id: [{}, popupNode]
+    };
+    viewModel.cacheLengthUnitList = {
+      id: [{ value: '1.0000', unit: 'kilometers' }]
+    };
+    viewModel.activeMode = 'draw_line_string';
+    viewModel.mode = 'draw_line_string';
+    viewModel.activeUnit = 'kilometers';
+    viewModel.result = 1;
+
+    viewModel.updateUnit('light_year_custom', 'draw_line_string');
+    popupNode.setText.mockClear();
+
+    viewModel.updateUnit('nanometer_custom', 'draw_line_string');
+
+    expect(popupNode.setText).toHaveBeenCalledWith(`${viewModel._getFormatResult(viewModel.result)} Nanometer`);
+    expect(viewModel.result).toBeCloseTo(1000000000000, 3);
+    expect(viewModel.fire).toHaveBeenLastCalledWith('update-unit', {
+      result: viewModel._getFormatResult(viewModel.result),
+      mode: 'draw_line_string'
+    });
   });
 
   it('updates polygon hover popup and result when switching to a custom area unit', () => {
@@ -106,6 +157,58 @@ describe('MeasureViewModel', () => {
       mode: 'draw_polygon'
     });
     expect(viewModel.activeUnit).toBe('mu');
+  });
+
+  it('keeps polygon popup and result in sync when switching units after finishing a draw', () => {
+    const hoverPopup = {
+      setLngLat: jest.fn().mockReturnThis(),
+      setText: jest.fn().mockReturnThis()
+    };
+    const feature = {
+      id: 'polygon-1',
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [87.38848464248667, 48.80281323462705],
+            [126.93926589247138, 36.451689761316274],
+            [101.62676589247422, 53.169433033115894],
+            [87.38848464248667, 48.80281323462705]
+          ]
+        ]
+      }
+    };
+
+    viewModel.activeMode = 'draw_polygon';
+    viewModel.mode = 'draw_polygon';
+    viewModel.activeUnit = 'hectares';
+    viewModel.map = {
+      off: jest.fn()
+    };
+    viewModel.tipHoverDiv = hoverPopup;
+    viewModel.cachePolygonUnit = {
+      value: 1,
+      unit: 'hectares'
+    };
+    viewModel.setPopupStyle = jest.fn();
+    jest.spyOn(viewModel, '_isDrawing').mockReturnValue(true);
+
+    viewModel._finishDraw({ features: [feature] });
+
+    const finalAreaInHectares = viewModel.result;
+    const expectedMuValue = convertMeasureArea(finalAreaInHectares, 'hectares', 'mu', dashboardConfig);
+
+    expect(viewModel.cachePolygonUnit).toEqual({
+      value: finalAreaInHectares,
+      unit: 'hectares'
+    });
+
+    hoverPopup.setText.mockClear();
+    viewModel.updateUnit('mu', 'draw_polygon');
+
+    expect(hoverPopup.setText).toHaveBeenCalledWith(`${viewModel._getFormatResult(expectedMuValue)} Mu`);
+    expect(viewModel.result).toBeCloseTo(expectedMuValue, 10);
   });
 
   it('restarts drawing when mode changes during continuous editing', () => {
