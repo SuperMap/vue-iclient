@@ -29,7 +29,8 @@
     height: auto;
     padding-top: 5px;
     .sm-component-table-content {
-      max-height: none !important;
+      height: var(--sm-table-popup-height, auto);
+      max-height: var(--sm-table-popup-max-height, none) !important;
     }
   }
 }

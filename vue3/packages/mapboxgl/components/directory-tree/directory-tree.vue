@@ -1,0 +1,347 @@
+﻿<template>
+  <div class="sm-component-directory-tree" :style="props.style">
+    <div class="sm-component-directory-tree__header">{{ treeTitle }}</div>
+    <div v-if="showBlankPlaceholder" class="sm-component-directory-tree__blank-placeholder">
+      <SmEmpty />
+    </div>
+    <SmTree
+      v-else
+      class="treeHolder"
+      checkable
+      checkStrictly
+      :expandedKeys="expandedKeys"
+      :autoExpandParent="autoExpandParent"
+      :treeData="displayTreeNodes"
+      :checkedKeys="treeCheckedState"
+      :loadData="loadNodeChildren"
+      @expand="handleExpand"
+      @select="handleSelect"
+      @check="handleCheck"
+    >
+      <template
+        #title="{
+          key,
+          title,
+          icon,
+          titleDisabled,
+          titleTooltip,
+          statusKind,
+          statusTooltip,
+          statusIconOnly
+        }"
+      >
+        <span
+          :class="[
+            'sm-component-directory-tree__title-trigger',
+            titleDisabled && 'sm-component-directory-tree__title-trigger--disabled',
+            statusKind === 'warning' && 'sm-component-directory-tree__title-trigger--warning'
+          ]"
+          @click.stop="handleTitleClick(key)"
+        >
+          <img
+            v-if="icon"
+            class="sm-component-directory-tree__title-icon"
+            :src="icon"
+            alt=""
+          />
+          <span
+            class="sm-component-directory-tree__title-text"
+            :title="titleTooltip"
+          >
+            {{ title }}
+          </span>
+          <span
+            v-if="statusKind"
+            :class="[
+              'sm-component-directory-tree__node-status',
+              `sm-component-directory-tree__node-status--${statusKind}`,
+              statusIconOnly && 'sm-component-directory-tree__node-status--icon-only'
+            ]"
+            :title="statusTooltip"
+          >
+            <span class="sm-component-directory-tree__node-status-icon">
+              !
+            </span>
+          </span>
+        </span>
+      </template>
+    </SmTree>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed, onUnmounted, ref, watch } from 'vue'
+import { message } from 'ant-design-vue'
+import type { AntTreeNodeSelectedEvent } from 'ant-design-vue/es/tree'
+import SmEmpty from '@supermapgis/common/components/empty/Empty'
+import SmTree from '@supermapgis/common/components/tree/Tree'
+import { useLocale } from '@supermapgis/common/hooks/useLocale'
+import mapEvent from 'vue-iclient-core/types/map-event'
+import type { DirectoryTreeProps, ResourceDescriptor, RuntimeTreeNode } from './types'
+import { DEFAULT_DIRECTORY_TREE_TITLE, directoryTreePropsDefault } from './types'
+import { createDirectoryTreeFetcher } from './utils/fetcher'
+import { useDirectoryTreeCheck } from './hooks/use-directory-tree-check'
+import { useDirectoryTreeDisplay } from './hooks/use-directory-tree-display'
+import { useDirectoryLoader } from './hooks/use-directory-loader'
+import { useDirectoryTreeRuntime } from './hooks/use-directory-tree-runtime'
+import { useResourceResolver } from './hooks/use-resource-resolver'
+import { useResourceLayerManager } from './hooks/use-resource-layer-manager'
+
+defineOptions({
+  name: 'SmDirectoryTree'
+})
+
+const props = withDefaults(defineProps<DirectoryTreeProps>(), directoryTreePropsDefault)
+const emit = defineEmits(['select', 'check-change'])
+const { t } = useLocale()
+
+const expandedKeys = ref<string[]>([])
+const autoExpandParent = ref(true)
+const runtimeNodes = ref<RuntimeTreeNode[]>([])
+const checkedResourceMap = ref(new Map<string, ResourceDescriptor>())
+const checkedKeys = ref<string[]>([])
+const halfCheckedKeys = ref<string[]>([])
+const iportalUrl = computed(() => `${window.location.origin}/iportal`)
+const fetcher = createDirectoryTreeFetcher()
+const serviceProxyUrlPrefix = computed(
+  () =>
+    getMapContext().webmap?.options?.iportalServiceProxyUrlPrefix ||
+    (typeof window !== 'undefined' ? (window as any).iportalServiceProxyUrl : undefined)
+)
+
+const loader = computed(() =>
+  useDirectoryLoader({
+    iportalUrl: iportalUrl.value,
+    fetcher
+  })
+)
+const resolver = computed(() =>
+  useResourceResolver({
+    iportalUrl: iportalUrl.value,
+    fetcher,
+    serviceProxyUrlPrefix: serviceProxyUrlPrefix.value
+  })
+)
+const resourceLayerManager = useResourceLayerManager({
+  iportalUrl: iportalUrl.value,
+  fetcher
+})
+
+const treeCheckedState = computed(() => ({
+  checked: checkedKeys.value,
+  halfChecked: halfCheckedKeys.value
+}))
+const treeTitle = computed(() => {
+  const title = props.treeSchema?.title
+  return typeof title === 'string' && title.trim() ? title.trim() : DEFAULT_DIRECTORY_TREE_TITLE
+})
+
+function getMapContext(mapTarget = props.mapTarget) {
+  return {
+    map: mapTarget ? mapEvent.getMap(mapTarget) : undefined,
+    mapTarget,
+    webmap: mapTarget ? mapEvent.getWebMap(mapTarget) : undefined
+  }
+}
+
+resourceLayerManager.setMapContext(getMapContext())
+
+function getActiveMap() {
+  if (!props.mapTarget) {
+    return undefined
+  }
+  return mapEvent.getMap(props.mapTarget)
+}
+
+function getMapProjection(): string | undefined {
+  const map = getActiveMap()
+  const crs = map?.getCRS?.()
+  const epsgCode = crs?.epsgCode ?? crs?.code
+  return resolver.value.normalizeProjection(epsgCode) || undefined
+}
+
+const { getDisabledReasonText, isBrowseOnlyResourceNode, mapNodesForTree } =
+  useDirectoryTreeDisplay({
+    t,
+    getMapTarget: () => props.mapTarget
+  })
+
+const {
+  resetTree,
+  findNodeByKey,
+  resolveResourceNode,
+  refreshResolvedNodeStates,
+  loadNodeChildren,
+  ensureDirectoryLoaded,
+  ensureDescendantsLoaded,
+  collectDescendantResourceNodes,
+  setNodeOperationState,
+  setDirectoryBatchProgress,
+  clearDirectoryBatchProgress,
+  isNodeBusy
+} = useDirectoryTreeRuntime({
+  runtimeNodes,
+  expandedKeys,
+  checkedResourceMap,
+  checkedKeys,
+  halfCheckedKeys,
+  mapTarget: () => props.mapTarget,
+  loader,
+  resolver,
+  resourceLayerManager,
+  getMapContext,
+  getMapProjection,
+  onLoadedChildren: () => recalculateCheckState()
+})
+
+const { recalculateCheckState, toggleNodeCheckByKey, reapplyCheckedResources } = useDirectoryTreeCheck({
+  t,
+  runtimeNodes,
+  checkedResourceMap,
+  checkedKeys,
+  halfCheckedKeys,
+  mapTarget: () => props.mapTarget,
+  resolver,
+  resourceLayerManager,
+  getMapContext,
+  getMapProjection,
+  findNodeByKey,
+  resolveResourceNode,
+  ensureDescendantsLoaded,
+  collectDescendantResourceNodes,
+  setNodeOperationState,
+  setDirectoryBatchProgress,
+  clearDirectoryBatchProgress,
+  isNodeBusy,
+  emitCheckChange: payload => emit('check-change', payload)
+})
+
+const displayTreeNodes = computed(() => mapNodesForTree(runtimeNodes.value))
+const showBlankPlaceholder = computed(() => displayTreeNodes.value.length === 0)
+
+watch(
+  () => props.treeSchema,
+  async nextSchema => {
+    await resetTree(nextSchema)
+  },
+  { immediate: true, deep: true }
+)
+
+watch(
+  () => props.mapTarget,
+  async (nextTarget, previousTarget) => {
+    if (previousTarget) {
+      resourceLayerManager.setMapContext(getMapContext(previousTarget))
+      await resourceLayerManager.clearResources({ mapTarget: previousTarget })
+    }
+    resourceLayerManager.setMapContext(getMapContext(nextTarget))
+    await refreshResolvedNodeStates(runtimeNodes.value, true)
+    if (nextTarget) {
+      await reapplyCheckedResources()
+    }
+  }
+)
+
+onUnmounted(async () => {
+  if (props.mapTarget) {
+    resourceLayerManager.setMapContext(getMapContext(props.mapTarget))
+    await resourceLayerManager.clearResources({ mapTarget: props.mapTarget })
+  }
+})
+
+function showNodeStatusMessage(content: string) {
+  message.destroy()
+  message.warning(content, 1.5)
+}
+
+function handleExpand(keys: string[]) {
+  expandedKeys.value = keys
+  autoExpandParent.value = false
+}
+
+function isTreeSwitcherClick(target: EventTarget | null): boolean {
+  return target instanceof Element && !!target.closest('.sm-component-tree-switcher')
+}
+
+async function toggleDirectoryExpansion(node: RuntimeTreeNode) {
+  if (node.kind !== 'directory' || node.isLeaf) {
+    return
+  }
+
+  const nextExpandedKeys = new Set<string>(expandedKeys.value)
+  const isExpanded = nextExpandedKeys.has(node.key)
+
+  if (isExpanded) {
+    nextExpandedKeys.delete(node.key)
+  } else {
+    await ensureDirectoryLoaded(node)
+    nextExpandedKeys.add(node.key)
+  }
+
+  handleExpand(Array.from(nextExpandedKeys))
+}
+
+async function handleNodeSelection(nodeKey: string, info?: { nativeEvent?: Event }) {
+  const node = nodeKey ? findNodeByKey(nodeKey) : undefined
+  if (!node) {
+    return
+  }
+
+  const allowLoadingDirectorySelection =
+    node.kind === 'directory' && node.loadState === 'loading' && !node.operationState && !node.batchProgress
+  if ((node.pendingValidation || node.operationState || node.batchProgress) && !allowLoadingDirectorySelection) {
+    return
+  }
+
+  const disabledReasonText = getDisabledReasonText(node.disabledReason)
+  if (disabledReasonText && !isBrowseOnlyResourceNode(node)) {
+    showNodeStatusMessage(disabledReasonText)
+    return
+  }
+
+  if (node.kind === 'directory') {
+    if (isTreeSwitcherClick(info?.nativeEvent?.target ?? null)) {
+      return
+    }
+    await toggleDirectoryExpansion(node)
+    emit('select', { node })
+    return
+  }
+
+  if (node.kind === 'resource') {
+    const descriptor = await resolveResourceNode(node)
+    emit('select', {
+      node,
+      resource: descriptor
+    })
+    return
+  }
+
+  emit('select', { node })
+}
+
+async function handleTitleClick(nodeKey: string | number) {
+  await handleNodeSelection(String(nodeKey))
+}
+
+async function handleSelect(selectedKeys: Array<string | number>, info: AntTreeNodeSelectedEvent) {
+  await handleNodeSelection(String(selectedKeys[selectedKeys.length - 1] || ''), info)
+}
+
+async function handleCheck(
+  checkedKeysValue: unknown,
+  info: { checked: boolean; node: { key: string | number } }
+) {
+  await toggleNodeCheckByKey(String(info.node.key), info.checked)
+}
+
+defineExpose({
+  runtimeNodes,
+  displayTreeNodes,
+  expandedKeys,
+  handleSelect,
+  loadNodeChildren,
+  toggleNodeCheckByKey
+})
+</script>
+

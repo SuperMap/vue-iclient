@@ -17,8 +17,23 @@
   @include e(table) {
     &.#{$table-prefix}-wrapper {
       .#{$table-prefix}-content {
-        max-height: 250px;
+        height: var(--sm-table-popup-height, auto);
+        max-height: var(--sm-table-popup-max-height, 250px);
         overflow: auto;
+        scrollbar-gutter: stable;
+        scrollbar-width: thin;
+        scrollbar-color: $scrollbar-bg transparent;
+        &::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        &::-webkit-scrollbar-track {
+          background-color: transparent;
+        }
+        &::-webkit-scrollbar-thumb {
+          border-radius: 4px;
+          background-color: $scrollbar-bg;
+        }
         .#{$table-prefix}-placeholder {
           background: transparent;
           border-top: none;

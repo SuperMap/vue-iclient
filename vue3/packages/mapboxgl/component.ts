@@ -33,6 +33,7 @@ import { SmChart } from '@supermapgis/mapboxgl/components/chart'
 import { SmSceneMeasure } from '@supermapgis/mapboxgl/components/scene-measure'
 import { SmFeatureTree } from '@supermapgis/mapboxgl/components/feature-tree'
 import { SmFeatureCascader } from '@supermapgis/mapboxgl/components/feature-cascader'
+import { SmDirectoryTree } from '@supermapgis/mapboxgl/components/directory-tree'
 
 import type { Plugin } from 'vue'
 
@@ -70,5 +71,6 @@ export default [
   SmChart,
   SmSceneMeasure,
   SmFeatureTree,
-  SmFeatureCascader
+  SmFeatureCascader,
+  SmDirectoryTree
 ] as Plugin[]

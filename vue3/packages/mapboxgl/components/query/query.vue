@@ -155,6 +155,7 @@
       </div>
     </div>
     <SmLayerHighlight
+      ref="query-highlight"
       uniqueName="query-popup"
       :layers="resultLayers"
       :highlightStyle="highlightStyle"
@@ -170,7 +171,6 @@
       :showPopup="showPopup"
       :popupInfoMap="popupInfoMap"
       :popupConfig="popupConfigValue"
-      ref="query-highlight"
       :title="queryResult && queryResult.name"
       @mapselectionchanged="handleMapSeletionChanged"
     />
@@ -351,9 +351,6 @@ const popupInfoMap = computed(() => {
 })
 
 const popupConfigValue = computed(() => {
-  if (!hasRichPopupInfo.value) {
-    return null
-  }
   return props.popupConfig
 })
 

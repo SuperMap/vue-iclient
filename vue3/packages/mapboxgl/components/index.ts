@@ -21,4 +21,5 @@ export * from './chart'
 export * from './scene-measure'
 export * from './feature-tree'
 export * from './feature-cascader'
+export * from './directory-tree'
 

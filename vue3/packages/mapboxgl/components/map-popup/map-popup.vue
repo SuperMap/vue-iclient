@@ -1,8 +1,8 @@
 <template>
   <div
     v-show="isRender"
-    :class="useRichPopup ? 'sm-component-attribute-popup' : 'sm-component-map-popup'"
     ref="Popup"
+    :class="useRichPopup ? 'sm-component-attribute-popup' : 'sm-component-map-popup'"
     :style="[popupBgStyleValue, textColorStyle, popupWidth]"
   >
     <div v-if="useRichPopup" class="content">
@@ -49,6 +49,7 @@
       :titleRender="titleRender"
       :valueRender="valueRender"
       :showHeader="showHeader"
+      :style="panelPopupStyle"
     >
       <template #header>
         <div class="title ellipsis" :title="title">{{ title }}</div>
@@ -118,6 +119,19 @@ const popupConfigValue = computed(() => {
 })
 const { popupWidth, popupHeight, popupStyle } = usePopupConfigHooks(popupConfigValue, contentHeight)
 const popupBgStyleValue = computed(() => ({ ...popupBgStyle.value, ...popupStyle.value }))
+const panelPopupStyle = computed<Record<string, string>>(() => {
+  const { autoResize, maxHeight, height } = popupConfigValue.value
+  if (autoResize) {
+    return maxHeight ? { '--sm-table-popup-max-height': maxHeight } : {}
+  }
+  if (!height) {
+    return {}
+  }
+  return {
+    '--sm-table-popup-height': height,
+    '--sm-table-popup-max-height': height
+  }
+})
 
 const popupData = computed(() => {
   return props.data[currentIndex.value] || []

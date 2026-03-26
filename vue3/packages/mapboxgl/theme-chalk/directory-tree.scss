@@ -1,0 +1,106 @@
+.sm-component-directory-tree {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 16px 12px 12px 16px;
+  background: transparent;
+  box-sizing: border-box;
+
+  .sm-component-directory-tree__header {
+    flex: 0 0 auto;
+    margin-bottom: 10px;
+    color: #1f1f1f;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 24px;
+  }
+
+  .treeHolder {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .sm-component-tree-title {
+    vertical-align: top;
+  }
+
+  .sm-component-directory-tree__blank-placeholder {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sm-component-directory-tree__title-trigger {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    vertical-align: top;
+  }
+
+  .sm-component-directory-tree__title-icon {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    object-fit: contain;
+  }
+
+  .sm-component-directory-tree__title-trigger--disabled {
+    color: #999;
+    cursor: help;
+  }
+
+  .sm-component-directory-tree__title-trigger--warning {
+    color: inherit;
+  }
+
+  .sm-component-directory-tree__title-text {
+    display: inline-block;
+    min-width: 0;
+    line-height: 24px;
+  }
+
+  .sm-component-directory-tree__node-status {
+    margin-left: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #8c8c8c;
+    font-size: 12px;
+    line-height: 1;
+    vertical-align: middle;
+  }
+
+  .sm-component-directory-tree__node-status--warning {
+    color: #d48806;
+  }
+
+  .sm-component-directory-tree__node-status--icon-only {
+    gap: 0;
+  }
+
+  .sm-component-directory-tree__node-status-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: currentColor;
+    color: #fff;
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 700;
+  }
+
+  .ant-tree-checkbox-disabled,
+  .ant-tree-checkbox-disabled .ant-tree-checkbox-inner,
+  .ant-tree-checkbox-disabled .ant-tree-checkbox-input,
+  .ant-tree-checkbox-disabled + span {
+    cursor: not-allowed !important;
+  }
+}

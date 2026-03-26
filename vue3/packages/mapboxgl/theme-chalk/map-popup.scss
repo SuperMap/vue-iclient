@@ -7,6 +7,11 @@
   height: auto;
   padding: 10px;
   border-radius: 4px;
+  .#{$sm-prefix}-component-attribute-panel {
+    overflow: hidden;
+    width: 100%;
+    min-width: 0;
+  }
   .switchDataText {
     display: inline-flex;
     padding: 8px 0px;
