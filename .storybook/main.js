@@ -3,7 +3,7 @@ function resolve(dir) {
   return path.join(__dirname, '..', dir);
 }
 const os = require('os');
-const threads = os.cpus().length - 1;
+const threads = Math.min(os.cpus().length - 1, 4); // 限制最多 4 个并行线程，避免内存过高
 const TerserPlugin = require('terser-webpack-plugin');
 // const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 // const smp = new SpeedMeasurePlugin();
@@ -59,10 +59,12 @@ module.exports = {
       },
       minimizer: [
         new TerserPlugin({
-          parallel: threads // 开启多进程
+          parallel: threads, // 开启多进程（已限制上限）
+          cache: true // 开启文件系统缓存，二次构建跳过未变更 chunk
         })
       ]
     };
+    config.devtool = false; // 关闭 source map，减少内存占用和构建时间
     config.resolve.extensions = ['.js', '.ts', '.json'];
     config.externals = [
       function (context, request, callback) {
