@@ -25,6 +25,24 @@ export interface DirectoryLoaderOptions {
   fetcher?: DirectoryLoaderFetch
 }
 
+function resolveQueryTotalPages(response: {
+  total: number
+  totalPage: number
+  pageSize: number
+  content: Record<string, any>[]
+}): number {
+  if (Number.isInteger(response.totalPage) && response.totalPage > 0) {
+    return response.totalPage
+  }
+
+  const pageSize = Number.isInteger(response.pageSize) && response.pageSize > 0 ? response.pageSize : 0
+  if (pageSize > 0 && Number.isFinite(response.total) && response.total > 0) {
+    return Math.max(1, Math.ceil(response.total / pageSize))
+  }
+
+  return 1
+}
+
 function isQueryDirectoryNode(node: RuntimeTreeNode): node is RuntimeTreeNode & { raw: QueryDirectoryNode } {
   return !!node.raw && typeof node.raw === 'object' && (node.raw as QueryDirectoryNode).type === 'resource-search'
 }
@@ -85,21 +103,16 @@ export function useDirectoryLoader(options: DirectoryLoaderOptions) {
       return cached
     }
 
-    let currentPage = 1
+    let totalPages = 1
     const items: Record<string, any>[] = []
 
-    while (true) {
+    for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
       const request = buildQuerySearchRequest(queryNode.params, currentPage)
       const url = `${createQuerySearchEndpoint(options.iportalUrl)}?${toQuerySearchParams(request)}`
       const response = normalizeQuerySearchResponse(await fetcher(url), request)
 
       items.push(...response.content)
-
-      if (currentPage >= response.totalPage) {
-        break
-      }
-
-      currentPage += 1
+      totalPages = resolveQueryTotalPages(response)
     }
 
     const result = {

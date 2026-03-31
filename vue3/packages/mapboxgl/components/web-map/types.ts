@@ -162,6 +162,10 @@ export const webMapProps = () => ({
     type: Object,
     default: undefined
   },
+  layerStyle: {
+    type: Object,
+    default: () => ({})
+  },
   autoresize: {
     type: Boolean,
     default: true
@@ -303,6 +307,7 @@ export type WebMapProps = {
   background?: string
   iportalServiceProxyUrlPrefix?: string
   mapOptions?: MapOptions
+  layerStyle?: Record<string, any>
   autoresize?: boolean
   keepBounds?: boolean
   panControl?: CommonControlParam

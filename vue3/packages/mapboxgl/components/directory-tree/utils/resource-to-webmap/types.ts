@@ -20,11 +20,31 @@ export interface MapSnapshot {
   baseLayer?: Record<string, any>
 }
 
+export interface DirectoryTreeMapLayerStyle {
+  circle?: {
+    paint?: Record<string, any>
+    layout?: Record<string, any>
+  }
+  line?: {
+    paint?: Record<string, any>
+    layout?: Record<string, any>
+  }
+  fill?: {
+    paint?: Record<string, any>
+    layout?: Record<string, any>
+  }
+  strokeLine?: {
+    paint?: Record<string, any>
+    layout?: Record<string, any>
+  }
+}
+
 export interface ResourceLoadPlanBuildOptions {
   iportalUrl: string
   mapSnapshot?: MapSnapshot
   withCredentials?: boolean
   fetcher?: ResourceToWebMapFetch
+  mapLayerStyle?: DirectoryTreeMapLayerStyle
 }
 
 export type SupportedFeatureType = 'POINT' | 'LINE' | 'POLYGON'
@@ -37,6 +57,7 @@ export interface XYField {
 export interface PortalDataMetadata {
   featureType: SupportedFeatureType
   xyField?: XYField
+  projection?: string
 }
 
 export interface RestDataMetadata {

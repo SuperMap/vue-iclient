@@ -252,7 +252,24 @@ export function useDirectoryTreeCheck(options: DirectoryTreeCheckOptions) {
     recalculateCheckState()
   }
 
+  function clearCheckedResources() {
+    const clearedResources = Array.from(options.checkedResourceMap.value.values()) as ResourceDescriptor[]
+    if (!clearedResources.length) {
+      recalculateCheckState()
+      return
+    }
+
+    options.checkedResourceMap.value = new Map()
+    recalculateCheckState()
+    options.emitCheckChange({
+      checkedResources: [],
+      changedResources: clearedResources,
+      failures: []
+    })
+  }
+
   return {
+    clearCheckedResources,
     recalculateCheckState,
     toggleNodeCheckByKey,
     reapplyCheckedResources

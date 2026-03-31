@@ -47,15 +47,6 @@ function isDirectoryNodeType(value: unknown): value is DirectoryNodeType {
   return DIRECTORY_TREE_NODE_TYPES.includes(value as DirectoryNodeType)
 }
 
-const DIRECTORY_NODE_TYPE_ALIASES: Record<string, DirectoryNodeType> = {
-  semantic: 'default',
-  iportal: 'resource-directory',
-  custom: 'resource-search',
-  'iportal-directory': 'resource-directory',
-  'search-directory': 'resource-search',
-  'query-directory': 'resource-search'
-}
-
 function isResourceType(value: unknown): value is ResourceType {
   return DIRECTORY_TREE_RESOURCE_TYPES.includes(value as ResourceType)
 }
@@ -82,7 +73,7 @@ function normalizeIcon(value: unknown, fieldName: string): string | undefined {
 }
 
 function normalizeResourceIcon(node: Record<string, any>, fieldName: string): string | undefined {
-  return normalizeIcon(node.resourceIcon ?? node['resource-icon'], fieldName)
+  return normalizeIcon(node.resourceIcon, fieldName)
 }
 
 function normalizeStringArray(value: unknown, fieldName: string): string[] | undefined {
@@ -209,7 +200,7 @@ function normalizeResourceDirectoryNode(
     id: normalizeString(node.id, 'resource-directory node id'),
     title: normalizeOptionalString(node.title, 'resource-directory node title'),
     icon: normalizeIcon(node.icon, 'resource-directory node icon'),
-    resourceIcon: normalizeResourceIcon(node, 'resource-directory node resource-icon'),
+    resourceIcon: normalizeResourceIcon(node, 'resource-directory node resourceIcon'),
     directoryId,
     children: normalizeChildren(node.children, seenIds)
   }
@@ -224,8 +215,8 @@ function normalizeQueryDirectoryNode(
     id: normalizeString(node.id, 'resource-search node id'),
     title: normalizeString(node.title, 'resource-search node title'),
     icon: normalizeIcon(node.icon, 'resource-search node icon'),
-    resourceIcon: normalizeResourceIcon(node, 'resource-search node resource-icon'),
-    params: normalizeQuery(node.params ?? node.query),
+    resourceIcon: normalizeResourceIcon(node, 'resource-search node resourceIcon'),
+    params: normalizeQuery(node.params),
     children: normalizeChildren(node.children, seenIds)
   }
 }
@@ -237,7 +228,7 @@ function normalizeNode(node: unknown, seenIds: Set<string>, fieldName = 'node'):
     node.type == null
       ? 'default'
       : typeof node.type === 'string'
-        ? (DIRECTORY_NODE_TYPE_ALIASES[node.type] ?? node.type)
+        ? node.type
         : node.type
   invariant(isDirectoryNodeType(normalizedNodeType), `Unsupported directory node type: ${String(node.type)}`)
 
@@ -315,7 +306,7 @@ export function normalizeDirectoryTreeSchema(
   schema: DirectoryTreeSchemaV1
 ): NormalizedDirectoryTreeSchema {
   invariant(isPlainObject(schema), 'treeSchema must be an object')
-  const version = schema.version ?? schema.schemaVersion
+  const version = schema.version
   invariant(
     version === DIRECTORY_TREE_SCHEMA_VERSION,
     `Unsupported version: ${String(version)}`

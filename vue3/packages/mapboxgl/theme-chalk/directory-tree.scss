@@ -9,7 +9,8 @@
 
   .sm-component-directory-tree__header {
     flex: 0 0 auto;
-    margin-bottom: 10px;
+    padding: 15px 0 0 15px;
+    margin-bottom: 12px;
     color: #1f1f1f;
     font-size: 16px;
     font-weight: 600;
@@ -20,6 +21,10 @@
     flex: 1;
     min-height: 0;
     overflow: auto;
+  }
+
+  .sm-component-tree {
+    background: transparent;
   }
 
   .sm-component-tree-title {
@@ -51,7 +56,7 @@
 
   .sm-component-directory-tree__title-trigger--disabled {
     color: #999;
-    cursor: help;
+    cursor: not-allowed;
   }
 
   .sm-component-directory-tree__title-trigger--warning {
@@ -97,6 +102,20 @@
     font-weight: 700;
   }
 
+  .sm-component-tree-checkbox {
+    margin-inline-end: 0px;
+    margin-block-start: 0px;
+  }
+
+  .ant-tree-treenode-checkbox-disabled,
+  .ant-tree-treenode-checkbox-disabled .ant-tree-switcher,
+  .ant-tree-treenode-checkbox-disabled .ant-tree-checkbox,
+  .ant-tree-treenode-checkbox-disabled .ant-tree-checkbox-inner,
+  .ant-tree-treenode-checkbox-disabled .ant-tree-checkbox-input,
+  .ant-tree-treenode-checkbox-disabled .ant-tree-node-content-wrapper,
+  .ant-tree-treenode-checkbox-disabled .sm-component-directory-tree__title-trigger,
+  .ant-tree-treenode-checkbox-disabled .sm-component-directory-tree__title-text,
+  .ant-tree-treenode-checkbox-disabled .sm-component-directory-tree__node-status,
   .ant-tree-checkbox-disabled,
   .ant-tree-checkbox-disabled .ant-tree-checkbox-inner,
   .ant-tree-checkbox-disabled .ant-tree-checkbox-input,

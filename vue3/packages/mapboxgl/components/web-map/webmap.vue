@@ -96,6 +96,12 @@ const resize = () => {
   }
 }
 
+const syncLayerStyleToViewModel = (layerStyle: Record<string, any> | undefined) => {
+  if (viewModel) {
+    viewModel.options.layerStyle = layerStyle || {}
+  }
+}
+
 const initializeWebMap = () => {
   viewModel = new WebMapViewModel(
     props.mapId,
@@ -113,11 +119,13 @@ const initializeWebMap = () => {
       'isSuperMapOnline',
       'proxy',
       'mapOptions',
+      'layerStyle',
       'iportalServiceProxyUrlPrefix',
       'tileTransformRequest'
     ]),
     props.mapOptions
   )
+  syncLayerStyleToViewModel(props.layerStyle)
   setViewModel(viewModel)
 }
 
@@ -248,6 +256,13 @@ watch(
   (newVal: boolean) => {
     spinning.value = newVal
   }
+)
+watch(
+  () => props.layerStyle,
+  next => {
+    syncLayerStyleToViewModel(next)
+  },
+  { deep: true, immediate: true }
 )
 
 onMounted(() => {

@@ -54,18 +54,17 @@ export interface DirectoryNodeIconOptions {
 
 export interface DirectoryResourceIconOptions {
   resourceIcon?: string
-  'resource-icon'?: string
 }
 
 export interface DefaultDirectoryNode extends DirectoryNodeIconOptions {
-  type?: 'default' | 'semantic'
+  type?: 'default'
   id: string
   title: string
   children?: DirectoryNode[]
 }
 
 export interface ResourceDirectoryNode extends DirectoryNodeIconOptions, DirectoryResourceIconOptions {
-  type: 'resource-directory' | 'iportal' | 'iportal-directory'
+  type: 'resource-directory'
   id: string
   title?: string
   directoryId: string | number
@@ -98,11 +97,10 @@ export interface QueryDirectoryQuery {
 }
 
 export interface QueryDirectoryNode extends DirectoryNodeIconOptions, DirectoryResourceIconOptions {
-  type: 'resource-search' | 'custom' | 'search-directory' | 'query-directory'
+  type: 'resource-search'
   id: string
   title: string
-  params?: QueryDirectoryQuery
-  query?: QueryDirectoryQuery
+  params: QueryDirectoryQuery
   children?: DirectoryNode[]
 }
 
@@ -110,7 +108,6 @@ export type DirectoryNode = DefaultDirectoryNode | ResourceDirectoryNode | Query
 
 export interface DirectoryTreeSchemaV1 {
   version?: typeof DIRECTORY_TREE_SCHEMA_VERSION
-  schemaVersion?: typeof DIRECTORY_TREE_SCHEMA_VERSION
   title?: string
   directoryCheckable?: boolean
   nodes: DirectoryNode[]
@@ -194,6 +191,7 @@ export type DirectoryTreeEmits = ShortEmits<DirectoryTreeEvents>
 export interface DirectoryTreeProps {
   treeSchema?: DirectoryTreeSchemaV1 | null
   mapTarget?: string
+  iportalUrl?: string
   style?: Record<string, any>
 }
 
@@ -203,6 +201,9 @@ export const directoryTreeProps = () => ({
     required: false
   },
   mapTarget: {
+    type: String
+  },
+  iportalUrl: {
     type: String
   },
   style: {

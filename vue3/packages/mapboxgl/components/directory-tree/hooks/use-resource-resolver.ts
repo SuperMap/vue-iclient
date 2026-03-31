@@ -66,7 +66,14 @@ function projectionsMatch(resourceProjection: string | null, mapProjection?: str
   if (!resourceProjection || !mapProjection) {
     return true
   }
-  return normalizeProjection(resourceProjection) === normalizeProjection(mapProjection)
+
+  const normalizedResourceProjection = normalizeProjection(resourceProjection)
+  const normalizedMapProjection = normalizeProjection(mapProjection)
+  if (!normalizedResourceProjection || !normalizedMapProjection) {
+    return resourceProjection.trim() === mapProjection.trim()
+  }
+
+  return normalizedResourceProjection === normalizedMapProjection
 }
 
 function getRawResourceType(node: RuntimeTreeNode): ResourceType {
@@ -748,6 +755,16 @@ async function resolveServiceDescriptor(
   if (!serviceType || !isSupportedServiceType(serviceType)) {
     return buildDescriptor(node, {
       disabledReason: 'unsupported-service-type',
+      serviceType,
+      serverUrl,
+      projection,
+      raw: nextRaw
+    })
+  }
+
+  if (serviceInfo?.offline === true || raw.offline === true) {
+    return buildDescriptor(node, {
+      disabledReason: 'service-unavailable',
       serviceType,
       serverUrl,
       projection,

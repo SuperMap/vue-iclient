@@ -55,9 +55,14 @@ export class ResourceLayerManagerError extends Error {
 const BUILT_IN_PROJECTIONS = new Set(['EPSG:3857', 'EPSG:4326', 'EPSG:4490', 'EPSG:4214', 'EPSG:4610'])
 const STRUCTURED_DATA_REQUEST_LIMIT = 5000
 const STRUCTURED_DATA_ITEMS_URL_PATTERN = /\/structureddata\/ogc-features\/collections\/all\/items\.json(?:\?|$)/i
+const RESOURCE_LOAD_TIMEOUT_MS = 15000
 
 function normalizeBaseUrl(iportalUrl: string): string {
   return iportalUrl.endsWith('/') ? iportalUrl.slice(0, -1) : iportalUrl
+}
+
+function resolveMapLayerStyle(webmap: any) {
+  return webmap?.options?.layerStyle
 }
 
 function getProjectionCode(projection: unknown): string | undefined {
@@ -176,15 +181,10 @@ async function fetchStructuredDataFeatures(webMapService: any, dataSourceUrl: st
     return featureResults
   }
 
-  const requests: Promise<any>[] = []
   for (let offset = STRUCTURED_DATA_REQUEST_LIMIT; offset < matchedCount; offset += STRUCTURED_DATA_REQUEST_LIMIT) {
-    requests.push(fetchStructuredDataPage(webMapService, buildStructuredDataRequestUrl(dataSourceUrl, offset)))
-  }
-
-  const results = await Promise.all(requests)
-  results.forEach(result => {
+    const result = await fetchStructuredDataPage(webMapService, buildStructuredDataRequestUrl(dataSourceUrl, offset))
     featureResults = featureResults.concat(getStructuredDataFeatures(result))
-  })
+  }
   return featureResults
 }
 
@@ -346,39 +346,61 @@ export function useResourceLayerManager(options: ResourceLayerManagerOptions) {
     context: ResourceLayerManagerContext,
     pendingLoad: PendingLoad
   ) {
-    return new Promise((resolve, reject) => {
-      const events = {
-        addlayerssucceeded: () => {
-          cleanup()
-          if (pendingLoad.cancelled) {
-            childWebMap.cleanLayers?.()
-            reject(new ResourceLayerManagerError('load-failed', `Resource ${descriptor.key} was cancelled`))
-            return
-          }
+    return new Promise<any>((resolve, reject) => {
+      let settled = false
+      let events: Record<string, () => void>
 
-          cacheMaps.set(descriptor.key, {
-            webMap: childWebMap,
-            mapTarget: context.mapTarget as string
-          })
-          mapEventBridge.setWebMap?.(context.mapTarget as string, childWebMap, descriptor.key)
-          resolve(childWebMap)
-        },
-        projectionnotmatch: () => {
-          cleanup()
-          childWebMap.cleanLayers?.()
-          reject(new ResourceLayerManagerError('crs-mismatch', `Projection mismatch for ${descriptor.key}`))
-        },
-        layerorsourcenameduplicated: () => {
-          cleanup()
-          childWebMap.cleanLayers?.()
-          reject(new ResourceLayerManagerError('load-failed', `Duplicate layer or source for ${descriptor.key}`))
+      const finish = (handler: () => void) => {
+        if (settled) {
+          return
         }
+        settled = true
+        cleanup()
+        handler()
       }
 
+      const timeoutId = setTimeout(() => {
+        finish(() => {
+          childWebMap.cleanLayers?.()
+          reject(new ResourceLayerManagerError('load-failed', `Timed out loading ${descriptor.key}`))
+        })
+      }, RESOURCE_LOAD_TIMEOUT_MS)
+
       const cleanup = () => {
+        clearTimeout(timeoutId)
         childWebMap.un?.(events)
       }
 
+      events = {
+        addlayerssucceeded: () => {
+          finish(() => {
+            if (pendingLoad.cancelled) {
+              childWebMap.cleanLayers?.()
+              reject(new ResourceLayerManagerError('load-failed', `Resource ${descriptor.key} was cancelled`))
+              return
+            }
+
+            cacheMaps.set(descriptor.key, {
+              webMap: childWebMap,
+              mapTarget: context.mapTarget as string
+            })
+            mapEventBridge.setWebMap?.(context.mapTarget as string, childWebMap, descriptor.key)
+            resolve(childWebMap)
+          })
+        },
+        projectionnotmatch: () => {
+          finish(() => {
+            childWebMap.cleanLayers?.()
+            reject(new ResourceLayerManagerError('crs-mismatch', `Projection mismatch for ${descriptor.key}`))
+          })
+        },
+        layerorsourcenameduplicated: () => {
+          finish(() => {
+            childWebMap.cleanLayers?.()
+            reject(new ResourceLayerManagerError('load-failed', `Duplicate layer or source for ${descriptor.key}`))
+          })
+        }
+      }
       childWebMap.on?.(events)
     })
   }
@@ -417,6 +439,7 @@ export function useResourceLayerManager(options: ResourceLayerManagerOptions) {
         iportalUrl: options.iportalUrl,
         withCredentials: options.withCredentials,
         fetcher,
+        mapLayerStyle: resolveMapLayerStyle(mergedContext.webmap),
         mapSnapshot: createMapSnapshot({
           map: mergedContext.map,
           webmap: mergedContext.webmap,
@@ -458,11 +481,11 @@ export function useResourceLayerManager(options: ResourceLayerManagerOptions) {
 
   async function clearResources(context: ResourceLayerManagerContext = {}) {
     const resolvedContext = resolveContext(context)
-    pendingLoads.forEach((pendingLoad, resourceKey) => {
+    for (const pendingLoad of Array.from(pendingLoads.values())) {
       if (!resolvedContext.mapTarget || pendingLoad.mapTarget === resolvedContext.mapTarget) {
         pendingLoad.cancelled = true
       }
-    })
+    }
 
     for (const [resourceKey, cached] of Array.from(cacheMaps.entries())) {
       if (!resolvedContext.mapTarget || cached.mapTarget === resolvedContext.mapTarget) {

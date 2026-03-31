@@ -79,6 +79,108 @@ function extractWmsLayerNameFromServiceUrl(serverUrl: unknown): string | undefin
   return decodeUrlPathSegment(match[1])
 }
 
+function extractWmtsInfoFromThumbnailUrl(
+  mapThumbnail: unknown
+): { layer?: string; tileMatrixSet?: string } | undefined {
+  if (typeof mapThumbnail !== 'string' || !mapThumbnail.trim()) {
+    return undefined
+  }
+
+  const normalizedThumbnail = mapThumbnail.trim()
+  let pathname = normalizedThumbnail
+
+  try {
+    pathname = new URL(normalizedThumbnail).pathname
+  } catch (_error) {
+    pathname = normalizedThumbnail.split('?')[0]
+  }
+
+  const segments = pathname.split('/').filter(Boolean)
+  const defaultIndex = segments.findIndex(segment => segment === 'default')
+  if (defaultIndex <= 0 || defaultIndex + 1 >= segments.length) {
+    return undefined
+  }
+
+  const layer = decodeUrlPathSegment(segments[defaultIndex - 1])
+  const tileMatrixSet = decodeUrlPathSegment(segments[defaultIndex + 1])
+  if (!layer && !tileMatrixSet) {
+    return undefined
+  }
+
+  return {
+    layer,
+    tileMatrixSet
+  }
+}
+
+function pickPreferredWmtsMapInfo(serviceInfo: Record<string, any>, descriptorName: string): Record<string, any> | undefined {
+  const mapInfos = Array.isArray(serviceInfo.mapInfos) ? serviceInfo.mapInfos : []
+  if (mapInfos.length === 0) {
+    return undefined
+  }
+
+  return (
+    mapInfos.find((mapInfo: Record<string, any>) => mapInfo?.mapTitle === descriptorName || mapInfo?.name === descriptorName) ||
+    mapInfos.find((mapInfo: Record<string, any>) => typeof mapInfo?.mapTitle === 'string' || typeof mapInfo?.mapThumbnail === 'string') ||
+    mapInfos[0]
+  )
+}
+
+function pickNonEmptyString(...values: unknown[]): string | undefined {
+  for (const value of values) {
+    if (typeof value === 'string' && value.trim()) {
+      return value.trim()
+    }
+  }
+  return undefined
+}
+
+function normalizeWmsRequestedLayers(serviceInfo: Record<string, any>, metadataLayerName?: string, urlLayerName?: string): string[] {
+  if (Array.isArray(serviceInfo.layers)) {
+    return serviceInfo.layers.filter((layer: unknown) => typeof layer === 'string' && layer.trim())
+  }
+  if (Array.isArray(serviceInfo.layerNames)) {
+    return serviceInfo.layerNames.filter((layer: unknown) => typeof layer === 'string' && layer.trim())
+  }
+
+  const fallbackLayer = pickNonEmptyString(metadataLayerName, serviceInfo.layerID, urlLayerName)
+  return fallbackLayer ? [fallbackLayer] : []
+}
+
+function resolveWmtsLayerMetadata(
+  serviceInfo: Record<string, any>,
+  descriptorName: string
+): { layer?: string; layerID?: string; tileMatrixSet?: string; name: string } {
+  const preferredMapInfo = pickPreferredWmtsMapInfo(serviceInfo, descriptorName)
+  const thumbnailInfo = extractWmtsInfoFromThumbnailUrl(preferredMapInfo?.mapThumbnail)
+  const layer = pickNonEmptyString(
+    serviceInfo.layer,
+    thumbnailInfo?.layer,
+    preferredMapInfo?.layer,
+    preferredMapInfo?.mapTitle,
+    preferredMapInfo?.name
+  )
+  const layerID = pickNonEmptyString(
+    serviceInfo.layerID,
+    preferredMapInfo?.mapTitle,
+    preferredMapInfo?.name,
+    thumbnailInfo?.layer,
+    layer
+  )
+  const tileMatrixSet = pickNonEmptyString(
+    serviceInfo.tileMatrixSet,
+    preferredMapInfo?.tileMatrixSet,
+    thumbnailInfo?.tileMatrixSet
+  )
+
+  return {
+    layer,
+    layerID,
+    tileMatrixSet,
+    name: layerID || layer || descriptorName
+  }
+}
+
 function hasRestDataLikeDataService(raw: Record<string, any>): boolean {
   const dataInfo = asRecord(raw.dataInfo)
   const dataItemServices = Array.isArray(dataInfo.dataItemServices) ? dataInfo.dataItemServices : []
@@ -168,21 +270,29 @@ export async function buildServiceLoadPlan(
     }
     const metadataLayerInfo = extractFirstWmsLayerInfo(serviceInfo.metadataString)
     const urlLayerName = extractWmsLayerNameFromServiceUrl(serverUrl)
-    const requestedLayers = Array.isArray(serviceInfo.layers)
-      ? serviceInfo.layers
-      : Array.isArray(serviceInfo.layerNames)
-        ? serviceInfo.layerNames
-        : metadataLayerInfo?.layerName
-          ? [metadataLayerInfo.layerName]
-          : [urlLayerName || serviceInfo.layerID || descriptor.name]
-    const layerTitle = serviceInfo.layerID || metadataLayerInfo?.layerTitle || urlLayerName || descriptor.name
+    const requestedLayers = normalizeWmsRequestedLayers(serviceInfo, metadataLayerInfo?.layerName, urlLayerName)
+    if (!requestedLayers.length) {
+      throw new ResourceLoadPlanError('load-failed', `Missing WMS layer metadata for ${descriptor.key}`)
+    }
+    const layerID = pickNonEmptyString(
+      serviceInfo.layerID,
+      metadataLayerInfo?.layerTitle,
+      requestedLayers[0],
+      urlLayerName
+    )
+    const layerTitle = pickNonEmptyString(
+      metadataLayerInfo?.layerTitle,
+      layerID,
+      descriptor.name,
+      requestedLayers[0]
+    )
     const layerInfo = {
       layerType: 'WMS',
       visible: true,
       name: layerTitle,
       url: serverUrl,
       layers: requestedLayers,
-      layerID: layerTitle
+      layerID
     }
     return {
       kind: 'webmap-object',
@@ -196,14 +306,18 @@ export async function buildServiceLoadPlan(
     if (!serverUrl) {
       throw new ResourceLoadPlanError('load-failed', `Missing WMTS url for ${descriptor.key}`)
     }
+    const wmtsLayerMetadata = resolveWmtsLayerMetadata(serviceInfo, descriptor.name)
+    if (!wmtsLayerMetadata.layer && !wmtsLayerMetadata.layerID) {
+      throw new ResourceLoadPlanError('load-failed', `Missing WMTS layer metadata for ${descriptor.key}`)
+    }
     const layerInfo = {
       layerType: 'WMTS',
       visible: true,
-      name: descriptor.name,
+      name: wmtsLayerMetadata.name,
       url: serverUrl,
-      layer: serviceInfo.layer || descriptor.name,
-      layerID: serviceInfo.layerID || descriptor.name,
-      tileMatrixSet: serviceInfo.tileMatrixSet || 'Custom_China',
+      layer: wmtsLayerMetadata.layer,
+      layerID: wmtsLayerMetadata.layerID,
+      tileMatrixSet: wmtsLayerMetadata.tileMatrixSet,
       requestEncoding: serviceInfo.requestEncoding || 'KVP',
       dpi: serviceInfo.dpi || 90.7142857142857
     }

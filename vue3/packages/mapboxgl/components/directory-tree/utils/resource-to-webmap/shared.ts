@@ -121,5 +121,5 @@ export function normalizeProjection(projection: unknown): string | null {
     return toEpsgProjection(epsgMatch[1])
   }
 
-  return trimmed.toUpperCase()
+  return null
 }

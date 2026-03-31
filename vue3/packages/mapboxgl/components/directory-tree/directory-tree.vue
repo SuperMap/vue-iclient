@@ -6,6 +6,7 @@
     </div>
     <SmTree
       v-else
+      :key="treeRenderVersion"
       class="treeHolder"
       checkable
       checkStrictly
@@ -70,7 +71,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { message } from 'ant-design-vue'
 import type { AntTreeNodeSelectedEvent } from 'ant-design-vue/es/tree'
 import SmEmpty from '@supermapgis/common/components/empty/Empty'
@@ -86,6 +87,7 @@ import { useDirectoryLoader } from './hooks/use-directory-loader'
 import { useDirectoryTreeRuntime } from './hooks/use-directory-tree-runtime'
 import { useResourceResolver } from './hooks/use-resource-resolver'
 import { useResourceLayerManager } from './hooks/use-resource-layer-manager'
+import { normalizeDirectoryTreeOrEmpty } from './utils/schema-normalizer'
 
 defineOptions({
   name: 'SmDirectoryTree'
@@ -101,7 +103,50 @@ const runtimeNodes = ref<RuntimeTreeNode[]>([])
 const checkedResourceMap = ref(new Map<string, ResourceDescriptor>())
 const checkedKeys = ref<string[]>([])
 const halfCheckedKeys = ref<string[]>([])
-const iportalUrl = computed(() => `${window.location.origin}/iportal`)
+
+function normalizeIportalBaseUrl(serverUrl: unknown): string | undefined {
+  if (typeof serverUrl !== 'string' || !serverUrl.trim()) {
+    return undefined
+  }
+
+  const trimmed = serverUrl.trim()
+  try {
+    if (typeof window !== 'undefined') {
+      return new URL(trimmed, window.location.href).toString().replace(/\/+$/, '')
+    }
+    return new URL(trimmed).toString().replace(/\/+$/, '')
+  } catch {
+    return trimmed.replace(/\/+$/, '') || undefined
+  }
+}
+
+function resolveRuntimeIportalUrl(configuredUrl: unknown, webmap: any): string {
+  const configuredPropUrl = normalizeIportalBaseUrl(configuredUrl)
+  if (configuredPropUrl) {
+    return configuredPropUrl
+  }
+
+  const configuredServerUrl =
+    normalizeIportalBaseUrl(webmap?.options?.serverUrl) ||
+    normalizeIportalBaseUrl(webmap?.serverUrl)
+  if (configuredServerUrl) {
+    return configuredServerUrl
+  }
+
+  if (typeof window === 'undefined') {
+    return ''
+  }
+
+  const href = window.location.href
+  const appsIndex = href.indexOf('/apps/')
+  if (appsIndex > 0) {
+    return href.slice(0, appsIndex).replace(/\/+$/, '')
+  }
+
+  return new URL(href).origin.replace(/\/+$/, '')
+}
+
+const iportalUrl = computed(() => resolveRuntimeIportalUrl(props.iportalUrl, getMapContext().webmap))
 const fetcher = createDirectoryTreeFetcher()
 const serviceProxyUrlPrefix = computed(
   () =>
@@ -194,7 +239,7 @@ const {
   onLoadedChildren: () => recalculateCheckState()
 })
 
-const { recalculateCheckState, toggleNodeCheckByKey, reapplyCheckedResources } = useDirectoryTreeCheck({
+const { clearCheckedResources, recalculateCheckState, toggleNodeCheckByKey } = useDirectoryTreeCheck({
   t,
   runtimeNodes,
   checkedResourceMap,
@@ -218,11 +263,58 @@ const { recalculateCheckState, toggleNodeCheckByKey, reapplyCheckedResources } =
 
 const displayTreeNodes = computed(() => mapNodesForTree(runtimeNodes.value))
 const showBlankPlaceholder = computed(() => displayTreeNodes.value.length === 0)
+const treeSchemaStructureKey = ref('')
+const treeRenderVersion = ref(0)
+
+function createSchemaStructureKey(treeSchema: DirectoryTreeProps['treeSchema']): string {
+  const normalized = normalizeDirectoryTreeOrEmpty(treeSchema).schema
+  const collectNodes = (nodes: Array<Record<string, any>> = []) =>
+    nodes.map(node => ({
+      id: String(node.id),
+      type: node.type ?? 'default',
+      children: collectNodes(node.children || [])
+    }))
+
+  return JSON.stringify({
+    directoryCheckable: normalized.directoryCheckable ?? true,
+    nodes: collectNodes(normalized.nodes as Array<Record<string, any>>)
+  })
+}
+
+function syncRuntimeNodePresentation(currentNodes: RuntimeTreeNode[], nextNodes: RuntimeTreeNode[]) {
+  currentNodes.forEach((currentNode, index) => {
+    const nextNode = nextNodes[index]
+    if (!nextNode) {
+      return
+    }
+
+    currentNode.parentKey = nextNode.parentKey
+    currentNode.title = nextNode.title
+    currentNode.icon = nextNode.icon
+    currentNode.resourceIcon = nextNode.resourceIcon
+    currentNode.checkable = nextNode.checkable
+    currentNode.raw = nextNode.raw
+
+    if (currentNode.children?.length && nextNode.children?.length) {
+      syncRuntimeNodePresentation(currentNode.children, nextNode.children)
+    }
+  })
+}
 
 watch(
   () => props.treeSchema,
   async nextSchema => {
-    await resetTree(nextSchema)
+    const nextStructureKey = createSchemaStructureKey(nextSchema)
+
+    if (!treeSchemaStructureKey.value || treeSchemaStructureKey.value !== nextStructureKey) {
+      treeSchemaStructureKey.value = nextStructureKey
+      await resetTree(nextSchema)
+      return
+    }
+
+    const normalized = normalizeDirectoryTreeOrEmpty(nextSchema)
+    syncRuntimeNodePresentation(runtimeNodes.value, normalized.rootNodes)
+    treeRenderVersion.value += 1
   },
   { immediate: true, deep: true }
 )
@@ -234,15 +326,44 @@ watch(
       resourceLayerManager.setMapContext(getMapContext(previousTarget))
       await resourceLayerManager.clearResources({ mapTarget: previousTarget })
     }
+    clearCheckedResources()
     resourceLayerManager.setMapContext(getMapContext(nextTarget))
     await refreshResolvedNodeStates(runtimeNodes.value, true)
-    if (nextTarget) {
-      await reapplyCheckedResources()
-    }
   }
 )
 
+async function handleBoundMapReload(mapTarget?: string) {
+  if (!mapTarget || mapTarget !== props.mapTarget) {
+    return
+  }
+
+  resourceLayerManager.setMapContext(getMapContext(mapTarget))
+  await resourceLayerManager.clearResources({ mapTarget })
+  clearCheckedResources()
+  resourceLayerManager.setMapContext(getMapContext(props.mapTarget))
+  await refreshResolvedNodeStates(runtimeNodes.value, true)
+}
+
+function handleLoadMap(event: { mapTarget?: string }) {
+  void handleBoundMapReload(event.mapTarget)
+}
+
+function handleDeleteMap(event: { mapTarget?: string }) {
+  void handleBoundMapReload(event.mapTarget)
+}
+
+onMounted(() => {
+  mapEvent.on({
+    'load-map': handleLoadMap,
+    'delete-map': handleDeleteMap
+  })
+})
+
 onUnmounted(async () => {
+  mapEvent.un({
+    'load-map': handleLoadMap,
+    'delete-map': handleDeleteMap
+  })
   if (props.mapTarget) {
     resourceLayerManager.setMapContext(getMapContext(props.mapTarget))
     await resourceLayerManager.clearResources({ mapTarget: props.mapTarget })

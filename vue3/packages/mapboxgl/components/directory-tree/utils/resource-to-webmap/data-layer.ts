@@ -22,6 +22,7 @@ import {
   getDescriptorRaw,
   getPassthroughLayerInfo
 } from './map-info'
+import { buildDirectoryTreeVectorStyleFromMapLayerStyle } from './layer-style-transform'
 
 const STRUCTURED_DATA_SOURCE_TYPE = 'USER_DATA'
 const STRUCTURED_DATA_TYPE = 'STRUCTUREDDATA'
@@ -97,6 +98,29 @@ function getFeatureCollectionFirstFeature(payload: Record<string, any> | undefin
   return Array.isArray(features) && features.length > 0 ? features[0] : undefined
 }
 
+function getFirstGeometryCoordinate(coordinates: unknown): number[] | undefined {
+  if (!Array.isArray(coordinates) || !coordinates.length) {
+    return undefined
+  }
+  if (typeof coordinates[0] === 'number') {
+    return coordinates as number[]
+  }
+  return getFirstGeometryCoordinate(coordinates[0])
+}
+
+function inferProjectionFromFeature(feature: Record<string, any> | undefined): string | undefined {
+  const coordinate = getFirstGeometryCoordinate(feature?.geometry?.coordinates)
+  if (!coordinate || coordinate.length < 2) {
+    return undefined
+  }
+  const [x, y] = coordinate
+  if (typeof x !== 'number' || typeof y !== 'number' || Number.isNaN(x) || Number.isNaN(y)) {
+    return undefined
+  }
+  const isLonLat = x > -180 && x < 180 && y > -180 && y < 180
+  return isLonLat ? 'EPSG:4326' : 'EPSG:3857'
+}
+
 function inferMetadataFromFeatureCollection(payload: Record<string, any> | undefined): PortalDataMetadata | undefined {
   const feature = getFeatureCollectionFirstFeature(payload)
   const featureType = normalizeFeatureType(feature?.geometry?.type)
@@ -109,7 +133,8 @@ function inferMetadataFromFeatureCollection(payload: Record<string, any> | undef
 
   return {
     featureType,
-    xyField
+    xyField,
+    projection: inferProjectionFromFeature(feature)
   }
 }
 
@@ -525,19 +550,19 @@ async function ensureRestDataMetadata(
   return metadata
 }
 
+function resolveVectorLayerStyle(featureType: SupportedFeatureType, options: ResourceLoadPlanBuildOptions) {
+  return (
+    buildDirectoryTreeVectorStyleFromMapLayerStyle(featureType, options.mapLayerStyle) ||
+    buildMinimalVectorStyle(featureType)
+  )
+}
+
 export async function resolvePortalDataLayer(
   descriptor: ResourceDescriptor,
   options: ResourceLoadPlanBuildOptions
 ): Promise<Record<string, any>> {
   const raw = getDescriptorRaw(descriptor)
   const useStructuredDataDirectUrl = shouldUseStructuredDataDirectUrl(raw)
-  if (
-    raw.portalDataLayer &&
-    (!useStructuredDataDirectUrl || raw.portalDataLayer?.dataSource?.type === STRUCTURED_DATA_SOURCE_TYPE)
-  ) {
-    return raw.portalDataLayer as Record<string, any>
-  }
-
   const metadata = await ensurePortalDataMetadata(descriptor, options)
   const dataBaseUrl = `${normalizeBaseUrl(options.iportalUrl)}/web/datas/${descriptor.resourceId}`
   const layer: Record<string, any> = {
@@ -545,7 +570,7 @@ export async function resolvePortalDataLayer(
     name: descriptor.name,
     visible: true,
     featureType: metadata.featureType,
-    style: buildMinimalVectorStyle(metadata.featureType),
+    style: resolveVectorLayerStyle(metadata.featureType, options),
     dataSource: useStructuredDataDirectUrl
       ? {
           type: STRUCTURED_DATA_SOURCE_TYPE,
@@ -559,11 +584,10 @@ export async function resolvePortalDataLayer(
   if (metadata.xyField) {
     layer.xyField = metadata.xyField
   }
-  const normalizedProjection = normalizeProjection(descriptor.projection)
+  const normalizedProjection = normalizeProjection(metadata.projection ?? descriptor.projection)
   if (normalizedProjection) {
     layer.projection = normalizedProjection
   }
-  raw.portalDataLayer = layer
   return layer
 }
 
@@ -571,18 +595,13 @@ export async function resolveRestDataServiceLayer(
   descriptor: ResourceDescriptor,
   options: ResourceLoadPlanBuildOptions
 ): Promise<Record<string, any>> {
-  const raw = getDescriptorRaw(descriptor)
-  if (raw.restDataLayer) {
-    return raw.restDataLayer as Record<string, any>
-  }
-
   const metadata = await ensureRestDataMetadata(descriptor, options)
   const layer = {
     layerType: 'VECTOR',
     name: descriptor.name,
     visible: true,
     featureType: metadata.featureType,
-    style: buildMinimalVectorStyle(metadata.featureType),
+    style: resolveVectorLayerStyle(metadata.featureType, options),
     dataSource: {
       type: 'REST_DATA',
       url: metadata.restDataUrl,
@@ -595,6 +614,5 @@ export async function resolveRestDataServiceLayer(
   if (normalizedProjection) {
     ;(layer as Record<string, any>).projection = normalizedProjection
   }
-  raw.restDataLayer = layer
   return layer
 }
