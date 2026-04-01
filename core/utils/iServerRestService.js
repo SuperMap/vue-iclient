@@ -482,10 +482,11 @@ export default class iServerRestService extends Events {
 
   _getRestMapFields(url, layerName, callBack, withCredentials = false) {
     let param = new QueryBySQLParameters({
+      expectCount: 1,
       queryParams: [
         new FilterParameter({
           name: layerName,
-          attributeFilter: 'SMID=0'
+          attributeFilter: ''
         })
       ]
     });
