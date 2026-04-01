@@ -50,6 +50,7 @@
     "lodash.uniqueid": "^4.0.1",
     "mapbox-gl-compare-enhanced": "^1.0.0",
     "omit.js": "^2.0.2",
+    "proj4": "^2.15.0",
     "quill": "2",
     "resize-detector": "^0.2.2",
     "swiper": "^12.1.2",
