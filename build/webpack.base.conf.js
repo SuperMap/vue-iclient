@@ -4,6 +4,7 @@ const utils = require('./utils');
 const config = require('../config');
 
 const vueLoaderConfig = require('./vue-loader.conf');
+const getOriginArgs = require('./get-origin-args');
 
 function resolve(dir) {
   return path.join(__dirname, '..', dir);
@@ -20,12 +21,12 @@ const createLintingRule = () => ({
   }
 });
 
-let argv = JSON.parse(process.env['npm_config_argv']);
-let origin = argv.original;
+let origin = getOriginArgs();
 let entry = './demo/mapboxgl/main.ts';
 
-if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {
-  let type = origin[2].replace('-', '');
+const engineArg = origin.find(arg => ['-mapboxgl', '-leaflet'].includes(arg));
+if (engineArg) {
+  let type = engineArg.replace('-', '');
   entry = `./demo/${type}/main.ts`;
 }
 module.exports = {

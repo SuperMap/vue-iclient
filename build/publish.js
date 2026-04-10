@@ -1,9 +1,10 @@
 const fs = require('fs-extra');
 const path = require('path');
+const getOriginArgs = require('./get-origin-args');
 
-let argv = JSON.parse(process.env['npm_config_argv']);
-let origin = argv.original;
-let key = origin[1] ? origin[1].replace('-', '') : 'mapboxgl';
+let origin = getOriginArgs();
+const engineArg = origin.find(arg => ['-mapboxgl', '-leaflet'].includes(arg));
+let key = engineArg ? engineArg.replace('-', '') : 'mapboxgl';
 
 let fileNames = ['package.json', '.npmignore', 'tsconfig.json', 'README.md'];
 key === 'leaflet' && fileNames.push('sfc.d.ts');

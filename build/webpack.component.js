@@ -2,13 +2,14 @@ const path = require('path');
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const utils = require('./utils');
+const getOriginArgs = require('./get-origin-args');
 
-const argv = JSON.parse(process.env['npm_config_argv']);
-const origin = argv.original;
+const origin = getOriginArgs();
 let type = 'mapboxgl';
 let entry;
-if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {
-  type = origin[2].replace('-', '');
+const engineArg = origin.find(arg => ['-mapboxgl', '-leaflet'].includes(arg));
+if (engineArg) {
+  type = engineArg.replace('-', '');
 }
 if (origin.includes('-index')) {
   entry = { index: `vue-iclient/src/${type}/index.ts` };
