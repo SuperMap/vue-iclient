@@ -592,6 +592,48 @@ describe('Chart Mixin Component', () => {
       expect(wrapper.vm.echartOptions.series[0].itemStyle.color).not.toStrictEqual(options.series[0].itemStyle.color);
     });
 
+    it('render cylinder chart keeps custom color function for caps', async () => {
+      const datasetOptions = [
+        {
+          xField: 'date',
+          yField: 'sale',
+          sort: 'descending',
+          seriesType: '2.5Bar'
+        }
+      ];
+      const customColorFn = jest.fn(params => {
+        return params.seriesName === 'sale' && typeof params.name === 'string' ? 'blue' : 'red';
+      });
+      wrapper = factory({
+        options: {
+          ...options,
+          series: [
+            {
+              type: '2.5Bar',
+              shape: 'cylinder',
+              name: 'sale',
+              itemStyle: {
+                color: customColorFn
+              }
+            }
+          ]
+        },
+        datasetOptions,
+        dataset: geoJSONDataset,
+        highlightColor,
+        highlightOptions: highlightOptions([0])
+      });
+      await flushPromises();
+      const topCapsSerie = wrapper.vm.echartOptions.series.find(item => item.type === 'pictorialBar' && item.symbolPosition === 'end');
+      expect(topCapsSerie).not.toBeUndefined();
+      const topCapsColorFn = topCapsSerie.itemStyle.normal.color;
+      const nonHighlightColor = topCapsColorFn({ dataIndex: 1, value: 800 });
+      expect(nonHighlightColor).toEqual(expect.objectContaining({ colorStops: expect.any(Array) }));
+      expect(nonHighlightColor.colorStops[0].color).toBe('blue');
+      expect(nonHighlightColor.colorStops[1].color).toBe('#fff');
+      expect(customColorFn).toHaveBeenCalled();
+    });
+
     it('render cylinder chart with Multiple feature', async () => {
       const datasetOptions = [
         {

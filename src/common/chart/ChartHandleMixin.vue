@@ -154,7 +154,6 @@ export default {
               const _this = this;
               serie.renderItem = this._squareRectangleRenderItem(
                 seriesSpace,
-                defaultColor,
                 colorGroup,
                 _this,
                 cubeType,
@@ -239,9 +238,21 @@ export default {
       const colorIndex = parallelShowNumber !== 0 ? Math.ceil((index + 1) / parallelShowNumber) - 1 : index;
       let cirCleColor = defaultColor || colorGroup[colorIndex];
       let cirCleColorFnList = [];
-      if (typeof cirCleColor === 'string') {
+      const axisDatas = dataOptions.xAxis?.[0]?.data || options.xAxis?.[0]?.data || [];
+      if (typeof cirCleColor === 'function') {
+        const originColorFn = cirCleColor;
+        cirCleColor = params => {
+          const color = originColorFn({
+            ...params,
+            seriesName: params.seriesName || serie.name,
+            name: params.name === undefined ? axisDatas[params.dataIndex] : params.name
+          });
+          return typeof color === 'string' ? this.setGradientColor(color, '#fff') : color;
+        };
+      } else if (typeof cirCleColor === 'string') {
         cirCleColor = this.setGradientColor(cirCleColor, '#fff');
       }
+      const getBaseCirCleColor = params => (typeof cirCleColor === 'function' ? cirCleColor(params) : cirCleColor);
       if (this.highlightOptions && this.highlightOptions.length > 0) {
         const matchDataList = [];
         this.highlightOptions.forEach(item => {
@@ -255,9 +266,13 @@ export default {
         });
         if (matchDataList.length > 0) {
           cirCleColorFnList = ['topCirCleColorFn', 'bottomCirCleColorFn'].map(() => {
-            return ({ dataIndex }) => {
+            return params => {
+              const { dataIndex } = params;
               const matchData = matchDataList.find(item => item.dataIndex === dataIndex);
-              return matchData ? matchData.color : cirCleColor;
+              if (matchData) {
+                return matchData.color;
+              }
+              return getBaseCirCleColor(params);
             };
           });
         }
@@ -522,10 +537,10 @@ export default {
       }
       return `${distance}%`;
     },
-    _squareRectangleRenderItem(seriesSpace, defaultColor, colorGroup, _this, cubeType, colorIndex) {
+    _squareRectangleRenderItem(seriesSpace, colorGroup, _this, cubeType, colorIndex) {
       return (params, api) => {
         const location = api.coord([api.value(0), api.value(1)]);
-        let fillColor = defaultColor || colorGroup[colorIndex];
+        let fillColor = api.style().fill || colorGroup[colorIndex];
         if (_this.newHighlightOptions && _this.newHighlightOptions.length > 0) {
           const matchData = _this.newHighlightOptions.find(
             item => item.seriesIndex.includes(params.seriesIndex) && item.dataIndex === params.dataIndex
