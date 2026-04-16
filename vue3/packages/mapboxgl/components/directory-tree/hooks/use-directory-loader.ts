@@ -22,6 +22,7 @@ export interface DirectoryLoadResult {
 
 export interface DirectoryLoaderOptions {
   iportalUrl: string
+  directoryCheckable: boolean
   fetcher?: DirectoryLoaderFetch
 }
 
@@ -86,6 +87,7 @@ export function useDirectoryLoader(options: DirectoryLoaderOptions) {
       children: normalizeDirectoryResponseToRuntimeNodes({
         directoryResponse: response,
         parentNodeId: node.id,
+        directoryCheckable: options.directoryCheckable,
         icon: node.icon,
         resourceIcon: node.resourceIcon
       })

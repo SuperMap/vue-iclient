@@ -50,6 +50,12 @@ interface RestMapServerResolution {
   probeError?: unknown
 }
 
+interface RestDataDatasetRef {
+  restDataUrl: string
+  dataSourceName: string
+  datasetName?: string
+}
+
 const VECTOR_OVERLAY_LAYER_TYPES = new Set([
   'VECTOR',
   'UNIQUE',
@@ -348,10 +354,62 @@ function normalizeRestDataUrl(address: string | undefined): string | undefined {
   if (!address) {
     return undefined
   }
+  const datasetRef = parseRestDataDatasetRef(address)
+  if (datasetRef) {
+    return datasetRef.restDataUrl
+  }
   if (/\/rest\/data(?:\/|$)/i.test(address)) {
     return address
   }
   return appendPath(address, 'data')
+}
+
+function decodeRestDataPathSegment(value: string): string {
+  try {
+    return decodeURIComponent(value)
+  } catch {
+    return value
+  }
+}
+
+function parseRestDataDatasetRef(address: string | undefined): RestDataDatasetRef | undefined {
+  if (!address || typeof address !== 'string') {
+    return undefined
+  }
+
+  const trimmed = address.trim()
+  if (!trimmed) {
+    return undefined
+  }
+
+  const matched = trimmed.match(/^(.*?\/rest\/data)\/datasources\/([^/?#]+)\/datasets\/([^/?#]+)(?:[/?#]|$)/i)
+  if (!matched) {
+    const datasourceMatched = trimmed.match(/^(.*?\/rest\/data)\/datasources\/([^/?#]+)(?:[/?#]|$)/i)
+    if (!datasourceMatched) {
+      return undefined
+    }
+
+    return {
+      restDataUrl: datasourceMatched[1],
+      dataSourceName: decodeRestDataPathSegment(datasourceMatched[2])
+    }
+  }
+
+  return {
+    restDataUrl: matched[1],
+    dataSourceName: decodeRestDataPathSegment(matched[2]),
+    datasetName: decodeRestDataPathSegment(matched[3])
+  }
+}
+
+function pickRestDataDatasetRef(candidates: unknown[]): RestDataDatasetRef | undefined {
+  for (const candidate of candidates) {
+    const datasetRef = parseRestDataDatasetRef(typeof candidate === 'string' ? candidate : undefined)
+    if (datasetRef) {
+      return datasetRef
+    }
+  }
+  return undefined
 }
 
 function buildDescriptor(
@@ -374,6 +432,9 @@ function buildDescriptor(
 }
 
 function hasRestDataLikeDataService(raw: Record<string, any>): boolean {
+  if (pickRestDataDatasetRef([raw.url, raw.serverUrl, raw.proxiedUrl, raw.linkPage])) {
+    return true
+  }
   const dataInfo = asRecord(raw.dataInfo)
   const dataItemServices = Array.isArray(dataInfo.dataItemServices) ? dataInfo.dataItemServices : []
   return dataItemServices.some((service: Record<string, any>) =>
@@ -535,13 +596,22 @@ async function resolveDataDescriptor(
       : {}
   const dataInfo = detailResult.detail
   const dataService = getDataServiceInfo(dataInfo)
+  const restDataDatasetRef = pickRestDataDatasetRef(
+    preferDetail
+      ? [dataService?.address, dataInfo?.address, raw.url, raw.serverUrl, raw.proxiedUrl, raw.linkPage]
+      : [raw.url, raw.serverUrl, raw.proxiedUrl, raw.linkPage, dataService?.address, dataInfo?.address]
+  )
   const serviceType = normalizeServiceType(
     preferDetail
-      ? dataService?.type ??
+      ? (restDataDatasetRef ? 'DATASET' : undefined) ??
+          dataService?.type ??
           dataService?.serviceType ??
           raw.serviceType ??
+          raw.type ??
           ((raw.url ?? raw.serverUrl)?.includes('/rest/data') ? 'DATA' : undefined)
       : raw.serviceType ??
+          raw.type ??
+          (restDataDatasetRef ? 'DATASET' : undefined) ??
           dataService?.type ??
           dataService?.serviceType ??
           ((raw.url ?? raw.serverUrl)?.includes('/rest/data') ? 'DATA' : undefined)
@@ -549,8 +619,8 @@ async function resolveDataDescriptor(
   const directServerUrl =
     preferDetail
       ? normalizeRestDataUrl(pickFirstUrl([dataService?.address, dataInfo?.address])) ||
-        pickFirstUrl([raw.url, raw.serverUrl])
-      : pickFirstUrl([raw.url, raw.serverUrl]) ||
+        pickFirstUrl([raw.url, raw.serverUrl, raw.proxiedUrl, raw.linkPage])
+      : pickFirstUrl([raw.url, raw.serverUrl, raw.proxiedUrl, raw.linkPage]) ||
         normalizeRestDataUrl(pickFirstUrl([dataService?.address, dataInfo?.address]))
   const serverUrl =
     applyServiceProxyUrlPrefix(
@@ -565,7 +635,8 @@ async function resolveDataDescriptor(
   const nextRaw = {
     ...raw,
     dataInfo,
-    detailUrl: detailResult.detailUrl
+    detailUrl: detailResult.detailUrl,
+    ...(restDataDatasetRef ? { restDataDatasetRef } : {})
   }
   const passthroughDescriptor = resolvePassthroughDescriptor(node, nextRaw, context, {
     serviceType,
@@ -724,6 +795,13 @@ async function resolveServiceDescriptor(
     isMapServiceType(serviceType)
       ? await resolveRestMapServerUrl(proxiedServiceUrl, fetcher, serviceProxyUrlPrefix)
       : undefined
+  const restDataDatasetRef = isDataServiceType(serviceType)
+    ? pickRestDataDatasetRef(
+        preferResolvedDetail
+          ? [serviceInfo?.address, serviceInfo?.url, serviceInfo?.proxiedUrl, raw.url, raw.serverUrl, raw.proxiedUrl, raw.linkPage]
+          : [raw.url, raw.serverUrl, raw.proxiedUrl, raw.linkPage, serviceInfo?.address, serviceInfo?.url, serviceInfo?.proxiedUrl]
+      )
+    : undefined
   const serverUrl =
     isMapServiceType(serviceType)
       ? restMapServerResolution?.serverUrl
@@ -736,6 +814,7 @@ async function resolveServiceDescriptor(
     ...raw,
     serviceInfo,
     detailUrl: detailResult.detailUrl,
+    ...(restDataDatasetRef ? { restDataDatasetRef } : {}),
     ...(detailResult.error ? { error: detailResult.error } : {})
   }
   const passthroughDescriptor = resolvePassthroughDescriptor(node, nextRaw, context, {

@@ -1,6 +1,11 @@
 ﻿<template>
   <div class="sm-component-directory-tree" :style="props.style">
-    <div class="sm-component-directory-tree__header">{{ treeTitle }}</div>
+    <div
+      v-if="treeTitle"
+      class="sm-component-directory-tree__header"
+    >
+      {{ treeTitle }}
+    </div>
     <div v-if="showBlankPlaceholder" class="sm-component-directory-tree__blank-placeholder">
       <SmEmpty />
     </div>
@@ -157,6 +162,7 @@ const serviceProxyUrlPrefix = computed(
 const loader = computed(() =>
   useDirectoryLoader({
     iportalUrl: iportalUrl.value,
+    directoryCheckable: normalizeDirectoryTreeOrEmpty(props.treeSchema).schema.directoryCheckable ?? true,
     fetcher
   })
 )
@@ -178,7 +184,10 @@ const treeCheckedState = computed(() => ({
 }))
 const treeTitle = computed(() => {
   const title = props.treeSchema?.title
-  return typeof title === 'string' && title.trim() ? title.trim() : DEFAULT_DIRECTORY_TREE_TITLE
+  if (title == null) {
+    return DEFAULT_DIRECTORY_TREE_TITLE
+  }
+  return typeof title === 'string' ? title.trim() : DEFAULT_DIRECTORY_TREE_TITLE
 })
 
 function getMapContext(mapTarget = props.mapTarget) {

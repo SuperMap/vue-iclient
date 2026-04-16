@@ -341,6 +341,16 @@ function normalizeRestDataServiceUrl(address: string | undefined): string | unde
 
   const { base, query } = splitUrlQuery(trimmed)
   let normalizedBase = base.replace(/\/+$/, '')
+  const datasetMatch = normalizedBase.match(/^(.*?\/rest\/data)\/datasources\/[^/?#]+\/datasets\/[^/?#]+(?:\/.*)?$/i)
+  if (datasetMatch) {
+    normalizedBase = datasetMatch[1]
+    return query ? `${normalizedBase}?${query}` : normalizedBase
+  }
+  const datasourceMatch = normalizedBase.match(/^(.*?\/rest\/data)\/datasources\/[^/?#]+(?:\/.*)?$/i)
+  if (datasourceMatch) {
+    normalizedBase = datasourceMatch[1]
+    return query ? `${normalizedBase}?${query}` : normalizedBase
+  }
   if (/\/rest\/data(?:$|\/)/i.test(normalizedBase)) {
     return query ? `${normalizedBase}?${query}` : normalizedBase
   }
@@ -506,7 +516,7 @@ async function ensureRestDataMetadata(
   options: ResourceLoadPlanBuildOptions
 ): Promise<RestDataMetadata> {
   const raw = getDescriptorRaw(descriptor)
-  if (raw.restDataMetadata) {
+  if (raw.restDataMetadata?.featureType && raw.restDataMetadata?.datasetInfo) {
     return raw.restDataMetadata as RestDataMetadata
   }
 
@@ -517,13 +527,85 @@ async function ensureRestDataMetadata(
   }
 
   const fetcher = options.fetcher || defaultFetcher
+  const resolvedDatasetRef = asRecord(raw.restDataDatasetRef)
+  const dataSourceNameFromRef =
+    typeof resolvedDatasetRef.dataSourceName === 'string' && resolvedDatasetRef.dataSourceName.trim()
+      ? resolvedDatasetRef.dataSourceName.trim()
+      : undefined
+  const datasetNameFromRef =
+    typeof resolvedDatasetRef.datasetName === 'string' && resolvedDatasetRef.datasetName.trim()
+      ? resolvedDatasetRef.datasetName.trim()
+      : undefined
+
+  if (dataSourceNameFromRef && datasetNameFromRef) {
+    const datasetResponse = await fetchRequiredJson(
+      fetcher,
+      appendPath(
+        restDataUrl,
+        `datasources/${encodeURIComponent(dataSourceNameFromRef)}/datasets/${encodeURIComponent(datasetNameFromRef)}.json`
+      )
+    )
+    const datasetInfo = asRecord(datasetResponse?.datasetInfo ?? datasetResponse)
+    const featureType = normalizeFeatureType(datasetInfo.type)
+    if (!featureType) {
+      throw new ResourceLoadPlanError('unsupported-service-type', `Unsupported DATA service dataset type for ${descriptor.key}`)
+    }
+
+    const metadata = {
+      restDataUrl,
+      dataSourceName: dataSourceNameFromRef,
+      datasetName: datasetNameFromRef,
+      datasetInfo,
+      featureType
+    }
+    raw.restDataMetadata = metadata
+    return metadata
+  }
+
+  if (dataSourceNameFromRef) {
+    const datasetList = await fetchRequiredJson(
+      fetcher,
+      appendPath(restDataUrl, `datasources/${encodeURIComponent(dataSourceNameFromRef)}/datasets.json`)
+    )
+    const datasetName = datasetList?.datasetNames?.[0]
+    if (!datasetName) {
+      throw new ResourceLoadPlanError('unsupported-service-type', `Missing dataset for ${descriptor.key}`)
+    }
+
+    const datasetResponse = await fetchRequiredJson(
+      fetcher,
+      appendPath(
+        restDataUrl,
+        `datasources/${encodeURIComponent(dataSourceNameFromRef)}/datasets/${encodeURIComponent(datasetName)}.json`
+      )
+    )
+    const datasetInfo = asRecord(datasetResponse?.datasetInfo ?? datasetResponse)
+    const featureType = normalizeFeatureType(datasetInfo.type)
+    if (!featureType) {
+      throw new ResourceLoadPlanError('unsupported-service-type', `Unsupported DATA service dataset type for ${descriptor.key}`)
+    }
+
+    const metadata = {
+      restDataUrl,
+      dataSourceName: dataSourceNameFromRef,
+      datasetName,
+      datasetInfo,
+      featureType
+    }
+    raw.restDataMetadata = metadata
+    return metadata
+  }
+
   const datasourceInfo = await fetchRequiredJson(fetcher, appendPath(restDataUrl, 'datasources.json'))
   const dataSourceName = datasourceInfo?.datasourceNames?.[0]
   if (!dataSourceName) {
     throw new ResourceLoadPlanError('unsupported-service-type', `Missing datasource for ${descriptor.key}`)
   }
 
-  const datasetList = await fetchRequiredJson(fetcher, appendPath(restDataUrl, `datasources/${dataSourceName}/datasets.json`))
+  const datasetList = await fetchRequiredJson(
+    fetcher,
+    appendPath(restDataUrl, `datasources/${encodeURIComponent(dataSourceName)}/datasets.json`)
+  )
   const datasetName = datasetList?.datasetNames?.[0]
   if (!datasetName) {
     throw new ResourceLoadPlanError('unsupported-service-type', `Missing dataset for ${descriptor.key}`)
@@ -531,7 +613,7 @@ async function ensureRestDataMetadata(
 
   const datasetResponse = await fetchRequiredJson(
     fetcher,
-    appendPath(restDataUrl, `datasources/${dataSourceName}/datasets/${datasetName}.json`)
+    appendPath(restDataUrl, `datasources/${encodeURIComponent(dataSourceName)}/datasets/${encodeURIComponent(datasetName)}.json`)
   )
   const datasetInfo = asRecord(datasetResponse?.datasetInfo ?? datasetResponse)
   const featureType = normalizeFeatureType(datasetInfo.type)
@@ -608,8 +690,13 @@ export async function resolveRestDataServiceLayer(
       dataSourceName: `${metadata.dataSourceName}:${metadata.datasetName}`
     }
   }
+  const prjCoordSys = asRecord(metadata.datasetInfo.prjCoordSys)
   const normalizedProjection = normalizeProjection(
-    metadata.datasetInfo.projection ?? metadata.datasetInfo.epsgCode ?? descriptor.projection
+    prjCoordSys.epsgCode ??
+      prjCoordSys.projection ??
+      metadata.datasetInfo.projection ??
+      metadata.datasetInfo.epsgCode ??
+      descriptor.projection
   )
   if (normalizedProjection) {
     ;(layer as Record<string, any>).projection = normalizedProjection

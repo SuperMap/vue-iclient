@@ -42,6 +42,7 @@ interface RuntimeRemoteDirectoryNodeOptions {
   parentNodeId: string
   sourceType: Extract<DirectoryNodeType, 'resource-directory'>
   directory: IPortalDirectoryBasicInfo
+  checkable: boolean
   icon?: string
   resourceIcon?: string
 }
@@ -81,8 +82,8 @@ function normalizeResponseItems(
     sourceType: item.sourceType,
     epsgCode: item.epsgCode,
     projection: item.projection,
-    serviceType: item.serviceType,
-    url: item.url,
+    serviceType: item.serviceType ?? item.type,
+    url: item.url ?? item.proxiedUrl ?? item.linkPage,
     raw: item
   }))
 }
@@ -190,7 +191,7 @@ export function createRuntimeRemoteDirectoryNode(
     kind: 'directory',
     sourceType: options.sourceType,
     isLeaf: false,
-    checkable: true,
+    checkable: options.checkable,
     disabled: false,
     loadState: 'idle',
     raw: {
@@ -234,11 +235,13 @@ export function createRuntimeResourceNode(options: RuntimeResourceNodeOptions): 
 export function normalizeDirectoryResponseToRuntimeNodes({
   directoryResponse,
   parentNodeId,
+  directoryCheckable,
   icon,
   resourceIcon
 }: {
   directoryResponse: IPortalDirectoryResponse
   parentNodeId: string
+  directoryCheckable: boolean
   icon?: string
   resourceIcon?: string
 }): RuntimeTreeNode[] {
@@ -248,6 +251,7 @@ export function normalizeDirectoryResponseToRuntimeNodes({
       parentNodeId,
       sourceType: 'resource-directory',
       directory,
+      checkable: directoryCheckable,
       icon,
       resourceIcon
     })

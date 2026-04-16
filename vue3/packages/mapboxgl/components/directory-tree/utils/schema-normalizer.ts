@@ -139,7 +139,11 @@ function normalizeDirectoryCheckable(value: unknown): boolean {
 }
 
 function normalizeRootTitle(value: unknown): string {
-  return normalizeOptionalString(value, 'treeSchema.title') ?? DEFAULT_DIRECTORY_TREE_TITLE
+  if (value == null) {
+    return DEFAULT_DIRECTORY_TREE_TITLE
+  }
+  invariant(typeof value === 'string', 'treeSchema.title must be a string')
+  return value.trim()
 }
 
 function normalizeQuery(params: unknown): QueryDirectoryQuery {

@@ -3,7 +3,7 @@ import type { ShortEmits } from '@supermapgis/common/utils/index.common'
 import { getPropsDefaults } from '@supermapgis/common/utils/index.common'
 
 export const DIRECTORY_TREE_SCHEMA_VERSION = '1.0.0' as const
-export const DEFAULT_DIRECTORY_TREE_TITLE = '资源目录' as const
+export const DEFAULT_DIRECTORY_TREE_TITLE = '' as const
 export const DIRECTORY_TREE_QUERY_PAGE_SIZE = 100
 
 export const DIRECTORY_TREE_RESOURCE_TYPES = ['MAP', 'DATA', 'SERVICE'] as const
