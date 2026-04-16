@@ -1,6 +1,7 @@
 import type { PropType } from 'vue'
-import type { ShortEmits } from '@supermapgis/common/utils/index.common'
-import { getPropsDefaults } from '@supermapgis/common/utils/index.common'
+import type { ShortEmits, ThemeProps } from '@supermapgis/common/utils/index.common'
+import type { ControlPosition } from 'vue-iclient-controllers-mapboxgl/src/utils/MapControl'
+import { getPropsDefaults, themeProps } from '@supermapgis/common/utils/index.common'
 
 export const DIRECTORY_TREE_SCHEMA_VERSION = '1.0.0' as const
 export const DEFAULT_DIRECTORY_TREE_TITLE = '' as const
@@ -240,10 +241,16 @@ export type DirectoryTreeEvents = {
 
 export type DirectoryTreeEmits = ShortEmits<DirectoryTreeEvents>
 
-export interface DirectoryTreeProps {
+export interface DirectoryTreeProps extends ThemeProps {
   treeSchema?: DirectoryTreeSchemaV1 | null
   mapTarget?: string
   iportalUrl?: string
+  position?: ControlPosition
+  headerName?: string
+  iconClass?: string
+  autoRotate?: boolean
+  collapsed?: boolean
+  splitLine?: boolean
   style?: Record<string, any>
 }
 
@@ -258,6 +265,29 @@ export const directoryTreeProps = () => ({
   iportalUrl: {
     type: String
   },
+  position: {
+    type: String as PropType<ControlPosition>,
+    default: 'top-left'
+  },
+  headerName: {
+    type: String
+  },
+  iconClass: {
+    type: String,
+    default: 'sm-components-icon-layer-list'
+  },
+  autoRotate: {
+    type: Boolean,
+    default: false
+  },
+  collapsed: {
+    type: Boolean,
+    default: false
+  },
+  splitLine: {
+    type: Boolean,
+    default: true
+  },
   style: {
     type: Object as PropType<Record<string, any>>,
     default: () => ({})
@@ -265,7 +295,7 @@ export const directoryTreeProps = () => ({
 })
 
 export const directoryTreePropsDefault = getPropsDefaults<DirectoryTreeProps>(
-  Object.assign(directoryTreeProps())
+  Object.assign(themeProps(), directoryTreeProps())
 )
 
 export interface QuerySearchRequest extends QueryDirectoryQuery {

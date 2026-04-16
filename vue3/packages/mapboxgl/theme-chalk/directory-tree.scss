@@ -1,42 +1,87 @@
+@use '@supermapgis/common/theme-chalk/collapse-card.scss';
+@use '@supermapgis/common/theme-chalk/card.scss';
+
 .sm-component-directory-tree {
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
-  padding: 16px 12px 12px 16px;
+  min-height: 0;
   background: transparent;
   box-sizing: border-box;
-  /* stylelint-disable-next-line */
-  font-size: 14px;
-  /* stylelint-disable-next-line */
-  line-height: 1.5;
+  overflow: auto;
 
-  .sm-component-directory-tree__header {
-    flex: 0 0 auto;
-    padding: 15px 0 0 15px;
-    margin-bottom: 12px;
-    /* stylelint-disable-next-line */
-    color: #1f1f1f;
-    /* stylelint-disable-next-line */
-    font-size: 16px;
-    /* stylelint-disable-next-line */
-    font-weight: 600;
-    /* stylelint-disable-next-line */
-    line-height: 24px;
+  .sm-component-collapse-card__content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .sm-component-collapse-card__header + .sm-component-collapse-card__body {
+    flex: 1;
+    height: auto;
+  }
+
+  .sm-component-collapse-card__body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .sm-component-directory-tree__card {
+    display: flex;
+    flex: 1;
+    height: 100%;
+    min-height: 0;
+    padding-top: 4px;
+    background: transparent;
+    box-sizing: border-box;
+    box-shadow: none;
+    overflow: hidden;
+
+    > .ant-card-body {
+      display: flex;
+      flex: 1;
+      height: 100%;
+      min-height: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+  }
+
+  .sm-component-directory-tree__content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
   .treeHolder {
+    display: flex;
+    flex-direction: column;
     flex: 1;
+    height: 100%;
+    max-height: 100%;
     min-height: 0;
     overflow: auto;
+
+    .ant-tree-list {
+      flex: 1;
+      height: 100%;
+      min-height: 0;
+      overflow: auto;
+    }
   }
 
   .sm-component-tree {
     background: transparent;
-    color: inherit;
-    font-size: inherit;
-    line-height: inherit;
-    font-family: inherit;
   }
 
   .sm-component-tree-title {
@@ -67,7 +112,6 @@
   }
 
   .sm-component-directory-tree__title-trigger--disabled {
-    /* stylelint-disable-next-line */
     color: #999;
     cursor: not-allowed;
   }
@@ -79,7 +123,6 @@
   .sm-component-directory-tree__title-text {
     display: inline-block;
     min-width: 0;
-    /* stylelint-disable-next-line */
     line-height: 24px;
   }
 
@@ -88,17 +131,13 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    /* stylelint-disable-next-line */
     color: #8c8c8c;
-    /* stylelint-disable-next-line */
     font-size: 12px;
-    /* stylelint-disable-next-line */
     line-height: 1;
     vertical-align: middle;
   }
 
   .sm-component-directory-tree__node-status--warning {
-    /* stylelint-disable-next-line */
     color: #d48806;
   }
 
@@ -113,19 +152,28 @@
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: currentcolor;
-    /* stylelint-disable-next-line */
+    background: currentColor;
     color: #fff;
-    /* stylelint-disable-next-line */
     font-size: 10px;
     font-style: normal;
-    /* stylelint-disable-next-line */
     font-weight: 700;
   }
 
-  .sm-component-tree-checkbox {
+  .ant-tree-checkbox {
     margin-inline-end: 0;
     margin-block-start: 0;
+  }
+
+  .ant-tree-checkbox + span,
+  .ant-tree-checkbox + .ant-tree-node-content-wrapper {
+    padding-inline: 0;
+  }
+
+  .ant-tree-switcher.ant-tree-switcher-noop {
+    width: 0;
+    min-width: 0;
+    margin-inline-end: 0;
+    overflow: hidden;
   }
 
   .ant-tree-treenode-checkbox-disabled,

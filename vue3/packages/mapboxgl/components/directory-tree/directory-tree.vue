@@ -1,70 +1,78 @@
-﻿<template>
-  <div class="sm-component-directory-tree" :style="props.style">
-    <div
-      v-if="treeTitle"
-      class="sm-component-directory-tree__header"
-    >
-      {{ treeTitle }}
-    </div>
-    <div v-if="showBlankPlaceholder" class="sm-component-directory-tree__blank-placeholder">
-      <SmEmpty />
-    </div>
-    <SmTree
-      v-else
-      :key="treeRenderVersion"
-      class="treeHolder"
-      checkable
-      checkStrictly
-      :expandedKeys="expandedKeys"
-      :autoExpandParent="autoExpandParent"
-      :treeData="displayTreeNodes"
-      :checkedKeys="treeCheckedState"
-      :loadData="loadNodeChildren"
-      @expand="handleExpand"
-      @select="handleSelect"
-      @check="handleCheck"
-    >
-      <template
-        #title="{
-          key,
-          title,
-          icon,
-          titleDisabled,
-          titleTooltip
-        }"
-      >
-        <span
-          :class="[
-            'sm-component-directory-tree__title-trigger',
-            titleDisabled && 'sm-component-directory-tree__title-trigger--disabled'
-          ]"
-          @click.stop="handleTitleClick(key)"
+<template>
+  <sm-collapse-card
+    class="sm-component-directory-tree"
+    :style="props.style"
+    :icon-class="props.iconClass"
+    :icon-position="props.position"
+    :header-name="collapseCardHeaderName"
+    :auto-rotate="props.autoRotate"
+    :collapsed="props.collapsed"
+    :split-line="props.splitLine"
+    :background="props.background"
+    :textColor="props.textColor"
+  >
+    <sm-card class="sm-component-directory-tree__card" :bordered="false" :style="textColorHeadingStyle">
+      <div class="sm-component-directory-tree__content">
+        <div v-if="showBlankPlaceholder" class="sm-component-directory-tree__blank-placeholder">
+          <SmEmpty />
+        </div>
+        <SmTree
+          v-else
+          :key="treeRenderVersion"
+          class="treeHolder"
+          checkable
+          checkStrictly
+          :expandedKeys="expandedKeys"
+          :autoExpandParent="autoExpandParent"
+          :treeData="displayTreeNodes"
+          :checkedKeys="treeCheckedState"
+          :loadData="loadNodeChildren"
+          @expand="handleExpand"
+          @select="handleSelect"
+          @check="handleCheck"
         >
-          <img
-            v-if="icon"
-            class="sm-component-directory-tree__title-icon"
-            :src="icon"
-            alt=""
-          />
-          <span
-            class="sm-component-directory-tree__title-text"
-            :title="titleTooltip"
+          <template
+            #title="{
+              key,
+              title,
+              icon,
+              titleDisabled,
+              titleTooltip
+            }"
           >
-            {{ title }}
-          </span>
-        </span>
-      </template>
-    </SmTree>
-  </div>
+            <span
+              :class="[
+                'sm-component-directory-tree__title-trigger',
+                titleDisabled && 'sm-component-directory-tree__title-trigger--disabled'
+              ]"
+              @click.stop="handleTitleClick(key)"
+            >
+              <img
+                v-if="icon"
+                class="sm-component-directory-tree__title-icon"
+                :src="icon"
+                alt=""
+              />
+              <span class="sm-component-directory-tree__title-text" :title="titleTooltip">
+                {{ title }}
+              </span>
+            </span>
+          </template>
+        </SmTree>
+      </div>
+    </sm-card>
+  </sm-collapse-card>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { message } from 'ant-design-vue'
 import type { AntTreeNodeSelectedEvent } from 'ant-design-vue/es/tree'
+import SmCard from '@supermapgis/common/components/card/Card'
+import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'
 import SmEmpty from '@supermapgis/common/components/empty/Empty'
 import SmTree from '@supermapgis/common/components/tree/Tree'
-import { useLocale } from '@supermapgis/common/hooks/useLocale'
+import { useLocale, useTheme } from '@supermapgis/common/hooks/index.common'
 import mapEvent from 'vue-iclient-core/types/map-event'
 import type { DirectoryTreeProps, ResourceDescriptor, RuntimeTreeNode } from './types'
 import { DEFAULT_DIRECTORY_TREE_TITLE, directoryTreePropsDefault } from './types'
@@ -84,6 +92,7 @@ defineOptions({
 const props = withDefaults(defineProps<DirectoryTreeProps>(), directoryTreePropsDefault)
 const emit = defineEmits(['select', 'check-change'])
 const { t } = useLocale()
+const { textColorHeadingStyle } = useTheme(props)
 
 const expandedKeys = ref<string[]>([])
 const autoExpandParent = ref(true)
@@ -115,8 +124,7 @@ function resolveRuntimeIportalUrl(configuredUrl: unknown, webmap: any): string {
   }
 
   const configuredServerUrl =
-    normalizeIportalBaseUrl(webmap?.options?.serverUrl) ||
-    normalizeIportalBaseUrl(webmap?.serverUrl)
+    normalizeIportalBaseUrl(webmap?.options?.serverUrl) || normalizeIportalBaseUrl(webmap?.serverUrl)
   if (configuredServerUrl) {
     return configuredServerUrl
   }
@@ -172,6 +180,7 @@ const treeTitle = computed(() => {
   }
   return typeof title === 'string' ? title.trim() : DEFAULT_DIRECTORY_TREE_TITLE
 })
+const collapseCardHeaderName = computed(() => props.headerName ?? treeTitle.value)
 
 function getMapContext(mapTarget = props.mapTarget) {
   return {
@@ -196,11 +205,10 @@ function getMapProjection(): string | undefined {
   return resolver.value.normalizeProjection(crs ?? crs?.wkt ?? crs?.epsgCode ?? crs?.code) || undefined
 }
 
-const { getDisabledReasonText, isBrowseOnlyResourceNode, mapNodesForTree } =
-  useDirectoryTreeDisplay({
-    t,
-    getMapTarget: () => props.mapTarget
-  })
+const { getDisabledReasonText, isBrowseOnlyResourceNode, mapNodesForTree } = useDirectoryTreeDisplay({
+  t,
+  getMapTarget: () => props.mapTarget
+})
 
 const {
   resetTree,
@@ -456,4 +464,3 @@ defineExpose({
   toggleNodeCheckByKey
 })
 </script>
-
