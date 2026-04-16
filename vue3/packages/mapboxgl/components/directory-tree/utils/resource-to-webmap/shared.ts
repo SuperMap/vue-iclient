@@ -74,6 +74,22 @@ export function normalizeVectorStyleUrl(address: string | undefined): string | u
   if (!address) {
     return undefined
   }
+  if (/\/style\.json(?:$|\?)/i.test(address)) {
+    return address
+  }
+  const { base, query } = splitUrlQuery(address)
+  const normalizedBase = base.replace(/\/+$/, '')
+  if (/\/restjsr\/v\d+\/vectortile(?:\/maps)?$/i.test(normalizedBase)) {
+    return undefined
+  }
+  if (/\/vectortile\/maps\/[^/?#]+\.json$/i.test(normalizedBase)) {
+    const styleBase = normalizedBase.replace(/\.json$/i, '/style.json')
+    return query ? `${styleBase}?${query}` : styleBase
+  }
+  if (/\/vectortile\/maps\/[^/?#]+$/i.test(normalizedBase)) {
+    const styleBase = `${normalizedBase}/style.json`
+    return query ? `${styleBase}?${query}` : styleBase
+  }
   if (/\/root\.json(?:$|\?)/i.test(address)) {
     return address
   }
@@ -86,7 +102,13 @@ export function normalizeVectorStyleUrl(address: string | undefined): string | u
   return address
 }
 
-export function normalizeProjection(projection: unknown): string | null {
+function isWktProjectionString(value: string): boolean {
+  return /^(PROJCS|GEOGCS|LOCAL_CS|COMPD_CS|VERT_CS|GEOCCS|BOUNDCRS|ENGCRS|GEODCRS|PROJCRS|VERTCRS|COMPOUNDCRS)\s*\[/i.test(
+    value
+  )
+}
+
+function normalizeProjectionValue(projection: unknown, depth = 0): string | null {
   const toEpsgProjection = (value: number | string): string | null => {
     const code = typeof value === 'number' ? value : Number.parseInt(value, 10)
     if (!Number.isInteger(code) || code <= 0) {
@@ -95,31 +117,49 @@ export function normalizeProjection(projection: unknown): string | null {
     return `EPSG:${code}`
   }
 
-  if (projection == null || projection === '') {
+  if (projection == null || projection === '' || depth > 4) {
     return null
   }
   if (typeof projection === 'number' && Number.isFinite(projection)) {
     return toEpsgProjection(projection)
   }
-  if (typeof projection !== 'string') {
+  if (typeof projection === 'string') {
+    const trimmed = projection.trim()
+    if (!trimmed) {
+      return null
+    }
+    if (/^EPSG:\d+$/i.test(trimmed)) {
+      return toEpsgProjection(trimmed.replace(/^EPSG:/i, ''))
+    }
+    if (/^\d+$/.test(trimmed)) {
+      return toEpsgProjection(trimmed)
+    }
+
+    const epsgMatch = trimmed.match(/EPSG(?::|::)(\d+)/i)
+    if (epsgMatch) {
+      return toEpsgProjection(epsgMatch[1])
+    }
+    if (isWktProjectionString(trimmed)) {
+      return trimmed
+    }
+
+    return null
+  }
+  if (typeof projection !== 'object') {
     return null
   }
 
-  const trimmed = projection.trim()
-  if (!trimmed) {
-    return null
-  }
-  if (/^EPSG:\d+$/i.test(trimmed)) {
-    return toEpsgProjection(trimmed.replace(/^EPSG:/i, ''))
-  }
-  if (/^\d+$/.test(trimmed)) {
-    return toEpsgProjection(trimmed)
-  }
+  const projectionRecord = asRecord(projection)
+  return (
+    normalizeProjectionValue(projectionRecord.epsgCode, depth + 1) ||
+    normalizeProjectionValue(projectionRecord.code, depth + 1) ||
+    normalizeProjectionValue(projectionRecord.wkt, depth + 1) ||
+    normalizeProjectionValue(projectionRecord.prjCoordSys, depth + 1) ||
+    normalizeProjectionValue(projectionRecord.projection, depth + 1) ||
+    null
+  )
+}
 
-  const epsgMatch = trimmed.match(/EPSG(?::|::)(\d+)/i)
-  if (epsgMatch) {
-    return toEpsgProjection(epsgMatch[1])
-  }
-
-  return null
+export function normalizeProjection(projection: unknown): string | null {
+  return normalizeProjectionValue(projection)
 }

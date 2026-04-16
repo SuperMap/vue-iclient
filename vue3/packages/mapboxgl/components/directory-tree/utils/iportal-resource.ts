@@ -4,6 +4,11 @@ import type {
   QuerySearchRequest,
   QuerySearchResponse,
   QuerySearchResponseItem,
+  RestMapCollectionItem,
+  RestMapServiceMapRaw,
+  RestDataDatasetRef,
+  RestDataDatasourceDirectoryRaw,
+  RestDataServiceDirectoryRaw,
   ResourceType,
   RuntimeTreeNode
 } from '../types'
@@ -47,6 +52,32 @@ interface RuntimeRemoteDirectoryNodeOptions {
   resourceIcon?: string
 }
 
+interface RuntimeRestDataDatasourceNodeOptions {
+  parentNodeId: string
+  sourceType: DirectoryNodeType
+  resource: Record<string, any>
+  restDataUrl: string
+  dataSourceName: string
+  icon?: string
+  title?: string
+}
+
+interface RuntimeRestDataServiceNodeOptions {
+  parentNodeId: string
+  sourceType: DirectoryNodeType
+  resource: Record<string, any>
+  restDataUrl: string
+  icon?: string
+}
+
+interface RuntimeRestMapServiceMapNodeOptions {
+  parentNodeId: string
+  sourceType: DirectoryNodeType
+  originResource: Record<string, any>
+  mapItem: RestMapCollectionItem
+  icon?: string
+}
+
 function normalizeBaseUrl(iportalUrl: string): string {
   return iportalUrl.endsWith('/') ? iportalUrl.slice(0, -1) : iportalUrl
 }
@@ -63,6 +94,69 @@ function normalizeObjectParam(value: unknown): string | undefined {
     return undefined
   }
   return JSON.stringify(value)
+}
+
+function decodeRestDataPathSegment(value: string): string {
+  try {
+    return decodeURIComponent(value)
+  } catch {
+    return value
+  }
+}
+
+function parseRestDataServiceRootRef(address: unknown): { restDataUrl: string } | undefined {
+  if (typeof address !== 'string') {
+    return undefined
+  }
+  const trimmed = address.trim()
+  if (!trimmed) {
+    return undefined
+  }
+
+  const matched = trimmed.match(/^(.*?\/rest)(?:\/data)?\/?(?:\?.*)?(?:#.*)?$/i)
+  if (!matched) {
+    return undefined
+  }
+
+  return {
+    restDataUrl: `${matched[1]}/data`
+  }
+}
+
+function parseDatasourceLevelRestDataRef(address: unknown): RestDataDatasetRef | undefined {
+  if (typeof address !== 'string') {
+    return undefined
+  }
+  const trimmed = address.trim()
+  if (!trimmed) {
+    return undefined
+  }
+
+  const matched = trimmed.match(/^(.*?\/rest\/data)\/datasources\/([^/?#]+)\/?(?:\?.*)?(?:#.*)?$/i)
+  if (!matched) {
+    return undefined
+  }
+
+  return {
+    restDataUrl: matched[1],
+    dataSourceName: decodeRestDataPathSegment(matched[2])
+  }
+}
+
+function getDatasourceLevelRestDataRef(resource: Record<string, any>): RestDataDatasetRef | undefined {
+  return (
+    parseDatasourceLevelRestDataRef(resource.url) ||
+    parseDatasourceLevelRestDataRef(resource.proxiedUrl) ||
+    parseDatasourceLevelRestDataRef(resource.linkPage)
+  )
+}
+
+function getRestDataServiceRootRef(resource: Record<string, any>): { restDataUrl: string } | undefined {
+  return (
+    parseRestDataServiceRootRef(resource.url) ||
+    parseRestDataServiceRootRef(resource.proxiedUrl) ||
+    parseRestDataServiceRootRef(resource.linkPage)
+  )
 }
 
 function normalizeResponseItems(
@@ -207,7 +301,154 @@ export function createRuntimeRemoteDirectoryNode(
   }
 }
 
+export function createRuntimeRestDataDatasourceNode(
+  options: RuntimeRestDataDatasourceNodeOptions
+): RuntimeTreeNode {
+  const resourceId = options.resource.id ?? options.resource.resourceId ?? options.dataSourceName
+  const key = createRemoteDirectoryKey(options.parentNodeId, `rest-data:${resourceId}:${options.dataSourceName}`)
+  const title =
+    options.title ?? options.resource.title ?? options.resource.resourceName ?? options.resource.name ?? options.dataSourceName
+
+  const raw: RestDataDatasourceDirectoryRaw = {
+    type: 'rest-data-datasource',
+    resourceId,
+    resourceType: 'DATA',
+    serviceType: options.resource.serviceType ?? options.resource.type,
+    url: options.resource.url ?? options.resource.proxiedUrl ?? options.resource.linkPage,
+    restDataUrl: options.restDataUrl,
+    dataSourceName: options.dataSourceName,
+    originResource: options.resource
+  }
+
+  return {
+    key,
+    id: key,
+    parentKey: options.parentNodeId,
+    title,
+    icon: options.icon,
+    resourceIcon: options.icon,
+    kind: 'directory',
+    sourceType: options.sourceType,
+    isLeaf: false,
+    checkable: false,
+    disabled: false,
+    loadState: 'idle',
+    raw
+  }
+}
+
+export function createRuntimeRestDataServiceNode(
+  options: RuntimeRestDataServiceNodeOptions
+): RuntimeTreeNode {
+  const resourceId = options.resource.id ?? options.resource.resourceId ?? options.restDataUrl
+  const key = createRemoteDirectoryKey(options.parentNodeId, `rest-data-service:${resourceId}`)
+  const title =
+    options.resource.title ?? options.resource.resourceName ?? options.resource.name ?? String(resourceId)
+
+  const raw: RestDataServiceDirectoryRaw = {
+    type: 'rest-data-service',
+    resourceId,
+    resourceType: 'DATA',
+    serviceType: options.resource.serviceType ?? options.resource.type,
+    url: options.resource.url ?? options.resource.proxiedUrl ?? options.resource.linkPage,
+    restDataUrl: options.restDataUrl,
+    originResource: options.resource
+  }
+
+  return {
+    key,
+    id: key,
+    parentKey: options.parentNodeId,
+    title,
+    icon: options.icon,
+    resourceIcon: options.icon,
+    kind: 'directory',
+    sourceType: options.sourceType,
+    isLeaf: false,
+    checkable: false,
+    disabled: false,
+    loadState: 'idle',
+    raw
+  }
+}
+
+export function createRuntimeRestMapServiceMapNode(
+  options: RuntimeRestMapServiceMapNodeOptions
+): RuntimeTreeNode {
+  const originResourceId =
+    options.originResource.resourceId ?? options.originResource.id ?? options.mapItem.name
+  const resourceId = `${originResourceId}:${options.mapItem.name}`
+  const serviceType =
+    options.originResource.serviceType === 'VECTOR_MAP' || options.originResource.serviceType === 'SINGLE_VECTOR_MAP'
+      ? 'VECTOR_MAP'
+      : 'MAP'
+  const resource: RestMapServiceMapRaw = {
+    type: 'rest-map-service-map',
+    resourceId,
+    resourceType: 'SERVICE',
+    serviceType,
+    url: options.mapItem.path,
+    mapName: options.mapItem.name,
+    originResource: options.originResource
+  }
+
+  return createRuntimeResourceNode({
+    parentNodeId: options.parentNodeId,
+    sourceType: options.sourceType,
+    resourceType: 'SERVICE',
+    resource: {
+      ...options.originResource,
+      ...resource,
+      id: resourceId,
+      title: options.mapItem.name,
+      resourceName: options.mapItem.name,
+      serverUrl: options.mapItem.path
+    },
+    icon: options.icon
+  })
+}
+
 export function createRuntimeResourceNode(options: RuntimeResourceNodeOptions): RuntimeTreeNode {
+  const isRestDataLikeResource =
+    options.resourceType === 'DATA' || options.resource.serviceType === 'DATA' || options.resource.type === 'DATA'
+  const restDataServiceRootRef =
+    isRestDataLikeResource &&
+    !options.resource.restDataDatasetRef &&
+    options.resource.serviceType !== 'DATASET' &&
+    options.resource.type !== 'DATASET' &&
+    !/\/datasources\/[^/?#]+/i.test(
+      String(options.resource.url ?? options.resource.proxiedUrl ?? options.resource.linkPage ?? '')
+    )
+      ? getRestDataServiceRootRef(options.resource)
+      : undefined
+  if (restDataServiceRootRef) {
+    return createRuntimeRestDataServiceNode({
+      parentNodeId: options.parentNodeId,
+      sourceType: options.sourceType,
+      resource: options.resource,
+      restDataUrl: restDataServiceRootRef.restDataUrl,
+      icon: options.icon
+    })
+  }
+
+  const datasourceLevelRestDataRef =
+    isRestDataLikeResource &&
+    !options.resource.restDataDatasetRef &&
+    options.resource.serviceType !== 'DATASET' &&
+    options.resource.type !== 'DATASET'
+      ? getDatasourceLevelRestDataRef(options.resource)
+      : undefined
+  if (datasourceLevelRestDataRef) {
+    return createRuntimeRestDataDatasourceNode({
+      parentNodeId: options.parentNodeId,
+      sourceType: options.sourceType,
+      resource: options.resource,
+      restDataUrl: datasourceLevelRestDataRef.restDataUrl,
+      dataSourceName: datasourceLevelRestDataRef.dataSourceName,
+      icon: options.icon
+    })
+  }
+
   const resourceId = options.resource.id ?? options.resource.resourceId
   const title = options.resource.title ?? options.resource.resourceName ?? String(resourceId)
   const key = createResourceNodeKey(options.parentNodeId, options.resourceType, resourceId)
@@ -230,6 +471,53 @@ export function createRuntimeResourceNode(options: RuntimeResourceNodeOptions): 
       resourceType: options.resourceType
     }
   }
+}
+
+export function createRuntimeRestDataDatasetNode({
+  parentNodeId,
+  sourceType,
+  restDataUrl,
+  dataSourceName,
+  datasetName,
+  originResource,
+  icon
+}: {
+  parentNodeId: string
+  sourceType: DirectoryNodeType
+  restDataUrl: string
+  dataSourceName: string
+  datasetName: string
+  originResource: Record<string, any>
+  icon?: string
+}): RuntimeTreeNode {
+  const originResourceId = originResource.id ?? originResource.resourceId ?? dataSourceName
+  const resource = {
+    ...originResource,
+    id: `${originResourceId}:${dataSourceName}:${datasetName}`,
+    resourceId: `${originResourceId}:${dataSourceName}:${datasetName}`,
+    title: datasetName,
+    resourceName: datasetName,
+    resourceType: 'DATA' as const,
+    type: 'DATASET',
+    serviceType: 'DATASET',
+    url: `${restDataUrl}/datasources/${encodeURIComponent(dataSourceName)}/datasets/${encodeURIComponent(datasetName)}`,
+    proxiedUrl: undefined,
+    linkPage: undefined,
+    restDataDatasetRef: {
+      restDataUrl,
+      dataSourceName,
+      datasetName
+    },
+    originResource
+  }
+
+  return createRuntimeResourceNode({
+    parentNodeId,
+    sourceType,
+    resourceType: 'DATA',
+    resource,
+    icon
+  })
 }
 
 export function normalizeDirectoryResponseToRuntimeNodes({

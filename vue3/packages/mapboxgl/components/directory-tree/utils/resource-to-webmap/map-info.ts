@@ -162,7 +162,9 @@ export function createMapSnapshot({
 } = {}): MapSnapshot {
   const projection =
     normalizeProjection(
-      map?.getCRS?.()?.epsgCode ??
+      map?.getCRS?.() ??
+        map?.getCRS?.()?.wkt ??
+        map?.getCRS?.()?.epsgCode ??
         map?.getCRS?.()?.code ??
         webmap?.webMapInfo?.projection ??
         webmap?._handler?.webMapInfo?.projection ??

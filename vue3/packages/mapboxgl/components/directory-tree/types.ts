@@ -129,6 +129,58 @@ export interface ResourceDescriptor {
   raw: unknown
 }
 
+export interface RestDataDatasetRef {
+  restDataUrl: string
+  dataSourceName: string
+  datasetName?: string
+}
+
+export interface RestMapCollectionItem {
+  name: string
+  path: string
+}
+
+export interface RestDataDatasourceDirectoryRaw {
+  type: 'rest-data-datasource'
+  resourceId: string | number
+  resourceType: ResourceType
+  serviceType?: string
+  url?: string
+  restDataUrl: string
+  dataSourceName: string
+  originResource: Record<string, any>
+}
+
+export interface RestDataServiceDirectoryRaw {
+  type: 'rest-data-service'
+  resourceId: string | number
+  resourceType: ResourceType
+  serviceType?: string
+  url?: string
+  restDataUrl: string
+  originResource: Record<string, any>
+}
+
+export interface RestMapServiceCollectionRaw {
+  type: 'rest-map-service-collection'
+  resourceId: string | number
+  resourceType: ResourceType
+  serviceType: 'MAP' | 'SINGLE_MAP' | 'VECTOR_MAP' | 'SINGLE_VECTOR_MAP'
+  restServiceUrl: string
+  mapItems: RestMapCollectionItem[]
+  originResource: Record<string, any>
+}
+
+export interface RestMapServiceMapRaw {
+  type: 'rest-map-service-map'
+  resourceId: string | number
+  resourceType: ResourceType
+  serviceType: 'MAP' | 'SINGLE_MAP' | 'VECTOR_MAP' | 'SINGLE_VECTOR_MAP'
+  url: string
+  mapName: string
+  originResource: Record<string, any>
+}
+
 export type ResourceLoadPlan =
   | {
       kind: 'map-id'

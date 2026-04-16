@@ -1,9 +1,18 @@
-import type { QueryDirectoryNode, RuntimeTreeNode } from '../types'
+import type {
+  QueryDirectoryNode,
+  RestDataDatasourceDirectoryRaw,
+  RestDataServiceDirectoryRaw,
+  RestMapServiceCollectionRaw,
+  RuntimeTreeNode
+} from '../types'
 import type { IPortalDirectoryResponse } from '../utils/iportal-resource'
 import {
   buildQuerySearchRequest,
   createDirectoryEndpoint,
   createQuerySearchEndpoint,
+  createRuntimeRestDataDatasourceNode,
+  createRuntimeRestMapServiceMapNode,
+  createRuntimeRestDataDatasetNode,
   createRuntimeResourceNode,
   normalizeDirectoryResponseToRuntimeNodes,
   normalizeQuerySearchResponse,
@@ -55,6 +64,20 @@ function isIportalDirectoryNode(node: RuntimeTreeNode): boolean {
   return !!node.raw && typeof node.raw === 'object' && 'directoryId' in (node.raw as Record<string, any>)
 }
 
+function isRestDataDatasourceNode(node: RuntimeTreeNode): node is RuntimeTreeNode & { raw: RestDataDatasourceDirectoryRaw } {
+  return !!node.raw && typeof node.raw === 'object' && (node.raw as RestDataDatasourceDirectoryRaw).type === 'rest-data-datasource'
+}
+
+function isRestDataServiceNode(node: RuntimeTreeNode): node is RuntimeTreeNode & { raw: RestDataServiceDirectoryRaw } {
+  return !!node.raw && typeof node.raw === 'object' && (node.raw as RestDataServiceDirectoryRaw).type === 'rest-data-service'
+}
+
+function isRestMapServiceCollectionNode(
+  node: RuntimeTreeNode
+): node is RuntimeTreeNode & { raw: RestMapServiceCollectionRaw } {
+  return !!node.raw && typeof node.raw === 'object' && (node.raw as RestMapServiceCollectionRaw).type === 'rest-map-service-collection'
+}
+
 function normalizeQueryRuntimeChildren(node: RuntimeTreeNode, responseItems: Record<string, any>[]) {
   return responseItems.map(item =>
     createRuntimeResourceNode({
@@ -71,6 +94,9 @@ export function useDirectoryLoader(options: DirectoryLoaderOptions) {
   const fetcher = options.fetcher || defaultDirectoryTreeFetcher
   const directoryCache = new Map<string, DirectoryLoadResult>()
   const queryCache = new Map<string, DirectoryLoadResult>()
+  const restDataServiceCache = new Map<string, DirectoryLoadResult>()
+  const restDataDatasourceCache = new Map<string, DirectoryLoadResult>()
+  const restMapServiceCache = new Map<string, DirectoryLoadResult>()
 
   async function loadIportalDirectoryChildren(node: RuntimeTreeNode): Promise<DirectoryLoadResult> {
     const rawNode = node.raw as { directoryId: string | number }
@@ -125,12 +151,141 @@ export function useDirectoryLoader(options: DirectoryLoaderOptions) {
     return result
   }
 
+  async function loadRestDataDatasourceChildren(node: RuntimeTreeNode): Promise<DirectoryLoadResult> {
+    const rawNode = node.raw as RestDataDatasourceDirectoryRaw
+    const cacheKey = `${rawNode.restDataUrl}:${rawNode.dataSourceName}`
+    const cached = restDataDatasourceCache.get(cacheKey)
+    if (cached) {
+      return cached
+    }
+
+    const datasetList = (await fetcher(
+      `${rawNode.restDataUrl}/datasources/${encodeURIComponent(rawNode.dataSourceName)}/datasets.json`
+    )) as {
+      datasetNames?: string[]
+    }
+    const datasetNames = Array.isArray(datasetList?.datasetNames)
+      ? datasetList.datasetNames.filter((name): name is string => typeof name === 'string' && !!name.trim())
+      : []
+    const result = {
+      children: datasetNames.map(datasetName =>
+        createRuntimeRestDataDatasetNode({
+          parentNodeId: node.id,
+          sourceType: node.sourceType,
+          restDataUrl: rawNode.restDataUrl,
+          dataSourceName: rawNode.dataSourceName,
+          datasetName,
+          originResource: rawNode.originResource,
+          icon: node.resourceIcon
+        })
+      )
+    }
+
+    restDataDatasourceCache.set(cacheKey, result)
+    return result
+  }
+
+  async function loadRestDataServiceChildren(node: RuntimeTreeNode): Promise<DirectoryLoadResult> {
+    const rawNode = node.raw as RestDataServiceDirectoryRaw
+    const cacheKey = rawNode.restDataUrl
+    const cached = restDataServiceCache.get(cacheKey)
+    if (cached) {
+      return cached
+    }
+
+    const datasourceList = (await fetcher(`${rawNode.restDataUrl}/datasources.json`)) as {
+      datasourceNames?: string[]
+    }
+    const datasourceNames = Array.isArray(datasourceList?.datasourceNames)
+      ? datasourceList.datasourceNames.filter((name): name is string => typeof name === 'string' && !!name.trim())
+      : []
+
+    if (datasourceNames.length === 1) {
+      const dataSourceName = datasourceNames[0]
+      const datasetList = (await fetcher(
+        `${rawNode.restDataUrl}/datasources/${encodeURIComponent(dataSourceName)}/datasets.json`
+      )) as {
+        datasetNames?: string[]
+      }
+      const datasetNames = Array.isArray(datasetList?.datasetNames)
+        ? datasetList.datasetNames.filter((name): name is string => typeof name === 'string' && !!name.trim())
+        : []
+
+      const result = {
+        children: datasetNames.map(datasetName =>
+          createRuntimeRestDataDatasetNode({
+            parentNodeId: node.id,
+            sourceType: node.sourceType,
+            restDataUrl: rawNode.restDataUrl,
+            dataSourceName,
+            datasetName,
+            originResource: rawNode.originResource,
+            icon: node.resourceIcon
+          })
+        )
+      }
+
+      restDataServiceCache.set(cacheKey, result)
+      return result
+    }
+
+    const result = {
+      children: datasourceNames.map(dataSourceName =>
+        createRuntimeRestDataDatasourceNode({
+          parentNodeId: node.id,
+          sourceType: node.sourceType,
+          resource: rawNode.originResource,
+          restDataUrl: rawNode.restDataUrl,
+          dataSourceName,
+          icon: node.resourceIcon,
+          title: dataSourceName
+        })
+      )
+    }
+
+    restDataServiceCache.set(cacheKey, result)
+    return result
+  }
+
+  async function loadRestMapServiceChildren(node: RuntimeTreeNode): Promise<DirectoryLoadResult> {
+    const rawNode = node.raw as RestMapServiceCollectionRaw
+    const cacheKey = `${rawNode.resourceId}:${rawNode.restServiceUrl}`
+    const cached = restMapServiceCache.get(cacheKey)
+    if (cached) {
+      return cached
+    }
+
+    const result = {
+      children: rawNode.mapItems.map(mapItem =>
+        createRuntimeRestMapServiceMapNode({
+          parentNodeId: node.id,
+          sourceType: node.sourceType,
+          originResource: rawNode.originResource,
+          mapItem,
+          icon: node.resourceIcon
+        })
+      )
+    }
+
+    restMapServiceCache.set(cacheKey, result)
+    return result
+  }
+
   async function loadChildren(node: RuntimeTreeNode): Promise<DirectoryLoadResult> {
     if (isQueryDirectoryNode(node)) {
       return loadQueryDirectoryChildren(node)
     }
     if (isIportalDirectoryNode(node)) {
       return loadIportalDirectoryChildren(node)
+    }
+    if (isRestDataServiceNode(node)) {
+      return loadRestDataServiceChildren(node)
+    }
+    if (isRestDataDatasourceNode(node)) {
+      return loadRestDataDatasourceChildren(node)
+    }
+    if (isRestMapServiceCollectionNode(node)) {
+      return loadRestMapServiceChildren(node)
     }
 
     return {
@@ -141,9 +296,15 @@ export function useDirectoryLoader(options: DirectoryLoaderOptions) {
   return {
     directoryCache,
     queryCache,
+    restDataServiceCache,
+    restDataDatasourceCache,
+    restMapServiceCache,
     loadChildren,
     loadIportalDirectoryChildren,
-    loadQueryDirectoryChildren
+    loadQueryDirectoryChildren,
+    loadRestDataServiceChildren,
+    loadRestDataDatasourceChildren,
+    loadRestMapServiceChildren
   }
 }
 

@@ -12,16 +12,11 @@ const DISABLED_REASON_I18N_KEYS: Record<DisabledReasonCode, string> = {
 
 type DirectoryTreeTranslate = (key: string, params?: Record<string, any>) => string
 
-export type DisplayNodeStatusKind = 'warning'
-
 export type DisplayTreeNode = Omit<RuntimeTreeNode, 'disabledReason' | 'children'> & {
   disableCheckbox?: boolean
   disabledReason?: string
   titleDisabled?: boolean
   titleTooltip?: string
-  statusKind?: DisplayNodeStatusKind
-  statusTooltip?: string
-  statusIconOnly?: boolean
   children?: DisplayTreeNode[]
 }
 
@@ -42,26 +37,9 @@ export function useDirectoryTreeDisplay(options: DirectoryTreeDisplayOptions) {
     return node.kind === 'resource' && node.disabledReason === 'missing-map-target'
   }
 
-  function getDisplayNodeStatus(node: RuntimeTreeNode): {
-    kind?: DisplayNodeStatusKind
-    tooltip?: string
-    iconOnly?: boolean
-  } {
-    const disabledReason = getDisabledReasonText(node.disabledReason)
-    if (disabledReason) {
-      return {
-        kind: 'warning',
-        tooltip: disabledReason,
-        iconOnly: true
-      }
-    }
-
-    return {}
-  }
-
   function mapNodesForTree(nodes: RuntimeTreeNode[]): DisplayTreeNode[] {
     return nodes.map(node => {
-      const status = getDisplayNodeStatus(node)
+      const titleTooltip = getDisabledReasonText(node.disabledReason)
       const titleDisabled = !!node.disabledReason && !isBrowseOnlyResourceNode(node)
 
       return {
@@ -77,11 +55,8 @@ export function useDirectoryTreeDisplay(options: DirectoryTreeDisplayOptions) {
           node.loadState === 'loading',
         disabled: node.disabled,
         titleDisabled,
-        titleTooltip: status.tooltip,
+        titleTooltip,
         disabledReason: getDisabledReasonText(node.disabledReason),
-        statusKind: status.kind,
-        statusTooltip: status.tooltip,
-        statusIconOnly: status.iconOnly,
         children: node.children ? mapNodesForTree(node.children) : undefined
       }
     })

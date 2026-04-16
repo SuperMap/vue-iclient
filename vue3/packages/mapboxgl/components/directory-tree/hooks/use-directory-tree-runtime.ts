@@ -1,6 +1,14 @@
 import type { ComputedRef, Ref } from 'vue'
 import type { EventDataNode } from 'ant-design-vue/es/tree'
-import type { DirectoryTreeProps, ResourceDescriptor, RuntimeNodeOperationState, RuntimeTreeNode } from '../types'
+import type {
+  DirectoryTreeProps,
+  ResourceDescriptor,
+  RestDataDatasourceDirectoryRaw,
+  RestDataServiceDirectoryRaw,
+  RestMapServiceCollectionRaw,
+  RuntimeNodeOperationState,
+  RuntimeTreeNode
+} from '../types'
 import { normalizeDirectoryTreeOrEmpty } from '../utils/schema-normalizer'
 import type { useDirectoryLoader } from './use-directory-loader'
 import type { useResourceLayerManager } from './use-resource-layer-manager'
@@ -26,6 +34,50 @@ function isRuntimeTreeNode(node: EventDataNode | RuntimeTreeNode): node is Runti
 }
 
 export function useDirectoryTreeRuntime(options: DirectoryTreeRuntimeOptions) {
+  function isRestDataDirectoryRaw(
+    raw: unknown
+  ): raw is RestDataServiceDirectoryRaw | RestDataDatasourceDirectoryRaw {
+    return (
+      !!raw &&
+      typeof raw === 'object' &&
+      ((raw as RestDataServiceDirectoryRaw).type === 'rest-data-service' ||
+        (raw as RestDataDatasourceDirectoryRaw).type === 'rest-data-datasource')
+    )
+  }
+
+  function isRestMapServiceCollectionRaw(raw: unknown): raw is RestMapServiceCollectionRaw {
+    return !!raw && typeof raw === 'object' && (raw as RestMapServiceCollectionRaw).type === 'rest-map-service-collection'
+  }
+
+  function convertNodeToRestDataDirectory(
+    node: RuntimeTreeNode,
+    raw: RestDataServiceDirectoryRaw | RestDataDatasourceDirectoryRaw
+  ) {
+    node.pendingValidation = false
+    node.resource = undefined
+    node.kind = 'directory'
+    node.isLeaf = false
+    node.checkable = false
+    node.disabled = false
+    node.disabledReason = undefined
+    node.loadState = 'idle'
+    node.children = undefined
+    node.raw = raw
+  }
+
+  function convertNodeToRestMapCollection(node: RuntimeTreeNode, raw: RestMapServiceCollectionRaw) {
+    node.pendingValidation = false
+    node.resource = undefined
+    node.kind = 'directory'
+    node.isLeaf = false
+    node.checkable = false
+    node.disabled = false
+    node.disabledReason = undefined
+    node.loadState = 'idle'
+    node.children = undefined
+    node.raw = raw
+  }
+
   function getResolvedNodeDisabledReason(descriptor: ResourceDescriptor) {
     return options.resolver.value.getCheckFailure(descriptor, {
       mapTarget: options.mapTarget()
@@ -33,6 +85,16 @@ export function useDirectoryTreeRuntime(options: DirectoryTreeRuntimeOptions) {
   }
 
   function syncResolvedNodeState(node: RuntimeTreeNode, descriptor: ResourceDescriptor) {
+    if (isRestDataDirectoryRaw(descriptor.raw)) {
+      convertNodeToRestDataDirectory(node, descriptor.raw)
+      return
+    }
+
+    if (isRestMapServiceCollectionRaw(descriptor.raw)) {
+      convertNodeToRestMapCollection(node, descriptor.raw)
+      return
+    }
+
     const disabledReason = getResolvedNodeDisabledReason(descriptor)
     node.pendingValidation = false
     node.resource = descriptor

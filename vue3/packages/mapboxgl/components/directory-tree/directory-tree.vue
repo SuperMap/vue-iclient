@@ -30,17 +30,13 @@
           title,
           icon,
           titleDisabled,
-          titleTooltip,
-          statusKind,
-          statusTooltip,
-          statusIconOnly
+          titleTooltip
         }"
       >
         <span
           :class="[
             'sm-component-directory-tree__title-trigger',
-            titleDisabled && 'sm-component-directory-tree__title-trigger--disabled',
-            statusKind === 'warning' && 'sm-component-directory-tree__title-trigger--warning'
+            titleDisabled && 'sm-component-directory-tree__title-trigger--disabled'
           ]"
           @click.stop="handleTitleClick(key)"
         >
@@ -55,19 +51,6 @@
             :title="titleTooltip"
           >
             {{ title }}
-          </span>
-          <span
-            v-if="statusKind"
-            :class="[
-              'sm-component-directory-tree__node-status',
-              `sm-component-directory-tree__node-status--${statusKind}`,
-              statusIconOnly && 'sm-component-directory-tree__node-status--icon-only'
-            ]"
-            :title="statusTooltip"
-          >
-            <span class="sm-component-directory-tree__node-status-icon">
-              !
-            </span>
           </span>
         </span>
       </template>
@@ -210,8 +193,7 @@ function getActiveMap() {
 function getMapProjection(): string | undefined {
   const map = getActiveMap()
   const crs = map?.getCRS?.()
-  const epsgCode = crs?.epsgCode ?? crs?.code
-  return resolver.value.normalizeProjection(epsgCode) || undefined
+  return resolver.value.normalizeProjection(crs ?? crs?.wkt ?? crs?.epsgCode ?? crs?.code) || undefined
 }
 
 const { getDisabledReasonText, isBrowseOnlyResourceNode, mapNodesForTree } =
