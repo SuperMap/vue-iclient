@@ -2,7 +2,7 @@
   <div 
     ref="scaleRef"
     class="sm-component-scale"
-    :style="[background && gisControlBgStyle, (textColor && textColorStyle) || { color: colorPrimary } ]"
+    :style="[background && gisControlBgStyle, textColorStyle ]"
   >
     <span>{{ content }}</span>
   </div>
@@ -24,8 +24,7 @@ const content = ref(null);
 const viewModel = new ScaleViewModel({unit: props.unit, maxWidth: props.maxWidth});
 const {
   textColorStyle,
-  gisControlBgStyle,
-  colorPrimary
+  gisControlBgStyle
 } = useTheme(props)
 useMapGetter<Map>({viewModel})
 useMapControl()

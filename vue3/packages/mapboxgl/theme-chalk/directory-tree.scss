@@ -6,14 +6,22 @@
   padding: 16px 12px 12px 16px;
   background: transparent;
   box-sizing: border-box;
+  /* stylelint-disable-next-line */
+  font-size: 14px;
+  /* stylelint-disable-next-line */
+  line-height: 1.5;
 
   .sm-component-directory-tree__header {
     flex: 0 0 auto;
     padding: 15px 0 0 15px;
     margin-bottom: 12px;
+    /* stylelint-disable-next-line */
     color: #1f1f1f;
+    /* stylelint-disable-next-line */
     font-size: 16px;
+    /* stylelint-disable-next-line */
     font-weight: 600;
+    /* stylelint-disable-next-line */
     line-height: 24px;
   }
 
@@ -25,6 +33,10 @@
 
   .sm-component-tree {
     background: transparent;
+    color: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    font-family: inherit;
   }
 
   .sm-component-tree-title {
@@ -55,6 +67,7 @@
   }
 
   .sm-component-directory-tree__title-trigger--disabled {
+    /* stylelint-disable-next-line */
     color: #999;
     cursor: not-allowed;
   }
@@ -66,6 +79,7 @@
   .sm-component-directory-tree__title-text {
     display: inline-block;
     min-width: 0;
+    /* stylelint-disable-next-line */
     line-height: 24px;
   }
 
@@ -74,13 +88,17 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
+    /* stylelint-disable-next-line */
     color: #8c8c8c;
+    /* stylelint-disable-next-line */
     font-size: 12px;
+    /* stylelint-disable-next-line */
     line-height: 1;
     vertical-align: middle;
   }
 
   .sm-component-directory-tree__node-status--warning {
+    /* stylelint-disable-next-line */
     color: #d48806;
   }
 
@@ -95,16 +113,19 @@
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: currentColor;
+    background: currentcolor;
+    /* stylelint-disable-next-line */
     color: #fff;
+    /* stylelint-disable-next-line */
     font-size: 10px;
     font-style: normal;
+    /* stylelint-disable-next-line */
     font-weight: 700;
   }
 
   .sm-component-tree-checkbox {
-    margin-inline-end: 0px;
-    margin-block-start: 0px;
+    margin-inline-end: 0;
+    margin-block-start: 0;
   }
 
   .ant-tree-treenode-checkbox-disabled,

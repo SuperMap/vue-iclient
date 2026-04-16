@@ -1,8 +1,8 @@
 @use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
 @use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
-@use '@supermapgis/common/theme-chalk/collapse-card.scss';
-@use '@supermapgis/common/theme-chalk/select.scss';
-@use '@supermapgis/common/theme-chalk/table-popup.scss';
+@use '@supermapgis/common/theme-chalk/collapse-card';
+@use '@supermapgis/common/theme-chalk/select';
+@use '@supermapgis/common/theme-chalk/table-popup';
 
 @include b(measure) {
   z-index: 1;
@@ -55,6 +55,7 @@
         }
 
         .selected-icon i {
+          /* stylelint-disable-next-line */
           color: $primary-color;
         }
       }
@@ -71,9 +72,11 @@
         .btn-secondary {
           width: 48%;
           height: 30px;
+
           > span {
             white-space: nowrap;
           }
+
           &:focus {
             border-color: $border-color-split;
           }
@@ -86,6 +89,7 @@
 .disabled-mapCanvas-pointer-events .measureCur {
   cursor: all-scroll;
 }
+
 .measureCur {
   cursor: crosshair;
 }

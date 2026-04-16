@@ -4,6 +4,7 @@
 @include b(input) {
   @include e(affix-wrapper, '-') {
     box-shadow: none;
+
     &:focus, &-focused {
         box-shadow: none;
     }

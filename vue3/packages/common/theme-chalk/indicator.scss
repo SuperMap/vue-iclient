@@ -12,41 +12,45 @@
   flex-wrap: nowrap;
   justify-content: center;
   align-items: center;
-  color: $text-color;
-  background: $color-bg-container;
+
   @include e(content) {
     display: flex;
     align-items: flex-end;
-    font-weight: bolder;
   }
+
   @include e(content-vertical) {
     flex-direction: column;
     align-items: flex-start;
+
     .sm-component-indicator__title {
       margin-bottom: 8px;
     }
   }
+
   @include e(content-horizontal) {
     flex-flow: row nowrap;
     width: 100%;
     justify-content: space-around;
+
     .sm-component-indicator__title {
+      /* stylelint-disable-next-line */
       line-height: 1.2;
     }
   }
-  @include e(title) {
-    font-size: 16px;
-    font-weight: bolder;
-  }
+
   @include e(num) {
+    /* stylelint-disable-next-line */
     font-weight: bolder;
+    /* stylelint-disable-next-line */
     color: $primary-color;
-    font-size: 22px;
+    /* stylelint-disable-next-line */
     line-height: 1;
   }
+
   @include e(unit) {
+    /* stylelint-disable-next-line */
     text-indent: 5px;
-    font-size: 16px;
+    /* stylelint-disable-next-line */
     line-height: 1.2;
   }
 }

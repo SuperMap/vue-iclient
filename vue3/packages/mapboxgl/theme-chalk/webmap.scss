@@ -15,46 +15,58 @@
     justify-content: center;
     flex-direction: column;
     z-index: 100;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgb(0 0 0 / 80%);
+
     & > div {
       & > .#{$ant-prefix}-spin {
         max-height: 100%;
+
         .sm-component-spin-text {
           text-shadow: none;
         }
       }
     }
   }
+
   // 为了echarts的resize
   .echartMap {
     width: 100% !important;
     height: 100% !important;
   }
+
   .mapboxgl-canvas-container {
     width: 100% !important;
     height: 100% !important;
   }
 }
+
 .mapboxgl-ctrl-top-left {
   z-index: 3;
+
   .mapboxgl-ctrl {
     margin: 10px 0 0 16px;
   }
 }
+
 .mapboxgl-ctrl-top-right {
   z-index: 3;
+
   .mapboxgl-ctrl {
     margin: 10px 16px 0 0;
   }
 }
+
 .mapboxgl-ctrl-bottom-left {
   z-index: 3;
+
   .mapboxgl-ctrl {
     margin: 0 0 10px 16px;
   }
 }
+
 .mapboxgl-ctrl-bottom-right {
   z-index: 3;
+
   .mapboxgl-ctrl {
     margin: 0 16px 10px 0;
   }

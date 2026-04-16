@@ -1,13 +1,15 @@
 @use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
 @use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
-@use '@supermapgis/common/theme-chalk/collapse-card.scss';
-@use '@supermapgis/common/theme-chalk/button.scss';
-@use '@supermapgis/common/theme-chalk/input.scss';
-@use '@supermapgis/common/theme-chalk/select.scss';
-@use '@supermapgis/mapboxgl/theme-chalk/layer-highlight.scss';
+@use '@supermapgis/common/theme-chalk/collapse-card';
+@use '@supermapgis/common/theme-chalk/button';
+@use '@supermapgis/common/theme-chalk/input';
+@use '@supermapgis/common/theme-chalk/select';
+@use '@supermapgis/mapboxgl/theme-chalk/layer-highlight';
 
 @include b(query) {
   $query-prefix: &;
+  /* stylelint-disable-next-line */
+  font-size: 12px;
 
   @include e(body) {
     min-width: 240px;
@@ -18,6 +20,7 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+
     & > div {
       width: 100%;
     }
@@ -34,10 +37,13 @@
 
   @include e(item-holder) {
     margin-top: 10px;
+
     &:first-child {
       margin-top: 0;
     }
+
     > div:first-child {
+      /* stylelint-disable-next-line */
       line-height: 18px;
     }
     .#{$ant-prefix}-input-affix-wrapper {
@@ -50,6 +56,7 @@
       }
     }
     .#{$ant-prefix}-input {
+      /* stylelint-disable-next-line */
       font-size: 12px;
       background: $color-bg-container;
     }
@@ -60,7 +67,7 @@
     .#{$ant-prefix}-select-single {
       .#{$ant-prefix}-select-selector {
         color: inherit;
-        font-size: 12px;
+        font-size: inherit;
         min-height: 28px;
         padding: 0 10px;
         align-items: center;
@@ -69,14 +76,16 @@
     .#{$ant-prefix}-select-dropdown {
       .#{$ant-prefix}-select-item {
         color: inherit;
-        font-size: 12px;
+        font-size: inherit;
       }
     }
   }
 
   @include e(section-title) {
+    /* stylelint-disable-next-line */
     color: $text-color-heading;
-    font-size: 12px;
+    font-size: inherit;
+    /* stylelint-disable-next-line */
     font-weight: 500;
   }
 
@@ -91,11 +100,13 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 12px;
+    /* stylelint-disable-next-line */
+    font-size: inherit;
+    /* stylelint-disable-next-line */
     line-height: 16px;
-    color: $text-color;
     cursor: pointer;
     user-select: none;
+
     &.is-disabled {
       cursor: not-allowed;
       opacity: 0.6;
@@ -113,9 +124,12 @@
     display: inline-block;
     position: relative;
     transition: all 0.2s;
+
     &:checked {
+      /* stylelint-disable-next-line */
       border-color: $primary-color;
     }
+
     &:checked::after {
       content: '';
       position: absolute;
@@ -126,6 +140,7 @@
       border-radius: 50%;
       background-color: $primary-color;
     }
+
     &:disabled {
       cursor: not-allowed;
     }
@@ -133,6 +148,7 @@
 
   @include e(item-config) {
     margin-top: 6px;
+    /* stylelint-disable-next-line */
     font-size: 12px;
     width: 100%;
   }
@@ -145,7 +161,9 @@
 
   @include e(error) {
     margin-top: 6px;
+    /* stylelint-disable-next-line */
     font-size: 12px;
+    /* stylelint-disable-next-line */
     color: $error-color;
   }
 
@@ -178,15 +196,22 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    /* stylelint-disable-next-line */
     color: $text-color-heading;
+
     > i {
+      /* stylelint-disable-next-line */
       color: $text-color-tertiary !important;
       transition: color 0.2s;
+
       &.is-disabled {
+        /* stylelint-disable-next-line */
         color: $text-color-disabled !important;
         cursor: not-allowed;
       }
+
       &:not(.is-disabled):hover {
+        /* stylelint-disable-next-line */
         color: $error-color !important;
       }
     }
@@ -198,6 +223,7 @@
     gap: 6px;
     min-width: 0;
     flex: 1;
+
     & > i {
       transform: rotate(180deg);
       color: inherit;
@@ -210,14 +236,18 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 100%;
+    /* stylelint-disable-next-line */
     line-height: 20px;
   }
 
   @include e(back) {
     cursor: pointer;
+    /* stylelint-disable-next-line */
     color: $text-color-tertiary;
     transition: color 0.2s;
+
     &:hover {
+      /* stylelint-disable-next-line */
       color: $primary-color;
     }
   }
@@ -237,6 +267,7 @@
       background-color: transparent;
     }
     .#{$ant-prefix}-empty-description {
+      /* stylelint-disable-next-line */
       color: $text-color-tertiary;
     }
   }
@@ -247,12 +278,15 @@
     overflow: auto;
     padding: 0;
     background-color: transparent;
+
     & > ul {
       list-style: none;
       padding: 0;
       margin: 0;
+
       & > li {
         padding: 8px 30px 8px 18px;
+        /* stylelint-disable-next-line */
         line-height: 20px;
         min-height: 36px;
         display: flex;
@@ -263,17 +297,23 @@
         white-space: nowrap;
         position: relative;
         transition: all 0.2s;
+
         &:last-child {
           border-bottom: none;
         }
+
         &:hover {
+          /* stylelint-disable-next-line */
           color: $primary-color-hover;
           background: $gis-control-item-bg-hover;
         }
+
         &[aria-selected='true'] {
+          /* stylelint-disable-next-line */
           color: $primary-color;
           background-color: $gis-control-item-bg-selected;
         }
+
         > i {
           position: absolute;
           right: 10px;
@@ -288,8 +328,11 @@
   @include e(result-count) {
     border-top: 1px solid $border-color-split;
     padding: 8px 10px;
+    /* stylelint-disable-next-line */
     font-size: 12px;
+    /* stylelint-disable-next-line */
     line-height: 18px;
+    /* stylelint-disable-next-line */
     color: $text-color-tertiary;
   }
 }

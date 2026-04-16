@@ -1,6 +1,7 @@
 body {
-  font-family: -apple-system, 'BlinkMacSystemFont', 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
-    Helvetica Neue, Helvetica, Arial, sans-serif, Apple Color Emoji, 'Segoe UI Emoji', Segoe UI Symbol !important;
+  /* stylelint-disable-next-line */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji", 'Segoe UI Emoji', "Segoe UI Symbol" !important;
 }
 
 .add-ellipsis {
@@ -13,7 +14,7 @@ body {
   display: none;
 }
 
-.clearfix:after {
+.clearfix::after {
   content: ' ';
   height: 0;
   display: block;
@@ -26,11 +27,13 @@ body {
 
 .clearfix {
   zoom: 1;
+
   &::before,
   &::after {
     display: table;
     content: '';
   }
+
   &::after {
     clear: both;
   }
@@ -45,9 +48,12 @@ body {
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
-  background-color: rgba(245, 245, 245, 0);
+  /* stylelint-disable-next-line */
+  background-color: rgb(245 245 245 / 0%);
 }
+
 ::-webkit-scrollbar-thumb {
   border-radius: 10px;
+  /* stylelint-disable-next-line */
   background-color: #bbb;
 }

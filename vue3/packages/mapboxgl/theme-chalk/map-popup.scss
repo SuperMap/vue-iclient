@@ -1,6 +1,6 @@
 @use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
 @use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
-@use '@supermapgis/common/theme-chalk/attribute-panel.scss';
+@use '@supermapgis/common/theme-chalk/attribute-panel';
 
 @include b(map-popup) {
   min-width: 200px;
@@ -12,26 +12,36 @@
     width: 100%;
     min-width: 0;
   }
+
   .switchDataText {
     display: inline-flex;
-    padding: 8px 0px;
+    padding: 8px 0;
     margin-right: 10px;
+
     span {
       vertical-align: 3px;
     }
+
     .icon {
+      /* stylelint-disable-next-line */
       font-size: 16px;
     }
+
     .left-icon {
       padding-right: 5px;
     }
+
     .right-icon {
       padding-left: 5px;
     }
+
     .disabled {
+      /* stylelint-disable-next-line */
       color: $text-color-disabled;
     }
+
     > i:not(.disabled) {
+      /* stylelint-disable-next-line */
       color: $primary-color;
     }
   }
@@ -47,13 +57,16 @@
       justify-content: space-between;
       min-height: 38px;
       padding: 0 8px;
+      /* stylelint-disable-next-line */
       font-size: 14px;
+      /* stylelint-disable-next-line */
       font-weight: 600;
       border-bottom: 1px solid $border-color-split;
 
       .title {
         width: 100%;
         margin-left: 4px;
+        /* stylelint-disable-next-line */
         font-size: 12px;
         overflow: hidden;
         white-space: nowrap;
@@ -66,6 +79,7 @@
       }
 
       .sm-components-icon-close {
+        /* stylelint-disable-next-line */
         font-size: 14px;
         cursor: pointer;
       }

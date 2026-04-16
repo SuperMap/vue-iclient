@@ -25,6 +25,8 @@
     "test:vue3": "pnpm --dir ./vue3 test:unit",
     "dev:vue3": "pnpm --dir ./vue3 dev",
     "typecheck:vue3": "pnpm --dir ./vue3 typecheck",
+    "lint:vue3": "pnpm --dir ./vue3 lint",
+    "stylelint:vue3": "pnpm --dir ./vue3 stylelint",
     "build-mapboxgl:vue3": "pnpm --dir ./vue3 build-mapboxgl",
     "publish-mapboxgl:vue3": "pnpm publish ./vue3/dist/vue3-iclient-mapboxgl"
   },

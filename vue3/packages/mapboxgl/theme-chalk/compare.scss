@@ -5,6 +5,7 @@
   position: relative;
   width: 100%;
   height: 100%;
+
   & > div:not(.mapboxgl-compare) {
     position: absolute;
     top: 0;
@@ -12,19 +13,21 @@
     width: 100%;
     height: 100%;
   }
+
   & > .mapboxgl-compare {
     z-index: 999;
     user-select: none;
     background-color: $compare-swiper-background;
     width: 2px !important;
     height: 100% !important;
+
     .compare-swiper-vertical,
     .compare-swiper-horizontal {
-      box-shadow: inset 0 0 0 2px;
       left: 50%;
       margin: 0;
       box-shadow: none;
       border: 2px solid;
+      /* stylelint-disable-next-line */
       color: $compare-swiper-color;
       background-color: $primary-color;
       box-sizing: content-box;
@@ -34,15 +37,20 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      /* stylelint-disable-next-line */
       font-size: 19px;
+
       &::before {
-        font-family: 'sm-components-icon-' !important;
+        /* stylelint-disable-next-line */
+        font-family: sm-components-icon- !important;
         content: '\e64a';
       }
     }
+
     .compare-swiper-horizontal {
       transform: translate(-50%, -50%) rotate(90deg);
     }
+
     .compare-swiper-vertical {
       transform: translate(-50%, -50%);
     }

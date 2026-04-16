@@ -1,6 +1,7 @@
 .mapboxgl-ctrl button:not(:disabled):hover {
   background-color: var(--color-primary-hover);
 }
+
 .mapboxgl-map {
   font-family: inherit;
 }
@@ -12,6 +13,7 @@
     border-bottom-color: var(--color-bg-elevated);
   }
 }
+
 .mapboxgl-popup-anchor-bottom,
 .mapboxgl-popup-anchor-bottom-left,
 .mapboxgl-popup-anchor-bottom-right {
@@ -19,9 +21,11 @@
     border-top-color: var(--color-bg-elevated);
   }
 }
+
 .mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
   border-right-color: var(--color-bg-elevated);
 }
+
 .mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
   border-left-color: var(--color-bg-elevated);
 }

@@ -18,14 +18,18 @@
     justify-content: center;
     flex-direction: column;
     z-index: 100;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgb(0 0 0 / 80%);
   }
+
   @include e(header) {
+    /* stylelint-disable-next-line */
     color: #fff;
   }
+
   @include e(header-content) {
     display: flex;
     height: 100%;
+
     & > div {
       display: flex;
       justify-content: center;
@@ -35,6 +39,7 @@
       align-self: center;
       min-width: 5%;
       user-select: none;
+
       & > div {
         word-break: keep-all;
         white-space: nowrap;
@@ -42,6 +47,7 @@
         overflow: hidden;
         padding-right: 5px;
       }
+
       .arrow-wrap {
         display: inline-block;
         height: 34px;
@@ -50,27 +56,30 @@
         cursor: pointer;
         overflow: initial;
         position: relative;
+
         .up-triangle {
           width: 0;
           height: 0;
           border: 5px solid transparent;
           position: absolute;
-          left: 0px;
+          left: 0;
           border-bottom-color: #fff;
           top: 5px;
         }
+
         .down-triangle {
           width: 0;
           height: 0;
           border: 5px solid transparent;
           position: absolute;
-          left: 0px;
+          left: 0;
           border-top-color: #fff;
           bottom: 6px;
         }
       }
     }
   }
+
   @include e(animate) {
     overflow-y: auto;
   }
@@ -84,6 +93,7 @@
   @include e(list) {
     width: 100%;
     display: flex;
+
     & > div {
       text-align: center;
       flex: 1;
@@ -97,9 +107,11 @@
       min-width: 5%;
       cursor: pointer;
     }
+
     .sm-component-text-list__slot {
       display: flex;
     }
+
     .text-list_thresholds a {
       color: inherit;
     }

@@ -1,7 +1,7 @@
 import type { PropType, CSSProperties } from 'vue'
-import { getPropsDefaults } from '@supermapgis/common/utils/vue-types'
 import type { ThemeProps } from '@supermapgis/common/utils/index.common'
 import type { ThirdServiceProps } from '@supermapgis/common/utils/index.common'
+import { getPropsDefaults } from '@supermapgis/common/utils/vue-types'
 import { thirdServiceProps, themeProps } from '@supermapgis/common/utils/index.common'
 
 

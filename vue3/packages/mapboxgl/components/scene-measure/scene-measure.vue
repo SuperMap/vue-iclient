@@ -40,7 +40,7 @@
                 :class="line.isSelect ? 'selected-icon' : ''"
                 @click="changleIconItem(line)"
               >
-                <i class="iconfont iconSize" :class="line.iconName" style="margin-top: 0px"></i>
+                <i class="iconfont iconSize" :class="line.iconName" style="margin-top: 0"></i>
               </span>
             </div>
           </div>

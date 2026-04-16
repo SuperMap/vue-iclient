@@ -14,10 +14,12 @@ export const indicatorProps = () => ({
   },
   indicatorColor: String,
   textFontSize: {
-    type: [String, Number]
+    type: [String, Number],
+    default: '16px'
   },
   fontSize: {
-    type: [String, Number]
+    type: [String, Number],
+    default: '22px'
   },
   fontWeight: {
     type: [String, Number],

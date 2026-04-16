@@ -70,5 +70,3 @@ const handleVideoLoad = status => {
   loadVideo.value = status
 }
 </script>
-
-<style scoped></style>

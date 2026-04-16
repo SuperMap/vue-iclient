@@ -63,5 +63,3 @@ const maxHeight = computed(() => {
   return popupConfig.value.height || popupConfig.value.maxHeight
 })
 </script>
-
-<style scoped></style>

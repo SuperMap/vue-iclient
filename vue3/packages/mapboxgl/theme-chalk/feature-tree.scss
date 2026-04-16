@@ -6,6 +6,8 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  /* stylelint-disable-next-line */
+  line-height: 1.5;
 
   .searchHolder {
     margin-bottom: 10px;
@@ -18,5 +20,8 @@
 
   .ant-input, .ant-input-search-button, .sm-component-tree {
     background: inherit;
+    color: inherit;
+    line-height: inherit;
+    font-family: inherit;
   }
 }

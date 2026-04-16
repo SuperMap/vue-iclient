@@ -3,13 +3,19 @@
 
 @include b(feature-cascader) {
   $prefix: &;
+
+  /* stylelint-disable-next-line */
+  font-size: 12px;
+
   &-menus {
     background-color: $select-dropdown-bg;
   }
+
   @include e(menu, '-') {
     $prefix-menu: &;
 
     &-item {
+      /* stylelint-disable-next-line */
       color: $text-color-heading;
 
       &:hover:not(&-disabled) {
@@ -18,32 +24,43 @@
 
       &-active:hover:not(&-disabled),
       &-active:not(&-disabled) {
+        /* stylelint-disable-next-line */
         font-weight: normal;
         background-color: $color-bg-container;
+        /* stylelint-disable-next-line */
         color: $text-color-heading;
       }
+
       &-expand &-expand-icon {
+        /* stylelint-disable-next-line */
         color: $text-color-tertiary;
       }
     }
   }
+
   &.ant-cascader {
     .ant-select-selector {
       height: 100%;
     }
+
     .ant-select-selection-item,
     .ant-select-selection-placeholder {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
     }
+
     & > div,
     & > div > div,
     .sm-component-feature-cascader__dropdown,
     .ant-select-selector,
     .ant-select-clear {
       background: inherit;
+      color: inherit;
+      font-family: inherit;
+      font-size: inherit;
     }
+
     .sm-component-feature-cascader__dropdown {
       .ant-cascader-menu-item-active,
       .ant-cascader-menu-item-active:hover:not(&-disabled) {

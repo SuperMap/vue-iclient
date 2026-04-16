@@ -1,85 +1,108 @@
 @use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
 @use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
-@use '@supermapgis/common/theme-chalk/input.scss';
-@use '@supermapgis/common/theme-chalk/table-popup.scss';
+@use '@supermapgis/common/theme-chalk/input';
+@use '@supermapgis/common/theme-chalk/table-popup';
 
 @include b(search) {
   $search-prefix: &;
   $input-prefix: #{$ant-prefix}-input;
+
+  /* stylelint-disable-next-line */
   font-size: 12px;
+
   @include e(toggle-icon) {
     width: 32px;
     height: 32px;
+    /* stylelint-disable-next-line */
     line-height: 32px;
     border-radius: 4px;
+    /* stylelint-disable-next-line */
     font-size: 16px;
     text-align: center;
     display: inline-block;
-    box-shadow: 0 3px 13px 0px $shadow-color;
+    box-shadow: 0 3px 13px 0 $shadow-color;
+
     &:hover {
+    /* stylelint-disable-next-line */
       color: $primary-color;
     }
   }
+
   @include e(search-icon arrow-icon datasource-icon) {
     height: 32px;
+    /* stylelint-disable-next-line */
     font-size: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     flex: 0 0 auto;
+
     > * {
       &:hover {
+        /* stylelint-disable-next-line */
         color: $primary-color !important;
       }
     }
   }
+
   @include e(search-icon) {
     width: 32px;
     border-left: 1px solid $border-color-split;
   }
+
   @include e(arrow-icon) {
     width: 32px;
     border-right: 1px solid $border-color-split;
     background: $gis-control-suffix-bg;
   }
+
   @include e(datasource-icon) {
     width: 32px;
     border-right: 1px solid $border-color-split;
     background: $gis-control-suffix-bg;
+
     > i {
       transition: transform .2s ease;
+
       &.is-open {
         transform: rotate(180deg);
       }
     }
   }
+
   @include e(content) {
     transform-origin: top left;
     overflow: hidden;
-    box-shadow: 0 3px 13px 0px $shadow-color;
+    box-shadow: 0 3px 13px 0 $shadow-color;
     border-radius: 4px;
+
     &.sm-component-zoom-in-enter-active {
       animation: zoom-in .5s;
     }
+
     &.sm-component-zoom-in-leave-active {
       animation: zoom-in .5s reverse;
     }
+
     @keyframes zoom-in {
       0% {
         transform: scale(0);
         opacity: 0;
       }
+
       100% {
         transform: scale(1);
         opacity: 1;
       }
     }
   }
+
   @include e(input) {
     display: flex;
     align-items: center;
     overflow: hidden;
+
     &.with-split-line {
       + div {
         border-top: 1px solid $gis-control-header-border
@@ -91,6 +114,7 @@
       }
     }
   }
+
   @include e(a-input) {
     &.#{$input-prefix}-affix-wrapper {
       display: flex;
@@ -102,6 +126,7 @@
       background-color: inherit;
       border-radius: 0;
       border-width: 0;
+
       &:hover {
         border-inline-end-width: 0;
         .#{$input-prefix} {
@@ -112,18 +137,20 @@
         background: transparent;
         border-color: transparent;
         color: inherit;
+
         &:focus {
           box-shadow: none;
         }
       }
       .#{$input-prefix}-suffix {
+        /* stylelint-disable-next-line */
         color: $text-color-quaternary;
       }
     }
   }
+
   @include e(result) {
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden auto;
     width: 100%;
     max-width: 100%;
     max-height: 500px;
@@ -133,13 +160,17 @@
       list-style: none;
       padding: 4px 0;
       margin: 0;
+
       & > li {
         padding: 6px 16px 6px 24px;
         display: block;
         cursor: pointer;
+
         &:hover {
+          /* stylelint-disable-next-line */
           color: $primary-color;
         }
+
         &.active {
           background: $gis-control-item-bg-selected;
         }
@@ -163,14 +194,18 @@
 
     #{$search-prefix}__history-delete {
       flex: 0 0 auto;
+      /* stylelint-disable-next-line */
       font-size: 14px;
+
       &:hover {
+        /* stylelint-disable-next-line */
         color: $primary-color;
       }
     }
 
     #{$search-prefix}__no-result {
       padding: 12px 16px;
+      /* stylelint-disable-next-line */
       color: $text-color-tertiary;
     }
   }
@@ -178,22 +213,28 @@
   @include e(panel-header-wrapper) {
     padding: 0 16px;
   }
+
   @include e(panel-header) {
     padding: 6px 0;
     border-bottom: 1px solid $border-color-split;
     display: flex;
     align-items: center;
+
     &:hover {
+      /* stylelint-disable-next-line */
       color: $primary-color;
     }
+
     > i {
       margin-right: 3px;
     }
+
     > span {
       display: block;
       max-width: 200px;
     }
   }
+
   @include e(panel-body) {
     background-color: $gis-control-bg-secondary;
   }

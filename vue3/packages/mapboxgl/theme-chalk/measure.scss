@@ -1,23 +1,25 @@
 @use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
 @use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
-@use '@supermapgis/common/theme-chalk/collapse-card.scss';
-@use '@supermapgis/common/theme-chalk/select.scss';
-@use '@supermapgis/common/theme-chalk/table-popup.scss';
+@use '@supermapgis/common/theme-chalk/collapse-card';
+@use '@supermapgis/common/theme-chalk/select';
+@use '@supermapgis/common/theme-chalk/table-popup';
 @use '@supermapgis/mapboxgl/theme-chalk/mapbox-gl-draw.css';
 
 @include b(measure) {
-
   @include e(panel) {
     padding: 16px;
     cursor: default;
   }
+
   @include e(panelContent) {
     position: relative;
     width: 100%;
     display: flex;
   }
+
   @include e(modeWrap) {
     text-align: left;
+    /* stylelint-disable-next-line */
     font-size: 0;
     padding: 10px 0;
   }
@@ -25,27 +27,37 @@
   @include e(modeIcon) {
     width: 40px;
     height: 28px;
+    /* stylelint-disable-next-line */
     line-height: 25px;
     text-align: center;
+    /* stylelint-disable-next-line */
     font-size: 22px;
+
     &:hover {
+      /* stylelint-disable-next-line */
       color: $primary-color-hover;
       cursor: pointer;
     }
+
     &:first-child {
-      border-radius: 4px 0px 0px 4px;
+      border-radius: 4px 0 0 4px;
       margin-right: 1px;
     }
+
     &:nth-child(2) {
-      border-radius: 0px 4px 4px 0px;
+      border-radius: 0 4px 4px 0;
       margin-right: 1px;
     }
+
     @include when(active) {
       background: $primary-color !important;
+      /* stylelint-disable-next-line */
       color: #fff !important;
     }
+
     i {
       cursor: pointer;
+      /* stylelint-disable-next-line */
       font-size: 14px;
     }
   }
@@ -59,7 +71,9 @@
       height: 28px;
     }
     .#{$ant-prefix}-select-selection__rendered {
+      /* stylelint-disable-next-line */
       line-height: 28px;
+      /* stylelint-disable-next-line */
       font-size: 12px;
     }
     &:not(.#{$ant-prefix}-select-customize-input) {
@@ -72,6 +86,7 @@
   @include e(default) {
     display: inline-block;
     height: 28px;
+    /* stylelint-disable-next-line */
     line-height: 28px;
   }
 
@@ -84,6 +99,7 @@
     padding: 12px 0;
   }
 }
+
 .sm-component-measure__popup {
   &.sm-mapboxgl-tabel-popup {
     .mapboxgl-popup-content {

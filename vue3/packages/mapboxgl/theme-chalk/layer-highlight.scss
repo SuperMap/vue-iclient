@@ -1,6 +1,6 @@
 @use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
 @use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
-@use '@supermapgis/mapboxgl/theme-chalk/map-popup.scss';
+@use '@supermapgis/mapboxgl/theme-chalk/map-popup';
 
 @include b(layer-highlight) {
   border-radius: 4px;

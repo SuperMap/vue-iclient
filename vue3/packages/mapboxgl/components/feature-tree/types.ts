@@ -9,6 +9,10 @@ export const featureTreeProps = () => ({
   },
   treeData: {
     type: Array
+  },
+  highlightColor: {
+    type: String,
+    default: '#f50'
   }
 })
 
@@ -16,6 +20,7 @@ export const featureTreeProps = () => ({
 export interface FeatureTreeProps {
   config?: DataConfig
   treeData?: TreeProps['treeData']
+  highlightColor?: string
 }
 
 export const featureTreePropsDefault = getPropsDefaults<FeatureTreeProps>(

@@ -76,5 +76,3 @@ const handleSelect = (id: string) => {
   emit('select', id)
 }
 </script>
-
-<style scoped></style>

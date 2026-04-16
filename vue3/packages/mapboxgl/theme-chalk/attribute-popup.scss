@@ -4,14 +4,19 @@
 @include b(attribute-popup) {
   padding: 0;
   width: 280px;
+  /* stylelint-disable-next-line */
+  font-size: 12px;
+
   .ellipsis {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
+
   i {
     cursor: pointer;
   }
+
   .header {
     display: inline-flex;
     width: 100%;
@@ -19,37 +24,51 @@
     justify-content: space-between;
     min-height: 38px;
     padding: 0 8px;
+    /* stylelint-disable-next-line */
     font-size: 14px;
+    /* stylelint-disable-next-line */
     font-weight: 600;
     border-bottom: 1px solid $border-color-split;
+
     .title {
       width: 100%;
       margin-left: 4px;
-      font-size: 12px;
+      font-size: inherit;
     }
+
     .switchDataText {
       display: inline-flex;
-      padding: 8px 0px;
+      padding: 8px 0;
       margin-right: 10px;
+
       span {
         vertical-align: 3px;
       }
+
       .icon {
+        /* stylelint-disable-next-line */
         font-size: 16px;
       }
+
       .left-icon {
         padding-right: 5px;
       }
+
       .right-icon {
         padding-left: 5px;
       }
+
       .disabled {
+        /* stylelint-disable-next-line */
         color: $text-color-disabled;
       }
+
       > i:not(.disabled) {
+        /* stylelint-disable-next-line */
         color: $primary-color;
       }
     }
+
     .identify-fields {
       margin-right: 10px;
       display: flex;
@@ -62,110 +81,138 @@
     overflow: hidden;
     width: 100%;
     height: auto;
-    min-height: 0px;
+    min-height: 0;
     max-height: 394px;
-    padding: 0px 8px;
+    padding: 0 8px;
+
     .ant-divider-horizontal {
       margin: 8px 0;
       border-color: $border-color-split;
     }
+
     .sm-component-field-info {
       display: flex;
       align-items: center;
       justify-content: flex-start;
       gap: 16px;
       padding: 4px 0;
+      /* stylelint-disable-next-line */
       font-size: 12px;
       word-break: break-all;
+
       > div {
         display: flex;
         align-items: center;
       }
+
       .sm-component-field-info-text {
         height: 100%;
       }
+
       .name {
         width: 80px;
 
       }
+
       .value {
         width: calc(100% - 96px);
       }
+
       .player {
         justify-content: start;
+
         .sm-player-loade-error{
           height: 100px;
           margin-left: -10px;
         } 
       }
     }
+
     .sm-compoent-ql {
       height: auto;
+
       .ql-editor {
         padding: 0;
       }
-      a:-webkit-any-link {
+
+      a:any-link {
         color: inherit;
       }
     }
+
     .player {
       display: flex;
       justify-content: center;
       max-width: 100%;
       max-height: 100%;
+
       .sm-component-image {
         width: 100%;
         height: 100%;
+
         img {
           height: auto;
           width: 100%;
           visibility: unset !important;
         }
-        // max-height: 200px;
       }
+
       video {
         max-width: 100%;
         margin: 0 auto;
       }
+
       .sm-player-loade-error {
         display: flex;
         align-items: center;
         min-height: 150px;
+
         i {
+          /* stylelint-disable-next-line */
           font-size: 80px;
+          /* stylelint-disable-next-line */
           color: $text-color-disabled;
         }
       }
       
     }
+
     .sm-media-info {
       display: flex;
       flex-direction: column;
       flex: 1;
+
       .swiper-wrapper {
         align-items: center;
       }
+
       .swiper-button-prev,
       .swiper-button-next {
         width: 24px;
         height: 24px;
       }
+
       .pagination {
-        margin: 8px 0 0px;
+        margin: 8px 0 0;
+        /* stylelint-disable-next-line */
         font-size: 12px;
       }
+
       .title {
         margin-top: 4px;
+        /* stylelint-disable-next-line */
         font-weight: 700;
         white-space: normal;
         word-break: break-all;
       }
+
       .swiper-slide {
         display: inline-flex;
         align-items: center;
         justify-content: center;
        }
     }
+
     > div {
       overflow: auto;
       margin-right: -8px;
@@ -174,48 +221,63 @@
       max-height: 100%;
       padding: 8px 24px 12px;
     }
+
     .scrollbars {
       ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
       }
+
       ::-webkit-scrollbar-track {
         background-color: transparent;
       }
+
       ::-webkit-scrollbar-thumb {
-        background-color: rgba(0, 0, 0, 0.2);
+        background-color: rgb(0 0 0 / 20%);
         border-radius: 4px;
       }
+
       ::-webkit-scrollbar-thumb:hover {
-        background-color: rgba(0, 0, 0, 0.4);
+        background-color: rgb(0 0 0 / 40%);
       }
     }
   }
   
   .sm-component-popup__select-layer {
      width: 100%;
+
     .sm-component-layer-type {
       display: flex;
       align-items: center;
       cursor: auto;
     }
-    .sm-component-layer-type:before {
+
+    .sm-component-layer-type::before {
+      /* stylelint-disable-next-line */
       font-size: 25px;
       transform: scale(0.64);
     }
+
     .ant-card-head {
       min-height: 38px;
       padding: 0 8px;
+      /* stylelint-disable-next-line */
       font-size: 14px;
+      /* stylelint-disable-next-line */
       font-weight: 600;
+
       .ant-card-head-title {
+        /* stylelint-disable-next-line */
         line-height: 38px;
         padding-right: 8px;
       }
     }
+
     .sm-components-icon-close {
+      /* stylelint-disable-next-line */
       font-size: 14px;
     }
+
     .ant-card-body {
       padding: 8px 0;
      
@@ -225,20 +287,26 @@
         justify-content: space-between;
         padding: 0 16px 0 8px;
         height: 28px;
+
         .sm-component-layer-next {
+          /* stylelint-disable-next-line */
           font-size: 16px;
           margin-left: 32px;
           transform: rotate(180deg);
         }
+
         .sm-component-layer-name {
           width: 100%;
           margin-left: 4px;
+          /* stylelint-disable-next-line */
           font-size: 12px;
         }
       }
+
       .sm-components-icon-arrow-right {
         display: none;
       }
+
       .sm-component-popup__select-layer-item:hover {
         .sm-components-icon-arrow-right {
           display: block;

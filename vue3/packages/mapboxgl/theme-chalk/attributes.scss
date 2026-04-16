@@ -1,9 +1,10 @@
 @use '@supermapgis/common/theme-chalk/mixins/mixins.scss' as *;
 @use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
-@use '@supermapgis/common/theme-chalk/table.scss';
+@use '@supermapgis/common/theme-chalk/table';
 
 @include b(attributes) {
   $attributes-prefix: &;
+
   height: 100%;
   width: 100%;
   overflow: hidden;
@@ -14,6 +15,7 @@
   .#{$ant-prefix}-table-wrapper {
     overflow: auto;
     height: calc(100% - 46px);
+
     &::-webkit-scrollbar-thumb {
       background: $scrollbar-bg;
     }
@@ -35,18 +37,21 @@
           }
         }
       }
+
       tr:first-child {
         > *:first-child {
           background: inherit;
         }
+
         > *:last-child {
           background: inherit;
         }
       }
+
       tr > th {
         color: inherit;
         background: inherit;
-        padding: 6px 6px;
+        padding: 6px;
         &.#{$ant-prefix}-table-column-sort {
           background: $gis-control-item-bg-hover;
         }
@@ -68,6 +73,7 @@
           .#{$ant-prefix}-table-filter-icon.#{$ant-prefix}-table-filter-open {
             background: $gis-control-item-bg-hover;
           }
+
           &:hover {
             .#{$ant-prefix}-table-filter-icon:hover {
               background: $gis-control-item-bg-hover;
@@ -88,7 +94,7 @@
       > tr {
         & > td {
           width: 128px;
-          padding: 6px 6px;
+          padding: 6px;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
@@ -100,9 +106,11 @@
     }
   }
   .#{$ant-prefix}-table-custom-filter-dropdown {
+    /* stylelint-disable-next-line */
     font-size: 0;
     padding: 8px;
   }
+
   @include e(header) {
     height: 30px;
     margin: 8px;
@@ -110,20 +118,27 @@
     justify-content: space-between;
     align-items: center;
   }
+
   @include e(count) {
     margin-left: 15px;
+
     > span {
       margin-right: 8px;
+      /* stylelint-disable-next-line */
       font-size: 16px;
+      /* stylelint-disable-next-line */
       font-weight: 500;
     }
   }
+
   @include e(menu) {
     .#{$ant-prefix}-icon:hover {
+      /* stylelint-disable-next-line */
       color: $primary-color !important;
     }
     
   }
+
   @include e(dropdown-menu) {
     .#{$ant-prefix}-dropdown-menu-submenu-title > span > .anticon:first-child {
       margin-right: 0;

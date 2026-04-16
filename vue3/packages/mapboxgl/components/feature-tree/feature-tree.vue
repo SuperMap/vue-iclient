@@ -12,7 +12,7 @@
       <template #title="{ title }">
         <span v-if="title?.includes(searchValue)">
           {{ title.substring(0, title.indexOf(searchValue)) }}
-          <span style="color: #f50">{{ searchValue }}</span>
+          <span :style="searchHighlightStyle">{{ searchValue }}</span>
           {{ title.substring(title.indexOf(searchValue) + searchValue.length) }}
         </span>
         <span v-else>{{ title }}</span>
@@ -44,6 +44,10 @@ const treeDatas = computed(() => {
 })
 const dataList = computed(() => {
   return generateList(treeDatas.value);
+})
+
+const searchHighlightStyle = computed(() => {
+  return { color: props.highlightColor }
 })
 
 const generateList = (data: Array<any>) => {

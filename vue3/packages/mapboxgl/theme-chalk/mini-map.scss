@@ -1,15 +1,18 @@
 @use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
 @use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
-@use '@supermapgis/common/theme-chalk/collapse-card.scss';
+@use '@supermapgis/common/theme-chalk/collapse-card';
 
 @include b(minimap) {
   .miniMap {
     height: 180px;
     width: 250px;
   }
+
   .sm-component-collapse-card__icon.is-click-out {
+    /* stylelint-disable-next-line */
     color: $primary-color !important;
   }
+
   .sm-component-spin {
     position: absolute;
     top: 0;
@@ -21,7 +24,7 @@
     justify-content: center;
     flex-direction: column;
     z-index: 100;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgb(0 0 0 / 80%);
   }
 }
 

@@ -1,20 +1,25 @@
 @use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
 @use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
-@use '@supermapgis/common/theme-chalk/table.scss';
+@use '@supermapgis/common/theme-chalk/table';
 
 @include b(table-popup) {
   $table-prefix: #{$ant-prefix}-table;
-  color: $text-color;
+
   border-radius: 4px;
+  /* stylelint-disable-next-line */
+  font-size: 12px;
   .#{$table-prefix}-thead > tr > th {
     border-bottom: 1px solid $gis-control-header-border;
   }
+
   &:not(.with-split-line) {
     .#{$table-prefix}-thead > tr > th {
       border-bottom: none;
     }
   }
+
   @include e(table) {
+    font-size: inherit;
     &.#{$table-prefix}-wrapper {
       .#{$table-prefix}-content {
         height: var(--sm-table-popup-height, auto);
@@ -23,13 +28,16 @@
         scrollbar-gutter: stable;
         scrollbar-width: thin;
         scrollbar-color: $scrollbar-bg transparent;
+
         &::-webkit-scrollbar {
           width: 8px;
           height: 8px;
         }
+
         &::-webkit-scrollbar-track {
           background-color: transparent;
         }
+
         &::-webkit-scrollbar-thumb {
           border-radius: 4px;
           background-color: $scrollbar-bg;
@@ -47,7 +55,7 @@
     &
     .#{$table-prefix} {
       color: inherit;
-      font-size: 12px;
+      font-size: inherit;
       background: inherit;
     }
     .#{$table-prefix}-thead > tr, .#{$table-prefix}-tbody > tr {
@@ -61,6 +69,7 @@
     }
     .#{$table-prefix}-row {
       &:hover {
+        /* stylelint-disable-next-line */
         color: $primary-color;
       }
     }
