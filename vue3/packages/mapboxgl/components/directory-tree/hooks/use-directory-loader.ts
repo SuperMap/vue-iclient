@@ -35,6 +35,11 @@ export interface DirectoryLoaderOptions {
   fetcher?: DirectoryLoaderFetch
 }
 
+export interface DirectoryLoaderContextUpdate {
+  iportalUrl?: string
+  directoryCheckable?: boolean
+}
+
 function resolveQueryTotalPages(response: {
   total: number
   totalPage: number
@@ -97,6 +102,30 @@ export function useDirectoryLoader(options: DirectoryLoaderOptions) {
   const restDataServiceCache = new Map<string, DirectoryLoadResult>()
   const restDataDatasourceCache = new Map<string, DirectoryLoadResult>()
   const restMapServiceCache = new Map<string, DirectoryLoadResult>()
+  let currentIportalUrl = options.iportalUrl
+  let currentDirectoryCheckable = options.directoryCheckable
+
+  function clearCaches() {
+    directoryCache.clear()
+    queryCache.clear()
+    restDataServiceCache.clear()
+    restDataDatasourceCache.clear()
+    restMapServiceCache.clear()
+  }
+
+  function updateContext(nextContext: DirectoryLoaderContextUpdate) {
+    const nextIportalUrl = nextContext.iportalUrl ?? currentIportalUrl
+    const nextDirectoryCheckable = nextContext.directoryCheckable ?? currentDirectoryCheckable
+    const shouldResetCaches =
+      nextIportalUrl !== currentIportalUrl || nextDirectoryCheckable !== currentDirectoryCheckable
+
+    currentIportalUrl = nextIportalUrl
+    currentDirectoryCheckable = nextDirectoryCheckable
+
+    if (shouldResetCaches) {
+      clearCaches()
+    }
+  }
 
   async function loadIportalDirectoryChildren(node: RuntimeTreeNode): Promise<DirectoryLoadResult> {
     const rawNode = node.raw as { directoryId: string | number }
@@ -107,13 +136,13 @@ export function useDirectoryLoader(options: DirectoryLoaderOptions) {
     }
 
     const response = (await fetcher(
-      createDirectoryEndpoint(options.iportalUrl, rawNode.directoryId)
+      createDirectoryEndpoint(currentIportalUrl, rawNode.directoryId)
     )) as IPortalDirectoryResponse
     const result = {
       children: normalizeDirectoryResponseToRuntimeNodes({
         directoryResponse: response,
         parentNodeId: node.id,
-        directoryCheckable: options.directoryCheckable,
+        directoryCheckable: currentDirectoryCheckable,
         icon: node.icon,
         resourceIcon: node.resourceIcon
       })
@@ -136,7 +165,7 @@ export function useDirectoryLoader(options: DirectoryLoaderOptions) {
 
     for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
       const request = buildQuerySearchRequest(queryNode.params, currentPage)
-      const url = `${createQuerySearchEndpoint(options.iportalUrl)}?${toQuerySearchParams(request)}`
+      const url = `${createQuerySearchEndpoint(currentIportalUrl)}?${toQuerySearchParams(request)}`
       const response = normalizeQuerySearchResponse(await fetcher(url), request)
 
       items.push(...response.content)
@@ -299,6 +328,7 @@ export function useDirectoryLoader(options: DirectoryLoaderOptions) {
     restDataServiceCache,
     restDataDatasourceCache,
     restMapServiceCache,
+    updateContext,
     loadChildren,
     loadIportalDirectoryChildren,
     loadQueryDirectoryChildren,

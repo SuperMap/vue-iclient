@@ -401,8 +401,12 @@ export default class iPortalDataService extends Events {
     for (let i = 0; i < len; i++) {
       let row = dataContent.rows[i];
 
-      let x = xfieldIndex !== -1 && Number(row[xfieldIndex]);
-      let y = yfieldIndex !== -1 && Number(row[yfieldIndex]);
+      let rawX = xfieldIndex !== -1 ? row[xfieldIndex] : undefined;
+      let rawY = yfieldIndex !== -1 ? row[yfieldIndex] : undefined;
+      let hasRawX = rawX !== null && rawX !== undefined && !(typeof rawX === 'string' && rawX.trim() === '');
+      let hasRawY = rawY !== null && rawY !== undefined && !(typeof rawY === 'string' && rawY.trim() === '');
+      let x = hasRawX ? Number(rawX) : NaN;
+      let y = hasRawY ? Number(rawY) : NaN;
       // 属性信息
       let attributes = {};
       for (let index in dataContent.colTitles) {
@@ -413,7 +417,7 @@ export default class iPortalDataService extends Events {
         type: 'Feature',
         properties: attributes
       };
-      if (x && y) {
+      if (Number.isFinite(x) && Number.isFinite(y)) {
         attributes.index = i + '';
         feature.geometry = {
           type: 'Point',

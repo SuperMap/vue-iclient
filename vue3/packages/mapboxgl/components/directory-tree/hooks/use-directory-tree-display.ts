@@ -23,6 +23,7 @@ export type DisplayTreeNode = Omit<RuntimeTreeNode, 'disabledReason' | 'children
 export interface DirectoryTreeDisplayOptions {
   t: DirectoryTreeTranslate
   getMapTarget: () => string | undefined
+  isNodeBusy: (node: RuntimeTreeNode) => boolean
 }
 
 export function useDirectoryTreeDisplay(options: DirectoryTreeDisplayOptions) {
@@ -45,14 +46,7 @@ export function useDirectoryTreeDisplay(options: DirectoryTreeDisplayOptions) {
       return {
         ...node,
         checkable: node.kind === 'resource' ? true : node.checkable,
-        disableCheckbox:
-          !options.getMapTarget() ||
-          !node.checkable ||
-          node.disabled ||
-          !!node.pendingValidation ||
-          !!node.operationState ||
-          !!node.batchProgress ||
-          node.loadState === 'loading',
+        disableCheckbox: !options.getMapTarget() || !node.checkable || node.disabled || options.isNodeBusy(node),
         disabled: node.disabled,
         titleDisabled,
         titleTooltip,

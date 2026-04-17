@@ -45,6 +45,11 @@ export interface ResourceResolverOptions {
   serviceProxyUrlPrefix?: string
 }
 
+export interface ResourceResolverContextUpdate {
+  iportalUrl?: string
+  serviceProxyUrlPrefix?: string
+}
+
 interface ResourceDetailFetchResult {
   detail?: Record<string, any>
   detailUrl?: string
@@ -849,6 +854,7 @@ function buildDescriptor(
   }
 }
 
+// Shared routing helpers used by the MAP / DATA / SERVICE descriptor branches.
 function hasRestDataLikeDataService(raw: Record<string, any>): boolean {
   if (pickRestDataDatasetRef([raw.url, raw.serverUrl, raw.proxiedUrl, raw.linkPage])) {
     return true
@@ -981,6 +987,7 @@ async function resolveRestMapServiceDescriptor(
   })
 }
 
+// MAP resources: resolve iPortal map detail, projection, and map server URL.
 async function resolveMapDescriptor(
   node: RuntimeTreeNode,
   context: ResourceResolveContext,
@@ -1067,6 +1074,7 @@ async function resolveMapDescriptor(
   }
 }
 
+// DATA resources: decide rest-data vs portal-data, then verify the final descriptor is loadable.
 async function resolveDataDescriptor(
   node: RuntimeTreeNode,
   context: ResourceResolveContext,
@@ -1154,8 +1162,9 @@ async function resolveDataDescriptor(
     restDataDatasetRef
   })
   if (restDataDirectoryRaw) {
+    const restDataServiceType = isDataServiceType(serviceType) ? serviceType : 'DATA'
     return buildDescriptor(node, {
-      serviceType,
+      serviceType: restDataServiceType,
       serverUrl,
       projection,
       raw: {
@@ -1223,6 +1232,7 @@ async function resolveDataDescriptor(
     projection,
     raw: nextRaw
   })
+  const restDataServiceType = isDataServiceType(serviceType) ? serviceType : 'DATA'
 
   const tryResolvePortalData = async () => {
     await resolvePortalDataLayer(descriptor, {
@@ -1244,7 +1254,7 @@ async function resolveDataDescriptor(
       fetcher
     })
     return buildDescriptor(node, {
-      serviceType,
+      serviceType: restDataServiceType,
       serverUrl,
       projection,
       overlaySupported: true,
@@ -1259,7 +1269,7 @@ async function resolveDataDescriptor(
       if (isDatasetLevelRestDataRef) {
         return buildDescriptor(node, {
           disabledReason: getLoadPlanErrorReason(restError, 'unsupported-resource-type'),
-          serviceType,
+          serviceType: restDataServiceType,
           serverUrl,
           projection,
           raw: {
@@ -1301,6 +1311,7 @@ async function resolveDataDescriptor(
   }
 }
 
+// SERVICE resources: normalize service metadata, collection branches, and final load constraints.
 async function resolveServiceDescriptor(
   node: RuntimeTreeNode,
   context: ResourceResolveContext,
@@ -1610,6 +1621,17 @@ async function resolveServiceDescriptor(
 
 export function useResourceResolver(options: ResourceResolverOptions) {
   const fetcher = options.fetcher || defaultFetcher
+  let currentIportalUrl = options.iportalUrl
+  let currentServiceProxyUrlPrefix = options.serviceProxyUrlPrefix
+
+  function updateContext(nextContext: ResourceResolverContextUpdate) {
+    if ('iportalUrl' in nextContext && typeof nextContext.iportalUrl === 'string') {
+      currentIportalUrl = nextContext.iportalUrl
+    }
+    if ('serviceProxyUrlPrefix' in nextContext) {
+      currentServiceProxyUrlPrefix = nextContext.serviceProxyUrlPrefix
+    }
+  }
 
   async function resolveResourceNode(
     node: RuntimeTreeNode,
@@ -1618,12 +1640,12 @@ export function useResourceResolver(options: ResourceResolverOptions) {
     const resourceType = getRawResourceType(node)
 
     if (resourceType === 'MAP') {
-      return resolveMapDescriptor(node, context, fetcher, options.iportalUrl, options.serviceProxyUrlPrefix)
+      return resolveMapDescriptor(node, context, fetcher, currentIportalUrl, currentServiceProxyUrlPrefix)
     }
     if (resourceType === 'DATA') {
-      return resolveDataDescriptor(node, context, fetcher, options.iportalUrl, options.serviceProxyUrlPrefix)
+      return resolveDataDescriptor(node, context, fetcher, currentIportalUrl, currentServiceProxyUrlPrefix)
     }
-    return resolveServiceDescriptor(node, context, fetcher, options.iportalUrl, options.serviceProxyUrlPrefix)
+    return resolveServiceDescriptor(node, context, fetcher, currentIportalUrl, currentServiceProxyUrlPrefix)
   }
 
   function getCheckFailure(
@@ -1638,6 +1660,7 @@ export function useResourceResolver(options: ResourceResolverOptions) {
 
   return {
     normalizeProjection,
+    updateContext,
     resolveResourceNode,
     getCheckFailure
   }

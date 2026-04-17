@@ -1,4 +1,4 @@
-import type { ComputedRef, Ref } from 'vue'
+import type { Ref } from 'vue'
 import type { EventDataNode } from 'ant-design-vue/es/tree'
 import type {
   DirectoryTreeProps,
@@ -21,10 +21,9 @@ export interface DirectoryTreeRuntimeOptions {
   checkedKeys: Ref<string[]>
   halfCheckedKeys: Ref<string[]>
   mapTarget: () => string | undefined
-  loader: ComputedRef<ReturnType<typeof useDirectoryLoader>>
-  resolver: ComputedRef<ReturnType<typeof useResourceResolver>>
+  loader: ReturnType<typeof useDirectoryLoader>
+  resolver: ReturnType<typeof useResourceResolver>
   resourceLayerManager: ReturnType<typeof useResourceLayerManager>
-  getMapContext: (mapTarget?: string) => Record<string, any>
   getMapProjection: () => string | undefined
   onLoadedChildren?: () => void
 }
@@ -79,7 +78,7 @@ export function useDirectoryTreeRuntime(options: DirectoryTreeRuntimeOptions) {
   }
 
   function getResolvedNodeDisabledReason(descriptor: ResourceDescriptor) {
-    return options.resolver.value.getCheckFailure(descriptor, {
+    return options.resolver.getCheckFailure(descriptor, {
       mapTarget: options.mapTarget()
     })
   }
@@ -119,7 +118,7 @@ export function useDirectoryTreeRuntime(options: DirectoryTreeRuntimeOptions) {
 
   async function resolveResourceNode(node: RuntimeTreeNode) {
     if (!node.resource) {
-      node.resource = await options.resolver.value.resolveResourceNode(node, {
+      node.resource = await options.resolver.resolveResourceNode(node, {
         mapProjection: options.getMapProjection()
       })
     }
@@ -133,7 +132,7 @@ export function useDirectoryTreeRuntime(options: DirectoryTreeRuntimeOptions) {
         const descriptor =
           !forceResolve && node.resource
             ? node.resource
-            : await options.resolver.value.resolveResourceNode(node, {
+            : await options.resolver.resolveResourceNode(node, {
                 mapProjection: options.getMapProjection()
               })
         syncResolvedNodeState(node, descriptor)
@@ -201,6 +200,12 @@ export function useDirectoryTreeRuntime(options: DirectoryTreeRuntimeOptions) {
     return !!node.pendingValidation || !!node.operationState || !!node.batchProgress || node.loadState === 'loading'
   }
 
+  function isNodeSelectionBlocked(node: RuntimeTreeNode): boolean {
+    const allowLoadingDirectorySelection =
+      node.kind === 'directory' && node.loadState === 'loading' && !node.operationState && !node.batchProgress
+    return isNodeBusy(node) && !allowLoadingDirectorySelection
+  }
+
   async function loadNodeChildren(treeNode: EventDataNode | RuntimeTreeNode) {
     const runtimeNode = findNodeByKey(String(treeNode.key)) || (isRuntimeTreeNode(treeNode) ? treeNode : undefined)
     if (!runtimeNode) {
@@ -215,7 +220,7 @@ export function useDirectoryTreeRuntime(options: DirectoryTreeRuntimeOptions) {
 
     runtimeNode.loadState = 'loading'
     try {
-      const result = await options.loader.value.loadChildren(runtimeNode)
+      const result = await options.loader.loadChildren(runtimeNode)
       runtimeNode.children = result.children
       markNodesAsPendingValidation(runtimeNode.children)
       await decorateTreeNodes(runtimeNode.children)
@@ -265,7 +270,6 @@ export function useDirectoryTreeRuntime(options: DirectoryTreeRuntimeOptions) {
     options.checkedResourceMap.value = new Map()
     options.checkedKeys.value = []
     options.halfCheckedKeys.value = []
-    options.resourceLayerManager.setMapContext(options.getMapContext())
     await options.resourceLayerManager.clearResources({ mapTarget: options.mapTarget() })
     await refreshResolvedNodeStates(options.runtimeNodes.value, true)
   }
@@ -282,6 +286,7 @@ export function useDirectoryTreeRuntime(options: DirectoryTreeRuntimeOptions) {
     setNodeOperationState,
     setDirectoryBatchProgress,
     clearDirectoryBatchProgress,
-    isNodeBusy
+    isNodeBusy,
+    isNodeSelectionBlocked
   }
 }

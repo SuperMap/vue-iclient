@@ -181,14 +181,6 @@ function resolveWmtsLayerMetadata(
   }
 }
 
-function hasRestDataLikeDataService(raw: Record<string, any>): boolean {
-  const dataInfo = asRecord(raw.dataInfo)
-  const dataItemServices = Array.isArray(dataInfo.dataItemServices) ? dataInfo.dataItemServices : []
-  return dataItemServices.some((service: Record<string, any>) =>
-    isDataServiceType(normalizeServiceType(service?.type ?? service?.serviceType))
-  )
-}
-
 export function buildMapLoadPlan(
   descriptor: ResourceDescriptor,
   options: ResourceLoadPlanBuildOptions
@@ -390,15 +382,9 @@ export async function buildDataLoadPlan(
   descriptor: ResourceDescriptor,
   options: ResourceLoadPlanBuildOptions
 ): Promise<ResourceLoadPlan> {
-  const raw = getDescriptorRaw(descriptor)
   let layerInfo: Record<string, any>
 
-  if (
-    (isDataServiceType(normalizeServiceType(descriptor.serviceType)) ||
-      hasRestDataLikeDataService(raw) ||
-      (typeof descriptor.serverUrl === 'string' && /\/rest\/data(?:\/|$|\?)/i.test(descriptor.serverUrl))) &&
-    descriptor.serverUrl
-  ) {
+  if (isDataServiceType(normalizeServiceType(descriptor.serviceType)) && descriptor.serverUrl) {
     try {
       layerInfo = await resolveRestDataServiceLayer(descriptor, options)
     } catch (_error) {

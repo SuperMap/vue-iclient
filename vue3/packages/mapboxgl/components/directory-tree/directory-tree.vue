@@ -143,6 +143,9 @@ function resolveRuntimeIportalUrl(configuredUrl: unknown, webmap: any): string {
 }
 
 const iportalUrl = computed(() => resolveRuntimeIportalUrl(props.iportalUrl, getMapContext().webmap))
+const directoryCheckable = computed(
+  () => normalizeDirectoryTreeOrEmpty(props.treeSchema).schema.directoryCheckable ?? true
+)
 const fetcher = createDirectoryTreeFetcher()
 const serviceProxyUrlPrefix = computed(
   () =>
@@ -150,20 +153,16 @@ const serviceProxyUrlPrefix = computed(
     (typeof window !== 'undefined' ? (window as any).iportalServiceProxyUrl : undefined)
 )
 
-const loader = computed(() =>
-  useDirectoryLoader({
-    iportalUrl: iportalUrl.value,
-    directoryCheckable: normalizeDirectoryTreeOrEmpty(props.treeSchema).schema.directoryCheckable ?? true,
-    fetcher
-  })
-)
-const resolver = computed(() =>
-  useResourceResolver({
-    iportalUrl: iportalUrl.value,
-    fetcher,
-    serviceProxyUrlPrefix: serviceProxyUrlPrefix.value
-  })
-)
+const loader = useDirectoryLoader({
+  iportalUrl: iportalUrl.value,
+  directoryCheckable: directoryCheckable.value,
+  fetcher
+})
+const resolver = useResourceResolver({
+  iportalUrl: iportalUrl.value,
+  fetcher,
+  serviceProxyUrlPrefix: serviceProxyUrlPrefix.value
+})
 const resourceLayerManager = useResourceLayerManager({
   iportalUrl: iportalUrl.value,
   fetcher
@@ -190,7 +189,11 @@ function getMapContext(mapTarget = props.mapTarget) {
   }
 }
 
-resourceLayerManager.setMapContext(getMapContext())
+function syncResourceLayerManagerContext(mapTarget = props.mapTarget) {
+  const mapContext = getMapContext(mapTarget)
+  resourceLayerManager.setMapContext(mapContext)
+  return mapContext
+}
 
 function getActiveMap() {
   if (!props.mapTarget) {
@@ -202,13 +205,8 @@ function getActiveMap() {
 function getMapProjection(): string | undefined {
   const map = getActiveMap()
   const crs = map?.getCRS?.()
-  return resolver.value.normalizeProjection(crs ?? crs?.wkt ?? crs?.epsgCode ?? crs?.code) || undefined
+  return resolver.normalizeProjection(crs ?? crs?.wkt ?? crs?.epsgCode ?? crs?.code) || undefined
 }
-
-const { getDisabledReasonText, isBrowseOnlyResourceNode, mapNodesForTree } = useDirectoryTreeDisplay({
-  t,
-  getMapTarget: () => props.mapTarget
-})
 
 const {
   resetTree,
@@ -222,7 +220,8 @@ const {
   setNodeOperationState,
   setDirectoryBatchProgress,
   clearDirectoryBatchProgress,
-  isNodeBusy
+  isNodeBusy,
+  isNodeSelectionBlocked
 } = useDirectoryTreeRuntime({
   runtimeNodes,
   expandedKeys,
@@ -233,7 +232,6 @@ const {
   loader,
   resolver,
   resourceLayerManager,
-  getMapContext,
   getMapProjection,
   onLoadedChildren: () => recalculateCheckState()
 })
@@ -248,7 +246,6 @@ const { clearCheckedResources, recalculateCheckState, toggleNodeCheckByKey } = u
   resolver,
   resourceLayerManager,
   getMapContext,
-  getMapProjection,
   findNodeByKey,
   resolveResourceNode,
   ensureDescendantsLoaded,
@@ -260,10 +257,16 @@ const { clearCheckedResources, recalculateCheckState, toggleNodeCheckByKey } = u
   emitCheckChange: payload => emit('check-change', payload)
 })
 
+const { getDisabledReasonText, isBrowseOnlyResourceNode, mapNodesForTree } = useDirectoryTreeDisplay({
+  t,
+  getMapTarget: () => props.mapTarget,
+  isNodeBusy
+})
 const displayTreeNodes = computed(() => mapNodesForTree(runtimeNodes.value))
 const showBlankPlaceholder = computed(() => displayTreeNodes.value.length === 0)
 const treeSchemaStructureKey = ref('')
 const treeRenderVersion = ref(0)
+let hasResolvedRuntimeContext = false
 
 function createSchemaStructureKey(treeSchema: DirectoryTreeProps['treeSchema']): string {
   const normalized = normalizeDirectoryTreeOrEmpty(treeSchema).schema
@@ -319,14 +322,49 @@ watch(
 )
 
 watch(
+  [iportalUrl, directoryCheckable, serviceProxyUrlPrefix],
+  async (nextValues, previousValues) => {
+    const [nextIportalUrl, nextDirectoryCheckable, nextServiceProxyUrlPrefix] = nextValues
+    loader.updateContext({
+      iportalUrl: nextIportalUrl,
+      directoryCheckable: nextDirectoryCheckable
+    })
+    resolver.updateContext({
+      iportalUrl: nextIportalUrl,
+      serviceProxyUrlPrefix: nextServiceProxyUrlPrefix
+    })
+    resourceLayerManager.updateOptions({
+      iportalUrl: nextIportalUrl
+    })
+
+    if (!hasResolvedRuntimeContext) {
+      hasResolvedRuntimeContext = true
+      return
+    }
+
+    const previousIportalUrl = previousValues?.[0]
+    const previousServiceProxyUrlPrefix = previousValues?.[2]
+    if (
+      nextIportalUrl !== previousIportalUrl ||
+      nextServiceProxyUrlPrefix !== previousServiceProxyUrlPrefix
+    ) {
+      await resourceLayerManager.clearResources()
+      clearCheckedResources()
+      syncResourceLayerManagerContext(props.mapTarget)
+      await refreshResolvedNodeStates(runtimeNodes.value, true)
+    }
+  },
+  { immediate: true }
+)
+
+watch(
   () => props.mapTarget,
   async (nextTarget, previousTarget) => {
     if (previousTarget) {
-      resourceLayerManager.setMapContext(getMapContext(previousTarget))
       await resourceLayerManager.clearResources({ mapTarget: previousTarget })
     }
     clearCheckedResources()
-    resourceLayerManager.setMapContext(getMapContext(nextTarget))
+    syncResourceLayerManagerContext(nextTarget)
     await refreshResolvedNodeStates(runtimeNodes.value, true)
   }
 )
@@ -336,10 +374,9 @@ async function handleBoundMapReload(mapTarget?: string) {
     return
   }
 
-  resourceLayerManager.setMapContext(getMapContext(mapTarget))
   await resourceLayerManager.clearResources({ mapTarget })
   clearCheckedResources()
-  resourceLayerManager.setMapContext(getMapContext(props.mapTarget))
+  syncResourceLayerManagerContext(props.mapTarget)
   await refreshResolvedNodeStates(runtimeNodes.value, true)
 }
 
@@ -352,6 +389,7 @@ function handleDeleteMap(event: { mapTarget?: string }) {
 }
 
 onMounted(() => {
+  syncResourceLayerManagerContext(props.mapTarget)
   mapEvent.on({
     'load-map': handleLoadMap,
     'delete-map': handleDeleteMap
@@ -364,7 +402,6 @@ onUnmounted(async () => {
     'delete-map': handleDeleteMap
   })
   if (props.mapTarget) {
-    resourceLayerManager.setMapContext(getMapContext(props.mapTarget))
     await resourceLayerManager.clearResources({ mapTarget: props.mapTarget })
   }
 })
@@ -407,9 +444,7 @@ async function handleNodeSelection(nodeKey: string, info?: { nativeEvent?: Event
     return
   }
 
-  const allowLoadingDirectorySelection =
-    node.kind === 'directory' && node.loadState === 'loading' && !node.operationState && !node.batchProgress
-  if ((node.pendingValidation || node.operationState || node.batchProgress) && !allowLoadingDirectorySelection) {
+  if (isNodeSelectionBlocked(node)) {
     return
   }
 

@@ -1,6 +1,4 @@
-import { FetchRequest } from '@supermapgis/iclient-common/util/FetchRequest'
 import WebMapViewModel from 'vue-iclient-controllers-mapboxgl/src/WebMapViewModel'
-import { vertifyEpsgCode } from 'vue-iclient-core/utils/iServerRestService'
 import mapEvent from 'vue-iclient-core/types/map-event'
 import proj4 from 'proj4'
 import type { DisabledReasonCode, ResourceDescriptor, ResourceLoadPlan } from '../types'
@@ -12,6 +10,7 @@ import {
   type ResourceToWebMapFetch
 } from '../utils/resource-to-webmap'
 import { defaultDirectoryTreeFetcher } from '../utils/fetcher'
+import { applyWebMapServicePrivatePatches } from './webmap-service-patch'
 
 export interface ResourceLayerManagerContext {
   map?: any
@@ -29,6 +28,11 @@ export interface ResourceLayerManagerOptions {
   ) => Promise<ResourceLoadPlan>
   mapEvent?: Pick<typeof mapEvent, 'setWebMap' | 'deleteWebMap'>
   WebMapViewModelClass?: new (mapId: any, options?: Record<string, any>, mapOptions?: Record<string, any>) => any
+}
+
+export interface ResourceLayerManagerOptionsUpdate {
+  iportalUrl?: string
+  withCredentials?: boolean
 }
 
 interface CachedResourceItem {
@@ -53,8 +57,6 @@ export class ResourceLayerManagerError extends Error {
 }
 
 const BUILT_IN_PROJECTIONS = new Set(['EPSG:3857', 'EPSG:4326', 'EPSG:4490', 'EPSG:4214', 'EPSG:4610'])
-const STRUCTURED_DATA_REQUEST_LIMIT = 5000
-const STRUCTURED_DATA_ITEMS_URL_PATTERN = /\/structureddata\/ogc-features\/collections\/all\/items\.json(?:\?|$)/i
 const RESOURCE_LOAD_TIMEOUT_MS = 15000
 
 function normalizeBaseUrl(iportalUrl: string): string {
@@ -78,54 +80,6 @@ function getProjectionCode(projection: unknown): string | undefined {
   return Number.isInteger(code) && code > 0 ? `EPSG:${code}` : undefined
 }
 
-function inferStructuredDataProjection(features: any[]): string | undefined {
-  if (!Array.isArray(features) || !features.length) {
-    return undefined
-  }
-
-  try {
-    const epsgCode = vertifyEpsgCode(features[0])
-    return epsgCode === 3857 ? 'EPSG:3857' : 'EPSG:4326'
-  } catch {
-    return undefined
-  }
-}
-
-function rectifyStructuredDataLayerProjection(layer: Record<string, any> | undefined, features: any[]) {
-  if (!layer) {
-    return
-  }
-
-  const inferredProjection = inferStructuredDataProjection(features)
-  if (!inferredProjection) {
-    return
-  }
-
-  const currentProjection = getProjectionCode(layer.projection)
-  if (!currentProjection) {
-    layer.projection = inferredProjection
-    return
-  }
-
-  if (
-    (currentProjection === 'EPSG:4326' || currentProjection === 'EPSG:3857') &&
-    currentProjection !== inferredProjection
-  ) {
-    layer.projection = inferredProjection
-  }
-}
-
-function isValidParentResourceId(parentResId: unknown): boolean {
-  if (parentResId == null) {
-    return false
-  }
-  if (typeof parentResId === 'string') {
-    const trimmed = parentResId.trim()
-    return trimmed !== '' && trimmed.toLowerCase() !== 'undefined'
-  }
-  return true
-}
-
 function isSameOriginUrl(url: string | undefined): boolean {
   if (!url || typeof window === 'undefined' || !window.location?.origin) {
     return false
@@ -135,57 +89,6 @@ function isSameOriginUrl(url: string | undefined): boolean {
   } catch {
     return false
   }
-}
-
-function isStructuredDataItemsUrl(url: unknown): url is string {
-  return typeof url === 'string' && STRUCTURED_DATA_ITEMS_URL_PATTERN.test(url)
-}
-
-function buildStructuredDataRequestUrl(url: string, offset = 0): string {
-  const [baseUrl] = url.split('?')
-  const requestUrl = `${baseUrl}?limit=${STRUCTURED_DATA_REQUEST_LIMIT}`
-  return offset > 0 ? `${requestUrl}&offset=${offset}` : requestUrl
-}
-
-function getStructuredDataFeatures(data: any): any[] {
-  if (Array.isArray(data?.features)) {
-    return data.features
-  }
-  return Array.isArray(data) ? data : []
-}
-
-function getStructuredDataMatchedCount(data: any, fallbackCount: number): number {
-  const matchedCount = Number(data?.numberMatched)
-  return Number.isFinite(matchedCount) && matchedCount >= 0 ? matchedCount : fallbackCount
-}
-
-async function fetchStructuredDataPage(webMapService: any, url: string): Promise<any> {
-  const proxy = typeof webMapService.handleProxy === 'function' ? webMapService.handleProxy() : undefined
-  const withCredentials =
-    typeof webMapService.handleWithCredentials === 'function'
-      ? webMapService.handleWithCredentials(proxy, url, webMapService.withCredentials)
-      : webMapService.withCredentials
-  const response = await FetchRequest.get(url, null, {
-    withCredentials,
-    proxy,
-    withoutFormatSuffix: true
-  })
-  return response.json()
-}
-
-async function fetchStructuredDataFeatures(webMapService: any, dataSourceUrl: string): Promise<any[]> {
-  const firstPage = await fetchStructuredDataPage(webMapService, buildStructuredDataRequestUrl(dataSourceUrl))
-  let featureResults = getStructuredDataFeatures(firstPage)
-  const matchedCount = getStructuredDataMatchedCount(firstPage, featureResults.length)
-  if (matchedCount <= STRUCTURED_DATA_REQUEST_LIMIT) {
-    return featureResults
-  }
-
-  for (let offset = STRUCTURED_DATA_REQUEST_LIMIT; offset < matchedCount; offset += STRUCTURED_DATA_REQUEST_LIMIT) {
-    const result = await fetchStructuredDataPage(webMapService, buildStructuredDataRequestUrl(dataSourceUrl, offset))
-    featureResults = featureResults.concat(getStructuredDataFeatures(result))
-  }
-  return featureResults
 }
 
 export function useResourceLayerManager(options: ResourceLayerManagerOptions) {
@@ -198,7 +101,18 @@ export function useResourceLayerManager(options: ResourceLayerManagerOptions) {
   const pendingLoads = new Map<string, PendingLoad>()
   const projectionWktCache = new Map<string, Promise<string | undefined>>()
   let currentContext: ResourceLayerManagerContext = {}
+  let currentIportalUrl = options.iportalUrl
+  let currentWithCredentials = options.withCredentials
   let queue = Promise.resolve()
+
+  function updateOptions(nextOptions: ResourceLayerManagerOptionsUpdate) {
+    const nextIportalUrl = nextOptions.iportalUrl ?? currentIportalUrl
+    if (nextIportalUrl !== currentIportalUrl) {
+      projectionWktCache.clear()
+    }
+    currentIportalUrl = nextIportalUrl
+    currentWithCredentials = nextOptions.withCredentials ?? currentWithCredentials
+  }
 
   function setMapContext(context: ResourceLayerManagerContext) {
     currentContext = {
@@ -242,8 +156,8 @@ export function useResourceLayerManager(options: ResourceLayerManagerOptions) {
     if (plan.withCredentials != null) {
       return plan.withCredentials
     }
-    if (options.withCredentials != null) {
-      return options.withCredentials
+    if (currentWithCredentials != null) {
+      return currentWithCredentials
     }
     if (inheritedOptions.withCredentials === true) {
       return true
@@ -251,7 +165,7 @@ export function useResourceLayerManager(options: ResourceLayerManagerOptions) {
 
     // DirectoryTree always targets the current iPortal. Default to credentialed requests
     // there so private same-origin resources can reuse the browser session cookie.
-    if (isSameOriginUrl(plan.serverUrl || options.iportalUrl)) {
+    if (isSameOriginUrl(plan.serverUrl || currentIportalUrl)) {
       return true
     }
 
@@ -267,7 +181,7 @@ export function useResourceLayerManager(options: ResourceLayerManagerOptions) {
     let projectionWktPromise = projectionWktCache.get(projectionCode)
     if (!projectionWktPromise) {
       const epsgCode = projectionCode.replace(/^EPSG:/, '')
-      const projectionUrl = `${normalizeBaseUrl(options.iportalUrl)}/epsgcodes/${epsgCode}.json`
+      const projectionUrl = `${normalizeBaseUrl(currentIportalUrl)}/epsgcodes/${epsgCode}.json`
       projectionWktPromise = fetcher(projectionUrl)
         .then((result: any) => (typeof result?.wkt === 'string' && result.wkt.trim() ? result.wkt : undefined))
         .catch(() => undefined)
@@ -288,7 +202,7 @@ export function useResourceLayerManager(options: ResourceLayerManagerOptions) {
         : undefined
     const inheritedOptions = getInheritedWebMapOptions(context)
     const childWebMapOptions: Record<string, any> = {
-      serverUrl: plan.serverUrl || options.iportalUrl,
+      serverUrl: plan.serverUrl || currentIportalUrl,
       withCredentials: resolveChildWebMapWithCredentials(plan, inheritedOptions),
       target: context.mapTarget,
       map: context.map,
@@ -303,40 +217,7 @@ export function useResourceLayerManager(options: ResourceLayerManagerOptions) {
       childWebMapOptions,
       {}
     )
-    const webMapService = childWebMap?._handler?.webMapService
-    if (webMapService && typeof webMapService.handleParentRes === 'function') {
-      const originalHandleParentRes = webMapService.handleParentRes.bind(webMapService)
-      webMapService.handleParentRes = (url: string, parentResId = webMapService.mapId, parentResType = 'MAP') => {
-        if (!isValidParentResourceId(parentResId)) {
-          return url
-        }
-        return originalHandleParentRes(url, parentResId, parentResType)
-      }
-    }
-    if (webMapService && typeof webMapService._getFeaturesFromUserData === 'function') {
-      const originalGetFeaturesFromUserData = webMapService._getFeaturesFromUserData.bind(webMapService)
-      webMapService._getFeaturesFromUserData = async (layer: Record<string, any>) => {
-        const dataSourceUrl = layer?.dataSource?.url
-        if (!isStructuredDataItemsUrl(dataSourceUrl)) {
-          return originalGetFeaturesFromUserData(layer)
-        }
-
-        const features = await fetchStructuredDataFeatures(webMapService, dataSourceUrl)
-        rectifyStructuredDataLayerProjection(layer, features)
-        const parsedFeatures =
-          typeof webMapService.parseGeoJsonData2Feature === 'function'
-            ? webMapService.parseGeoJsonData2Feature({
-                allDatas: {
-                  features
-                }
-              })
-            : features
-        return {
-          type: 'feature',
-          features: parsedFeatures
-        }
-      }
-    }
+    applyWebMapServicePrivatePatches(childWebMap?._handler?.webMapService)
     return childWebMap
   }
 
@@ -436,8 +317,8 @@ export function useResourceLayerManager(options: ResourceLayerManagerOptions) {
       }
 
       const loadPlan = await buildLoadPlan(descriptor, {
-        iportalUrl: options.iportalUrl,
-        withCredentials: options.withCredentials,
+        iportalUrl: currentIportalUrl,
+        withCredentials: currentWithCredentials,
         fetcher,
         mapLayerStyle: resolveMapLayerStyle(mergedContext.webmap),
         mapSnapshot: createMapSnapshot({
@@ -498,6 +379,7 @@ export function useResourceLayerManager(options: ResourceLayerManagerOptions) {
     cacheMaps,
     pendingLoads,
     setMapContext,
+    updateOptions,
     applyResource,
     removeResource,
     clearResources

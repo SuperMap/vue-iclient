@@ -1,4 +1,4 @@
-import type { ComputedRef, Ref } from 'vue'
+import type { Ref } from 'vue'
 import { message } from 'ant-design-vue'
 import type {
   DirectoryTreeCheckChangeEventPayload,
@@ -18,10 +18,9 @@ export interface DirectoryTreeCheckOptions {
   checkedKeys: Ref<string[]>
   halfCheckedKeys: Ref<string[]>
   mapTarget: () => string | undefined
-  resolver: ComputedRef<ReturnType<typeof useResourceResolver>>
+  resolver: ReturnType<typeof useResourceResolver>
   resourceLayerManager: ReturnType<typeof useResourceLayerManager>
   getMapContext: (mapTarget?: string) => Record<string, any>
-  getMapProjection: () => string | undefined
   findNodeByKey: (key: string, nodes?: RuntimeTreeNode[]) => RuntimeTreeNode | undefined
   resolveResourceNode: (node: RuntimeTreeNode) => Promise<ResourceDescriptor>
   ensureDescendantsLoaded: (node: RuntimeTreeNode) => Promise<void>
@@ -116,7 +115,7 @@ export function useDirectoryTreeCheck(options: DirectoryTreeCheckOptions) {
 
       if (checked) {
         const failure =
-          options.resolver.value.getCheckFailure(descriptor, { mapTarget: options.mapTarget() }) ||
+          options.resolver.getCheckFailure(descriptor, { mapTarget: options.mapTarget() }) ||
           descriptor.disabledReason ||
           (!descriptor.overlaySupported ? 'unsupported-resource-type' : undefined)
 
@@ -129,8 +128,8 @@ export function useDirectoryTreeCheck(options: DirectoryTreeCheckOptions) {
         }
 
         try {
-          options.resourceLayerManager.setMapContext(options.getMapContext())
-          await options.resourceLayerManager.applyResource(descriptor, options.getMapContext())
+          const mapContext = options.getMapContext()
+          await options.resourceLayerManager.applyResource(descriptor, mapContext)
         } catch (error) {
           payload.failures.push({
             nodeId: node.id,
@@ -148,7 +147,6 @@ export function useDirectoryTreeCheck(options: DirectoryTreeCheckOptions) {
         return
       }
 
-      options.resourceLayerManager.setMapContext(options.getMapContext())
       await options.resourceLayerManager.removeResource(descriptor.key)
       options.checkedResourceMap.value.delete(descriptor.key)
       payload.changedResources.push(descriptor)
@@ -202,56 +200,6 @@ export function useDirectoryTreeCheck(options: DirectoryTreeCheckOptions) {
     showCheckChangeSummary(payload, checked)
   }
 
-  async function reapplyCheckedResources() {
-    if (!options.mapTarget()) {
-      return
-    }
-    const mapContext = options.getMapContext()
-    if (!mapContext.map || !mapContext.mapTarget) {
-      return
-    }
-
-    options.resourceLayerManager.setMapContext(mapContext)
-    const checkedResources = Array.from(options.checkedResourceMap.value.values()) as ResourceDescriptor[]
-    options.checkedResourceMap.value = new Map()
-    for (const resource of checkedResources) {
-      const descriptor = await options.resolver.value.resolveResourceNode(
-        {
-          key: resource.key,
-          id: resource.key,
-          parentKey: resource.sourceNodeId,
-          title: resource.name,
-          kind: 'resource',
-          sourceType: 'resource-search',
-          isLeaf: true,
-          checkable: true,
-          disabled: false,
-          loadState: 'loaded',
-          raw: {
-            ...(resource.raw as Record<string, any>),
-            resourceType: resource.resourceType,
-            serviceType: resource.serviceType,
-            serverUrl: resource.serverUrl,
-            url: resource.serverUrl,
-            projection: resource.projection
-          }
-        },
-        {
-          mapProjection: options.getMapProjection()
-        }
-      )
-      if (descriptor.overlaySupported && !descriptor.disabledReason) {
-        try {
-          await options.resourceLayerManager.applyResource(descriptor, mapContext)
-          options.checkedResourceMap.value.set(descriptor.key, descriptor)
-        } catch (_error) {
-          continue
-        }
-      }
-    }
-    recalculateCheckState()
-  }
-
   function clearCheckedResources() {
     const clearedResources = Array.from(options.checkedResourceMap.value.values()) as ResourceDescriptor[]
     if (!clearedResources.length) {
@@ -271,7 +219,6 @@ export function useDirectoryTreeCheck(options: DirectoryTreeCheckOptions) {
   return {
     clearCheckedResources,
     recalculateCheckState,
-    toggleNodeCheckByKey,
-    reapplyCheckedResources
+    toggleNodeCheckByKey
   }
 }
