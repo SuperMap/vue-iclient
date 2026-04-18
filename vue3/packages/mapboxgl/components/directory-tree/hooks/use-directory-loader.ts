@@ -154,7 +154,7 @@ export function useDirectoryLoader(options: DirectoryLoaderOptions) {
 
   async function loadQueryDirectoryChildren(node: RuntimeTreeNode): Promise<DirectoryLoadResult> {
     const queryNode = node.raw as QueryDirectoryNode
-    const cacheKey = createQueryDirectoryCacheKey(queryNode.id)
+    const cacheKey = createQueryDirectoryCacheKey(queryNode.id, queryNode.params)
     const cached = queryCache.get(cacheKey)
     if (cached) {
       return cached

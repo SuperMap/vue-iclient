@@ -302,8 +302,12 @@ export function createIportalDirectoryCacheKey(directoryId: string | number): st
   return `resource-directory:${directoryId}`
 }
 
-export function createQueryDirectoryCacheKey(nodeId: string): string {
-  return `resource-search:${nodeId}`
+function serializeQueryDirectoryParams(params: QueryDirectoryQuery): string {
+  return JSON.stringify(params)
+}
+
+export function createQueryDirectoryCacheKey(nodeId: string, params: QueryDirectoryQuery): string {
+  return `resource-search:${nodeId}:${serializeQueryDirectoryParams(params)}`
 }
 
 export function normalizeDirectoryTreeSchema(

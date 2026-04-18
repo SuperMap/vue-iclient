@@ -274,6 +274,7 @@ function createSchemaStructureKey(treeSchema: DirectoryTreeProps['treeSchema']):
     nodes.map(node => ({
       id: String(node.id),
       type: node.type ?? 'default',
+      params: (node.type ?? 'default') === 'resource-search' ? node.params ?? null : undefined,
       children: collectNodes(node.children || [])
     }))
 

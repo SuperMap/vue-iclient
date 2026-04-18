@@ -265,6 +265,7 @@ export function useDirectoryTreeRuntime(options: DirectoryTreeRuntimeOptions) {
 
   async function resetTree(treeSchema: DirectoryTreeProps['treeSchema']) {
     const normalized = normalizeDirectoryTreeOrEmpty(treeSchema)
+    options.loader.queryCache.clear()
     options.runtimeNodes.value = normalized.rootNodes
     options.expandedKeys.value = []
     options.checkedResourceMap.value = new Map()
