@@ -226,8 +226,11 @@ const onPlayerPlay = () => {
   if (popupToPlay.value) {
     player.pause()
     player.currentTime(1)
+    player.autoplay(false)
     player.controlBar.el_.style.visibility = 'hidden'
     modalVisible.value = true
+  } else {
+    handleControlBar(player)
   }
   modalVisible.value = popupToPlay.value
   if (!popupToPlay.value && isFullscreen.value) {
@@ -244,6 +247,15 @@ const onFullscreenchange = (e: any) => {
 const onPlayerEnded = () => {
   if (!props.options.autoplay && !popupToPlay.value) {
     isFirst.value = true
+  }
+}
+
+const handleControlBar = (player) => {
+  let isControlBarShow = props.options.controls === null ? true : props.options.controls;
+  if (isControlBarShow) {
+    player.controlBar.el_.style.visibility = 'visible';
+  } else {
+    player.controlBar.el_.style.visibility = 'hidden';
   }
 }
 
