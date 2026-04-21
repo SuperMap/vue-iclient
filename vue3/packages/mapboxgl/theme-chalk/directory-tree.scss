@@ -40,7 +40,10 @@
     background: transparent;
     box-sizing: border-box;
     box-shadow: none;
-    overflow: hidden;
+    overflow: auto;
+    > .sm-component-card-body {
+      width: 100%;
+    }
 
     > .ant-card-body {
       display: flex;
