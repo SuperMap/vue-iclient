@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch, useTemplateRef, onMounted } from 'vue'
+import { reactive, watch, useTemplateRef, onMounted, onBeforeUnmount } from 'vue'
 import type { SceneMeasureProps } from './types'
 import { useSceneGetter, useLocale } from '@supermapgis/common/hooks/index.common'
 import { useSceneControl } from '@supermapgis/mapboxgl/hooks'
@@ -645,4 +645,12 @@ const setMouseCursor = (type: string) => {
     if (targetDiv) targetDiv.classList.remove('measureCur');
   }
 };
+
+onBeforeUnmount(() => {
+  clear();
+  if (isoline) {
+    isoline.destroy();
+  }
+  layers = undefined;
+});
 </script>

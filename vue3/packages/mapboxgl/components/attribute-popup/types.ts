@@ -54,7 +54,7 @@ interface DividerInfo {
 
 export interface PopupInfo {
   title?: string
-  layerId?: string
+  layerId?: string | string[]
   fieldCaptions?: Record<string, string>
   identifyField?: string
   elements: (Attribute | TextInfo | MediaInfo | DividerInfo)[]
