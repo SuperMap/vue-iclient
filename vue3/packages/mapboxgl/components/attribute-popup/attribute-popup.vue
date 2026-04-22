@@ -102,7 +102,13 @@ const loaded = (map: Map, webmap) => {
 useMapGetter<Map>({ loaded })
 
 const popupInfosValue = computed(() => {
-  return props.useMapPopup ? mapPopupInfos.value : props.popupInfos
+  const infos = props.useMapPopup ? mapPopupInfos.value : props.popupInfos
+  return infos.map(item => {
+    if (typeof item.layerId === 'string' && item.layerId) {
+      item.layerId =[item.layerId]
+    }
+    return item;
+  })
 })
 const popupConfigValue = computed(() => {
   const MSStyle = {
@@ -116,7 +122,7 @@ const popupConfigValue = computed(() => {
 })
 const contentHeight = ref('')
 
-const highlightLayerIds = computed(() => popupInfosValue.value?.map(item => item.layerId) || [])
+const highlightLayerIds = computed(() => popupInfosValue.value?.flatMap(item => item.layerId) || [])
 
 const resizeCallback = () => {
   contentHeight.value = popupContentRef.value?.$el.scrollHeight
@@ -154,10 +160,12 @@ const currentLayerId = ref('')
 const showSelectLayer = ref(true)
 const allPupDatasDisabled = ref([])
 const selectedLayers = computed(() => {
-  return clickedLayers.value.map(item => {
-    const { id, type } = item
-    const name = popupInfosValue.value?.find(item => item.layerId === id)?.title
-    return { id, type, name }
+  return popupInfosValue.value.filter(item => {
+    const isSelectLayer = clickedLayers.value.some(layer => item.layerId.includes(layer.id));
+    return isSelectLayer;
+  }).map(item => {
+    const selectedLayer = clickedLayers.value.find(layer => item.layerId.includes(layer.id));
+    return { id: selectedLayer?.id, type: selectedLayer?.type, name: item.title };
   })
 })
 const showPopupContent = computed(() => {
@@ -171,7 +179,7 @@ const isSelectLayer = computed(() => {
 
 const currentLayerName = computed(() => {
   return (
-    popupInfosValue.value?.find(item => item.layerId === currentLayerId.value)?.title ||
+    popupInfosValue.value?.find(item => item.layerId.includes(currentLayerId.value))?.title ||
     currentLayerId.value
   )
 })
@@ -244,7 +252,7 @@ watch(clickedLngLat, newVal => {
 })
 
 const popupInfo = computed(() => {
-  return popupInfosValue.value?.find(item => item.layerId === currentLayerId.value)
+  return popupInfosValue.value?.find(item =>item.layerId.includes(currentLayerId.value))
 })
 const paginationContent = computed(() => {
   return `${currentIndex.value + 1}/${enablePopupDatasLength.value}`
@@ -289,7 +297,7 @@ watch(allPopupDatas, () => {
     : []
 })
 const identifyField = computed(() => {
-  return props.popupInfos?.find(item => item.layerId === currentLayerId.value)?.identifyField
+  return props.popupInfos?.find(item => Array.isArray(item.layerId) ? item.layerId.includes(currentLayerId.value) : item.layerId === currentLayerId.value)?.identifyField
 })
 
 const changeIndex = (step: number) => {
