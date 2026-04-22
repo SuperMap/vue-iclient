@@ -13,6 +13,7 @@
       :id="chartId"
       ref="chartRef"
       :option="_chartOptions as any"
+      :update-options="chartUpdateOptions"
       :init-options="initOptions"
       :group="group"
       :manual-update="manualUpdate"
@@ -67,6 +68,7 @@ const {
   _chartStyle,
   tablePopupProps,
   dataZoomHandler,
+  chartUpdateOptions,
   getChartFeatures,
   mergeOptions,
   resize,

@@ -145,7 +145,7 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
       mergeOptions.series.push(...extraSeries)
     }
 
-    return mergeOptions
+    return normalizeChartOptions(mergeOptions)
   }
 
   const _handlerColorGroup = (serielDataLength: number) => {
@@ -187,6 +187,344 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
   }
 
   // 计算属性
+  const INVALID_THRESHOLD_COLLECTION = [undefined, null, '']
+
+  const getChartSeriesType = (options: any) => {
+    return props.seriesType || options?.series?.[0]?.type
+  }
+
+  const getSeriesFallbackColor = (series: any[], seriesIndex: number) => {
+    const palette = getMultiColorGroup(colorGroupsData.value, Math.max(series.length, 1))
+    return palette?.[seriesIndex]
+  }
+
+  const getVisualMapFallbackColor = (series: any[], seriesIndex: number) => {
+    const paletteColor = getSeriesFallbackColor(series, seriesIndex)
+    return typeof paletteColor === 'object' ? paletteColor?.colorStops?.[0]?.color : paletteColor
+  }
+
+  const getSeriesLineRenderColor = (serie: any, seriesIndex: number) => {
+    return (
+      serie?.lineStyle?.color ||
+      props.colorGroup?.[seriesIndex] ||
+      serie?.itemStyle?.borderColor ||
+      serie?.itemStyle?.color ||
+      getSeriesFallbackColor([serie], 0)
+    )
+  }
+
+  const getSeriesNumericValues = (seriesData: any[] = []) => {
+    return seriesData
+      .map((item: any) => {
+        let value = item
+        if (Array.isArray(item)) {
+          value = item[item.length - 1]
+        } else if (item && typeof item === 'object' && 'value' in item) {
+          value = Array.isArray(item.value) ? item.value[item.value.length - 1] : item.value
+        }
+        const nextValue = Number(value)
+        return Number.isFinite(nextValue) ? nextValue : null
+      })
+      .filter((item: number | null): item is number => item !== null)
+  }
+
+  const getThresholdDatas = (thresholdConfig: any[], serieIndex: number) => {
+    const thresholdItem = thresholdConfig?.[serieIndex]
+    if (!thresholdItem?.show) {
+      return []
+    }
+    switch (thresholdItem.type) {
+      case 'data':
+        return thresholdItem.dataConfig || []
+      case 'number':
+        return thresholdItem.rankConfig || []
+      default:
+        return []
+    }
+  }
+
+  const normalizeLineSeries = (series: any[] = []) => {
+    return series.map((serie: any, seriesIndex: number) => {
+      const isLineSerie = serie && (serie.type === 'line' || (!serie.type && props.seriesType === 'line'))
+      if (!isLineSerie) {
+        return serie
+      }
+      const useEmptyCircle =
+        serie.symbol === 'emptyCircle' || serie.__bxSymbolDisplay === 'emptyCircle'
+      if (!useEmptyCircle) {
+        return serie
+      }
+      const nextSerie = cloneDeep(serie)
+      const hasThreshold = getThresholdDatas(props.thresholdConfig || [], seriesIndex).length > 0
+      const normalNodeColor = nextSerie?.itemStyle?.borderColor || nextSerie?.itemStyle?.color
+      nextSerie.itemStyle = nextSerie.itemStyle || {}
+      nextSerie.emphasis = nextSerie.emphasis || {}
+      nextSerie.emphasis.itemStyle = nextSerie.emphasis.itemStyle || {}
+
+      if (hasThreshold) {
+        nextSerie.symbol = 'emptyCircle'
+        if (normalNodeColor) {
+          nextSerie.itemStyle.color = normalNodeColor
+        }
+        nextSerie.itemStyle.borderColor = undefined
+        nextSerie.emphasis.itemStyle.color = undefined
+        nextSerie.emphasis.itemStyle.borderColor = undefined
+        nextSerie.lineStyle = nextSerie.lineStyle || {}
+        nextSerie.lineStyle.color = undefined
+        nextSerie.emphasis.lineStyle = nextSerie.emphasis.lineStyle || {}
+        nextSerie.emphasis.lineStyle.color = undefined
+        return nextSerie
+      }
+
+      nextSerie.symbol = 'circle'
+      const backgroundColor = props.background || '#fff'
+      if (nextSerie.itemStyle.borderWidth === undefined) {
+        nextSerie.itemStyle.borderWidth = 2
+      }
+      if (normalNodeColor) {
+        nextSerie.itemStyle.borderColor = normalNodeColor
+        nextSerie.lineStyle = nextSerie.lineStyle || {}
+        if (!nextSerie.lineStyle.color) {
+          nextSerie.lineStyle.color = normalNodeColor
+        }
+      }
+      nextSerie.itemStyle.color = backgroundColor
+      nextSerie.emphasis.itemStyle.borderWidth = nextSerie.itemStyle.borderWidth
+      nextSerie.emphasis.itemStyle.borderColor = nextSerie.itemStyle.borderColor
+      nextSerie.emphasis.itemStyle.color = backgroundColor
+      return nextSerie
+    })
+  }
+
+  const buildThresholdVisualMap = (series: any[] = []) => {
+    if (getChartSeriesType({ series }) !== 'line' || !props.thresholdConfig?.length) {
+      return null
+    }
+    const visualMap = props.thresholdConfig.reduce((result: any[], item: any, index: number) => {
+      const thresholdDatas = getThresholdDatas(props.thresholdConfig || [], index)
+      if (!item?.show || !thresholdDatas.length) {
+        return result
+      }
+      const values = getSeriesNumericValues(series[index]?.data)
+      if (!values.length) {
+        return result
+      }
+      const sortedValues = [...values].sort((prev, next) => next - prev)
+      const outOfRangeColor = getVisualMapFallbackColor(series, index)
+      const pieces = thresholdDatas.reduce((pieceResult: any[], piece: any) => {
+        if (
+          INVALID_THRESHOLD_COLLECTION.includes(piece?.min) &&
+          INVALID_THRESHOLD_COLLECTION.includes(piece?.max)
+        ) {
+          return pieceResult
+        }
+        if (
+          item.type === 'number' &&
+          ((piece?.min && +piece.min > sortedValues.length) ||
+            (piece?.max && +piece.max > sortedValues.length))
+        ) {
+          return pieceResult
+        }
+        const nextPiece = Object.assign({}, piece)
+        if (!nextPiece.color && outOfRangeColor) {
+          nextPiece.color = outOfRangeColor
+        }
+        if (INVALID_THRESHOLD_COLLECTION.includes(nextPiece.min)) {
+          nextPiece.min = Math.min(...sortedValues)
+        }
+        if (INVALID_THRESHOLD_COLLECTION.includes(nextPiece.max)) {
+          nextPiece.max = Math.max(...sortedValues)
+        }
+        if (item.type === 'number') {
+          const start = nextPiece.min ? nextPiece.min - 1 : 0
+          const end = nextPiece.max ? nextPiece.max : sortedValues.length
+          const subValues = sortedValues.slice(start, end)
+          if (!subValues.length) {
+            return pieceResult
+          }
+          nextPiece.min = +subValues[subValues.length - 1]
+          nextPiece.max = +subValues[0]
+        }
+        pieceResult.push(nextPiece)
+        return pieceResult
+      }, [])
+      if (!pieces.length) {
+        return result
+      }
+      result.push({
+        show: false,
+        seriesIndex: index,
+        pieces,
+        outOfRange: outOfRangeColor
+          ? {
+              color: outOfRangeColor
+            }
+          : undefined
+      })
+      return result
+    }, [])
+    return visualMap
+  }
+
+  const getDataValue = (item: any) => {
+    if (Array.isArray(item)) {
+      item = item[item.length - 1]
+    } else if (item && typeof item === 'object' && 'value' in item) {
+      item = Array.isArray(item.value) ? item.value[item.value.length - 1] : item.value
+    }
+    const nextValue = Number(item)
+    return Number.isFinite(nextValue) ? nextValue : null
+  }
+
+  const matchThresholdPiece = (visualMapItem: any, value: number | null) => {
+    if (value === null) {
+      return null
+    }
+    const pieces = visualMapItem?.pieces || []
+    for (let index = 0; index < pieces.length; index++) {
+      const piece = pieces[index]
+      let matched = true
+      if (piece.value !== undefined) {
+        matched = value === piece.value
+      } else {
+        if (piece.min !== undefined && value < piece.min) matched = false
+        if (piece.max !== undefined && value > piece.max) matched = false
+        if (piece.gt !== undefined && value <= piece.gt) matched = false
+        if (piece.gte !== undefined && value < piece.gte) matched = false
+        if (piece.lt !== undefined && value >= piece.lt) matched = false
+        if (piece.lte !== undefined && value > piece.lte) matched = false
+      }
+      if (matched) {
+        return piece
+      }
+    }
+    return null
+  }
+
+  const getThresholdSegmentColor = (
+    visualMapItem: any,
+    startValue: number | null,
+    endValue: number | null,
+    fallbackColor: any
+  ) => {
+    const endMatch = matchThresholdPiece(visualMapItem, endValue)
+    if (endMatch?.color) {
+      return endMatch.color
+    }
+    const startMatch = matchThresholdPiece(visualMapItem, startValue)
+    if (startMatch?.color) {
+      return startMatch.color
+    }
+    return fallbackColor
+  }
+
+  const createThresholdLineOverlaySeries = (options: any, series: any[] = []) => {
+    if (getChartSeriesType(options) !== 'line') {
+      return []
+    }
+    const visualMapList = Array.isArray(options.visualMap)
+      ? options.visualMap
+      : options.visualMap
+      ? [options.visualMap]
+      : []
+
+    return series.reduce((result: any[], serie: any, seriesIndex: number) => {
+      const visualMapItem = visualMapList.find((item: any) => item.seriesIndex === seriesIndex)
+      if (!visualMapItem?.pieces?.length || !Array.isArray(serie?.data) || serie.data.length < 2) {
+        return result
+      }
+
+      const fallbackColor = getSeriesLineRenderColor(serie, seriesIndex)
+      const lineWidth = serie?.lineStyle?.width ?? 2
+      const lineOpacity = serie?.lineStyle?.opacity ?? 1
+      const segmentData = []
+
+      for (let index = 1; index < serie.data.length; index++) {
+        const startValue = getDataValue(serie.data[index - 1])
+        const endValue = getDataValue(serie.data[index])
+        if (startValue === null || endValue === null) {
+          continue
+        }
+        segmentData.push({
+          value: [
+            index - 1,
+            startValue,
+            index,
+            endValue,
+            getThresholdSegmentColor(visualMapItem, startValue, endValue, fallbackColor),
+            lineWidth,
+            lineOpacity
+          ]
+        })
+      }
+
+      if (!segmentData.length) {
+        return result
+      }
+
+      serie.lineStyle = serie.lineStyle || {}
+      serie.lineStyle.opacity = 0
+      serie.emphasis = serie.emphasis || {}
+      serie.emphasis.lineStyle = serie.emphasis.lineStyle || {}
+      serie.emphasis.lineStyle.opacity = 0
+
+      result.push({
+        type: 'custom',
+        coordinateSystem: 'cartesian2d',
+        __bxThresholdLineOverlay: true,
+        silent: true,
+        animation: false,
+        tooltip: {
+          show: false
+        },
+        data: segmentData,
+        renderItem: (params: any, api: any) => {
+          const start = api.coord([api.value(0), api.value(1)])
+          const end = api.coord([api.value(2), api.value(3)])
+          return {
+            type: 'line',
+            shape: {
+              x1: start[0],
+              y1: start[1],
+              x2: end[0],
+              y2: end[1]
+            },
+            style: {
+              stroke: api.value(4),
+              lineWidth: api.value(5),
+              opacity: api.value(6)
+            },
+            silent: true
+          }
+        }
+      })
+      return result
+    }, [])
+  }
+
+  const normalizeChartOptions = (options: any) => {
+    if (!options?.series?.length) {
+      return options
+    }
+    const nextOptions = cloneDeep(options)
+    nextOptions.series = normalizeLineSeries(
+      nextOptions.series.filter((serie: any) => !serie?.__bxThresholdLineOverlay)
+    )
+    const visualMap = buildThresholdVisualMap(nextOptions.series)
+    if (visualMap) {
+      if (visualMap.length > 0) {
+        nextOptions.visualMap = visualMap
+      } else if (props.thresholdConfig?.length) {
+        delete nextOptions.visualMap
+      }
+    }
+    const thresholdLineOverlays = createThresholdLineOverlaySeries(nextOptions, nextOptions.series)
+    if (thresholdLineOverlays.length > 0) {
+      nextOptions.series.push(...thresholdLineOverlays)
+    }
+    return nextOptions
+  }
+
   const _chartStyle = computed(() => ({
     width: '100%',
     height: props.headerName ? 'calc(100% - 30px)' : '100%'
@@ -216,15 +554,35 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
       }
       return serie
     })
-    return {
+    return normalizeChartOptions({
       ...props.options,
       series
-    }
+    })
   })
 
   const _chartOptions = computed(() => {
     return (_isRequestData.value && echartOptions.value) || parseOptions.value
   })
+
+  const chartUpdateOptions = ref({
+    replaceMerge: ['series', 'visualMap']
+  })
+
+  const getSeriesStructureSignature = (series: any[] = []) => {
+    return JSON.stringify(
+      series.map((serie: any) => ({
+        id: serie?.id ?? null,
+        name: serie?.name ?? null,
+        type: serie?.type ?? null,
+        customType: serie?.customType ?? null,
+        coordinateSystem: serie?.coordinateSystem ?? null,
+        xAxisIndex: serie?.xAxisIndex ?? null,
+        yAxisIndex: serie?.yAxisIndex ?? null,
+        datasetIndex: serie?.datasetIndex ?? null,
+        thresholdOverlay: !!serie?.__bxThresholdLineOverlay
+      }))
+    )
+  }
 
   // 是否传入dataset和datasetOptions
   const _isRequestData = computed(() => {
@@ -331,6 +689,21 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
       _queueChartResize()
     },
     { deep: true }
+  )
+
+  watch(
+    _chartOptions,
+    (next, prev) => {
+      const replaceMerge = ['visualMap']
+      if (
+        getSeriesStructureSignature(next?.series || []) !==
+        getSeriesStructureSignature(prev?.series || [])
+      ) {
+        replaceMerge.unshift('series')
+      }
+      chartUpdateOptions.value = { replaceMerge }
+    },
+    { immediate: true }
   )
 
   watch(
@@ -1819,6 +2192,7 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
     // 计算属性
     _chartStyle,
     _chartOptions,
+    chartUpdateOptions,
 
     // 方法
     getChartFeatures,
