@@ -7,7 +7,7 @@ import MapEvents, { MAP_EVENT_NAMES } from 'vue-iclient-controllers-mapboxgl/src
 import { useVmProps, useLocale, useEventListeners } from '@supermapgis/common/hooks/index.common'
 import { addListener, removeListener } from 'resize-detector'
 import { debounce, pick } from 'lodash-es'
-import { onBeforeUnmount, onMounted, onUnmounted, ref, watch, computed, useTemplateRef } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch, computed, useTemplateRef } from 'vue'
 import { message } from 'ant-design-vue'
 import SmSpin from '@supermapgis/common/components/spin/Spin'
 import { webMapPropsDefault } from './types'
@@ -85,6 +85,8 @@ const controlComponents = computed(() => {
 
 let viewModel: InstanceType<typeof WebMapViewModel>
 let __resizeHandler: () => void
+let isUnmounting = false
+let viewModelEventHandlers: Record<string, (e?: any) => void> | undefined
 
 const { t } = useLocale()
 const { setViewModel } = useVmProps(props, viewModelProps)
@@ -103,6 +105,7 @@ const syncLayerStyleToViewModel = (layerStyle: Record<string, any> | undefined) 
 }
 
 const initializeWebMap = () => {
+  isUnmounting = false
   viewModel = new WebMapViewModel(
     props.mapId,
     pick(props, [
@@ -130,8 +133,11 @@ const initializeWebMap = () => {
 }
 
 const registerEvents = () => {
-  viewModel.on({
+  viewModelEventHandlers = {
     addlayerssucceeded: e => {
+      if (isUnmounting) {
+        return
+      }
       spinning.value = false
       mapEvent.setMap(props.target, e.map, viewModel)
       e.map.resize()
@@ -145,6 +151,9 @@ const registerEvents = () => {
       emit('load', { map: e.map })
     },
     mapcreatefailed: e => {
+      if (isUnmounting) {
+        return
+      }
       /**
        * @event getMapFailed
        * @desc 获取 WebMap 地图信息失败。
@@ -155,6 +164,9 @@ const registerEvents = () => {
       spinning.value = false
     },
     layercreatefailed: e => {
+      if (isUnmounting) {
+        return
+      }
       /**
        * @event getLayerDatasourceFailed
        * @desc 获取图层数据失败。
@@ -179,15 +191,25 @@ const registerEvents = () => {
       })
     },
     baidumapnotsupport: () => {
+      if (isUnmounting) {
+        return
+      }
       notifyErrorTip({ defaultTip: 'baiduMapNotSupport', showErrorMsg: false })
     },
     layerorsourcenameduplicated: () => {
+      if (isUnmounting) {
+        return
+      }
       notifyErrorTip({ defaultTip: 'layerorsourcenameduplicated', showErrorMsg: false })
     },
     mapbeforeremove: () => {
+      if (isUnmounting) {
+        return
+      }
       mapEvent.deleteMap(props.target)
     }
-  })
+  }
+  viewModel.on(viewModelEventHandlers)
   if (props.autoresize) {
     __resizeHandler = debounce(
       () => {
@@ -226,6 +248,9 @@ const notifyErrorTip = ({
   defaultTip: string
   showErrorMsg?: boolean
 }) => {
+  if (isUnmounting) {
+    return
+  }
   let msg = ''
   if (showErrorMsg) {
     if (e.error && e.error.message) {
@@ -235,6 +260,25 @@ const notifyErrorTip = ({
     }
   }
   message.error(t(`webmap.${defaultTip}`) + msg)
+}
+
+const unregisterEvents = () => {
+  if (viewModel && viewModelEventHandlers) {
+    viewModel.un(viewModelEventHandlers)
+    viewModelEventHandlers = undefined
+  }
+}
+
+const cleanupWebMap = () => {
+  if (isUnmounting) {
+    return
+  }
+  isUnmounting = true
+  unregisterEvents()
+  mapEvent.deleteMap(props.target)
+  if (viewModel && viewModel.cleanWebMap) {
+    viewModel.cleanWebMap()
+  }
 }
 
 const destory = () => {
@@ -272,11 +316,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   destory()
-})
-
-onUnmounted(() => {
-  mapEvent.deleteMap(props.target)
-  viewModel.cleanWebMap()
+  cleanupWebMap()
 })
 </script>
 
