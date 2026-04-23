@@ -502,13 +502,101 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
     }, [])
   }
 
+  const createThresholdNodeOverlaySeries = (options: any, series: any[] = []) => {
+    if (getChartSeriesType(options) !== 'line') {
+      return []
+    }
+    const visualMapList = Array.isArray(options.visualMap)
+      ? options.visualMap
+      : options.visualMap
+      ? [options.visualMap]
+      : []
+
+    return series.reduce((result: any[], serie: any, seriesIndex: number) => {
+      const useEmptyCircle =
+        serie?.symbol === 'emptyCircle' || serie?.__bxSymbolDisplay === 'emptyCircle'
+      const visualMapItem = visualMapList.find((item: any) => item.seriesIndex === seriesIndex)
+      if (!useEmptyCircle || !visualMapItem?.pieces?.length || !Array.isArray(serie?.data) || !serie.data.length) {
+        return result
+      }
+
+      const borderWidth = Number(serie?.itemStyle?.borderWidth ?? 2)
+      if (!(borderWidth > 0)) {
+        return result
+      }
+      const symbolSize = Array.isArray(serie?.symbolSize)
+        ? Number(serie.symbolSize[0] ?? serie.symbolSize[serie.symbolSize.length - 1] ?? 8)
+        : Number(serie?.symbolSize ?? 8)
+      const radius = Math.max((Number.isFinite(symbolSize) ? symbolSize : 8) / 2, borderWidth / 2 + 1)
+      const backgroundColor = props.background || '#fff'
+      const fallbackBorderColor =
+        visualMapItem?.outOfRange?.color || getSeriesLineRenderColor(serie, seriesIndex)
+      const pointData = []
+
+      for (let index = 0; index < serie.data.length; index++) {
+        const value = getDataValue(serie.data[index])
+        if (value === null) {
+          continue
+        }
+        pointData.push({
+          value: [
+            index,
+            value,
+            matchThresholdPiece(visualMapItem, value)?.color || fallbackBorderColor,
+            radius,
+            borderWidth,
+            backgroundColor
+          ]
+        })
+      }
+
+      if (!pointData.length) {
+        return result
+      }
+
+      result.push({
+        type: 'custom',
+        coordinateSystem: 'cartesian2d',
+        __bxThresholdNodeOverlay: true,
+        silent: true,
+        animation: false,
+        z: (serie?.z ?? 2) + 2,
+        zlevel: serie?.zlevel,
+        tooltip: {
+          show: false
+        },
+        data: pointData,
+        renderItem: (params: any, api: any) => {
+          const point = api.coord([api.value(0), api.value(1)])
+          return {
+            type: 'circle',
+            shape: {
+              cx: point[0],
+              cy: point[1],
+              r: api.value(3)
+            },
+            style: {
+              stroke: api.value(2),
+              fill: api.value(5),
+              lineWidth: api.value(4)
+            },
+            silent: true
+          }
+        }
+      })
+      return result
+    }, [])
+  }
+
   const normalizeChartOptions = (options: any) => {
     if (!options?.series?.length) {
       return options
     }
     const nextOptions = cloneDeep(options)
     nextOptions.series = normalizeLineSeries(
-      nextOptions.series.filter((serie: any) => !serie?.__bxThresholdLineOverlay)
+      nextOptions.series.filter(
+        (serie: any) => !serie?.__bxThresholdLineOverlay && !serie?.__bxThresholdNodeOverlay
+      )
     )
     const visualMap = buildThresholdVisualMap(nextOptions.series)
     if (visualMap) {
@@ -521,6 +609,10 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
     const thresholdLineOverlays = createThresholdLineOverlaySeries(nextOptions, nextOptions.series)
     if (thresholdLineOverlays.length > 0) {
       nextOptions.series.push(...thresholdLineOverlays)
+    }
+    const thresholdNodeOverlays = createThresholdNodeOverlaySeries(nextOptions, nextOptions.series)
+    if (thresholdNodeOverlays.length > 0) {
+      nextOptions.series.push(...thresholdNodeOverlays)
     }
     return nextOptions
   }
@@ -580,6 +672,18 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
         yAxisIndex: serie?.yAxisIndex ?? null,
         datasetIndex: serie?.datasetIndex ?? null,
         thresholdOverlay: !!serie?.__bxThresholdLineOverlay
+      }))
+    )
+  }
+
+  const getDataZoomStructureSignature = (dataZoom: any) => {
+    const list = Array.isArray(dataZoom) ? dataZoom : dataZoom ? [dataZoom] : []
+    return JSON.stringify(
+      list.map((item: any) => ({
+        type: item?.type ?? null,
+        mode: item?.mode ?? null,
+        xAxisIndex: item?.xAxisIndex ?? null,
+        yAxisIndex: item?.yAxisIndex ?? null
       }))
     )
   }
@@ -700,6 +804,12 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
         getSeriesStructureSignature(prev?.series || [])
       ) {
         replaceMerge.unshift('series')
+      }
+      if (
+        getDataZoomStructureSignature(next?.dataZoom) !==
+        getDataZoomStructureSignature(prev?.dataZoom)
+      ) {
+        replaceMerge.unshift('dataZoom')
       }
       chartUpdateOptions.value = { replaceMerge }
     },
