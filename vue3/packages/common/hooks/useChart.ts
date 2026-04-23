@@ -256,7 +256,24 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
       }
       const nextSerie = cloneDeep(serie)
       const hasThreshold = getThresholdDatas(props.thresholdConfig || [], seriesIndex).length > 0
-      const normalNodeColor = nextSerie?.itemStyle?.borderColor || nextSerie?.itemStyle?.color
+      const backgroundColor = props.background || '#fff'
+      const fillColor =
+        typeof nextSerie?.itemStyle?.color === 'object'
+          ? nextSerie.itemStyle.color?.colorStops?.[0]?.color
+          : nextSerie?.itemStyle?.color
+      const backgroundFill =
+        typeof backgroundColor === 'object'
+          ? (backgroundColor as any)?.colorStops?.[0]?.color
+          : backgroundColor
+      const fillMatchesBackground =
+        typeof fillColor === 'string' &&
+        typeof backgroundFill === 'string' &&
+        fillColor.toLowerCase() === backgroundFill.toLowerCase()
+      const normalNodeColor =
+        nextSerie?.itemStyle?.borderColor ||
+        nextSerie?.lineStyle?.color ||
+        (fillColor && !fillMatchesBackground ? nextSerie?.itemStyle?.color : undefined) ||
+        getSeriesFallbackColor(series, seriesIndex)
       nextSerie.itemStyle = nextSerie.itemStyle || {}
       nextSerie.emphasis = nextSerie.emphasis || {}
       nextSerie.emphasis.itemStyle = nextSerie.emphasis.itemStyle || {}
@@ -277,7 +294,6 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
       }
 
       nextSerie.symbol = 'circle'
-      const backgroundColor = props.background || '#fff'
       if (nextSerie.itemStyle.borderWidth === undefined) {
         nextSerie.itemStyle.borderWidth = 2
       }
