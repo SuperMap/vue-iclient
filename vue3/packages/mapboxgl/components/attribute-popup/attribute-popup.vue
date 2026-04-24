@@ -96,7 +96,7 @@ const loaded = (map: Map, webmap) => {
   removePopup()
   removed()
   mapPopupInfos.value = webmap.getPopupInfos()
-  setLayerIds(highlightLayerIds.value)
+  setLayerIds(highlightLayerIds.value, sourceLayers.value)
 }
 
 useMapGetter<Map>({ loaded })
@@ -123,6 +123,7 @@ const popupConfigValue = computed(() => {
 const contentHeight = ref('')
 
 const highlightLayerIds = computed(() => popupInfosValue.value?.flatMap(item => item.layerId) || [])
+const sourceLayers = computed(() => popupInfosValue.value?.map(item => item.layerId) || [])
 
 const resizeCallback = () => {
   contentHeight.value = popupContentRef.value?.$el.scrollHeight
@@ -144,7 +145,7 @@ const {
   queryFeaturesByLayerId,
   setHighlightLayerFilter,
   removed
-} = useLayerHighlightHooks(props, highlightLayerIds)
+} = useLayerHighlightHooks(props, highlightLayerIds, sourceLayers)
 
 const rootEl = useTemplateRef('popupRef')
 const popupProps = reactive({
@@ -210,7 +211,7 @@ watch(
 
 watchEffect(() => {
   // 如果图层 <= 1 ， 不显示
-  if (clickedLayers.value.length <= 1) {
+  if (selectedLayers.value.length <= 1) {
     showSelectLayer.value = false
     return
   }
@@ -232,7 +233,7 @@ const getCurrentLayerId = () => {
     return currentLayerId.value
   }
   // 如果单选或第一次多选，图层只有一个
-  if (clickedLayers.value.length === 1) {
+  if (selectedLayers.value.length === 1) {
     return clickedLayers.value[0].id
   }
   // 如果单选或第一次多选，图层有多个

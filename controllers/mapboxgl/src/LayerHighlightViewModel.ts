@@ -42,6 +42,7 @@ export interface LayerEventCursorMap {
 export interface HighlightLayerOptions {
   name: string;
   layerIds?: string[];
+  sourceLayers?: string[][];
   style: HighlightStyle;
   featureFieldsMap?: Record<string, string[]>;
   displayFieldsMap?: Record<string, FieldsDisplayInfo[]>;
@@ -210,6 +211,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
       ...options,
       style: this.transHighlightStyle(options.style),
       layerIds: (options.layerIds ?? []).slice(),
+      sourceLayers: options.sourceLayers,
       featureFieldsMap: options.featureFieldsMap,
       displayFieldsMap: options.displayFieldsMap,
       clickTolerance: options.clickTolerance ?? 5,
@@ -221,19 +223,20 @@ export default class HighlightLayer extends mapboxgl.Evented {
     this.map = map;
     this.webmap = webmap;
     this.registerMapClick();
-    this.setTargetLayers(this.highlightOptions.layerIds);
+    this.setTargetLayers(this.highlightOptions.layerIds, this.highlightOptions.sourceLayers);
   }
 
   setHighlightStyle(style: HighlightStyle) {
     this.highlightOptions.style = this.transHighlightStyle(style);
   }
 
-  setTargetLayers(layerIds: string[]) {
+  setTargetLayers(layerIds: string[], sourceLayers?: string[][]) {
     this.unregisterLayerMouseEvents();
     this.registerLayerMouseEvents(layerIds);
     this.unregisterLayerMultiClick();
     this.registerLayerMultiClick();
     this.highlightOptions.layerIds = layerIds;
+    this.highlightOptions.sourceLayers = sourceLayers;
   }
 
   setFeatureFieldsMap(fieldsMap: Record<string, string[]>) {
@@ -624,6 +627,15 @@ export default class HighlightLayer extends mapboxgl.Evented {
     this.handleMapSelections(features);
   }
 
+  getMoreHighlightLayerIds(layerId: string) {
+    if(!layerId) return []
+    if(!this.highlightOptions.sourceLayers) {
+      return [layerId];
+    }
+    const sourceLayers = this.highlightOptions.sourceLayers?.find(item => item.includes(layerId))
+    return sourceLayers
+  }
+
   handleMapSelections(features: LayerClickedFeature[]) {
     this.removeHighlightLayers();
     let popupDatas: PopupFeatureInfo[] = [];
@@ -635,8 +647,10 @@ export default class HighlightLayer extends mapboxgl.Evented {
     });
     const topLayerId = layers?.[topLayerIndex]?.id;
     const matchTargetFeature = features.find(f => f.layer?.id === topLayerId) ?? features[0];
-    let activeTargetLayer = matchTargetFeature?.layer;
-    if (activeTargetLayer) {
+    const layerId = matchTargetFeature?.layer.id;
+    const highlightLayerIds = this.getMoreHighlightLayerIds(layerId);
+    let activeTargetLayers = layers.filter(layer => highlightLayerIds.includes(layer.id));
+    if (activeTargetLayers) {
       switch (this.dataSelectorMode) {
         case DataSelectorMode.ALL:
           this.resultFeatures = features;
@@ -657,21 +671,24 @@ export default class HighlightLayer extends mapboxgl.Evented {
           this.resultFeatures = [matchTargetFeature];
           break;
       }
-      const params: CreateRelatedDatasParams = {
+      activeTargetLayers.forEach(layer => {
+        const params: CreateRelatedDatasParams = {
         features: this.resultFeatures,
-        targetId: activeTargetLayer.id,
+        targetId: layer.id,
         isMultiple: this.dataSelectorMode !== DataSelectorMode.SINGLE
-      };
-      const filterExps = this.createFilterExps(params);
-      popupDatas = this.createPopupDatas(params);
-      this.addHighlightLayers(activeTargetLayer as mapboxEnhanceLayer, filterExps, this.resultFeatures);
+        };
+        const filterExps = this.createFilterExps(params);
+        popupDatas = this.createPopupDatas(params);
+        this.addHighlightLayers(layer as mapboxEnhanceLayer, filterExps, this.resultFeatures);
+      })
+      
     }
     const emitData: MapSelectionChangedEmit = {
       features,
       popupInfos: popupDatas.map(item => item.info),
       lnglats: popupDatas.map(item => item.coordinates),
       highlightLayerIds: this.getHighlightLayerIds(this.highlightOptions.layerIds),
-      targetId: activeTargetLayer?.id,
+      targetId: highlightLayerIds[0],
       dataSelectorMode: this.dataSelectorMode
     };
     if (this.highlightOptions.layerIds.length > 0) {

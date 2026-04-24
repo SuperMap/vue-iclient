@@ -6,7 +6,7 @@ import { useMapGetter } from '@supermapgis/common/hooks/index.common'
 import PopupViewModel from 'vue-iclient-controllers-mapboxgl/src/PopupViewModel'
 import { isEqual } from 'lodash-es'
 
-export function useLayerHighlightHooks(props, layerIds) {
+export function useLayerHighlightHooks(props, layerIds, sourceLayers) {
   const { setViewModel } = useMapGetter<Map>({ removed })
   const allPopupDatas = ref<MapSelectionChangedEvent['popupInfos'] & { disabled?: boolean }>([])
   const lnglats = ref<MapSelectionChangedEvent['lnglats'] & { disabled?: boolean }>([])
@@ -22,7 +22,7 @@ export function useLayerHighlightHooks(props, layerIds) {
   watch(layerIds, (next, prev) => {
     if (!isEqual(next, prev)) {
       clearPopupData()
-      viewModel?.setTargetLayers(next)
+      viewModel?.setTargetLayers(next, sourceLayers.value)
     }
   })
 
@@ -67,6 +67,7 @@ export function useLayerHighlightHooks(props, layerIds) {
     viewModel = new PopupViewModel({
       name: 'popup',
       layerIds: layerIds.value,
+      sourceLayers: sourceLayers.value,
       style: props.layerStyle,
       featureFieldsMap: props.featureFieldsMap,
       displayFieldsMap: props.displayFieldsMap,
@@ -82,8 +83,8 @@ export function useLayerHighlightHooks(props, layerIds) {
     clearPopupData()
   })
 
-  function setLayerIds(layerIds: string[]) {
-    viewModel?.setTargetLayers(layerIds)
+  function setLayerIds(layerIds: string[], sourceLayers?: string[][]) {
+    viewModel?.setTargetLayers(layerIds, sourceLayers)
   }
 
   function registerEvents() {

@@ -145,6 +145,7 @@ onBeforeMount(() => {
   viewModel = new LayerHighlightViewModel({
     name: props.uniqueName,
     layerIds: props.layers,
+    sourceLayers: props.sourceLayers,
     style: props.highlightStyle,
     featureFieldsMap: props.featureFieldsMap,
     displayFieldsMap: props.displayFieldsMap,

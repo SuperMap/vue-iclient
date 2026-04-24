@@ -99,6 +99,7 @@ export interface LayerHighlightProps extends ThemeProps, MapGetterProps {
   uniqueName?: string
   title?: string
   layers?: string[]
+  sourceLayers?: string[][]
   highlightStyle?: HighlightStyle
   featureFieldsMap?: Record<string, string[]>
   displayFieldsMap?: Record<string, FieldsDisplayInfo[]>
