@@ -1,4 +1,4 @@
-// "deploy-common": "webpack --config ./build/webpack.config.common.js --color",
+// "deploy-common": "webpack --config ./build/webpack.config.common-webmapv2base.js --color",
 
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 

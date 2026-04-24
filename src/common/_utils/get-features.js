@@ -40,7 +40,8 @@ export default function getFeatures(dataset) {
         keyWord
       };
       if (dataset.filterConditions) {
-        queryInfo.attributeFilter = getAttributeFilter(dataset.filterConditions, dataset.dataType);
+        const dataFilterCondition = getAttributeFilter(dataset.filterConditions, type);
+        queryInfo.attributeFilter = [dataFilterCondition, queryInfo.attributeFilter].filter(Boolean).join(' AND ');
       }
       if (type === 'iServer') {
         let datasetInfo;
