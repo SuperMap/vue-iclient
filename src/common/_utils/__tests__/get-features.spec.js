@@ -397,8 +397,7 @@ describe('getFeatures test', () => {
       dataName: ['Jingjin:BaseMap_P'],
       type: 'iServer',
       url: 'http://fake/iserver/services/data-jingjin/rest/data',
-      filterConditions: ['==', 'name', 'test'],
-      attributeFilter: 'original filter'
+      filterConditions: ['==', 'name', 'test']
     };
     try {
       await getFeatures(dataset);
@@ -435,7 +434,6 @@ describe('getFeatures test', () => {
       type: 'iPortal',
       url: 'http://fake/iserver/services/data-jingjin/rest/data',
       filterConditions: ['==', 'name', 'test'],
-      attributeFilter: 'original filter',
       dataType: 'STRUCTUREDDATA',
       proxy: true
     };
@@ -445,6 +443,48 @@ describe('getFeatures test', () => {
     } catch (error) {
       expect(mapboxFilterToQueryFilter).toHaveBeenCalledWith(dataset.filterConditions, 'STRUCTURE_DATA');
       expect(queryParmams.attributeFilter).toBe(mockAttributeFilter);
+    }
+  });
+
+  it('filterConditions concat attribute filter', async () => {
+    const errorMsg = 'mock error';
+    const mockImplementationCb = () => {
+      return Promise.reject(errorMsg);
+    };
+    jest.spyOn(FetchRequest, 'post').mockImplementation(mockImplementationCb);
+    jest.spyOn(FetchRequest, 'get').mockImplementation(mockImplementationCb);
+    let queryParmams;
+    jest.spyOn(iPortalDataService.default.prototype, 'getData').mockImplementation((params) => {
+      queryParmams = params;
+      return null;
+    });
+    jest.spyOn(iPortalDataService.default.prototype, 'on').mockImplementation((params) => {
+      params.getdatafailed({ error: 'mock error' });
+    });
+    const mockAttributeFilter = "name='test'";
+
+    mapboxFilterToQueryFilter.mockReturnValue(mockAttributeFilter);
+
+    const originalAttributeFilter = `"title" like '%测试%'`;
+
+    const dataset = {
+      withCredentials: false,
+      epsgCode: 4326,
+      name: 'Jingjin:BaseMap_P',
+      dataName: ['Jingjin:BaseMap_P'],
+      type: 'iPortal',
+      url: 'http://fake/iserver/services/data-jingjin/rest/data',
+      filterConditions: ['==', 'name', 'test'],
+      attributeFilter: originalAttributeFilter,
+      dataType: 'STRUCTUREDDATA',
+      proxy: true
+    };
+
+    try {
+      await getFeatures(dataset);
+    } catch (error) {
+      expect(mapboxFilterToQueryFilter).toHaveBeenCalledWith(dataset.filterConditions, 'STRUCTURE_DATA');
+      expect(queryParmams.attributeFilter).toBe([mockAttributeFilter, originalAttributeFilter].join(' AND '));
     }
   });
 });
