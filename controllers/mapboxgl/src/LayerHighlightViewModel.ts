@@ -688,7 +688,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
       popupInfos: popupDatas.map(item => item.info),
       lnglats: popupDatas.map(item => item.coordinates),
       highlightLayerIds: this.getHighlightLayerIds(this.highlightOptions.layerIds),
-      targetId: highlightLayerIds[0],
+      targetId: layerId,
       dataSelectorMode: this.dataSelectorMode
     };
     if (this.highlightOptions.layerIds.length > 0) {

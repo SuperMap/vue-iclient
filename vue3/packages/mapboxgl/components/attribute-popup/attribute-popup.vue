@@ -107,6 +107,8 @@ const popupInfosValue = computed(() => {
     if (typeof item.layerId === 'string' && item.layerId) {
       item.layerId =[item.layerId]
     }
+    // 去除webmap添加的strokeLine图层
+    item.layerId = item.layerId.filter(id => !id?.includes('-strokeLine'))
     return item;
   })
 })
