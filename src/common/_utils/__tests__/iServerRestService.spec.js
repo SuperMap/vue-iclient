@@ -185,6 +185,28 @@ describe('iServerRestService', () => {
       }
     });
   });
+  it('triggers featureisempty for empty rest data string', done => {
+    const service = new iServerRestService('url', { hasGeometry: true });
+    service.on({
+      featureisempty: data => {
+        expect(data.features).toEqual([]);
+        expect(data.fields).toEqual([]);
+        expect(data.originalFields).toEqual([]);
+        expect(data.fieldCaptions).toEqual([]);
+        expect(data.fieldValues).toEqual([]);
+        expect(data.fieldTypes).toEqual([]);
+        done();
+      },
+      getdatasucceeded: () => {
+        done.fail('empty data string should not trigger getdatasucceeded');
+      }
+    });
+    service._getFeaturesSucceed({
+      result: {
+        features: { data: '' }
+      }
+    });
+  });
 
   it('getDataFeatures by keyWord', done => {
     const service = new iServerRestService('url', { hasGeometry: true });

@@ -419,9 +419,14 @@ export default class iServerRestService extends Events {
       // 数据来自restdata---results.result.features
       this.features = results.result.features;
       features = this.features.features || this.features;
-      if (features.length === 0) {
+      if (features.length === 0 || features.data === '') {
         this.triggerEvent('featureisempty', {
-          results
+          features: [],
+          fields: [],
+          originalFields: [],
+          fieldCaptions: [],
+          fieldValues: [],
+          fieldTypes: []
         });
         return;
       }
