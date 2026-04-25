@@ -104,12 +104,13 @@ useMapGetter<Map>({ loaded })
 const popupInfosValue = computed(() => {
   const infos = props.useMapPopup ? mapPopupInfos.value : props.popupInfos
   return infos.map(item => {
+    const newItem = { ...item }
     if (typeof item.layerId === 'string' && item.layerId) {
-      item.layerId =[item.layerId]
+      newItem.layerId = [item.layerId]
     }
     // 去除webmap添加的strokeLine图层
-    item.layerId = item.layerId.filter(id => !id?.includes('-strokeLine'))
-    return item;
+    newItem.layerId = newItem.layerId.filter(id => !id?.includes('-strokeLine'))
+    return newItem
   })
 })
 const popupConfigValue = computed(() => {
