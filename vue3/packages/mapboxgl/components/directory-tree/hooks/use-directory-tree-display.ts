@@ -7,6 +7,7 @@ const DISABLED_REASON_I18N_KEYS: Record<DisabledReasonCode, string> = {
   'service-unavailable': 'warning.directoryTreeServiceUnavailable',
   'missing-projection': 'warning.directoryTreeMissingProjection',
   'crs-mismatch': 'warning.directoryTreeCrsMismatch',
+  'unsupported-tile-matrix-set': 'warning.directoryTreeUnsupportedTileMatrixSet',
   'load-failed': 'warning.directoryTreeLoadFailed'
 }
 

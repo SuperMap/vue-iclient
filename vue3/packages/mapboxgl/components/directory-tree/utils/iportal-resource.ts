@@ -10,7 +10,9 @@ import type {
   RestDataDatasourceDirectoryRaw,
   RestDataServiceDirectoryRaw,
   ResourceType,
-  RuntimeTreeNode
+  RuntimeTreeNode,
+  WmtsLayerItem,
+  WmtsLayerRaw
 } from '../types'
 import { DIRECTORY_TREE_QUERY_PAGE_SIZE } from '../types'
 import { createRemoteDirectoryKey, createResourceNodeKey } from './schema-normalizer'
@@ -75,6 +77,15 @@ interface RuntimeRestMapServiceMapNodeOptions {
   sourceType: DirectoryNodeType
   originResource: Record<string, any>
   mapItem: RestMapCollectionItem
+  icon?: string
+}
+
+interface RuntimeWmtsLayerNodeOptions {
+  parentNodeId: string
+  sourceType: DirectoryNodeType
+  originResource: Record<string, any>
+  wmtsServiceUrl: string
+  layerItem: WmtsLayerItem
   icon?: string
 }
 
@@ -209,7 +220,7 @@ export function toQuerySearchParams(request: QuerySearchRequest): URLSearchParam
   params.set('resourceType', request.resourceType)
 
   if (request.text) {
-    params.set('keywords', request.text)
+    params.set('text', request.text)
   }
 
   const arrayFields: Array<[keyof QuerySearchRequest, string]> = [
@@ -403,6 +414,48 @@ export function createRuntimeRestMapServiceMapNode(
       title: options.mapItem.name,
       resourceName: options.mapItem.name,
       serverUrl: options.mapItem.path
+    },
+    icon: options.icon
+  })
+}
+
+export function createRuntimeWmtsLayerNode(options: RuntimeWmtsLayerNodeOptions): RuntimeTreeNode {
+  const originResourceId =
+    options.originResource.resourceId ?? options.originResource.id ?? options.wmtsServiceUrl
+  const layerResourceId = `${originResourceId}:${options.layerItem.layer}`
+  const originServiceInfo =
+    options.originResource.serviceInfo && typeof options.originResource.serviceInfo === 'object'
+      ? options.originResource.serviceInfo
+      : {}
+  const resource: WmtsLayerRaw = {
+    type: 'wmts-layer',
+    resourceId: layerResourceId,
+    resourceType: 'SERVICE',
+    serviceType: 'WMTS',
+    url: options.wmtsServiceUrl,
+    layer: options.layerItem.layer,
+    layerID: options.layerItem.layerID,
+    tileMatrixSet: options.layerItem.tileMatrixSet,
+    originResource: options.originResource
+  }
+
+  return createRuntimeResourceNode({
+    parentNodeId: options.parentNodeId,
+    sourceType: options.sourceType,
+    resourceType: 'SERVICE',
+    resource: {
+      ...options.originResource,
+      ...resource,
+      id: layerResourceId,
+      title: options.layerItem.name,
+      resourceName: options.layerItem.name,
+      serverUrl: options.wmtsServiceUrl,
+      serviceInfo: {
+        ...originServiceInfo,
+        layer: options.layerItem.layer,
+        layerID: options.layerItem.layerID,
+        tileMatrixSet: options.layerItem.tileMatrixSet
+      }
     },
     icon: options.icon
   })

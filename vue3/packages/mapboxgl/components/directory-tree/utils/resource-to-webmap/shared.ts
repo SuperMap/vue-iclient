@@ -135,6 +135,10 @@ function normalizeProjectionValue(projection: unknown, depth = 0): string | null
       return toEpsgProjection(trimmed)
     }
 
+    if (/CRS:84/i.test(trimmed) || /OGC(?::|::)2(?::|::)84/i.test(trimmed)) {
+      return 'EPSG:4326'
+    }
+
     const epsgMatch = trimmed.match(/EPSG(?::|::)(\d+)/i)
     if (epsgMatch) {
       return toEpsgProjection(epsgMatch[1])

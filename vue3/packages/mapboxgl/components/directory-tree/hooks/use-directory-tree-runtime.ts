@@ -7,7 +7,8 @@ import type {
   RestDataServiceDirectoryRaw,
   RestMapServiceCollectionRaw,
   RuntimeNodeOperationState,
-  RuntimeTreeNode
+  RuntimeTreeNode,
+  WmtsServiceDirectoryRaw
 } from '../types'
 import { normalizeDirectoryTreeOrEmpty } from '../utils/schema-normalizer'
 import type { useDirectoryLoader } from './use-directory-loader'
@@ -48,6 +49,10 @@ export function useDirectoryTreeRuntime(options: DirectoryTreeRuntimeOptions) {
     return !!raw && typeof raw === 'object' && (raw as RestMapServiceCollectionRaw).type === 'rest-map-service-collection'
   }
 
+  function isWmtsServiceDirectoryRaw(raw: unknown): raw is WmtsServiceDirectoryRaw {
+    return !!raw && typeof raw === 'object' && (raw as WmtsServiceDirectoryRaw).type === 'wmts-service'
+  }
+
   function convertNodeToRestDataDirectory(
     node: RuntimeTreeNode,
     raw: RestDataServiceDirectoryRaw | RestDataDatasourceDirectoryRaw
@@ -77,6 +82,19 @@ export function useDirectoryTreeRuntime(options: DirectoryTreeRuntimeOptions) {
     node.raw = raw
   }
 
+  function convertNodeToWmtsServiceDirectory(node: RuntimeTreeNode, raw: WmtsServiceDirectoryRaw) {
+    node.pendingValidation = false
+    node.resource = undefined
+    node.kind = 'directory'
+    node.isLeaf = false
+    node.checkable = false
+    node.disabled = false
+    node.disabledReason = undefined
+    node.loadState = 'idle'
+    node.children = undefined
+    node.raw = raw
+  }
+
   function getResolvedNodeDisabledReason(descriptor: ResourceDescriptor) {
     return options.resolver.getCheckFailure(descriptor, {
       mapTarget: options.mapTarget()
@@ -91,6 +109,11 @@ export function useDirectoryTreeRuntime(options: DirectoryTreeRuntimeOptions) {
 
     if (isRestMapServiceCollectionRaw(descriptor.raw)) {
       convertNodeToRestMapCollection(node, descriptor.raw)
+      return
+    }
+
+    if (isWmtsServiceDirectoryRaw(descriptor.raw)) {
+      convertNodeToWmtsServiceDirectory(node, descriptor.raw)
       return
     }
 
@@ -140,6 +163,24 @@ export function useDirectoryTreeRuntime(options: DirectoryTreeRuntimeOptions) {
       }
       if (node.children?.length) {
         await refreshResolvedNodeStates(node.children, forceResolve)
+      }
+    }
+  }
+
+  async function refreshDirectoryNodeTitles(nodes = options.runtimeNodes.value) {
+    for (const node of nodes) {
+      const rawNode = node.raw as { title?: string; directoryId?: string | number } | undefined
+      if (
+        node.kind === 'directory' &&
+        node.sourceType === 'resource-directory' &&
+        rawNode &&
+        !rawNode.title &&
+        (typeof rawNode.directoryId === 'string' || typeof rawNode.directoryId === 'number')
+      ) {
+        await options.loader.loadIportalDirectoryChildren(node)
+      }
+      if (node.children?.length) {
+        await refreshDirectoryNodeTitles(node.children)
       }
     }
   }
@@ -265,13 +306,14 @@ export function useDirectoryTreeRuntime(options: DirectoryTreeRuntimeOptions) {
 
   async function resetTree(treeSchema: DirectoryTreeProps['treeSchema']) {
     const normalized = normalizeDirectoryTreeOrEmpty(treeSchema)
-    options.loader.queryCache.clear()
+    options.loader.clearCaches()
     options.runtimeNodes.value = normalized.rootNodes
     options.expandedKeys.value = []
     options.checkedResourceMap.value = new Map()
     options.checkedKeys.value = []
     options.halfCheckedKeys.value = []
     await options.resourceLayerManager.clearResources({ mapTarget: options.mapTarget() })
+    await refreshDirectoryNodeTitles(options.runtimeNodes.value)
     await refreshResolvedNodeStates(options.runtimeNodes.value, true)
   }
 
@@ -280,6 +322,7 @@ export function useDirectoryTreeRuntime(options: DirectoryTreeRuntimeOptions) {
     findNodeByKey,
     resolveResourceNode,
     refreshResolvedNodeStates,
+    refreshDirectoryNodeTitles,
     loadNodeChildren,
     ensureDirectoryLoaded,
     ensureDescendantsLoaded,

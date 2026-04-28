@@ -9,10 +9,14 @@ import type {
   RestMapServiceMapRaw,
   ResourceType,
   RuntimeTreeNode,
-  ServiceType
+  ServiceType,
+  WmtsLayerRaw,
+  WmtsServiceDirectoryRaw
 } from '../types'
 import { DIRECTORY_TREE_SERVICE_TYPES } from '../types'
 import {
+  extractWmtsLayerItemsFromCapabilities,
+  fetchWmtsCapabilitiesText,
   ResourceLoadPlanError,
   resolvePortalDataLayer,
   resolveRestDataServiceLayer
@@ -69,6 +73,11 @@ interface RestMapInfoResolution {
   mapInfo?: Record<string, any>
   projection: string | null
   error?: unknown
+}
+
+interface WmtsServiceDirectoryResolution {
+  directoryRaw?: WmtsServiceDirectoryRaw
+  unsupported?: boolean
 }
 
 const VECTOR_OVERLAY_LAYER_TYPES = new Set([
@@ -302,6 +311,10 @@ function normalizeRestMapCollectionItems(
 
 function isRestMapServiceMapRaw(raw: Record<string, any>): raw is RestMapServiceMapRaw {
   return raw.type === 'rest-map-service-map'
+}
+
+function isWmtsLayerRaw(raw: Record<string, any>): raw is WmtsLayerRaw {
+  return raw.type === 'wmts-layer'
 }
 
 function isRestMapDynamicProjectionAllowed(
@@ -835,6 +848,56 @@ function buildRestDataDirectoryRaw({
   return restDataServiceRaw
 }
 
+async function resolveWmtsServiceDirectory({
+  node,
+  raw,
+  serviceInfo,
+  serverUrl,
+  targetProjection
+}: {
+  node: RuntimeTreeNode
+  raw: Record<string, any>
+  serviceInfo: Record<string, any>
+  serverUrl: string | undefined
+  targetProjection?: string | null
+}): Promise<WmtsServiceDirectoryResolution> {
+  if (!serverUrl || isWmtsLayerRaw(raw)) {
+    return {}
+  }
+
+  try {
+    const capabilitiesText = await fetchWmtsCapabilitiesText(serverUrl, {})
+    const layerItems = capabilitiesText
+      ? extractWmtsLayerItemsFromCapabilities(capabilitiesText, targetProjection)
+      : []
+    if (layerItems.length === 1 && !layerItems[0].tileMatrixSet) {
+      return {
+        unsupported: true
+      }
+    }
+    if (layerItems.length <= 1) {
+      return {}
+    }
+
+    return {
+      directoryRaw: {
+        type: 'wmts-service',
+        resourceId: getResourceId(node),
+        resourceType: getRawResourceType(node),
+        serviceType: 'WMTS',
+        wmtsServiceUrl: serverUrl,
+        layerItems,
+        originResource: {
+          ...raw,
+          serviceInfo
+        }
+      }
+    }
+  } catch {
+    return {}
+  }
+}
+
 function buildDescriptor(
   node: RuntimeTreeNode,
   overrides: Partial<ResourceDescriptor>
@@ -1327,8 +1390,10 @@ async function resolveServiceDescriptor(
   const inheritedServiceInfo =
     Object.keys(embeddedServiceInfo).length > 0 ? embeddedServiceInfo : asRecord(restMapOriginResource?.serviceInfo)
   const detailResourceId =
-    !isRestMapServiceMapRaw(raw) ? resourceId : (restMapOriginResource?.resourceId ?? restMapOriginResource?.id)
-  const shouldFetchDetail = detailResourceId != null && !isRestMapServiceMapRaw(raw)
+    !isRestMapServiceMapRaw(raw) && !isWmtsLayerRaw(raw)
+      ? resourceId
+      : (restMapOriginResource?.resourceId ?? restMapOriginResource?.id)
+  const shouldFetchDetail = detailResourceId != null && !isRestMapServiceMapRaw(raw) && !isWmtsLayerRaw(raw)
   const detailResult: ResourceDetailFetchResult =
     shouldFetchDetail && detailResourceId != null
       ? await fetchResourceDetail([`${normalizeBaseUrl(iportalUrl)}/web/services/${detailResourceId}.json`], fetcher)
@@ -1472,6 +1537,63 @@ async function resolveServiceDescriptor(
       serviceType,
       serverUrl,
       projection,
+      raw: nextRaw
+    })
+  }
+
+  if (serviceType === 'WMTS') {
+    if (!serverUrl) {
+      return buildDescriptor(node, {
+        disabledReason: 'load-failed',
+        serviceType,
+        projection,
+        raw: nextRaw
+      })
+    }
+
+    if (isWmtsLayerRaw(nextRaw) && !nextRaw.tileMatrixSet) {
+      return buildDescriptor(node, {
+        disabledReason: 'unsupported-tile-matrix-set',
+        serviceType,
+        serverUrl,
+        projection,
+        raw: nextRaw
+      })
+    }
+
+    const wmtsServiceDirectory = await resolveWmtsServiceDirectory({
+      node,
+      raw: nextRaw,
+      serviceInfo,
+      serverUrl,
+      targetProjection: context.mapProjection || projection
+    })
+    if (wmtsServiceDirectory.unsupported) {
+      return buildDescriptor(node, {
+        disabledReason: 'unsupported-tile-matrix-set',
+        serviceType,
+        serverUrl,
+        projection,
+        raw: nextRaw
+      })
+    }
+    if (wmtsServiceDirectory.directoryRaw) {
+      return buildDescriptor(node, {
+        serviceType,
+        serverUrl,
+        projection,
+        raw: {
+          ...nextRaw,
+          ...wmtsServiceDirectory.directoryRaw
+        }
+      })
+    }
+
+    return buildDescriptor(node, {
+      serviceType,
+      serverUrl,
+      projection: context.mapProjection || projection,
+      overlaySupported: true,
       raw: nextRaw
     })
   }

@@ -3,7 +3,8 @@ import type {
   RestDataDatasourceDirectoryRaw,
   RestDataServiceDirectoryRaw,
   RestMapServiceCollectionRaw,
-  RuntimeTreeNode
+  RuntimeTreeNode,
+  WmtsServiceDirectoryRaw
 } from '../types'
 import type { IPortalDirectoryResponse } from '../utils/iportal-resource'
 import {
@@ -14,6 +15,7 @@ import {
   createRuntimeRestMapServiceMapNode,
   createRuntimeRestDataDatasetNode,
   createRuntimeResourceNode,
+  createRuntimeWmtsLayerNode,
   normalizeDirectoryResponseToRuntimeNodes,
   normalizeQuerySearchResponse,
   toQuerySearchParams
@@ -27,6 +29,7 @@ export interface DirectoryLoaderFetch {
 
 export interface DirectoryLoadResult {
   children: RuntimeTreeNode[]
+  title?: string
 }
 
 export interface DirectoryLoaderOptions {
@@ -83,6 +86,10 @@ function isRestMapServiceCollectionNode(
   return !!node.raw && typeof node.raw === 'object' && (node.raw as RestMapServiceCollectionRaw).type === 'rest-map-service-collection'
 }
 
+function isWmtsServiceNode(node: RuntimeTreeNode): node is RuntimeTreeNode & { raw: WmtsServiceDirectoryRaw } {
+  return !!node.raw && typeof node.raw === 'object' && (node.raw as WmtsServiceDirectoryRaw).type === 'wmts-service'
+}
+
 function normalizeQueryRuntimeChildren(node: RuntimeTreeNode, responseItems: Record<string, any>[]) {
   return responseItems.map(item =>
     createRuntimeResourceNode({
@@ -102,6 +109,7 @@ export function useDirectoryLoader(options: DirectoryLoaderOptions) {
   const restDataServiceCache = new Map<string, DirectoryLoadResult>()
   const restDataDatasourceCache = new Map<string, DirectoryLoadResult>()
   const restMapServiceCache = new Map<string, DirectoryLoadResult>()
+  const wmtsServiceCache = new Map<string, DirectoryLoadResult>()
   let currentIportalUrl = options.iportalUrl
   let currentDirectoryCheckable = options.directoryCheckable
 
@@ -111,6 +119,7 @@ export function useDirectoryLoader(options: DirectoryLoaderOptions) {
     restDataServiceCache.clear()
     restDataDatasourceCache.clear()
     restMapServiceCache.clear()
+    wmtsServiceCache.clear()
   }
 
   function updateContext(nextContext: DirectoryLoaderContextUpdate) {
@@ -128,17 +137,25 @@ export function useDirectoryLoader(options: DirectoryLoaderOptions) {
   }
 
   async function loadIportalDirectoryChildren(node: RuntimeTreeNode): Promise<DirectoryLoadResult> {
-    const rawNode = node.raw as { directoryId: string | number }
+    const rawNode = node.raw as { title?: string; directoryId: string | number }
     const cacheKey = createIportalDirectoryCacheKey(rawNode.directoryId)
     const cached = directoryCache.get(cacheKey)
     if (cached) {
+      if (!rawNode.title && cached.title) {
+        node.title = cached.title
+      }
       return cached
     }
 
     const response = (await fetcher(
       createDirectoryEndpoint(currentIportalUrl, rawNode.directoryId)
     )) as IPortalDirectoryResponse
-    const result = {
+    const remoteDirectoryName = response.basicDirInfo?.dirName
+    const title = typeof remoteDirectoryName === 'string' ? remoteDirectoryName.trim() : undefined
+    if (!rawNode.title && title) {
+      node.title = title
+    }
+    const result: DirectoryLoadResult = {
       children: normalizeDirectoryResponseToRuntimeNodes({
         directoryResponse: response,
         parentNodeId: node.id,
@@ -146,6 +163,9 @@ export function useDirectoryLoader(options: DirectoryLoaderOptions) {
         icon: node.icon,
         resourceIcon: node.resourceIcon
       })
+    }
+    if (title) {
+      result.title = title
     }
 
     directoryCache.set(cacheKey, result)
@@ -300,6 +320,31 @@ export function useDirectoryLoader(options: DirectoryLoaderOptions) {
     return result
   }
 
+  async function loadWmtsServiceChildren(node: RuntimeTreeNode): Promise<DirectoryLoadResult> {
+    const rawNode = node.raw as WmtsServiceDirectoryRaw
+    const cacheKey = `${rawNode.resourceId}:${rawNode.wmtsServiceUrl}`
+    const cached = wmtsServiceCache.get(cacheKey)
+    if (cached) {
+      return cached
+    }
+
+    const result = {
+      children: rawNode.layerItems.map(layerItem =>
+        createRuntimeWmtsLayerNode({
+          parentNodeId: node.id,
+          sourceType: node.sourceType,
+          originResource: rawNode.originResource,
+          wmtsServiceUrl: rawNode.wmtsServiceUrl,
+          layerItem,
+          icon: node.resourceIcon
+        })
+      )
+    }
+
+    wmtsServiceCache.set(cacheKey, result)
+    return result
+  }
+
   async function loadChildren(node: RuntimeTreeNode): Promise<DirectoryLoadResult> {
     if (isQueryDirectoryNode(node)) {
       return loadQueryDirectoryChildren(node)
@@ -316,6 +361,9 @@ export function useDirectoryLoader(options: DirectoryLoaderOptions) {
     if (isRestMapServiceCollectionNode(node)) {
       return loadRestMapServiceChildren(node)
     }
+    if (isWmtsServiceNode(node)) {
+      return loadWmtsServiceChildren(node)
+    }
 
     return {
       children: node.children || []
@@ -328,13 +376,16 @@ export function useDirectoryLoader(options: DirectoryLoaderOptions) {
     restDataServiceCache,
     restDataDatasourceCache,
     restMapServiceCache,
+    wmtsServiceCache,
+    clearCaches,
     updateContext,
     loadChildren,
     loadIportalDirectoryChildren,
     loadQueryDirectoryChildren,
     loadRestDataServiceChildren,
     loadRestDataDatasourceChildren,
-    loadRestMapServiceChildren
+    loadRestMapServiceChildren,
+    loadWmtsServiceChildren
   }
 }
 

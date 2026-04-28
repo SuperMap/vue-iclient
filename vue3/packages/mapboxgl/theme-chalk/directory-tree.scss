@@ -12,6 +12,9 @@
   overflow: auto;
 
   .sm-component-collapse-card__content {
+    .sm-component-collapse-card__header {
+      height: 32px;
+    }
     display: flex;
     flex-direction: column;
     flex: 1;

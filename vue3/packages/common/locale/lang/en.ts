@@ -8,6 +8,8 @@ export default {
     directoryTreeServiceUnavailable: 'This service is unavailable and cannot be checked.',
     directoryTreeMissingProjection: 'This resource has no projection information and cannot be checked.',
     directoryTreeCrsMismatch: 'This resource projection does not match the current map and cannot be checked.',
+    directoryTreeUnsupportedTileMatrixSet:
+      'This WMTS layer has no tile matrix set supported by the current map and cannot be checked.',
     directoryTreeLoadFailed: 'Failed to load this resource. Try again later.'
   },
   info: {

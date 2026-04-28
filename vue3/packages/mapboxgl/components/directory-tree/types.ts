@@ -32,6 +32,7 @@ export const DIRECTORY_TREE_DISABLED_REASON_CODES = [
   'service-unavailable',
   'missing-projection',
   'crs-mismatch',
+  'unsupported-tile-matrix-set',
   'load-failed'
 ] as const
 
@@ -179,6 +180,35 @@ export interface RestMapServiceMapRaw {
   serviceType: 'MAP' | 'SINGLE_MAP' | 'VECTOR_MAP' | 'SINGLE_VECTOR_MAP'
   url: string
   mapName: string
+  originResource: Record<string, any>
+}
+
+export interface WmtsLayerItem {
+  name: string
+  layer: string
+  layerID?: string
+  tileMatrixSet?: string
+}
+
+export interface WmtsServiceDirectoryRaw {
+  type: 'wmts-service'
+  resourceId: string | number
+  resourceType: ResourceType
+  serviceType: 'WMTS'
+  wmtsServiceUrl: string
+  layerItems: WmtsLayerItem[]
+  originResource: Record<string, any>
+}
+
+export interface WmtsLayerRaw {
+  type: 'wmts-layer'
+  resourceId: string | number
+  resourceType: 'SERVICE'
+  serviceType: 'WMTS'
+  url: string
+  layer: string
+  layerID?: string
+  tileMatrixSet?: string
   originResource: Record<string, any>
 }
 

@@ -160,17 +160,17 @@ export function createMapSnapshot({
   webmap?: any
   fallbackProjection?: string | null
 } = {}): MapSnapshot {
+  const mapCrs = map?.getCRS?.()
   const projection =
-    normalizeProjection(
-      map?.getCRS?.() ??
-        map?.getCRS?.()?.wkt ??
-        map?.getCRS?.()?.epsgCode ??
-        map?.getCRS?.()?.code ??
-        webmap?.webMapInfo?.projection ??
-        webmap?._handler?.webMapInfo?.projection ??
-        webmap?.mapId?.projection ??
-        fallbackProjection
-    ) || undefined
+    normalizeProjection(mapCrs) ||
+    normalizeProjection(mapCrs?.wkt) ||
+    normalizeProjection(mapCrs?.epsgCode) ||
+    normalizeProjection(mapCrs?.code) ||
+    normalizeProjection(webmap?.webMapInfo?.projection) ||
+    normalizeProjection(webmap?._handler?.webMapInfo?.projection) ||
+    normalizeProjection(webmap?.mapId?.projection) ||
+    normalizeProjection(fallbackProjection) ||
+    undefined
 
   const bounds = map?.getBounds?.()
   const boundsArray = bounds?.toArray?.()

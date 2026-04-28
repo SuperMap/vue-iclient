@@ -257,7 +257,7 @@ function createRuntimeNode(node: DirectoryNode, directoryCheckable: boolean, par
   const hasStaticChildren = childNodes.length > 0
   const isLazyDirectory = nodeType === 'resource-directory' || nodeType === 'resource-search'
   const title =
-    nodeType === 'resource-directory' && 'directoryId' in node ? node.title || String(node.directoryId) : node.title
+    nodeType === 'resource-directory' && 'directoryId' in node ? node.title || '' : node.title
 
   const runtimeNode: RuntimeTreeNode = {
     key,

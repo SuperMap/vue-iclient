@@ -146,12 +146,14 @@ const iportalUrl = computed(() => resolveRuntimeIportalUrl(props.iportalUrl, get
 const directoryCheckable = computed(
   () => normalizeDirectoryTreeOrEmpty(props.treeSchema).schema.directoryCheckable ?? true
 )
-const fetcher = createDirectoryTreeFetcher()
 const serviceProxyUrlPrefix = computed(
   () =>
     getMapContext().webmap?.options?.iportalServiceProxyUrlPrefix ||
     (typeof window !== 'undefined' ? (window as any).iportalServiceProxyUrl : undefined)
 )
+const fetcher = createDirectoryTreeFetcher({
+  serviceProxyUrlPrefix: () => serviceProxyUrlPrefix.value
+})
 
 const loader = useDirectoryLoader({
   iportalUrl: iportalUrl.value,
@@ -213,6 +215,7 @@ const {
   findNodeByKey,
   resolveResourceNode,
   refreshResolvedNodeStates,
+  refreshDirectoryNodeTitles,
   loadNodeChildren,
   ensureDirectoryLoaded,
   ensureDescendantsLoaded,
@@ -274,6 +277,7 @@ function createSchemaStructureKey(treeSchema: DirectoryTreeProps['treeSchema']):
     nodes.map(node => ({
       id: String(node.id),
       type: node.type ?? 'default',
+      directoryId: (node.type ?? 'default') === 'resource-directory' ? node.directoryId : undefined,
       params: (node.type ?? 'default') === 'resource-search' ? node.params ?? null : undefined,
       children: collectNodes(node.children || [])
     }))
@@ -317,6 +321,7 @@ watch(
 
     const normalized = normalizeDirectoryTreeOrEmpty(nextSchema)
     syncRuntimeNodePresentation(runtimeNodes.value, normalized.rootNodes)
+    await refreshDirectoryNodeTitles(runtimeNodes.value)
     treeRenderVersion.value += 1
   },
   { immediate: true, deep: true }

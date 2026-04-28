@@ -160,7 +160,10 @@ export function useDirectoryTreeCheck(options: DirectoryTreeCheckOptions) {
     if (!node || options.isNodeBusy(node)) {
       return
     }
-    if (node.kind === 'directory' && !node.checkable) {
+    const nextChecked = node.kind === 'directory' && checked && options.halfCheckedKeys.value.includes(node.key)
+      ? false
+      : checked
+    if (node.kind === 'directory' && !node.checkable && nextChecked) {
       return
     }
 
@@ -171,17 +174,22 @@ export function useDirectoryTreeCheck(options: DirectoryTreeCheckOptions) {
     }
 
     if (node.kind === 'directory') {
-      const operationState: RuntimeNodeOperationState = checked ? 'checking' : 'unchecking'
+      const operationState: RuntimeNodeOperationState = nextChecked ? 'checking' : 'unchecking'
       options.setNodeOperationState(node, operationState)
       try {
         await options.ensureDescendantsLoaded(node)
-        const descendantResources = options.collectDescendantResourceNodes(node)
+        const descendantResources = options.collectDescendantResourceNodes(node).filter(resourceNode => {
+          if (!nextChecked) {
+            return options.checkedResourceMap.value.has(resourceNode.key)
+          }
+          return resourceNode.checkable && !resourceNode.disabled
+        })
         if (descendantResources.length > 0) {
           options.setDirectoryBatchProgress(node, operationState, 0, descendantResources.length)
         }
 
         for (let index = 0; index < descendantResources.length; index += 1) {
-          await applyResourceToggle(descendantResources[index], checked, payload)
+          await applyResourceToggle(descendantResources[index], nextChecked, payload)
           if (node.batchProgress) {
             options.setDirectoryBatchProgress(node, operationState, index + 1, node.batchProgress.total)
           }
@@ -191,13 +199,13 @@ export function useDirectoryTreeCheck(options: DirectoryTreeCheckOptions) {
         options.clearDirectoryBatchProgress(node)
       }
     } else {
-      await applyResourceToggle(node, checked, payload)
+      await applyResourceToggle(node, nextChecked, payload)
     }
 
     recalculateCheckState()
     payload.checkedResources = Array.from(options.checkedResourceMap.value.values())
     options.emitCheckChange(payload)
-    showCheckChangeSummary(payload, checked)
+    showCheckChangeSummary(payload, nextChecked)
   }
 
   function clearCheckedResources() {
