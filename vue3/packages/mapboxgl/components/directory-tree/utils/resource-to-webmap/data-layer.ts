@@ -89,6 +89,51 @@ function extractXYFieldFromNames(fieldNames: unknown): XYField | undefined {
   }
 }
 
+function toFiniteNumber(value: unknown): number | undefined {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : undefined
+  }
+  if (typeof value !== 'string') {
+    return undefined
+  }
+  const trimmed = value.trim()
+  if (!trimmed) {
+    return undefined
+  }
+  const parsed = Number(trimmed)
+  return Number.isFinite(parsed) ? parsed : undefined
+}
+
+function getTableCellValue(row: unknown, fieldName: string, fieldIndex: number): unknown {
+  if (Array.isArray(row)) {
+    return row[fieldIndex]
+  }
+  return asRecord(row)[fieldName]
+}
+
+function inferProjectionFromTableRows(rows: unknown, colTitles: unknown, xyField: XYField): string | undefined {
+  if (!Array.isArray(rows) || !Array.isArray(colTitles)) {
+    return undefined
+  }
+
+  const xIndex = colTitles.findIndex(fieldName => fieldName === xyField.xField)
+  const yIndex = colTitles.findIndex(fieldName => fieldName === xyField.yField)
+  if (xIndex < 0 || yIndex < 0) {
+    return undefined
+  }
+
+  for (const row of rows) {
+    const x = toFiniteNumber(getTableCellValue(row, xyField.xField, xIndex))
+    const y = toFiniteNumber(getTableCellValue(row, xyField.yField, yIndex))
+    if (x === undefined || y === undefined) {
+      continue
+    }
+    return x >= -180 && x <= 180 && y >= -90 && y <= 90 ? 'EPSG:4326' : 'EPSG:3857'
+  }
+
+  return undefined
+}
+
 function getFeatureCollectionFirstFeature(payload: Record<string, any> | undefined) {
   const features = Array.isArray(payload?.features)
     ? payload?.features
@@ -226,7 +271,8 @@ function inferMetadataFromTableContent(content: unknown): PortalDataMetadata | u
 
   return {
     featureType: 'POINT',
-    xyField
+    xyField,
+    projection: inferProjectionFromTableRows(tablePayload.rows, tablePayload.colTitles, xyField)
   }
 }
 

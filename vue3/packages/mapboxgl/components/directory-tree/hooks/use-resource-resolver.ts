@@ -29,6 +29,7 @@ import {
   isMapServiceType,
   isVectorMapServiceType,
   normalizeBaseUrl,
+  normalizePortalDataType,
   normalizeProjection,
   normalizeServiceType,
   normalizeVectorStyleUrl
@@ -950,6 +951,48 @@ function getLoadPlanErrorReason(
   return error instanceof ResourceLoadPlanError ? error.reason : fallbackReason
 }
 
+function isCsvOrExcelData(raw: Record<string, unknown>): boolean {
+  const dataInfo = asRecord(raw.dataInfo)
+  return [
+    dataInfo.type,
+    dataInfo.dataType,
+    dataInfo.contentType,
+    dataInfo.fileType,
+    raw.type,
+    raw.dataType,
+    raw.contentType,
+    raw.fileType,
+    raw.portalDataContentType
+  ].some(item => {
+    const dataType = normalizePortalDataType(item)
+    return dataType === 'CSV' || dataType === 'EXCEL'
+  })
+}
+
+function hasXYField(layerInfo: Record<string, unknown> | undefined): boolean {
+  const xyField = asRecord(layerInfo?.xyField)
+  return (
+    typeof xyField.xField === 'string' &&
+    !!xyField.xField.trim() &&
+    typeof xyField.yField === 'string' && !!xyField.yField.trim()
+  )
+}
+
+function getCsvExcelDataUnsupportedReason(
+  raw: Record<string, unknown>,
+  projection: string | null | undefined,
+  layerInfo?: Record<string, unknown>
+): DisabledReasonCode | undefined {
+  if (!isCsvOrExcelData(raw)) {
+    return undefined
+  }
+  if (!hasXYField(layerInfo)) {
+    return 'unsupported-resource-type'
+  }
+  const normalizedProjection = normalizeProjection(layerInfo?.projection ?? projection)
+  return normalizedProjection === 'EPSG:4326' ? undefined : 'unsupported-resource-type'
+}
+
 function resolvePassthroughDescriptor(
   node: RuntimeTreeNode,
   raw: Record<string, any>,
@@ -1244,34 +1287,57 @@ async function resolveDataDescriptor(
   })
 
   if (shouldFetchDetail && (detailResult.error || (preferDetail && !dataInfo))) {
-    return (
-      resolvePassthroughDescriptor(
-        node,
-        {
-          ...nextRaw,
-          error: detailResult.error
-        },
-        context,
-        {
-          serviceType,
-          serverUrl,
-          projection
-        }
-      ) ||
-      buildDescriptor(node, {
-        disabledReason: 'load-failed',
+    const fallbackRaw = {
+      ...nextRaw,
+      error: detailResult.error
+    }
+    const fallbackPassthroughDescriptor = resolvePassthroughDescriptor(node, fallbackRaw, context, {
+      serviceType,
+      serverUrl,
+      projection
+    })
+    if (fallbackPassthroughDescriptor) {
+      const csvExcelFailure = getCsvExcelDataUnsupportedReason(
+        fallbackRaw,
+        fallbackPassthroughDescriptor.projection ?? projection,
+        getPassthroughLayerInfo(fallbackRaw)
+      )
+      if (!csvExcelFailure) {
+        return fallbackPassthroughDescriptor
+      }
+      return buildDescriptor(node, {
+        disabledReason: csvExcelFailure,
         serviceType,
         serverUrl,
         projection,
-        raw: {
-          ...nextRaw,
-          error: detailResult.error
-        }
+        raw: fallbackRaw
       })
-    )
+    }
+
+    return buildDescriptor(node, {
+      disabledReason: 'load-failed',
+      serviceType,
+      serverUrl,
+      projection,
+      raw: fallbackRaw
+    })
   }
 
   if (passthroughDescriptor) {
+    const csvExcelFailure = getCsvExcelDataUnsupportedReason(
+      nextRaw,
+      passthroughDescriptor.projection ?? projection,
+      getPassthroughLayerInfo(nextRaw)
+    )
+    if (csvExcelFailure) {
+      return buildDescriptor(node, {
+        disabledReason: csvExcelFailure,
+        serviceType,
+        serverUrl,
+        projection,
+        raw: nextRaw
+      })
+    }
     return passthroughDescriptor
   }
 
@@ -1298,14 +1364,28 @@ async function resolveDataDescriptor(
   const restDataServiceType = isDataServiceType(serviceType) ? serviceType : 'DATA'
 
   const tryResolvePortalData = async () => {
-    await resolvePortalDataLayer(descriptor, {
+    const layerInfo = await resolvePortalDataLayer(descriptor, {
       iportalUrl,
       fetcher
     })
+    const csvExcelFailure = getCsvExcelDataUnsupportedReason(
+      descriptor.raw as Record<string, unknown>,
+      projection,
+      layerInfo
+    )
+    if (csvExcelFailure) {
+      return buildDescriptor(node, {
+        disabledReason: csvExcelFailure,
+        serviceType,
+        serverUrl,
+        projection: normalizeProjection(layerInfo.projection ?? projection),
+        raw: descriptor.raw
+      })
+    }
     return buildDescriptor(node, {
       serviceType,
       serverUrl,
-      projection,
+      projection: normalizeProjection(layerInfo.projection ?? projection),
       overlaySupported: true,
       raw: descriptor.raw
     })
