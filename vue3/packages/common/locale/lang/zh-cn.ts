@@ -38,6 +38,9 @@ export default {
     directoryTreeServiceUnavailable: '当前服务不可用，无法勾选。',
     directoryTreeMissingProjection: '当前资源缺少坐标系信息，无法勾选。',
     directoryTreeCrsMismatch: '当前资源坐标系与关联地图不匹配，无法勾选。',
+    directoryTreeCsvExcelMissingCoordinateFields: '当前 CSV/Excel 数据缺少坐标字段，无法勾选。',
+    directoryTreeCsvExcelMissingProjection: '当前 CSV/Excel 坐标数据无法判断为 EPSG:4326，无法勾选。',
+    directoryTreeCsvExcelUnsupportedProjection: '当前 CSV/Excel 坐标系不是 EPSG:4326，无法勾选。',
     directoryTreeUnsupportedTileMatrixSet: '当前 WMTS 图层没有匹配当前地图的切片矩阵集，无法勾选。',
     directoryTreeLoadFailed: '当前资源加载失败，请稍后重试。',
     videojs:

@@ -987,10 +987,13 @@ function getCsvExcelDataUnsupportedReason(
     return undefined
   }
   if (!hasXYField(layerInfo)) {
-    return 'unsupported-resource-type'
+    return 'csv-excel-missing-coordinate-fields'
   }
   const normalizedProjection = normalizeProjection(layerInfo?.projection ?? projection)
-  return normalizedProjection === 'EPSG:4326' ? undefined : 'unsupported-resource-type'
+  if (!normalizedProjection) {
+    return 'csv-excel-missing-projection'
+  }
+  return normalizedProjection === 'EPSG:4326' ? undefined : 'csv-excel-unsupported-projection'
 }
 
 function resolvePassthroughDescriptor(

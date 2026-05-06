@@ -32,6 +32,9 @@ export const DIRECTORY_TREE_DISABLED_REASON_CODES = [
   'service-unavailable',
   'missing-projection',
   'crs-mismatch',
+  'csv-excel-missing-coordinate-fields',
+  'csv-excel-missing-projection',
+  'csv-excel-unsupported-projection',
   'unsupported-tile-matrix-set',
   'load-failed'
 ] as const

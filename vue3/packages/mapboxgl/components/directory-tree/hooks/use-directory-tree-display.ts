@@ -7,6 +7,9 @@ const DISABLED_REASON_I18N_KEYS: Record<DisabledReasonCode, string> = {
   'service-unavailable': 'warning.directoryTreeServiceUnavailable',
   'missing-projection': 'warning.directoryTreeMissingProjection',
   'crs-mismatch': 'warning.directoryTreeCrsMismatch',
+  'csv-excel-missing-coordinate-fields': 'warning.directoryTreeCsvExcelMissingCoordinateFields',
+  'csv-excel-missing-projection': 'warning.directoryTreeCsvExcelMissingProjection',
+  'csv-excel-unsupported-projection': 'warning.directoryTreeCsvExcelUnsupportedProjection',
   'unsupported-tile-matrix-set': 'warning.directoryTreeUnsupportedTileMatrixSet',
   'load-failed': 'warning.directoryTreeLoadFailed'
 }

@@ -1,14 +1,14 @@
 <template>
   <sm-collapse-card
     class="sm-component-directory-tree"
-    :style="props.style"
+    :style="collapseCardStyle"
     :icon-class="props.iconClass"
     :icon-position="props.position"
     :header-name="collapseCardHeaderName"
     :auto-rotate="props.autoRotate"
     :collapsed="props.collapsed"
     :split-line="props.splitLine"
-    :background="props.background"
+    :background="collapseCardBackground"
     :textColor="props.textColor"
   >
     <sm-card class="sm-component-directory-tree__card" :bordered="false" :style="textColorHeadingStyle">
@@ -182,6 +182,17 @@ const treeTitle = computed(() => {
   return typeof title === 'string' ? title.trim() : DEFAULT_DIRECTORY_TREE_TITLE
 })
 const collapseCardHeaderName = computed(() => props.headerName ?? treeTitle.value)
+const collapseCardBackground = computed(
+  () => props.background || props.style?.backgroundColor || undefined
+)
+const collapseCardStyle = computed(() => {
+  if (!props.style?.backgroundColor) {
+    return props.style
+  }
+
+  const { backgroundColor, ...style } = props.style
+  return style
+})
 
 function getMapContext(mapTarget = props.mapTarget) {
   return {
