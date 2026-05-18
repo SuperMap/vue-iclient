@@ -321,7 +321,10 @@ export default {
   computed: {
     resultDisplayTitle() {
       return function(properties) {
-        return `SmID：${getValueCaseInsensitive(properties, 'smid')}`;
+        let { field, fieldCaption } = this.activeQueryJob.identifyField || {};
+        field = field || 'smid';
+        fieldCaption = fieldCaption || 'SmID';
+        return `${fieldCaption}：${getValueCaseInsensitive(properties, field)}`;
       };
     },
     featureFieldsMap() {

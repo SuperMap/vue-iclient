@@ -1,5 +1,4 @@
 import { mount } from '@vue/test-utils';
-import SmWebMap from '../../../WebMap';
 import SmMeasure from '../Measure';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_point';
@@ -7,6 +6,23 @@ import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.j
 import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap';
 
 jest.mock('@libs/mapbox-gl-draw/mapbox-gl-draw', () => require('@mocks/mapboxgl_draw').MapboxDraw);
+
+function getWatcher(vm, name) {
+  const watcher = vm.$options.watch[name];
+  if (Array.isArray(watcher)) {
+    return watcher[0];
+  }
+  return watcher;
+}
+
+function runWatcher(vm, name, value) {
+  const watcher = getWatcher(vm, name);
+  if (typeof watcher === 'function') {
+    watcher.call(vm, value);
+    return;
+  }
+  watcher.handler.call(vm, value);
+}
 
 describe('measure', () => {
   let mapWrapper;
@@ -18,12 +34,141 @@ describe('measure', () => {
 
   afterEach(() => {
     jest.resetAllMocks();
+    jest.useRealTimers();
     if (measureWrapper) {
       measureWrapper.destroy();
     }
     if (mapWrapper) {
       mapWrapper.destroy();
     }
+  });
+
+  it('reads visible measure units from dashboard config and falls back to the first available unit', async () => {
+    const dashboardConfig = {
+      measureUnits: {
+        distance: ['nauticalmiles', 'meters'],
+        area: ['acres', 'hectares']
+      }
+    };
+    measureWrapper = mount(SmMeasure, {
+      propsData: {
+        mapTarget: 'map',
+        distanceDefaultUnit: 'kilometers',
+        areaDefaultUnit: 'kilometers'
+      },
+      mocks: {
+        $store: {
+          getters: {
+            customRequestConfig: dashboardConfig
+          }
+        }
+      },
+      sync: false
+    });
+
+    expect(measureWrapper.vm.activeDistanceUnit).toBe('nauticalmiles');
+    expect(measureWrapper.vm.activeAreaUnit).toBe('acres');
+
+    measureWrapper.setData({ activeMode: 'draw_line_string' });
+    await measureWrapper.vm.$nextTick();
+    expect(Object.keys(measureWrapper.vm.getUnitOptions)).toEqual(['nauticalmiles', 'meters']);
+    expect(measureWrapper.vm.distanceDefaultUnitValue).toBe('nauticalmiles');
+
+    measureWrapper.setData({ activeMode: 'draw_polygon' });
+    await measureWrapper.vm.$nextTick();
+    expect(Object.keys(measureWrapper.vm.getUnitOptions)).toEqual(['acres', 'hectares']);
+    expect(measureWrapper.vm.areaDefaultUnitValue).toBe('acres');
+  });
+
+  it('updates viewModel config and normalizes units when visible units change', async () => {
+    const dashboardConfig = {
+      measureUnits: {
+        distance: ['meters', 'feet'],
+        area: ['meters', 'acres']
+      }
+    };
+    measureWrapper = mount(SmMeasure, {
+      propsData: {
+        mapTarget: 'map',
+        distanceDefaultUnit: 'kilometers',
+        areaDefaultUnit: 'kilometers'
+      },
+      mocks: {
+        $store: {
+          getters: {
+            customRequestConfig: dashboardConfig
+          }
+        }
+      },
+      sync: false
+    });
+
+    const setDashboardConfigSpy = jest.spyOn(measureWrapper.vm.viewModel, 'setDashboardConfig');
+    const updateUnitSpy = jest.spyOn(measureWrapper.vm, 'updateUnit');
+    const nextDashboardConfig = {
+      measureUnits: {
+        distance: ['nauticalmiles'],
+        area: ['hectares']
+      }
+    };
+
+    runWatcher(measureWrapper.vm, 'dashboardMeasureConfig', nextDashboardConfig);
+    expect(setDashboardConfigSpy).toHaveBeenCalledWith(nextDashboardConfig);
+
+    await measureWrapper.setData({
+      activeMode: 'draw_line_string',
+      activeDistanceUnit: 'kilometers'
+    });
+    runWatcher(measureWrapper.vm, 'distanceVisibleUnits', ['meters']);
+    expect(measureWrapper.vm.activeDistanceUnit).toBe('meters');
+    expect(updateUnitSpy).toHaveBeenCalledWith('meters', 'draw_line_string');
+
+    updateUnitSpy.mockClear();
+    await measureWrapper.setData({
+      activeMode: 'draw_polygon',
+      activeAreaUnit: 'kilometers'
+    });
+    runWatcher(measureWrapper.vm, 'areaVisibleUnits', ['acres']);
+    expect(measureWrapper.vm.activeAreaUnit).toBe('acres');
+    expect(updateUnitSpy).toHaveBeenCalledWith('acres', 'draw_polygon');
+  });
+
+  it('normalizes the active unit before opening a draw mode', async () => {
+    const dashboardConfig = {
+      measureUnits: {
+        distance: ['nauticalmiles'],
+        area: ['hectares']
+      }
+    };
+    measureWrapper = mount(SmMeasure, {
+      propsData: {
+        mapTarget: 'map'
+      },
+      mocks: {
+        $store: {
+          getters: {
+            customRequestConfig: dashboardConfig
+          }
+        }
+      },
+      sync: false
+    });
+
+    jest.useFakeTimers();
+    const openDrawSpy = jest.spyOn(measureWrapper.vm.viewModel, 'openDraw').mockImplementation(() => {});
+    measureWrapper.vm.map = {
+      loaded: jest.fn(() => true)
+    };
+    measureWrapper.vm.mapNotLoadedTip = jest.fn(() => false);
+    await measureWrapper.setData({
+      activeDistanceUnit: 'kilometers'
+    });
+
+    measureWrapper.vm.changeMeasureMode('draw_line_string');
+    jest.runOnlyPendingTimers();
+
+    expect(measureWrapper.vm.activeDistanceUnit).toBe('nauticalmiles');
+    expect(openDrawSpy).toHaveBeenCalledWith('draw_line_string', 'nauticalmiles', measureWrapper.vm.setPopupStyle);
   });
 
   it('line default', async done => {
@@ -108,7 +253,7 @@ describe('measure', () => {
     await mapSubComponentLoaded(measureWrapper);
     jest.useFakeTimers();
     expect(measureWrapper.vm.mapTarget).toBe('map');
-    expect(measureWrapper.findAll('.sm-component-select-selection-selected-value').at(0).text()).toBe('kilometers');
+    expect(measureWrapper.findAll('.sm-component-select-selection-selected-value').at(0).text()).toBe('unit.kilometers');
     const spychangeMode = jest.spyOn(measureWrapper.vm.viewModel.draw, 'changeMode');
     measureWrapper.find('i.sm-components-icon-line').trigger('click');
     try {

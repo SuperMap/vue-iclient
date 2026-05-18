@@ -21,7 +21,8 @@ export function sortData(features, datasetOptions, maxFeatures, xBar) {
   if (matchItem) {
     nextFeatures = orderBy(
       features,
-      feature => isNaN(+feature.properties[matchItem.yField]) ? -Number.MAX_VALUE : +feature.properties[matchItem.yField],
+      feature =>
+        isNaN(+feature.properties[matchItem.yField]) ? -Number.MAX_VALUE : +feature.properties[matchItem.yField],
       matchItem.sort === 'ascending' ? 'asc' : 'desc'
     );
   }
@@ -66,6 +67,7 @@ export default class EchartsDataService {
     this.dataCache = null; // 缓存的是请求后的数据
     this.sortDataCache = null;
     this.statisticDataCache = null;
+    this.statisticOriginDataCache = null;
     this.axisDatas = []; // 坐标data
     this.serieDatas = []; // series data
     this.gridAxis = { xAxis: [], yAxis: {} }; // 直角坐标系
@@ -126,9 +128,10 @@ export default class EchartsDataService {
     // 统计后的数据
     let features;
     const isStastic = datasetOptions.length && datasetOptions[0].isStastic;
-    if(isStastic) {
+    if (isStastic) {
       features = this._createStatisticData(data, datasetOptions, xBar);
       this.statisticDataCache = features;
+      this.statisticOriginDataCache = this._createStatisticOriginData(data);
     }
     // 设置this.data
     data = this._setData(data, xBar);
@@ -182,12 +185,8 @@ export default class EchartsDataService {
     const statisticFieldCaptions = [xField].concat(yFields);
     const statisticFieldValues = [xData].concat(yDatas);
     let features = this._transformToObj(statisticFieldCaptions, statisticFieldValues);
-    if(sortMatchItem) {
-      features = orderBy(
-        features,
-        sortMatchItem.yField,
-        sortMatchItem.sort === 'ascending' ? 'asc' : 'desc'
-      );
+    if (sortMatchItem) {
+      features = orderBy(features, sortMatchItem.yField, sortMatchItem.sort === 'ascending' ? 'asc' : 'desc');
       xBar && features.reverse();
     }
     const maxLen = +this.dataset.maxFeatures;
@@ -195,6 +194,41 @@ export default class EchartsDataService {
       features.length = maxLen;
     }
     return features;
+  }
+
+  /**
+   * @function EchartsDataService.prototype._createStatisticOriginData
+   * @description 对相同字段数据进行统计后，对应的原始features
+   * @param {Object} data - 从superMap的iserver,iportal中请求返回的数据
+   * @param {Object} datasetOptions - 数据解析的配置参数
+   * @returns {Map} key为xField的字段对应的值，value为该值对应的原始features
+   */
+  _createStatisticOriginData(data, datasetOptions = this.datasetOptions, features = this.statisticDataCache) {
+    const result = new Map();
+    const xField = datasetOptions[0]?.xField;
+    const allFeatures = data.features;
+    // 预先分组allFeatures以提高性能
+    const groupedFeatures = new Map();
+    allFeatures.forEach(feature => {
+      const key = feature.properties[xField];
+      if (!groupedFeatures.has(key)) {
+        groupedFeatures.set(key, []);
+      }
+      groupedFeatures.get(key).push(feature);
+    });
+    features?.forEach(item => {
+      const xFieldValue = item[xField];
+      const originFeatures = groupedFeatures.get(xFieldValue) || [];
+      result.set(xFieldValue, originFeatures);
+    });
+    return result;
+  }
+
+  /**
+   * @function EchartsDataService.prototype.getStatisticOriginData
+   */
+  getStatisticOriginData() {
+    return this.statisticOriginDataCache;
   }
 
   /**
@@ -296,7 +330,7 @@ export default class EchartsDataService {
           name: XData[index]
         });
       });
-    } else if (chartType === 'radar') {
+    } else if (chartType === 'radar' && YData.length) {
       let yData = [...YData];
       serieData.data.push({
         value: [...YData],
@@ -480,10 +514,12 @@ export default class EchartsDataService {
    */
   _processValue(fieldValues, statisticFunction, features) {
     let result;
-    if(typeof (statisticFunction) === 'function') {
+    if (typeof statisticFunction === 'function') {
       result = statisticFunction(fieldValues, features);
     } else {
-      result = statisticFunctions[statisticFunction] ? statisticFunctions[statisticFunction](fieldValues) : statisticFunctions.sum(fieldValues);
+      result = statisticFunctions[statisticFunction]
+        ? statisticFunctions[statisticFunction](fieldValues)
+        : statisticFunctions.sum(fieldValues);
     }
     return result;
   }

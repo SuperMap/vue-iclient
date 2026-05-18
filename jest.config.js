@@ -22,7 +22,8 @@ module.exports = {
     '@leaflet/(.*)$': '<rootDir>/src/leaflet/$1',
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
     '<rootDir>/test/unit/assetsTransformer.js',
-    '^axios$': require.resolve('axios')
+    '^axios$': require.resolve('axios'),
+    '^swiper/modules$': '<rootDir>/node_modules/swiper/modules/index.mjs',
   },
   transform: {
     '^.+\\.ts$': '<rootDir>/node_modules/ts-jest',

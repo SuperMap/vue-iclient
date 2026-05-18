@@ -3,8 +3,8 @@
 
 @include b(icon) {
   display: inline-flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
   color: $primary-color;
   > i {
     font-size: inherit;

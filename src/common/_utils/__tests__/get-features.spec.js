@@ -1,7 +1,16 @@
 import getFeatures from '../get-features';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
-import iServerRestService from 'vue-iclient/src/common/_utils/iServerRestService';
-import { FetchRequest } from 'vue-iclient/static/libs/iclient-common/iclient-common';
+import * as iServerRestService from 'vue-iclient/src/common/_utils/iServerRestService';
+import { FetchRequest, mapboxFilterToQueryFilter } from 'vue-iclient/static/libs/iclient-common/iclient-common';
+import * as iPortalDataService from 'vue-iclient/src/common/_utils/iPortalDataService';
+
+jest.mock('vue-iclient/static/libs/iclient-common/iclient-common', () => {
+  const originalModule = jest.requireActual('vue-iclient/static/libs/iclient-common/iclient-common');
+  return {
+    ...originalModule,
+    mapboxFilterToQueryFilter: jest.fn()
+  };
+});
 
 describe('getFeatures test', () => {
   const dataInfo = {
@@ -34,50 +43,50 @@ describe('getFeatures test', () => {
   });
 
   it('getStructureddata', done => {
-    const result = {
-      timeStamp: '2024-05-13T10:00:45Z',
-      features: [
-        {
-          geometry: {
-            coordinates: [
-              [116.38050072430798, 39.94888011518407],
-              [116.37993841640692, 39.94887730328765],
-              [116.38050072430798, 39.94888011518407]
-            ],
-            type: 'LineString'
-          },
-          id: '1',
-          type: 'Feature',
-          properties: {
-            SmID: 1,
-            标准名称: '地铁二号线',
-            smpid: 1
-          }
+  const result = {
+    timeStamp: '2024-05-13T10:00:45Z',
+    features: [
+      {
+        geometry: {
+          coordinates: [
+            [116.38050072430798, 39.94888011518407],
+            [116.37993841640692, 39.94887730328765],
+            [116.38050072430798, 39.94888011518407]
+          ],
+          type: 'LineString'
         },
-        {
-          geometry: {
-            coordinates: [
-              [116.38050072430798, 39.94888011518407],
-              [116.37993841640692, 39.94887730328765],
-              [116.38050072430798, 39.94888011518407]
-            ],
-            type: 'LineString'
-          },
-          id: '5',
-          type: 'Feature',
-          properties: {
-            SmID: 5,
-            标准名称: '地铁一号线',
-            smpid: 5
-          }
+        id: '1',
+        type: 'Feature',
+        properties: {
+          SmID: 1,
+          标准名称: '地铁二号线',
+          smpid: 1
         }
-      ],
-      numberReturned: 3,
-      numberMatched: 3,
-      type: 'FeatureCollection'
-    };
+      },
+      {
+        geometry: {
+          coordinates: [
+            [116.38050072430798, 39.94888011518407],
+            [116.37993841640692, 39.94887730328765],
+            [116.38050072430798, 39.94888011518407]
+          ],
+          type: 'LineString'
+        },
+        id: '5',
+        type: 'Feature',
+        properties: {
+          SmID: 5,
+          标准名称: '地铁一号线',
+          smpid: 5
+        }
+      }
+    ],
+    numberReturned: 3,
+    numberMatched: 3,
+    type: 'FeatureCollection'
+  };
     const fetchResource = {
-      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000':
+      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000&filter=SmID>0&filter-lang=cql-text':
         result
     };
     mockFetch(fetchResource);
@@ -130,7 +139,7 @@ describe('getFeatures test', () => {
       type: 'FeatureCollection'
     };
     const fetchResource = {
-      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000':
+      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000&filter=SmID>0&filter-lang=cql-text':
         result
     };
     mockFetch(fetchResource);
@@ -191,9 +200,9 @@ describe('getFeatures test', () => {
       });
     }
     const fetchResource = {
-      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000':
+      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000&filter=SmID>0&filter-lang=cql-text':
         result1,
-      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000&offset=5000':
+      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000&offset=5000&filter=SmID>0&filter-lang=cql-text':
         result2
     };
     mockFetch(fetchResource);
@@ -258,9 +267,9 @@ describe('getFeatures test', () => {
 
     const fetchResource = {
       'https://fakeiportal.supermap.io/web/datas/1832028287?parentResType=DATA&parentResId=1832028287': metadata,
-      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000':
+      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000&filter=SmID>0&filter-lang=cql-text':
         result1,
-      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000&offset=5000':
+      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000&offset=5000&filter=SmID>0&filter-lang=cql-text':
         result2
     };
     mockFetch(fetchResource);
@@ -287,7 +296,7 @@ describe('getFeatures test', () => {
 
   it('iserver support bounds and keyWord', done => {
     let params;
-    jest.spyOn(iServerRestService.prototype, 'getData').mockImplementation((param1, param2) => {
+    jest.spyOn(iServerRestService.default.prototype, 'getData').mockImplementation((param1, param2) => {
       params = param2;
     });
     getFeatures(dataInfo);
@@ -360,6 +369,123 @@ describe('getFeatures test', () => {
       expect(e.error).toBe(errorMsg);
       done();
     });
+  });
+
+  it('iServer - should handle filterConditions correctly', async () => {
+    const errorMsg = 'mock error';
+    const mockImplementationCb = () => {
+      return Promise.reject(errorMsg);
+    };
+    jest.spyOn(FetchRequest, 'post').mockImplementation(mockImplementationCb);
+    jest.spyOn(FetchRequest, 'get').mockImplementation(mockImplementationCb);
+    let queryParmams;
+    jest.spyOn(iServerRestService.default.prototype, 'getData').mockImplementation((_, params) => {
+      queryParmams = params;
+      return null;
+    });
+    jest.spyOn(iServerRestService.default.prototype, 'on').mockImplementation((params) => {
+      params.getdatafailed({ error: 'mock error' });
+    });
+    const mockAttributeFilter = "name='test'";
+
+    mapboxFilterToQueryFilter.mockReturnValue(mockAttributeFilter);
+
+    const dataset = {
+      withCredentials: false,
+      epsgCode: 4326,
+      name: 'Jingjin:BaseMap_P',
+      dataName: ['Jingjin:BaseMap_P'],
+      type: 'iServer',
+      url: 'http://fake/iserver/services/data-jingjin/rest/data',
+      filterConditions: ['==', 'name', 'test']
+    };
+    try {
+      await getFeatures(dataset);
+    } catch (error) {
+      expect(mapboxFilterToQueryFilter).toHaveBeenCalledWith(dataset.filterConditions, '');
+      expect(queryParmams.attributeFilter).toBe(mockAttributeFilter);
+    }
+  });
+
+  it('STRUCTUREDDATA - should handle filterConditions correctly', async () => {
+    const errorMsg = 'mock error';
+    const mockImplementationCb = () => {
+      return Promise.reject(errorMsg);
+    };
+    jest.spyOn(FetchRequest, 'post').mockImplementation(mockImplementationCb);
+    jest.spyOn(FetchRequest, 'get').mockImplementation(mockImplementationCb);
+    let queryParmams;
+    jest.spyOn(iPortalDataService.default.prototype, 'getData').mockImplementation((params) => {
+      queryParmams = params;
+      return null;
+    });
+    jest.spyOn(iPortalDataService.default.prototype, 'on').mockImplementation((params) => {
+      params.getdatafailed({ error: 'mock error' });
+    });
+    const mockAttributeFilter = "name='test'";
+
+    mapboxFilterToQueryFilter.mockReturnValue(mockAttributeFilter);
+
+    const dataset = {
+      withCredentials: false,
+      epsgCode: 4326,
+      name: 'Jingjin:BaseMap_P',
+      dataName: ['Jingjin:BaseMap_P'],
+      type: 'iPortal',
+      url: 'http://fake/iserver/services/data-jingjin/rest/data',
+      filterConditions: ['==', 'name', 'test'],
+      dataType: 'STRUCTUREDDATA',
+      proxy: true
+    };
+
+    try {
+      await getFeatures(dataset);
+    } catch (error) {
+      expect(mapboxFilterToQueryFilter).toHaveBeenCalledWith(dataset.filterConditions, 'STRUCTURE_DATA');
+      expect(queryParmams.attributeFilter).toBe(mockAttributeFilter);
+    }
+  });
+
+  it('filterConditions concat attribute filter', async () => {
+    const errorMsg = 'mock error';
+    const mockImplementationCb = () => {
+      return Promise.reject(errorMsg);
+    };
+    jest.spyOn(FetchRequest, 'post').mockImplementation(mockImplementationCb);
+    jest.spyOn(FetchRequest, 'get').mockImplementation(mockImplementationCb);
+    let queryParmams;
+    jest.spyOn(iPortalDataService.default.prototype, 'getData').mockImplementation((params) => {
+      queryParmams = params;
+      return null;
+    });
+    jest.spyOn(iPortalDataService.default.prototype, 'on').mockImplementation((params) => {
+      params.getdatafailed({ error: 'mock error' });
+    });
+    const mockAttributeFilter = "name='test'";
+
+    mapboxFilterToQueryFilter.mockReturnValue(mockAttributeFilter);
+
+    const originalAttributeFilter = `"title" like '%测试%'`;
+
+    const dataset = {
+      withCredentials: false,
+      epsgCode: 4326,
+      name: 'Jingjin:BaseMap_P',
+      dataName: ['Jingjin:BaseMap_P'],
+      type: 'iPortal',
+      url: 'http://fake/iserver/services/data-jingjin/rest/data',
+      filterConditions: ['==', 'name', 'test'],
+      attributeFilter: originalAttributeFilter,
+      dataType: 'STRUCTUREDDATA',
+      proxy: true
+    };
+
+    try {
+      await getFeatures(dataset);
+    } catch (error) {
+      expect(mapboxFilterToQueryFilter).toHaveBeenCalledWith(dataset.filterConditions, 'STRUCTURE_DATA');
+      expect(queryParmams.attributeFilter).toBe([mockAttributeFilter, originalAttributeFilter].join(' AND '));
+    }
   });
 });
 

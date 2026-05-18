@@ -71,16 +71,36 @@
       display: list-item;
     }
     & .sm-component-tree-title .header-text {
-      display: inline-flex;
-      width: 100%;
+      display: inline-block;
+      min-width: 100%;
       position: relative;
       z-index: 1;
+      vertical-align: middle;
+    }
+    & .sm-component-tree-title .header-text .layer-title-sizer {
+      display: block;
+      padding-right: 12px;
+      visibility: hidden;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    & .sm-component-tree-title .header-text .layer-title-content {
+      position: absolute;
+      top: 0;
+      right: 12px;
+      bottom: 0;
+      left: 0;
+      display: flex;
+      align-items: center;
+      min-width: 0;
     }
     & .icon-buttons-hidden {
       display: none !important;
     }
     & .sm-component-tree-title .header-text .icon-buttons{
       display: flex;
+      flex: 0 0 auto;
+      align-items: center;
       justify-content: flex-end;
       height: 20px;
       margin-left: 16px;
@@ -93,6 +113,30 @@
       }
       & .highlight-icon:hover {
         color: $primary-5
+      }
+    }
+    .layer-list-container & {
+      overflow-x: hidden;
+      > div {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+      }
+      .sm-component-tree-title .header-text {
+        display: block;
+        width: 100%;
+        min-width: 0;
+      }
+      .sm-component-tree-title .header-text .layer-title-sizer {
+        display: none;
+      }
+      .sm-component-tree-title .header-text .layer-title-content {
+        position: relative;
+        top: auto;
+        right: auto;
+        bottom: auto;
+        left: auto;
+        width: calc(100% - 12px);
       }
     }
     & .opacity-style {
@@ -176,13 +220,15 @@
       }
       .header-text {
         & > i,
-        & > span {
+        .layer-title-sizer,
+        .layer-title-content > span {
+          font-size: 12px;
           vertical-align: middle;
         }
-        & > span {
-          flex: 1;
-          display: inline-block;
-          font-size: 12px;
+        .layer-title-content > span {
+          flex: 1 1 auto;
+          display: block;
+          min-width: 0;
         }
       }
     }

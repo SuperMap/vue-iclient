@@ -246,7 +246,7 @@ describe('Chart Mixin Component', () => {
             show: true,
             position: 'center',
             xFieldDecimals: 2,
-            originFormatter: "{b}: {c}"
+            originFormatter: '{b}: {c}'
           },
           emphasis: {
             show: true,
@@ -300,7 +300,14 @@ describe('Chart Mixin Component', () => {
     });
     expect(wrapper.vm.parseOptions).not.toStrictEqual(options);
     expect(wrapper.vm.parseOptions.series[0].label.normal.formatter).not.toBeUndefined();
-    expect(wrapper.vm.parseOptions.series[0].label.normal.formatter({ dataIndex: 0, name: 1, value: 1.2547, percent: 125.47 })).toEqual('1.00: 1.3');
+    expect(
+      wrapper.vm.parseOptions.series[0].label.normal.formatter({
+        dataIndex: 0,
+        name: 1,
+        value: 1.2547,
+        percent: 125.47
+      })
+    ).toEqual('1.00: 1.3');
     const spyFn = jest.spyOn(wrapper.vm, '_handlePieAutoPlay');
     jest.useFakeTimers();
     await wrapper.setProps({
@@ -357,6 +364,7 @@ describe('Chart Mixin Component', () => {
         ]
       }
     });
+    await flushPromises();
     expect(wrapper.vm.echartOptions).toStrictEqual(wrapper.vm.parseOptions);
     expect(wrapper.vm.datasetChange).toBeFalsy();
     const spyFn = jest.spyOn(wrapper.vm, '_setEchartOptions');
@@ -369,6 +377,7 @@ describe('Chart Mixin Component', () => {
       ],
       dataset: geoJSONDataset
     });
+    await flushPromises();
     expect(wrapper.vm.datasetChange).toBeTruthy();
     expect(spyFn).toHaveBeenCalled();
     const spyOptionHandlerFn = jest.spyOn(wrapper.vm, '_optionsHandler');
@@ -414,6 +423,7 @@ describe('Chart Mixin Component', () => {
         ]
       }
     });
+    await flushPromises();
     expect(spyOptionHandlerFn).toHaveBeenCalled();
     wrapper.vm.echartOptions.visualMap[0].pieces.forEach((item, index) => {
       expect(wrapper.vm.echartOptions.yAxis[0].axisLabel.rich[`color_${index}`]).not.toBeUndefined();
@@ -472,7 +482,7 @@ describe('Chart Mixin Component', () => {
       dataset: geoJSONDataset
     });
     await wrapper.vm.$nextTick();
-    expect(wrapper.vm.echartOptions.series[0].label.normal.formatter({ dataIndex:0, value:1.234 })).toEqual('1.2');
+    expect(wrapper.vm.echartOptions.series[0].label.normal.formatter({ dataIndex: 0, value: 1.234 })).toEqual('1.2');
     done();
   });
 
@@ -578,7 +588,50 @@ describe('Chart Mixin Component', () => {
       await wrapper.setProps({
         highlightOptions: highlightOptions([1])
       });
+      await flushPromises();
       expect(wrapper.vm.echartOptions.series[0].itemStyle.color).not.toStrictEqual(options.series[0].itemStyle.color);
+    });
+
+    it('render cylinder chart keeps custom color function for caps', async () => {
+      const datasetOptions = [
+        {
+          xField: 'date',
+          yField: 'sale',
+          sort: 'descending',
+          seriesType: '2.5Bar'
+        }
+      ];
+      const customColorFn = jest.fn(params => {
+        return params.seriesName === 'sale' && typeof params.name === 'string' ? 'blue' : 'red';
+      });
+      wrapper = factory({
+        options: {
+          ...options,
+          series: [
+            {
+              type: '2.5Bar',
+              shape: 'cylinder',
+              name: 'sale',
+              itemStyle: {
+                color: customColorFn
+              }
+            }
+          ]
+        },
+        datasetOptions,
+        dataset: geoJSONDataset,
+        highlightColor,
+        highlightOptions: highlightOptions([0])
+      });
+      await flushPromises();
+      const topCapsSerie = wrapper.vm.echartOptions.series.find(item => item.type === 'pictorialBar' && item.symbolPosition === 'end');
+      expect(topCapsSerie).not.toBeUndefined();
+      const topCapsColorFn = topCapsSerie.itemStyle.normal.color;
+      const nonHighlightColor = topCapsColorFn({ dataIndex: 1, value: 800 });
+      expect(nonHighlightColor).toEqual(expect.objectContaining({ colorStops: expect.any(Array) }));
+      expect(nonHighlightColor.colorStops[0].color).toBe('blue');
+      expect(nonHighlightColor.colorStops[1].color).toBe('#fff');
+      expect(customColorFn).toHaveBeenCalled();
     });
 
     it('render cylinder chart with Multiple feature', async () => {
@@ -775,6 +828,59 @@ describe('Chart Mixin Component', () => {
     expect(wrapper.vm.echartOptions.series[0].isShine).toBeUndefined();
   });
 
+  it('specify itemStyle.color which ring is shine', async () => {
+    const testColor = 'red';
+    const colorFn = jest.fn(params => {
+      if (!params.name) {
+        return;
+      }
+      return testColor;
+    });
+    const series = [
+      {
+        name: 'demo',
+        type: 'pie',
+        radius: ['75%', '80%'],
+        clockwise: false,
+        avoidLabelOverlap: true,
+        isShine: true,
+        itemStyle: {
+          color: colorFn
+        },
+        outerGap: 0
+      }
+    ];
+    const options = optionFactory(series);
+    wrapper = factory({
+      options,
+      datasetOptions: datasetOptionsFactory(['pie']),
+      dataset: geoJSONDataset,
+      highlightOptions: [
+        {
+          seriesIndex: [0],
+          dataIndex: 0,
+          properties: {
+            date: 'Mon',
+            sale: 500,
+            target: 6000
+          },
+          color: 'blue'
+        }
+      ]
+    });
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.echartOptions.series[0].outerGap).toBeUndefined();
+    expect(wrapper.vm.echartOptions.series[0].isShine).toBeUndefined();
+    expect(colorFn).toHaveBeenCalled();
+    expect(
+      wrapper.vm.echartOptions.series[0].data.filter(item => item.name).some(item => item.itemStyle.color === testColor)
+    ).toBeTruthy();
+    expect(
+      wrapper.vm.echartOptions.series[0].data.filter(item => item.name).some(item => item.itemStyle.color === 'blue')
+    ).toBeTruthy();
+  });
+
   it('render special pie chart which is named Rose', async () => {
     const series = [
       {
@@ -848,5 +954,640 @@ describe('Chart Mixin Component', () => {
       }
     });
     expect(options1.radar.indicator[0].text).toBe('1.232');
+  });
+  it('highlightOptions, dataZoom', async () => {
+    const serieItem = {
+      name: 'sale',
+      emphasis: {
+        itemStyle: {}
+      },
+      itemStyle: {
+        barBorderRadius: [0, 15, 15, 0]
+      },
+      stack: 0,
+      type: 'bar',
+      barWidth: 10,
+      data: []
+    };
+    const options = {
+      xAxis: yAxis,
+      yAxis: {
+        ...xAxis
+      },
+      legend,
+      series: [
+        {
+          ...serieItem,
+          label: {
+            normal: {
+              decimals: 1,
+              show: true,
+              position: 'center',
+              smart: true
+            }
+          }
+        }
+      ]
+    };
+
+    wrapper = factory(
+      {
+        options,
+        datasetOptions: datasetOptionsFactory(['bar']),
+        dataset: geoJSONDataset
+      },
+      { localVue }
+    );
+    jest.useFakeTimers();
+    await flushPromises();
+    expect(wrapper.vm._chartOptions.dataZoom).toEqual(undefined);
+    await wrapper.setProps({
+      options: {
+        ...options,
+        dataZoom: [
+          {
+            type: 'slider',
+            start: 0,
+            end: 5,
+            xAxisIndex: 0,
+            height: 25
+          },
+          {
+            type: 'inside',
+            xAxisIndex: 0
+          }
+        ]
+      },
+      highlightOptions: [
+        {
+          color: 'red',
+          properties: {
+            date: 'Sat',
+            sale: 4200,
+            target: 6000
+          }
+        }
+      ]
+    });
+    await flushPromises();
+    expect(wrapper.vm.newHighlightOptions.length).toEqual(1);
+    expect(wrapper.vm.newHighlightOptions[0].seriesIndex).toEqual([0]);
+    expect(wrapper.vm.newHighlightOptions[0].dataIndex).toEqual(6);
+    expect(wrapper.vm.newHighlightOptions[0].color).toEqual('red');
+
+    expect(wrapper.vm._chartOptions.dataZoom[0]).toEqual({
+      endValue: 210,
+      height: 25,
+      startValue: 0,
+      type: 'slider',
+      xAxisIndex: 0
+    });
+    await wrapper.setProps({
+      options: {
+        ...options,
+        dataZoom: undefined
+      }
+    });
+    await flushPromises();
+
+    expect(wrapper.vm._chartOptions.dataZoom).toEqual(undefined);
+    await wrapper.setProps({
+      datasetOptions: [{ ...datasetOptionsFactory(['bar'])[0], isStatic: true }],
+      dataset: {
+        ...geoJSONDataset,
+        geoJSON: {
+          ...geoJSONDataset.geoJSON,
+          features: [
+            {
+              type: 'Feature',
+              properties: {
+                date: 'Sat',
+                sale: 4200,
+                target: 6000
+              }
+            }
+          ]
+        }
+      }
+    });
+    await flushPromises();
+    expect(wrapper.vm.newHighlightOptions.length).toEqual(1);
+    expect(wrapper.vm.newHighlightOptions[0].seriesIndex).toEqual([0]);
+    expect(wrapper.vm.newHighlightOptions[0].dataIndex).toEqual(0);
+    jest.useRealTimers();
+  });
+
+  describe('misc internal methods coverage', () => {
+    it('showDetailInfo returns early when mapNotLoadedTip is true', () => {
+      wrapper = factory();
+      const spyUnSup = jest.spyOn(wrapper.vm, 'unSupportedFeatureTip');
+      jest.spyOn(wrapper.vm, 'mapNotLoadedTip').mockReturnValue(true);
+      wrapper.vm.showDetailInfo({ geometry: { coordinates: [] }, properties: {} });
+      expect(wrapper.vm.mapNotLoadedTip).toHaveBeenCalled();
+      expect(spyUnSup).not.toHaveBeenCalled();
+    });
+
+    it('_dataZoomChanged does not call _optionsHandler when smart labels not enabled', () => {
+      wrapper = factory();
+      const spy = jest.spyOn(wrapper.vm, '_optionsHandler').mockImplementation(() => ({}));
+      // set options without smart label (include series.type to avoid echarts error)
+      wrapper.setProps({ options: { series: [{ type: 'pie', label: { normal: { show: false, smart: false } } }] } });
+      wrapper.vm.dataSeriesCache = {};
+      wrapper.vm._dataZoomChanged();
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('delegate methods call through to smChart', () => {
+      wrapper = factory();
+      const mock = {
+        mergeOptions: jest.fn(() => 'merged'),
+        appendData: jest.fn(() => 'appended'),
+        resize: jest.fn(() => 'resized'),
+        dispatchAction: jest.fn(() => 'dispatched'),
+        convertToPixel: jest.fn(() => 'pixel')
+      };
+      wrapper.vm.smChart = mock;
+      expect(wrapper.vm.mergeOptions({ a: 1 }, true, false)).toBeUndefined();
+      expect(mock.mergeOptions).toHaveBeenCalledWith({ a: 1 }, true, false);
+      wrapper.vm.appendData({ b: 2 });
+      expect(mock.appendData).toHaveBeenCalledWith({ b: 2 });
+      wrapper.vm.resize({ width: 100 });
+      expect(mock.resize).toHaveBeenCalledWith({ width: 100 });
+      wrapper.vm.dispatchAction({ type: 'test' });
+      expect(mock.dispatchAction).toHaveBeenCalledWith({ type: 'test' });
+      const cv = wrapper.vm.convertToPixel('finder', [1, 2]);
+      expect(cv).toBe('pixel');
+    });
+
+    it('chart static methods delegate to ECharts when available', () => {
+      // ensure ECharts static functions exist
+      const ECharts = require('vue-echarts');
+      ECharts.connect = jest.fn();
+      ECharts.disConnect = jest.fn();
+      ECharts.registerMap = jest.fn();
+      ECharts.registerTheme = jest.fn();
+
+      wrapper = factory();
+      // static functions are defined on the component export, not instance methods
+      ChartMixin.connect('group1');
+      expect(ECharts.connect).toHaveBeenCalledWith('group1');
+      ChartMixin.disconnect('group1');
+      expect(ECharts.disConnect).toHaveBeenCalledWith('group1');
+      ChartMixin.registerMap('mapName', { foo: 1 }, { special: true });
+      expect(ECharts.registerMap).toHaveBeenCalledWith('mapName', { foo: 1 }, { special: true });
+      ChartMixin.registerTheme('dark', { color: '#000' });
+      expect(ECharts.registerTheme).toHaveBeenCalledWith('dark', { color: '#000' });
+    });
+  });
+
+  describe('xBar with visualMap and highlightOptions', () => {
+    it('should disable visualMap when xBar has highlightOptions', async () => {
+      const geoJSONDataset = {
+        maxFeatures: 20,
+        url: '',
+        type: 'geoJSON',
+        geoJSON: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              properties: {
+                name: 'Item 1',
+                value: 100
+              }
+            }
+          ]
+        }
+      };
+
+      // xBar 配置：yAxis 是 category
+      const xBarOptions = {
+        yAxis: {
+          type: 'category',
+          show: true
+        },
+        xAxis: {
+          type: 'value',
+          show: false
+        },
+        series: [
+          {
+            type: 'bar',
+            data: []
+          }
+        ],
+        visualMap: [
+          {
+            show: false,
+            seriesIndex: 0,
+            pieces: [
+              {
+                min: 0,
+                max: 100,
+                color: '#3fb1e3'
+              }
+            ],
+            outOfRange: {
+              color: '#6be6c1'
+            }
+          }
+        ]
+      };
+
+      wrapper = factory({
+        options: xBarOptions,
+        datasetOptions: datasetOptionsFactory(['bar']),
+        dataset: geoJSONDataset,
+        highlightOptions: [
+          {
+            seriesIndex: [0],
+            dataIndex: 0,
+            color: 'red'
+          }
+        ]
+      });
+
+      await flushPromises();
+
+      // visualMap 应该被禁用（设置为 null）
+      expect(wrapper.vm.echartOptions.visualMap).toBeNull();
+    });
+
+    it('should keep visualMap when not xBar chart', async () => {
+      const geoJSONDataset = {
+        maxFeatures: 20,
+        url: '',
+        type: 'geoJSON',
+        geoJSON: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              properties: {
+                name: 'Item 1',
+                value: 100
+              }
+            }
+          ]
+        }
+      };
+
+      // 普通柱状图配置：xAxis 是 category，yAxis 是 value
+      const normalBarOptions = {
+        xAxis: {
+          type: 'category',
+          show: true
+        },
+        yAxis: {
+          type: 'value',
+          show: true
+        },
+        series: [
+          {
+            type: 'bar',
+            data: []
+          }
+        ],
+        visualMap: [
+          {
+            show: false,
+            seriesIndex: 0,
+            pieces: [
+              {
+                min: 0,
+                max: 100,
+                color: '#3fb1e3'
+              }
+            ],
+            outOfRange: {
+              color: '#6be6c1'
+            }
+          }
+        ]
+      };
+
+      wrapper = factory({
+        options: normalBarOptions,
+        datasetOptions: datasetOptionsFactory(['bar']),
+        dataset: geoJSONDataset,
+        highlightOptions: [
+          {
+            seriesIndex: [0],
+            dataIndex: 0,
+            color: 'red'
+          }
+        ]
+      });
+
+      await flushPromises();
+
+      // visualMap 应该保留
+      expect(wrapper.vm.echartOptions.visualMap).not.toBeNull();
+      expect(wrapper.vm.echartOptions.visualMap).toEqual(normalBarOptions.visualMap);
+    });
+
+    it('should keep visualMap when xBar has no highlightOptions', async () => {
+      const geoJSONDataset = {
+        maxFeatures: 20,
+        url: '',
+        type: 'geoJSON',
+        geoJSON: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              properties: {
+                name: 'Item 1',
+                value: 100
+              }
+            }
+          ]
+        }
+      };
+
+      const xBarOptions = {
+        yAxis: {
+          type: 'category',
+          show: true
+        },
+        xAxis: {
+          type: 'value',
+          show: false
+        },
+        series: [
+          {
+            type: 'bar',
+            data: []
+          }
+        ],
+        visualMap: [
+          {
+            show: false,
+            seriesIndex: 0,
+            min: 0,
+            max: 100,
+            color: '#3fb1e3'
+          }
+        ]
+      };
+
+      wrapper = factory({
+        options: xBarOptions,
+        datasetOptions: datasetOptionsFactory(['bar']),
+        dataset: geoJSONDataset,
+        // 没有 highlightOptions
+        highlightOptions: []
+      });
+
+      await flushPromises();
+
+      // visualMap 应该保留
+      expect(wrapper.vm.echartOptions.visualMap).not.toBeNull();
+    });
+  });
+
+  describe('computed properties', () => {
+    it('isPie returns true when series type is pie', () => {
+      const options = {
+        series: [
+          {
+            type: 'pie',
+            data: []
+          }
+        ]
+      };
+      wrapper = factory({ options });
+      expect(wrapper.vm.isPie).toBe(true);
+    });
+
+    it('isPie returns false when options has no series', () => {
+      wrapper = factory({ options: {} });
+      expect(wrapper.vm.isPie).toBe(false);
+    });
+
+    it('isPie returns false when options is empty', () => {
+      wrapper = factory({});
+      expect(wrapper.vm.isPie).toBe(false);
+    });
+
+    it('maxFeatures returns dataset maxFeatures when not pie chart', () => {
+      const dataset = {
+        maxFeatures: 100,
+        geoJSON: {
+          type: 'FeatureCollection',
+          features: []
+        }
+      };
+      // xBar 配置：yAxis 是 category
+      const xBarOptions = {
+        yAxis: {
+          type: 'category',
+          show: true
+        },
+        xAxis: {
+          type: 'value',
+          show: false
+        },
+        series: [
+          {
+            type: 'bar',
+            data: []
+          }
+        ],
+        visualMap: [
+          {
+            show: false,
+            seriesIndex: 0,
+            pieces: [
+              {
+                min: 0,
+                max: 100,
+                color: '#3fb1e3'
+              }
+            ],
+            outOfRange: {
+              color: '#6be6c1'
+            }
+          }
+        ]
+      };
+      wrapper = factory({ dataset, options: xBarOptions });
+      expect(wrapper.vm.maxFeatures).toBe(100);
+    });
+
+    it('maxFeatures returns PIE_MAX_FEATURES when pie chart and maxFeatures is empty string', () => {
+      const dataset = {
+        maxFeatures: '',
+        geoJSON: {
+          type: 'FeatureCollection',
+          features: []
+        }
+      };
+      const options = {
+        series: [
+          {
+            type: 'pie',
+            data: []
+          }
+        ]
+      };
+      wrapper = factory({ dataset, options });
+      expect(wrapper.vm.maxFeatures).toBe(300);
+    });
+
+    it('maxFeatures returns PIE_MAX_FEATURES when pie chart and maxFeatures > 300', () => {
+      const dataset = {
+        maxFeatures: 500,
+        geoJSON: {
+          type: 'FeatureCollection',
+          features: []
+        }
+      };
+      const options = {
+        series: [
+          {
+            type: 'pie',
+            data: []
+          }
+        ]
+      };
+      wrapper = factory({ dataset, options });
+      expect(wrapper.vm.maxFeatures).toBe(300);
+    });
+
+    it('maxFeatures returns original value when pie chart and maxFeatures <= 300', () => {
+      const dataset = {
+        maxFeatures: 200,
+        geoJSON: {
+          type: 'FeatureCollection',
+          features: []
+        }
+      };
+      const options = {
+        series: [
+          {
+            type: 'pie',
+            data: []
+          }
+        ]
+      };
+      wrapper = factory({ dataset, options });
+      expect(wrapper.vm.maxFeatures).toBe(200);
+    });
+
+    it('_dataset returns null when dataset is null', () => {
+      wrapper = factory({ dataset: null });
+      expect(wrapper.vm._dataset).toBeNull();
+    });
+
+    it('isStastic returns true when datasetOptions has isStastic true', () => {
+      wrapper = factory({
+        datasetOptions: [
+          {
+            xField: 'date',
+            yField: 'sale',
+            isStastic: true
+          }
+        ]
+      });
+      expect(wrapper.vm.isStastic).toBe(true);
+    });
+
+    it('isStastic returns false when datasetOptions has isStastic false', () => {
+      wrapper = factory({
+        datasetOptions: [
+          {
+            xField: 'date',
+            yField: 'sale',
+            isStastic: false
+          }
+        ]
+      });
+      expect(wrapper.vm.isStastic).toBe(false);
+    });
+
+    it('isStastic returns false when datasetOptions has no isStastic', () => {
+      wrapper = factory({
+        datasetOptions: [
+          {
+            xField: 'date',
+            yField: 'sale'
+          }
+        ]
+      });
+      expect(wrapper.vm.isStastic).toBe(false);
+    });
+
+    it('isStastic returns false when datasetOptions is null', () => {
+      wrapper = factory({
+        datasetOptions: null
+      });
+      expect(wrapper.vm.isStastic).toBe(false);
+    });
+  });
+
+  describe('colorNumber computed property', () => {
+    it('returns colorGroupsData length when no series', () => {
+      wrapper = factory({});
+      expect(wrapper.vm.colorNumber).toBe(wrapper.vm.colorGroupsData.length);
+    });
+  });
+
+  describe('_isRequestData computed property', () => {
+    it('returns false when dataset is empty', () => {
+      wrapper = factory({ dataset: {}, datasetOptions: [] });
+      expect(wrapper.vm._isRequestData).toBe(false);
+    });
+
+    it('returns false when datasetOptions is empty', () => {
+      wrapper = factory({
+        dataset: { url: 'http://example.com' },
+        datasetOptions: []
+      });
+      expect(wrapper.vm._isRequestData).toBe(false);
+    });
+
+    it('returns true when dataset has url and datasetOptions is not empty', () => {
+      wrapper = factory({
+        dataset: { url: 'http://example.com' },
+        datasetOptions: [{ xField: 'date', yField: 'sale' }]
+      });
+      expect(wrapper.vm._isRequestData).toBe(true);
+    });
+
+    it('returns true when dataset has geoJSON and datasetOptions is not empty', () => {
+      wrapper = factory({
+        dataset: {
+          geoJSON: {
+            type: 'FeatureCollection',
+            features: []
+          }
+        },
+        datasetOptions: [{ xField: 'date', yField: 'sale' }]
+      });
+      expect(wrapper.vm._isRequestData).toBe(true);
+    });
+  });
+
+  describe('methods - timing', () => {
+    it('sets dataSeriesCache and echartOptions when echartsDataService exists', async () => {
+      const options = {
+        series: [
+          {
+            type: 'pie',
+            data: []
+          }
+        ]
+      };
+      wrapper = factory({ options });
+      const mockOptions = { series: [{ data: [1, 2, 3] }] };
+      wrapper.vm.echartsDataService = {
+        getDataOption: jest.fn().mockResolvedValue(mockOptions)
+      };
+      const spyHandler = jest.spyOn(wrapper.vm, '_optionsHandler');
+
+      wrapper.vm.timing();
+      await flushPromises();
+
+      expect(wrapper.vm.dataSeriesCache).toEqual(mockOptions);
+      expect(spyHandler).toHaveBeenCalled();
+    });
   });
 });

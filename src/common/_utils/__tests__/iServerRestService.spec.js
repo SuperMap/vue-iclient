@@ -5,6 +5,7 @@ import { REST_DATA_FIELDS_RESULT, prj_data } from '@mocks/services';
 
 describe('iServerRestService', () => {
   let mockPostParams;
+  let postSpy;
   beforeEach(() => {
     jest.spyOn(FetchRequest, 'get').mockImplementation((url, params) => {
       if (url.includes('fields?returnAll=true')) {
@@ -14,7 +15,7 @@ describe('iServerRestService', () => {
       }
       return Promise.resolve(new Response(JSON.stringify(prj_data)));
     });
-    jest.spyOn(FetchRequest, 'post').mockImplementation((url, params) => {
+    postSpy = jest.spyOn(FetchRequest, 'post').mockImplementation((url, params) => {
       mockPostParams = params;
       if (url.indexOf('returnCountOnly=true') >= 0) {
         return new Promise((resolve, reject) => {
@@ -138,6 +139,11 @@ describe('iServerRestService', () => {
     const service = new iServerRestService('url', { hasGeometry: true });
     service.on({
       getdatasucceeded: function (data) {
+        expect(postSpy).toHaveBeenCalledWith(
+          expect.stringContaining('queryResults?returnContent=true'),
+          expect.stringContaining( `'expectCount':1,`),
+          expect.any(Object)
+        );
         expect(data.features[0].geometry).toBeTruthy();
         expect(data.features[0].properties['NAME']).toBeTruthy();
         expect(data.features[0].properties['名称']).toBeFalsy();
@@ -176,6 +182,28 @@ describe('iServerRestService', () => {
         const featureFields = Object.keys(data.features[0].properties);
         expect(data.fields).toEqual(featureFields);
         done();
+      }
+    });
+  });
+  it('triggers featureisempty for empty rest data string', done => {
+    const service = new iServerRestService('url', { hasGeometry: true });
+    service.on({
+      featureisempty: data => {
+        expect(data.features).toEqual([]);
+        expect(data.fields).toEqual([]);
+        expect(data.originalFields).toEqual([]);
+        expect(data.fieldCaptions).toEqual([]);
+        expect(data.fieldValues).toEqual([]);
+        expect(data.fieldTypes).toEqual([]);
+        done();
+      },
+      getdatasucceeded: () => {
+        done.fail('empty data string should not trigger getdatasucceeded');
+      }
+    });
+    service._getFeaturesSucceed({
+      result: {
+        features: { data: '' }
       }
     });
   });

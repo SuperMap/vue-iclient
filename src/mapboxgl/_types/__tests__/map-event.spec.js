@@ -339,5 +339,20 @@ describe('map-event-mapboxgl', () => {
     expect(allWebMap[mapTarget]).not.toBeUndefined();
     done();
   });
+
+  it('mapDataCache setMap -> getMapData returns latest mapData', () => {
+    const t = 'mapDataTarget1';
+    const map = { __map: true };
+
+    const mapData1 = { mapOptions: { center: [0, 0], zoom: 1 } };
+    mapEvent.$options.setMap(t, map, mapData1);
+    expect(mapEvent.$options.getMapData(t)).toBe(mapData1);
+
+    const mapData2 = { mapOptions: { center: [10, 10], zoom: 5 } };
+    mapEvent.$options.setMap(t, map, mapData2);
+    expect(mapEvent.$options.getMapData(t)).toBe(mapData2);
+
+    mapEvent.$options.deleteMap(t);
+  });
 });
 

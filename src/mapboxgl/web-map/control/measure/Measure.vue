@@ -19,7 +19,7 @@
           :key="group.mode"
           :title="group.title"
           :style="subComponentSpanBgStyle"
-          :class="{'sm-component-measure__modeIcon': true, 'is-active':activeMode === group.mode}"
+          :class="{ 'sm-component-measure__modeIcon': true, 'is-active': activeMode === group.mode }"
           @click="changeMeasureMode(group.mode)"
         >
           <i :class="group.iconClass"></i>
@@ -31,7 +31,7 @@
           class="sm-component-measure__unit"
           :style="getTextColorStyle"
           :get-popup-container="getPopupContainer"
-          @change="updateUnit"
+          @change="unit => updateUnit(unit, 'draw_line_string')"
         >
           <sm-select-option v-for="(value, key, index) in getUnitOptions" :key="index" :title="value" :value="key">
             {{ value }}
@@ -44,7 +44,7 @@
           class="sm-component-measure__unit"
           :style="getTextColorStyle"
           :get-popup-container="getPopupContainer"
-          @change="updateUnit"
+          @change="unit => updateUnit(unit, 'draw_polygon')"
         >
           <sm-select-option v-for="(value, key, index) in getUnitOptions" :key="index" :title="value" :value="key">
             {{ value }}
@@ -69,12 +69,17 @@ import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
 import Card from 'vue-iclient/src/common/_mixin/Card';
 import SmSelect from 'vue-iclient/src/common/select/Select.vue';
 import SmSelectOption from 'vue-iclient/src/common/select/Option.vue';
-import MeasureViewModel from './MeasureViewModel';
 import drawEvent from 'vue-iclient/src/mapboxgl/_types/draw-event';
 import uniqueId from 'lodash.uniqueid';
 import { setPopupArrowStyle } from 'vue-iclient/src/common/_utils/util';
-import 'vue-iclient/static/libs/mapbox-gl-draw/mapbox-gl-draw.css';
 import Message from 'vue-iclient/src/common/message/Message.js';
+import 'vue-iclient/static/libs/mapbox-gl-draw/mapbox-gl-draw.css';
+import MeasureViewModel from './MeasureViewModel';
+import {
+  ensureMeasureDefaultUnit,
+  getAvailableMeasureUnitKeys,
+  getMeasureUnitOptionMap
+} from './measure-unit';
 
 export default {
   name: 'SmMeasure',
@@ -95,45 +100,24 @@ export default {
       }
     },
     showUnitSelect: {
-      // 配置单位选择框是否显示，若不显示，则显示对应的默认单位
       type: Boolean,
       default: true
     },
     distanceDefaultUnit: {
-      // 距离默认单位
       type: String,
       default: 'kilometers'
     },
     areaDefaultUnit: {
-      // 面积默认单位
       type: String,
       default: 'kilometers'
     },
     continueDraw: {
-      // 是否开启多绘制
       type: Boolean,
       default: true
     }
   },
   data() {
-    const unitOptions = {
-      draw_line_string: {
-        kilometers: this.$t('unit.kilometers'),
-        miles: this.$t('unit.miles'),
-        meters: this.$t('unit.meters'),
-        feet: this.$t('unit.feet'),
-        yards: this.$t('unit.yards')
-      },
-      draw_polygon: {
-        kilometers: this.$t('unit.squarekilometers'),
-        miles: this.$t('unit.squaremiles'),
-        meters: this.$t('unit.squaremeters'),
-        feet: this.$t('unit.squarefeet'),
-        yards: this.$t('unit.squareyards')
-      }
-    };
     return {
-      unitOptions,
       modeGroups: [
         {
           mode: 'draw_line_string',
@@ -152,19 +136,43 @@ export default {
         }
       ],
       activeMode: '',
+      activeModeCache: null,
       result: '',
+      resultMode: null,
+      measureFinished: false,
       activeDistanceUnit: this.distanceDefaultUnit,
       activeAreaUnit: this.areaDefaultUnit,
       modeUnitMap: {
         draw_line_string: 'activeDistanceUnit',
         draw_polygon: 'activeAreaUnit'
-      },
-      layerId: ''
+      }
     };
   },
   computed: {
+    dashboardMeasureConfig() {
+      return this.$store?.getters.customRequestConfig || {};
+    },
+    distanceVisibleUnits() {
+      return getAvailableMeasureUnitKeys(this.dashboardMeasureConfig, 'distance');
+    },
+    areaVisibleUnits() {
+      return getAvailableMeasureUnitKeys(this.dashboardMeasureConfig, 'area');
+    },
+    distanceDefaultUnitValue() {
+      return ensureMeasureDefaultUnit(this.distanceDefaultUnit, this.distanceVisibleUnits);
+    },
+    areaDefaultUnitValue() {
+      return ensureMeasureDefaultUnit(this.areaDefaultUnit, this.areaVisibleUnits);
+    },
+    distanceUnitOptions() {
+      return getMeasureUnitOptionMap(this.dashboardMeasureConfig, 'distance', key => this.$t(key), 'result');
+    },
+    areaUnitOptions() {
+      return getMeasureUnitOptionMap(this.dashboardMeasureConfig, 'area', key => this.$t(key), 'result');
+    },
     getUnitOptions() {
-      return this.unitOptions[this.activeMode] || [];
+      const displayMode = this.activeMode || this.resultMode;
+      return displayMode === 'draw_polygon' ? this.areaUnitOptions : this.distanceUnitOptions;
     },
     getResult() {
       if (this.result && this.measureFinished) {
@@ -176,9 +184,9 @@ export default {
     },
     getUnitLabel() {
       const units = this.getUnitOptions;
-      const modeUnitKey = this.modeUnitMap[this.activeMode];
-      let label = units[this[modeUnitKey]];
-      return label;
+      const displayMode = this.activeMode || this.resultMode;
+      const modeUnitKey = this.modeUnitMap[displayMode];
+      return modeUnitKey ? units[this[modeUnitKey]] || '' : '';
     },
     getAreaSelect() {
       return this.activeMode === 'draw_polygon' && this.showUnitSelect;
@@ -194,13 +202,39 @@ export default {
     }
   },
   watch: {
-    distanceDefaultUnit: function(newVal) {
-      this.activeDistanceUnit = newVal;
-      this.updateUnit(newVal);
+    dashboardMeasureConfig: {
+      deep: true,
+      handler(next) {
+        this.viewModel && this.viewModel.setDashboardConfig(next);
+      }
     },
-    areaDefaultUnit: function(newVal) {
-      this.activeAreaUnit = newVal;
-      this.updateUnit(newVal);
+    distanceDefaultUnit(newVal) {
+      this.activeDistanceUnit = ensureMeasureDefaultUnit(newVal, this.distanceVisibleUnits, this.activeDistanceUnit);
+      this.shouldUpdateResultUnit('draw_line_string') && this.updateUnit(this.activeDistanceUnit, 'draw_line_string');
+    },
+    areaDefaultUnit(newVal) {
+      this.activeAreaUnit = ensureMeasureDefaultUnit(newVal, this.areaVisibleUnits, this.activeAreaUnit);
+      this.shouldUpdateResultUnit('draw_polygon') && this.updateUnit(this.activeAreaUnit, 'draw_polygon');
+    },
+    distanceVisibleUnits: {
+      immediate: true,
+      handler(next) {
+        const nextUnit = ensureMeasureDefaultUnit(this.activeDistanceUnit, next, this.distanceDefaultUnitValue);
+        if (nextUnit !== this.activeDistanceUnit) {
+          this.activeDistanceUnit = nextUnit;
+          this.shouldUpdateResultUnit('draw_line_string') && this.updateUnit(nextUnit, 'draw_line_string');
+        }
+      }
+    },
+    areaVisibleUnits: {
+      immediate: true,
+      handler(next) {
+        const nextUnit = ensureMeasureDefaultUnit(this.activeAreaUnit, next, this.areaDefaultUnitValue);
+        if (nextUnit !== this.activeAreaUnit) {
+          this.activeAreaUnit = nextUnit;
+          this.shouldUpdateResultUnit('draw_polygon') && this.updateUnit(nextUnit, 'draw_polygon');
+        }
+      }
     },
     popupStyle(next) {
       this.setPopupStyle(next);
@@ -210,8 +244,10 @@ export default {
     this.componentName = uniqueId(this.$options.name);
     this.viewModel = new MeasureViewModel({
       continueDraw: this.continueDraw,
-      componentName: this.componentName
+      componentName: this.componentName,
+      dashboardConfig: this.dashboardMeasureConfig
     });
+    this.viewModel.setDashboardConfig(this.dashboardMeasureConfig);
     this.viewModel.on('measure-finished', this.measureFinishedFn);
     this.viewModel.on('measure-start', this.measureStartFn);
     this.viewModel.on('update-unit', this.updateUnitFn);
@@ -233,21 +269,27 @@ export default {
     measureFinishedFn(e) {
       this.result = e.result;
       this.measureFinished = true;
+      this.resultMode = e.mode || this.activeMode || this.resultMode;
     },
     measureStartFn() {
       this.result = '';
       this.measureFinished = false;
+      this.resultMode = this.activeMode || this.resultMode;
     },
     updateUnitFn(e) {
       this.result = e.result;
+      this.resultMode = e.mode || this.resultMode;
     },
     drawResetFn({ componentName }) {
       if (componentName !== this.componentName) {
         this.activeMode = null;
         this.result = '';
+        this.resultMode = null;
       }
     },
-    // 切换量算模式
+    shouldUpdateResultUnit(mode) {
+      return this.activeMode === mode || this.resultMode === mode;
+    },
     changeMeasureMode(mode) {
       setTimeout(() => {
         const mapNotLoaded = this.mapNotLoadedTip();
@@ -255,32 +297,38 @@ export default {
           return;
         }
         if (!this.map.loaded()) {
-          // @ts-ignore
           Message.destroy();
-          // @ts-ignore
           Message.warning(this.$t('warning.mapNotLoaded'));
         } else {
-          let modeUnitKey = this.modeUnitMap[mode];
-          let activeUnit = this[modeUnitKey];
+          const modeUnitKey = this.modeUnitMap[mode];
+          const visibleUnits = mode === 'draw_polygon' ? this.areaVisibleUnits : this.distanceVisibleUnits;
+          const fallbackUnit = mode === 'draw_polygon' ? this.areaDefaultUnitValue : this.distanceDefaultUnitValue;
+          this[modeUnitKey] = ensureMeasureDefaultUnit(this[modeUnitKey], visibleUnits, fallbackUnit);
+          const activeUnit = this[modeUnitKey];
           if (mode === 'delete') {
             this.viewModel.trash();
             this.activeMode = null;
             this.result = '';
+            this.resultMode = null;
             return;
           }
           if (this.activeMode !== mode || !this.continueDraw) {
+            this.resultMode = mode;
             this.viewModel.openDraw(mode, activeUnit, this.setPopupStyle);
             this.activeMode = mode;
             this.continueDraw && drawEvent.$emit('draw-reset', { componentName: this.componentName });
           } else {
             this.viewModel.removeDraw(this.continueDraw);
             this.activeMode = null;
+            this.resultMode = null;
           }
         }
       }, 0);
     },
-    updateUnit(unit) {
-      this.viewModel && this.viewModel.updateUnit(unit);
+    updateUnit(unit, mode) {
+      const modeUnitKey = this.modeUnitMap[mode];
+      modeUnitKey && (this[modeUnitKey] = unit);
+      this.viewModel && this.viewModel.updateUnit(unit, mode);
       this.setPopupStyle();
     },
     getPopupContainer() {
@@ -296,12 +344,13 @@ export default {
     resetData() {
       this.activeMode = null;
       this.result = '';
+      this.resultMode = null;
       this.continueDraw && drawEvent.$emit('draw-reset', { componentName: this.componentName });
     },
-    // 提供对外方法：清空features
     clear() {
       this.activeMode = null;
       this.result = '';
+      this.resultMode = null;
       this.viewModel && this.viewModel.clearAllFeatures();
     },
     setPopupStyle(styleData = this.popupStyle) {
@@ -314,7 +363,7 @@ export default {
           });
         }
         setPopupArrowStyle(styleData.background);
-      })
+      });
     }
   }
 };

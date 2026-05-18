@@ -11,7 +11,7 @@ import restmapLayer from 'vue-iclient/test/unit/mocks/data/WebMap/restmapLayer.j
 import webmap3Datas from 'vue-iclient/test/unit/mocks/data/WebMap/webmap3.json';
 import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
 import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance.js';
-import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
+import * as getFeaturesUtil from 'vue-iclient/src/common/_utils/get-features';
 
 const CRS = require('vue-iclient/test/unit/mocks/crs');
 
@@ -808,46 +808,95 @@ describe('WebMapViewModel.spec', () => {
       ],
       type: 'FeatureCollection'
     };
-    const dataUrl = 'https://fakeiportal.supermap.io/iportal/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000';
-    const fetchResource = {
-      [dataUrl]: dataResult
+    const geojsonData = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            coordinates: [
+              [
+                [48.30078125000128, 28.226970038917116],
+                [48.30078125000128, -9.015302333421928],
+                [48.30078125000128, 28.226970038917116]
+              ]
+            ],
+            type: 'Polygon'
+          }
+        }
+      ]
     };
-    mockFetch(fetchResource);
+    jest.spyOn(getFeaturesUtil, 'default').mockImplementation((dataset => {
+      if (dataset.type === 'iPortal') {
+        return dataResult;
+      }
+      return geojsonData;
+    }));
     const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
     const callback = async function (data) {
-      console.log(123);
-      const geojsonData = {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              coordinates: [
-                [
-                  [48.30078125000128, 28.226970038917116],
-                  [48.30078125000128, -9.015302333421928],
-                  [48.30078125000128, 28.226970038917116]
-                ]
-              ],
-              type: 'Polygon'
-            }
-          }
-        ]
-      };
       jest.spyOn(data.map, 'getSource').mockReturnValueOnce({ type: 'geojson', getData: jest.fn().mockReturnValueOnce(geojsonData) });
       let result = await viewModel.getLayerDatas({ renderSource: { type: 'geojson' }});
       expect(result).toEqual(geojsonData.features);
       result = await viewModel.getLayerDatas({ renderSource: { type: 'vector' }, dataSource: {} });
       expect(result).toEqual([]);
-      result = await viewModel.getLayerDatas({ renderSource: { type: 'vector' }, dataSource: { serverId: 1832028287 } });
+      result = await viewModel.getLayerDatas({ renderSource: { type: 'vector' }, dataSource: { serverId: 1832028287, type: 'STRUCTURE_DATA' } });
       expect(result).toEqual(dataResult.features);
-      jest.restoreAllMocks();
-      try {
-        result = await viewModel.getLayerDatas({ renderSource: { type: 'vector' }, dataSource: { serverId: 1832028287 } });
-      } catch (error) {
-        expect(error.error.message).toContain(`request to ${dataUrl} failed`);
-      }
+      result = await viewModel.getLayerDatas({ renderSource: { type: 'vector' }, dataSource: { type: 'REST_DATA', url: 'http://fakeiserver:8090/iserver/services/data-China400/rest/data', dataSourceName: 'China:District_pt' } });
+      expect(result).toEqual(geojsonData.features);
+      result = await viewModel.getLayerDatas({ renderSource: { type: 'vector', sourceLayer: 'New_LINE' }, dataSource: { type: 'REST_MAP', url: 'https://fakeiportal.supermap.io/services/rest/datas', mapName: 'newBuilding' } });
+      expect(result).toEqual(geojsonData.features);
+      result = await viewModel.getLayerDatas({ renderSource: { type: 'raster' }, dataSource: { type: 'REST_DATA', url: 'http://fakeiserver:8090/iserver/services/data-China400/rest/data', dataSourceName: 'China:District_pt' } });
+      expect(result).toEqual([]);
+      result = await viewModel.getLayerDatas({ renderSource: { type: 'raster', sourceLayer: 'New_LINE' }, dataSource: { type: 'REST_MAP', url: 'https://fakeiportal.supermap.io/services/rest/datas', mapName: 'newBuilding' } });
+      expect(result).toEqual([]);
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
+  });
+
+    it('getLayerDatas - filter', async (done) => {
+        const dataResult = {
+      features: [
+        {
+          geometry: {
+            coordinates: [
+              [116.38050072430798, 39.94888011518407],
+              [116.38050072430798, 39.94888011518407]
+            ],
+            type: 'LineString'
+          },
+          id: '1',
+          type: 'Feature',
+          properties: {
+            SmID: 1,
+            标准名称: '地铁二号线',
+            smpid: 1
+          }
+        }
+      ],
+      type: 'FeatureCollection'
+    };
+    let params
+    jest.spyOn(getFeaturesUtil, 'default').mockImplementation((dataset => {
+        params = dataset;
+        return dataResult;
+    }));
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+
+    const callback = async function (data) {
+      jest.spyOn(data.map, 'getSource').mockReturnValueOnce({ type: 'vector'});
+      let res;
+      let filter = ['==', 'name', 'test'];
+      res = await viewModel.getLayerDatas({ renderSource: { type: 'vector' }, dataSource: {type: 'REST_DATA'}, filter });
+      expect(res).toEqual(dataResult.features);
+      expect(params.filterConditions).toEqual(filter);
+      filter = ['!=', 'name1', 'test1'];
+      res = await viewModel.getLayerDatas({ renderSource: { type: 'vector' }, dataSource: {type: 'STRUCTURE_DATA'}, filter });
+      expect(res).toEqual(dataResult.features);
+      expect(params.filterConditions).toEqual(filter);
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
@@ -1227,6 +1276,61 @@ describe('WebMapViewModel.spec', () => {
     viewModel.on({ addlayerssucceeded: callback });
     await flushPromises();
     jest.advanceTimersByTime(0);
+  });
+
+  it('attributesDataAvailable', (done) => {
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+    expect(viewModel.attributesDataAvailable({ renderSource: { type: 'geojson' } })).toBeTruthy();
+    expect(viewModel.attributesDataAvailable({ renderSource: { type: 'vector' }, dataSource: { type: 'STRUCTURE_DATA' } })).toBeTruthy();
+    expect(viewModel.attributesDataAvailable({ renderSource: { type: 'vector' }, dataSource: { type: 'REST_DATA' } })).toBeTruthy();
+    expect(viewModel.attributesDataAvailable({ renderSource: { type: 'vector' }, dataSource: { type: 'REST_MAP' } })).toBeTruthy();
+    expect(viewModel.attributesDataAvailable({ renderSource: { type: 'raster' }, dataSource: { type: 'STRUCTURE_DATA' } })).toBeFalsy();
+    expect(viewModel.attributesDataAvailable({ renderSource: { type: 'raster' }, dataSource: { type: 'REST_DATA' } })).toBeFalsy();
+    expect(viewModel.attributesDataAvailable({ renderSource: { type: 'raster' }, dataSource: { type: 'REST_MAP' } })).toBeFalsy();
+    done();
+  });
+
+  it('_mapCreateSucceededHandlerHandler should emit addlayerssucceeded with mapData.mapOptions (formatted)', done => {
+    const viewModel = new WebMapViewModel(123, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+
+    const fakeMapparams = { title: 't', description: 'd' };
+    const fakeLayers = [{ id: 'l1' }, { id: 'l2' }];
+
+    const fakeMap = {
+      getCenter: () => ({
+        toArray: () => [120.12345678, 30.98765432]
+      }),
+      getZoom: () => 3.4567,
+      getBearing: () => 10.9876,
+      getPitch: () => 20.1234
+    };
+
+    viewModel.on({
+      addlayerssucceeded: e => {
+        expect(e.mapparams).toBe(fakeMapparams);
+        expect(e.layers).toBe(fakeLayers);
+        expect(e.map).toBe(fakeMap);
+
+        expect(e.mapData).toBeDefined();
+        expect(e.mapData.mapOptions).toEqual({
+          center: [120.1235, 30.9877],
+          zoom: 3.46,
+          bearing: 10.99,
+          pitch: 20.12
+        });
+
+        // also verify internal cache updated
+        expect(viewModel._cacheCleanLayers).toBe(fakeLayers);
+        done();
+      }
+    });
+
+    viewModel._mapCreateSucceededHandlerHandler({
+      mapparams: fakeMapparams,
+      layers: fakeLayers,
+      map: fakeMap,
+      allLoaded: true
+    });
   });
 });
 

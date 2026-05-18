@@ -41,6 +41,11 @@ export default {
         }
       }
       const mergeOptions = merge(options, dataOptions);
+
+      if (this.xBar && this.highlightOptions && this.highlightOptions.length > 0 && mergeOptions.visualMap) {
+        mergeOptions.visualMap = null;
+      }
+
       if (extraSeries.length > 0) {
         mergeOptions.series.push(...extraSeries);
       }
@@ -115,7 +120,7 @@ export default {
       let colorIndex = 0;
       options.series = options.series.map((serie, index) => {
         if (parallelShowNumber !== 0) {
-          const serieName = serie.name.substring(serie.name.indexOf('-') + 1);
+          const serieName = serie.name?.substring(serie.name?.indexOf('-') + 1);
           if (!seriesNameTag) {
             seriesNameTag = serieName;
             seriesSpace = this.getSericeSpace(parallelShowNumber, baseSpace, seriesSpaceCount);
@@ -149,7 +154,6 @@ export default {
               const _this = this;
               serie.renderItem = this._squareRectangleRenderItem(
                 seriesSpace,
-                defaultColor,
                 colorGroup,
                 _this,
                 cubeType,
@@ -234,9 +238,21 @@ export default {
       const colorIndex = parallelShowNumber !== 0 ? Math.ceil((index + 1) / parallelShowNumber) - 1 : index;
       let cirCleColor = defaultColor || colorGroup[colorIndex];
       let cirCleColorFnList = [];
-      if (typeof cirCleColor === 'string') {
+      const axisDatas = dataOptions.xAxis?.[0]?.data || options.xAxis?.[0]?.data || [];
+      if (typeof cirCleColor === 'function') {
+        const originColorFn = cirCleColor;
+        cirCleColor = params => {
+          const color = originColorFn({
+            ...params,
+            seriesName: params.seriesName || serie.name,
+            name: params.name === undefined ? axisDatas[params.dataIndex] : params.name
+          });
+          return typeof color === 'string' ? this.setGradientColor(color, '#fff') : color;
+        };
+      } else if (typeof cirCleColor === 'string') {
         cirCleColor = this.setGradientColor(cirCleColor, '#fff');
       }
+      const getBaseCirCleColor = params => (typeof cirCleColor === 'function' ? cirCleColor(params) : cirCleColor);
       if (this.highlightOptions && this.highlightOptions.length > 0) {
         const matchDataList = [];
         this.highlightOptions.forEach(item => {
@@ -250,9 +266,13 @@ export default {
         });
         if (matchDataList.length > 0) {
           cirCleColorFnList = ['topCirCleColorFn', 'bottomCirCleColorFn'].map(() => {
-            return ({ dataIndex }) => {
+            return params => {
+              const { dataIndex } = params;
               const matchData = matchDataList.find(item => item.dataIndex === dataIndex);
-              return matchData ? matchData.color : cirCleColor;
+              if (matchData) {
+                return matchData.color;
+              }
+              return getBaseCirCleColor(params);
             };
           });
         }
@@ -326,6 +346,9 @@ export default {
     multipleYField(optionSeries) {
       const series = cloneDeep(optionSeries);
       const nameList = series.map(serie => {
+        if (serie.name === undefined) {
+          return serie.name;
+        }
         if (!serie.name.includes('-')) {
           return serie.name;
         }
@@ -347,7 +370,7 @@ export default {
       const symbolPosition = series[0].name.indexOf('-');
       let firstSeriesName = series[0].name.substring(symbolPosition + 1);
       series.forEach(option => {
-        const optionName = option.name.substring(symbolPosition + 1);
+        const optionName = option.name?.substring(symbolPosition + 1);
         if (firstSeriesName === optionName) {
           parallelShowNumber++;
         }
@@ -426,11 +449,12 @@ export default {
     _createRingShineSeries(series, optionsSeries) {
       if (optionsSeries) {
         this.datasetOptions.forEach((datasetOption, index) => {
-          let { type, outerGap, isShine } = optionsSeries[index] || {};
+          const optionsSerieConfig = optionsSeries[index] || {};
+          let { type, outerGap } = optionsSerieConfig;
           if (type === 'pie' && outerGap >= 0) {
             const data = series[index].data.map(val => val.value);
             outerGap = outerGap || Math.min.apply(null, data) / 5;
-            series[index].data = this._createRingShineDataOption(series[index].data, outerGap, isShine);
+            series[index].data = this._createRingShineDataOption(series[index].data, outerGap, optionsSerieConfig);
             delete optionsSeries[index].outerGap;
             delete optionsSeries[index].isShine;
           }
@@ -438,10 +462,12 @@ export default {
       }
       return series;
     },
-    _createRingShineDataOption(data, outerGap, isShine) {
+    _createRingShineDataOption(data, outerGap, optionSerie) {
       if (!data) {
         return;
       }
+      const { isShine, itemStyle: originItemStyle } = optionSerie;
+      const customColorFn = originItemStyle && typeof originItemStyle.color === 'function' ? originItemStyle.color : undefined;
       const colors = this._handlerColorGroup(data.length);
       const gapItem = {
         value: outerGap,
@@ -467,12 +493,16 @@ export default {
           name: data[i].name
         };
         if (isShine) {
+          let color = colors[i];
+          if (customColorFn) {
+            color = customColorFn({ ...dataItem, dataIndex: i }) || color;
+          }
           dataItem.itemStyle = {
             borderWidth: 5,
             shadowBlur: 10,
-            color: colors[i],
-            borderColor: colors[i],
-            shadowColor: colors[i]
+            color: color,
+            borderColor: color,
+            shadowColor: color
           };
         }
         result.push(dataItem);
@@ -507,12 +537,12 @@ export default {
       }
       return `${distance}%`;
     },
-    _squareRectangleRenderItem(seriesSpace, defaultColor, colorGroup, _this, cubeType, colorIndex) {
+    _squareRectangleRenderItem(seriesSpace, colorGroup, _this, cubeType, colorIndex) {
       return (params, api) => {
         const location = api.coord([api.value(0), api.value(1)]);
-        let fillColor = defaultColor || colorGroup[colorIndex];
-        if (_this.highlightOptions && _this.highlightOptions.length > 0) {
-          const matchData = _this.highlightOptions.find(
+        let fillColor = api.style().fill || colorGroup[colorIndex];
+        if (_this.newHighlightOptions && _this.newHighlightOptions.length > 0) {
+          const matchData = _this.newHighlightOptions.find(
             item => item.seriesIndex.includes(params.seriesIndex) && item.dataIndex === params.dataIndex
           );
           if (matchData && (matchData.color || _this.highlightColor)) {
@@ -598,7 +628,7 @@ export default {
       const firstSeriesName = series[0].name.split('-')[1];
       let seriesCount = 0;
       for (let serie of series) {
-        const serieNname = serie.name.split('-')[1];
+        const serieNname = serie.name?.split('-')[1];
         if (firstSeriesName === serieNname) {
           seriesCount += 1;
         } else {

@@ -31,6 +31,7 @@ export default {
         opacity: this.$t('legend.opacity'),
         width: this.$t('legend.width'),
         outlineColor: this.$t('legend.outlineColor'),
+        outlineWidth: this.$t('legend.outlineWidth'),
         textSize: this.$t('legend.label') + '-' + this.$t('legend.size'),
         textOpacity: this.$t('legend.label') + '-' + this.$t('legend.opacity'),
         textColor: this.$t('legend.label') + '-' + this.$t('legend.color'),

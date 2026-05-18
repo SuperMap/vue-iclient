@@ -8,12 +8,13 @@ import 'vue-iclient/static/libs/geostats/geostats';
 import 'vue-iclient/static/libs/json-sql/jsonsql';
 import echarts from 'echarts';
 import EchartsLayer from 'vue-iclient/static/libs/echarts-layer/EchartsLayer';
-import iPortalDataService from 'vue-iclient/src/common/_utils/iPortalDataService';
 import proj4 from 'proj4';
 import { getLayerCatalogIds, getGroupChildrenLayers, findLayerCatalog } from 'vue-iclient/src/mapboxgl/web-map/GroupUtil';
 import bbox from '@turf/bbox';
 import { points } from '@turf/helpers';
-
+import getFeatures from 'vue-iclient/src/common/_utils/get-features';
+// @ts-ignore
+import { Util } from 'vue-iclient/static/libs/iclient-common/iclient-common';
 // @ts-ignore
 window.echarts = echarts;
 // @ts-ignore
@@ -317,33 +318,54 @@ export default class WebMapViewModel extends Events {
     this._handler.cleanLayers();
   }
 
-  getLayerDatas(item) {
+  attributesDataAvailable(item) {
+    return item.renderSource.type === 'geojson' || item.renderSource.type === 'vector' && ['STRUCTURE_DATA', 'REST_DATA', 'REST_MAP'].includes(item.dataSource.type);
+  }
+
+  async getLayerDatas(item) {
+    if (!this.attributesDataAvailable(item)) {
+      return [];
+    }
     const isGeojson = item.renderSource.type === 'geojson';
     if (isGeojson) {
       // @ts-ignore
-      return Promise.resolve(this.map.getSource(item.renderSource.id).getData().features);
-    } else {
-      const dataId = item.dataSource.serverId;
-      // TODO iserver服务也可获取要素
-      if (!dataId) return [];
-      let promise = new Promise((resolve, reject) => {
-        const dataService = new iPortalDataService(
-          `${this.serverUrl}web/datas/${dataId}`,
-          this.options.withCredentials,
-          { dataType: 'STRUCTUREDDATA' }
-        );
-        dataService.on({
-          getdatafailed: e => {
-            reject(e);
-          },
-          getdatasucceeded: e => {
-            resolve(e.features);
-          }
-        });
-        dataService.getData({});
-      });
-      return promise;
+      return this.map.getSource(item.renderSource.id).getData().features;
     }
+    const commonParams = {
+      withCredentials: this.options.withCredentials,
+      maxFeatures: 1000000
+    };
+    let datasetInfo: Record<string, any> = {};
+    switch (item.dataSource.type) {
+      case 'STRUCTURE_DATA': {
+        const dataId = item.dataSource.serverId;
+        datasetInfo = {
+          type: 'iPortal',
+          id: dataId,
+          dataType: 'STRUCTUREDDATA',
+          url: Util.urlPathAppend(this.serverUrl, `web/datas/${dataId}`),
+          filterConditions: item.filter
+        };
+        break;
+      }
+      case 'REST_DATA':
+      case 'REST_MAP': {
+        datasetInfo = {
+          type: 'iServer',
+          url: item.dataSource.url,
+          filterConditions: item.filter
+        };
+        if (item.dataSource.type === 'REST_DATA') {
+          datasetInfo.dataName = [item.dataSource.dataSourceName];
+        } else {
+          datasetInfo.layerName = item.dataSource.layerName;
+          datasetInfo.url = Util.urlPathAppend(item.dataSource.url, item.dataSource.mapName);
+        }
+        break;
+      }
+    }
+    const res = await getFeatures(Object.assign(commonParams, datasetInfo));
+    return res.features;
   }
 
   changeItemVisible(layer: Record<string, any>, visible: boolean) {
@@ -550,11 +572,20 @@ export default class WebMapViewModel extends Events {
   }
 
   private _mapCreateSucceededHandlerHandler(params: AddlayerssucceededParams) {
-    const { mapparams, layers } = params;
+    const { mapparams, layers, map } = params;
     this.mapParams = mapparams;
     this._cacheCleanLayers = layers;
     this._cacheLayerCatalogIds = getLayerCatalogIds(this.getLayerList());
-    this.triggerEvent('addlayerssucceeded', params);
+    const mapOptions: Partial<mapboxglTypes.MapboxOptions> = {
+      center: map
+        .getCenter()
+        .toArray()
+        .map(item => +item.toFixed(4)) as [number, number],
+      zoom: +map.getZoom().toFixed(2),
+      bearing: +map.getBearing().toFixed(2),
+      pitch: +map.getPitch().toFixed(2)
+    };
+    this.triggerEvent('addlayerssucceeded', Object.assign({}, params, { mapData: { mapOptions } }));
   }
 
   private _layerUpdateChangedHandler(params: LayerUpdateChangedParams) {

@@ -12,6 +12,7 @@ declare module 'vue/types/options' {
     setMap?: Function;
     setWebMap?: Function;
     getMap?: Function;
+    getMapData?: Function;
     getAllMaps?: Function;
     getWebMap?: Function;
   }
