@@ -1,11 +1,12 @@
-export function statisticsFeatures(features, fields, fieldCaptions, fieldTypes, originalFields) {
+export function statisticsFeatures(features, fields, fieldCaptions, fieldTypes, originalFields, isSystemFields) {
   const data = {
     features,
     fields: fields || [],
     originalFields: originalFields || [],
     fieldCaptions: fieldCaptions || [],
     fieldValues: [],
-    fieldTypes
+    fieldTypes,
+    isSystemFields: isSystemFields || []
   };
   if (features && !!features.length && (!fields || !fieldCaptions)) {
     const properties = Object.assign({}, features[0].properties, features[features.length - 1].properties);
