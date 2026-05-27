@@ -1,11 +1,12 @@
-export function statisticsFeatures(features, fields, fieldCaptions, fieldTypes, originalFields) {
+export function statisticsFeatures(features, fields, fieldCaptions, fieldTypes, originalFields, isSystemFields) {
   const data = {
     features,
     fields: fields || [],
     originalFields: originalFields || [],
     fieldCaptions: fieldCaptions || [],
     fieldValues: [],
-    fieldTypes
+    fieldTypes,
+    isSystemFields: isSystemFields || []
   };
 
   // 如果缺少 fields 或 fieldCaptions，从 features 的首尾要素中提取属性名（保持原逻辑）

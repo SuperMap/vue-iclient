@@ -428,11 +428,12 @@ export default class iServerRestService extends Events {
           originalFields: [],
           fieldCaptions: [],
           fieldValues: [],
-          fieldTypes: []
+          fieldTypes: [],
+          isSystemFields: []
         });
         return;
       }
-      let fieldCaptions, fieldTypes, originalFields;
+      let fieldCaptions, fieldTypes, originalFields, isSystemFields;
       if (this.fieldInfos.length) {
         // todo 考虑properties不全情况?
         const properties = Object.assign({}, features[0].properties, features[features.length - 1].properties);
@@ -441,17 +442,19 @@ export default class iServerRestService extends Events {
         );
         fieldCaptions = [];
         originalFields = [];
+        isSystemFields = [];
         fieldTypes = [];
         filterFieldInfos.forEach(fieldInfo => {
           if (fieldInfo.name) {
             fieldCaptions.push(fieldInfo.caption);
             fieldTypes.push(fieldInfo.type);
             originalFields.push(fieldInfo.name);
+            isSystemFields.push(fieldInfo.isSystemField);
           }
         });
       }
       // 因为fieldInfos和features中的字段大小写可能不一致, 所以只传入fieldCaptions，不传入fields，fields从features中去获取
-      data = statisticsFeatures(features, undefined, fieldCaptions, fieldTypes, originalFields);
+      data = statisticsFeatures(features, undefined, fieldCaptions, fieldTypes, originalFields, isSystemFields);
       data.totalCount = results.result.totalCount;
     } else {
       this.triggerEvent('getdatafailed', {
