@@ -10,6 +10,7 @@
 
 @include b(query) {
   $query-prefix: &;
+  position: relative;
 
   @include e(body) {
     min-width: 240px;
@@ -57,7 +58,7 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    & > #{$query-prefix}__job-info-name,git
+    & > #{$query-prefix}__job-info-name,
     & > #{$query-prefix}__header-name {
       display: inline-block;
       overflow: hidden;
@@ -93,6 +94,209 @@
     margin-top: 8px;
     font-size: 12px;
     width: 100%;
+  }
+  @include e(sql-config-wrap) {
+    position: relative;
+    display: block;
+    margin-top: 8px;
+    width: 100%;
+  }
+  @include e(sql-input-row) {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+  }
+  @include e(sql-input) {
+    margin-top: 0;
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    .sm-component-input__inner {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+  @include e(sql-config-button) {
+    width: 32px;
+    min-width: 32px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid $border-color-base;
+    border-left: 0;
+    border-radius: 0 4px 4px 0;
+    background: $component-background;
+    color: inherit;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 30px;
+    &:hover {
+      color: $primary-color;
+      border-color: $primary-color;
+    }
+  }
+  @include e(sql-builder-mask) {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    background: rgba($white, 0.28);
+  }
+  @include e(sql-builder-panel) {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    padding: 6px;
+    overflow-y: auto;
+    background: $component-background;
+    color: $heading-color;
+    font-size: 12px;
+
+    &::before {
+      content: 'SQL表达式';
+      display: block;
+      margin: -6px -6px 8px;
+      padding: 8px 10px;
+      border-bottom: 1px solid $border-color-split;
+      color: $heading-color;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 20px;
+    }
+
+    .sm-component-btn,
+    .sm-component-input,
+    .sm-component-select {
+      font-size: 12px;
+    }
+  }
+  @include e(sql-builder-popover) {
+    background-color: $background-color-light;
+    position: absolute !important;
+    top: 28px !important;
+    right: 0;
+    bottom: 0;
+    left: 0 !important;
+    width: 100%;
+    height: 254px;
+    max-height: 254px;
+    padding: 0;
+    overflow: auto;
+
+    .#{$ant-prefix}-popover-arrow,
+    .#{$ant-prefix}-popover-arrow::before {
+      display: none;
+    }
+    .#{$ant-prefix}-popover-content,
+    .#{$ant-prefix}-popover-inner,
+    .#{$ant-prefix}-popover-inner-content {
+      height: 100%;
+      max-height: 100%;
+      overflow: auto;
+    }
+    .#{$ant-prefix}-popover-inner {
+      background: $component-background;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px $shadow-color;
+    }
+    .#{$ant-prefix}-popover-inner-content {
+      padding: 0;
+      color: $heading-color;
+    }
+  }
+  @include e(sql-builder-connector) {
+    display: flex;
+    justify-content: center;
+    margin: 8px 0;
+  }
+  @include e(sql-builder-condition) {
+    position: relative;
+    padding: 24px 8px 8px;
+    border: 1px solid $border-color-base;
+    border-radius: 4px;
+    background: $background-color-light;
+  }
+  @include e(sql-builder-condition-close) {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: $text-color-secondary;
+    font-size: 12px;
+    line-height: 16px;
+    box-shadow: none;
+    z-index: 1;
+
+    &:hover,
+    &:focus {
+      border: 0;
+      background: transparent;
+      color: $heading-color;
+      box-shadow: none;
+    }
+    &:disabled {
+      color: $disabled-color;
+      cursor: not-allowed;
+    }
+  }
+  @include e(sql-builder-line) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    > span {
+      flex: 0 0 36px;
+      line-height: 28px;
+      color: $heading-color;
+    }
+  }
+  @include e(sql-builder-control) {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+  }
+  @include e(sql-builder-value-row) {
+    display: flex;
+    flex: 1;
+    gap: 8px;
+    min-width: 0;
+  }
+  @include e(sql-builder-empty-value) {
+    flex: 1;
+    min-width: 0;
+    line-height: 28px;
+    color: $input-placeholder-color;
+  }
+  @include e(sql-builder-delete) {
+    flex: 0 0 auto;
+  }
+  @include e(sql-builder-logic) {
+    flex: 0 0 72px;
+
+    .#{$ant-prefix}-select-selection--single {
+      height: 28px;
+    }
+
+    .#{$ant-prefix}-select-selection__rendered {
+      line-height: 26px;
+    }
+  }
+  @include e(sql-builder-actions) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
   }
   @include e(query-button) {
     margin-top: 12px;

@@ -201,7 +201,14 @@ export default {
     queryFailed: 'Query failed!',
     seviceNotSupport: 'This service does not support queries!',
     keyQueryPlaceholder: 'Please enter the search keyword',
-    sqlQueryPlaceholder: 'Please enter the SQL expression'
+    sqlQueryPlaceholder: 'Please enter the SQL expression',
+    sqlBuilderField: 'Field',
+    sqlBuilderOperator: 'Condition',
+    sqlBuilderValue: 'Value',
+    sqlBuilderAddCondition: 'Add condition',
+    sqlBuilderDelete: 'Delete',
+    sqlBuilderClear: 'Clear',
+    sqlBuilderCancel: 'Cancel'
   },
   cascader: {
     placeholder: 'Please select'
