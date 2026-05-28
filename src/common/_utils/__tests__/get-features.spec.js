@@ -330,6 +330,11 @@ describe('getFeatures test', () => {
         }
     };
     const mockImplementationCb = url => {
+      if (url.includes('/datasources/') && url.endsWith('.json')) {
+        return new Promise(resolve => {
+          resolve(new Response(JSON.stringify({})));
+        });
+      }
       return new Promise((resolve) => {
         resolve(new Response(JSON.stringify(fetchResource[url])));
       });
@@ -356,7 +361,8 @@ describe('getFeatures test', () => {
             isZeroLengthAllowed: true,
             isSystemField: false
           }
-        ]
+        ],
+        'http://fakeiserver:8090/iserver/services/data-China400/rest/data/datasources/China.json': {}
     };
     const errorMsg = 'mock error';
     const mockImplementationCb = () => {
