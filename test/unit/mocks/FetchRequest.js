@@ -2,6 +2,7 @@ import { FetchRequest } from 'vue-iclient/static/libs/iclient-common/iclient-com
 
 function mockFetch(resource) {
   const mockImplementation = url => {
+    console.log(url)
     return new Promise((resolve, reject) => {
       if (url.indexOf('prjCoordSys.wkt') > -1) {
         resolve(new Response(resource[url]));

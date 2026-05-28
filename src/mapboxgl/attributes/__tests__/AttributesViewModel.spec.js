@@ -629,7 +629,10 @@ describe('AttributesViewModel.ts', () => {
   it('_getAttributeFilter for non-iServer rest data', async () => {
     const iServerRestService = require('../../../common/_utils/iServerRestService').default;
     const originalMethod = iServerRestService.prototype._getAttributeFilterByKeywords;
+    const originalGetRestDataEngineType = iServerRestService.prototype._getRestDataEngineType;
+    const mockGetRestDataEngineType = jest.fn().mockResolvedValue('POSTGRESQL');
     const mockGetAttributeFilterByKeywords = jest.fn().mockReturnValue("LOWER(NAME) LIKE LOWER('%test%')");
+    iServerRestService.prototype._getRestDataEngineType = mockGetRestDataEngineType;
     iServerRestService.prototype._getAttributeFilterByKeywords = mockGetAttributeFilterByKeywords;
 
     const nextOption = {
@@ -648,16 +651,20 @@ describe('AttributesViewModel.ts', () => {
 
     const result = await viewModel._getAttributeFilter(dataset, fields, 'test');
 
-    expect(mockGetAttributeFilterByKeywords).toHaveBeenCalledWith(fields, 'test', true);
+    expect(mockGetAttributeFilterByKeywords).toHaveBeenCalledWith(fields, 'test', false);
     expect(result).toBe("LOWER(NAME) LIKE LOWER('%test%')");
 
     iServerRestService.prototype._getAttributeFilterByKeywords = originalMethod;
+    iServerRestService.prototype._getRestDataEngineType = originalGetRestDataEngineType;
   });
 
   it('_getAttributeFilter for geoJSON returns lower filter', async () => {
     const iServerRestService = require('../../../common/_utils/iServerRestService').default;
     const originalMethod = iServerRestService.prototype._getAttributeFilterByKeywords;
+    const originalGetRestDataEngineType = iServerRestService.prototype._getRestDataEngineType;
+    const mockGetRestDataEngineType = jest.fn().mockResolvedValue('POSTGRESQL');
     const mockGetAttributeFilterByKeywords = jest.fn().mockReturnValue("LOWER(NAME) LIKE LOWER('%test%')");
+    iServerRestService.prototype._getRestDataEngineType = mockGetRestDataEngineType;
     iServerRestService.prototype._getAttributeFilterByKeywords = mockGetAttributeFilterByKeywords;
 
     const nextOption = {
@@ -676,9 +683,10 @@ describe('AttributesViewModel.ts', () => {
 
     const result = await viewModel._getAttributeFilter(dataset, fields, 'test');
 
-    expect(mockGetAttributeFilterByKeywords).toHaveBeenCalledWith(fields, 'test', true);
+    expect(mockGetAttributeFilterByKeywords).toHaveBeenCalledWith(fields, 'test', false);
     expect(result).toBe("LOWER(NAME) LIKE LOWER('%test%')");
 
     iServerRestService.prototype._getAttributeFilterByKeywords = originalMethod;
+    iServerRestService.prototype._getRestDataEngineType = originalGetRestDataEngineType;
   });
 });
