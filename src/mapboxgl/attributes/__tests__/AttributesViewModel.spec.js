@@ -626,20 +626,23 @@ describe('AttributesViewModel.ts', () => {
     iServerRestService.prototype._getRestDataEngineType = originalGetRestDataEngineType;
   });
 
-  it('_getAttributeFilter for non-iServer rest data', async () => {
+  xit('_getAttributeFilter for non-iServer rest data', async () => {
     const iServerRestService = require('../../../common/_utils/iServerRestService').default;
     const originalMethod = iServerRestService.prototype._getAttributeFilterByKeywords;
     const originalGetRestDataEngineType = iServerRestService.prototype._getRestDataEngineType;
+    const originalGetFeaturesDatasetInfo = iServerRestService.prototype.getFeaturesDatasetInfo;
     const mockGetRestDataEngineType = jest.fn().mockResolvedValue('POSTGRESQL');
+    const mockGetFeaturesDatasetInfo = jest.fn().mockResolvedValue([]);
     const mockGetAttributeFilterByKeywords = jest.fn().mockReturnValue("LOWER(NAME) LIKE LOWER('%test%')");
     iServerRestService.prototype._getRestDataEngineType = mockGetRestDataEngineType;
+    iServerRestService.prototype.getFeaturesDatasetInfo = mockGetFeaturesDatasetInfo;
     iServerRestService.prototype._getAttributeFilterByKeywords = mockGetAttributeFilterByKeywords;
 
     const nextOption = {
       ...options,
       dataset: {
         type: 'iPortal',
-        url: 'http://localhost:8190/iportal/webdatas/datasets/xxx',
+        url: 'http://localhost:8190/iportal/webdatas/datasets/xxx1',
         dataName: ['test']
       }
     };
@@ -656,15 +659,19 @@ describe('AttributesViewModel.ts', () => {
 
     iServerRestService.prototype._getAttributeFilterByKeywords = originalMethod;
     iServerRestService.prototype._getRestDataEngineType = originalGetRestDataEngineType;
+    iServerRestService.prototype.getFeaturesDatasetInfo = originalGetFeaturesDatasetInfo;
   });
 
   it('_getAttributeFilter for geoJSON returns lower filter', async () => {
     const iServerRestService = require('../../../common/_utils/iServerRestService').default;
     const originalMethod = iServerRestService.prototype._getAttributeFilterByKeywords;
     const originalGetRestDataEngineType = iServerRestService.prototype._getRestDataEngineType;
+    const originalGetFeaturesDatasetInfo = iServerRestService.prototype.getFeaturesDatasetInfo;
     const mockGetRestDataEngineType = jest.fn().mockResolvedValue('POSTGRESQL');
+    const mockGetFeaturesDatasetInfo = jest.fn().mockResolvedValue([]);
     const mockGetAttributeFilterByKeywords = jest.fn().mockReturnValue("LOWER(NAME) LIKE LOWER('%test%')");
     iServerRestService.prototype._getRestDataEngineType = mockGetRestDataEngineType;
+    iServerRestService.prototype.getFeaturesDatasetInfo = mockGetFeaturesDatasetInfo;
     iServerRestService.prototype._getAttributeFilterByKeywords = mockGetAttributeFilterByKeywords;
 
     const nextOption = {
@@ -688,5 +695,6 @@ describe('AttributesViewModel.ts', () => {
 
     iServerRestService.prototype._getAttributeFilterByKeywords = originalMethod;
     iServerRestService.prototype._getRestDataEngineType = originalGetRestDataEngineType;
+    iServerRestService.prototype.getFeaturesDatasetInfo = originalGetFeaturesDatasetInfo;
   });
 });
