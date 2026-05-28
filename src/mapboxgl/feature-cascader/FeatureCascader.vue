@@ -178,7 +178,7 @@ export default {
         this.$emit('change', value, null);
         return;
       }
-      const attributeFilter = `("${target.originalIdField}" like '%${lastValue}%')`;
+      const attributeFilter = `("${target.originalIdField}" = '%${lastValue}%')`;
       const data = await getFeatures({ ...target.dataset, attributeFilter });
       this.$emit('change', value, data?.features?.[0]);
     },

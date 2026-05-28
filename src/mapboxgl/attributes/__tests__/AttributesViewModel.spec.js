@@ -582,4 +582,103 @@ describe('AttributesViewModel.ts', () => {
     viewModel.addOverlaysToMap([], layerStyleOptions, attributesTitle2);
     expect(spy).toBeCalled();
   });
+
+  it('_getAttributeFilter for iServer rest data', async () => {
+    const iServerRestService = require('../../../common/_utils/iServerRestService').default;
+    const originalGetRestDataAttributeFilter = iServerRestService.prototype._getRestDataAttributeFilter;
+    const originalGetRestDataEngineType = iServerRestService.prototype._getRestDataEngineType;
+    const mockGetRestDataEngineType = jest.fn().mockResolvedValue('POSTGRESQL');
+    const mockGetRestDataAttributeFilter = jest.fn().mockImplementation(function(datasetInfo, fields, keyWord, withCredentials) {
+      return this._getAttributeFilterByKeywords(fields, keyWord, true);
+    });
+    iServerRestService.prototype._getRestDataEngineType = mockGetRestDataEngineType;
+    iServerRestService.prototype._getRestDataAttributeFilter = mockGetRestDataAttributeFilter;
+
+    const nextOption = {
+      ...options,
+      dataset: {
+        type: 'iServer',
+        url: 'http://172.16.14.44:8090/iserver/services/data-jingjin/rest/data',
+        dataName: ['Jingjin:BaseMap_P']
+      }
+    };
+    const viewModel = new AttributesViewModel(nextOption);
+    viewModel.searchText = 'test';
+
+    const dataset = nextOption.dataset;
+    const fields = ['NAME'];
+
+    const result = await viewModel._getAttributeFilter(dataset, fields, 'test');
+
+    expect(mockGetRestDataAttributeFilter).toHaveBeenCalledWith(
+      {
+        datasetName: 'BaseMap_P',
+        dataSourceName: 'Jingjin',
+        dataUrl: 'http://172.16.14.44:8090/iserver/services/data-jingjin/rest/data'
+      },
+      fields,
+      'test',
+      undefined
+    );
+    expect(result).toBe("LOWER(NAME) LIKE LOWER('%test%')");
+
+    iServerRestService.prototype._getRestDataAttributeFilter = originalGetRestDataAttributeFilter;
+    iServerRestService.prototype._getRestDataEngineType = originalGetRestDataEngineType;
+  });
+
+  it('_getAttributeFilter for non-iServer rest data', async () => {
+    const iServerRestService = require('../../../common/_utils/iServerRestService').default;
+    const originalMethod = iServerRestService.prototype._getAttributeFilterByKeywords;
+    const mockGetAttributeFilterByKeywords = jest.fn().mockReturnValue("LOWER(NAME) LIKE LOWER('%test%')");
+    iServerRestService.prototype._getAttributeFilterByKeywords = mockGetAttributeFilterByKeywords;
+
+    const nextOption = {
+      ...options,
+      dataset: {
+        type: 'iPortal',
+        url: 'http://localhost:8190/iportal/webdatas/datasets/xxx',
+        dataName: ['test']
+      }
+    };
+    const viewModel = new AttributesViewModel(nextOption);
+    viewModel.searchText = 'test';
+
+    const dataset = nextOption.dataset;
+    const fields = ['NAME'];
+
+    const result = await viewModel._getAttributeFilter(dataset, fields, 'test');
+
+    expect(mockGetAttributeFilterByKeywords).toHaveBeenCalledWith(fields, 'test', true);
+    expect(result).toBe("LOWER(NAME) LIKE LOWER('%test%')");
+
+    iServerRestService.prototype._getAttributeFilterByKeywords = originalMethod;
+  });
+
+  it('_getAttributeFilter for geoJSON returns lower filter', async () => {
+    const iServerRestService = require('../../../common/_utils/iServerRestService').default;
+    const originalMethod = iServerRestService.prototype._getAttributeFilterByKeywords;
+    const mockGetAttributeFilterByKeywords = jest.fn().mockReturnValue("LOWER(NAME) LIKE LOWER('%test%')");
+    iServerRestService.prototype._getAttributeFilterByKeywords = mockGetAttributeFilterByKeywords;
+
+    const nextOption = {
+      ...options,
+      dataset: {
+        type: 'geoJSON',
+        url: '',
+        geoJSON: { type: 'FeatureCollection', features: [] }
+      }
+    };
+    const viewModel = new AttributesViewModel(nextOption);
+    viewModel.searchText = 'test';
+
+    const dataset = nextOption.dataset;
+    const fields = ['NAME'];
+
+    const result = await viewModel._getAttributeFilter(dataset, fields, 'test');
+
+    expect(mockGetAttributeFilterByKeywords).toHaveBeenCalledWith(fields, 'test', true);
+    expect(result).toBe("LOWER(NAME) LIKE LOWER('%test%')");
+
+    iServerRestService.prototype._getAttributeFilterByKeywords = originalMethod;
+  });
 });

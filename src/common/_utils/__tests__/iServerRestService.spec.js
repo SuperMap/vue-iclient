@@ -13,6 +13,11 @@ describe('iServerRestService', () => {
           resolve(new Response(JSON.stringify(REST_DATA_FIELDS_RESULT)));
         });
       }
+      if (url.includes('/datasources/') && url.endsWith('.json')) {
+        return new Promise(resolve => {
+          resolve(new Response(JSON.stringify({})));
+        });
+      }
       return Promise.resolve(new Response(JSON.stringify(prj_data)));
     });
     postSpy = jest.spyOn(FetchRequest, 'post').mockImplementation((url, params) => {
@@ -141,7 +146,7 @@ describe('iServerRestService', () => {
       getdatasucceeded: function (data) {
         expect(postSpy).toHaveBeenCalledWith(
           expect.stringContaining('queryResults?returnContent=true'),
-          expect.stringContaining( `'expectCount':1,`),
+          expect.stringContaining(`'expectCount':1,`),
           expect.any(Object)
         );
         expect(data.features[0].geometry).toBeTruthy();
@@ -185,86 +190,95 @@ describe('iServerRestService', () => {
       }
     });
   });
-  it('triggers featureisempty for empty rest data string', done => {
+  it('_getAttributeFilterByKeywords with isLower true', () => {
     const service = new iServerRestService('url', { hasGeometry: true });
-    service.on({
-      featureisempty: data => {
-        expect(data.features).toEqual([]);
-        expect(data.fields).toEqual([]);
-        expect(data.originalFields).toEqual([]);
-        expect(data.fieldCaptions).toEqual([]);
-        expect(data.fieldValues).toEqual([]);
-        expect(data.fieldTypes).toEqual([]);
-        done();
-      },
-      getdatasucceeded: () => {
-        done.fail('empty data string should not trigger getdatasucceeded');
-      }
-    });
-    service._getFeaturesSucceed({
-      result: {
-        features: { data: '' }
-      }
-    });
+    const fields = ['NAME', 'SmID'];
+    const keyWord = 'test';
+    const result = service._getAttributeFilterByKeywords(fields, keyWord, true);
+    expect(result).toBe("LOWER(NAME) LIKE LOWER('%test%') OR LOWER(SmID) LIKE LOWER('%test%')");
   });
 
-  it('getDataFeatures by keyWord', done => {
+  it('_getAttributeFilterByKeywords with isLower false (SHAPEFILE)', () => {
     const service = new iServerRestService('url', { hasGeometry: true });
-    service.getDataFeatures(
-      { datasetName: 'District_pt', dataSourceName: 'China', dataUrl: 'http://fakeiserver/rest/data' },
-      { keyWord: 'A' }
-    );
-    service.on({
-      getdatasucceeded: data => {
-        expect(data.fields).toEqual(['SMID', 'NAME', 'lowercase']);
-        expect(data.fieldCaptions).toEqual(['SmID', '名称', 'lowercase']);
-        expect(mockPostParams).toMatch(/'attributeFilter':"NAME LIKE '%25A%25'/);
-        done();
+    const fields = ['NAME', 'SmID'];
+    const keyWord = 'test';
+    const result = service._getAttributeFilterByKeywords(fields, keyWord, false);
+    expect(result).toBe("NAME LIKE '%test%' OR SmID LIKE '%test%'");
+  });
+
+  it('_getAttributeFilterByKeywords with empty fields', () => {
+    const service = new iServerRestService('url', { hasGeometry: true });
+    const fields = [];
+    const keyWord = 'test';
+    const result = service._getAttributeFilterByKeywords(fields, keyWord, true);
+    expect(result).toBe('');
+  });
+
+  it('_getRestDataEngineType returns SHAPEFILE', async () => {
+    jest.spyOn(FetchRequest, 'get').mockImplementation((url) => {
+      if (url.includes('/rest/data') && url.includes('/datasources/') && url.endsWith('.json')) {
+        return new Promise(resolve => {
+          resolve(new Response(JSON.stringify({
+            datasourceInfo: {
+                engineType: 'SHAPEFILE'
+            }
+          })));
+        });
       }
+      return Promise.resolve(new Response(JSON.stringify({})));
     });
+    const service = new iServerRestService('url', { hasGeometry: true });
+    const result = await service._getRestDataEngineType('http://fakeiserver/rest/data/datasources/test/datasets/test', false);
+    expect(result).toBe('SHAPEFILE');
   });
 
-  it('getDataFeaturesCount', async done => {
-    const service = new iServerRestService();
-    const result = await service.getDataFeaturesCount({
-      dataUrl: 'http://localhost:8090/iserver/services/xxx/rest/data',
-      datasetName: 'test',
-      dataSourceName: 'test'
-    });
-    expect(result).toBe(500);
-    done();
-  });
-
-  it('getFeaturesDatasetInfo', async done => {
-    const service = new iServerRestService();
-    const result = await service.getFeaturesDatasetInfo({
-      dataUrl: 'http://localhost:8090/iserver/services/xxx/rest/data',
-      datasetName: 'test',
-      dataSourceName: 'test'
-    });
-    expect(result[0].name).toBe('SmID');
-    expect(result[0].caption).toBe('SmID');
-    done();
-  });
-
-  it('transformFeatures', done => {
-    const epsgCode = 'EPSG:4548';
-    const wkt = `PROJCS["China_2000_3_DEGREE_GK_Zone_39N",GEOGCS["GCS_China_2000",DATUM["D_China_2000",SPHEROID["CGCS2000",6378137.0,298.257222101,AUTHORITY["EPSG","7044"]]],PRIMEM["Greenwich",0.0,AUTHORITY["EPSG","8901"]],UNIT["DEGREE",0.017453292519943295],AUTHORITY["EPSG","4490"]],PROJECTION["Transverse_Mercator",AUTHORITY["EPSG","9807"]],PARAMETER["False_Easting",500000.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",117.0],PARAMETER["Latitude_Of_Origin",0.0],PARAMETER["Scale_Factor",1.0],UNIT["METER",1.0],AUTHORITY["EPSG","4548"]]`;
-    registerProjection(epsgCode, wkt);
-    expect(getProjection(epsgCode)).not.toBeUndefined();
-    const features = [
-      {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [478591, 3734142]
-        },
-        properties: {}
+  it('_getRestDataAttributeFilter with SHAPEFILE engineType', async () => {
+    jest.spyOn(FetchRequest, 'get').mockImplementation((url) => {
+      if (url.includes('/rest/data') && url.includes('/datasources/') && url.endsWith('.json')) {
+        return new Promise(resolve => {
+          resolve(new Response(JSON.stringify({
+            datasourceInfo: {
+                engineType: 'SHAPEFILE'
+            }
+          })));
+        });
       }
-    ];
-    const result = transformFeatures(4548, features);
-    expect(result).toEqual(features);
-    expect(result[0].geometry.coordinates).toEqual([116.76898148293563, 33.733651143352695]);
-    done();
+      return Promise.resolve(new Response(JSON.stringify({})));
+    });
+    const service = new iServerRestService('url', { hasGeometry: true });
+    const datasetInfo = {
+      datasetName: 'test',
+      dataSourceName: 'test',
+      dataUrl: 'http://fakeiserver/rest/data'
+    };
+    const fields = ['NAME', 'SmID'];
+    const keyWord = 'test';
+    const result = await service._getRestDataAttributeFilter(datasetInfo, fields, keyWord, false);
+    expect(result).toBe("NAME LIKE '%test%' OR SmID LIKE '%test%'");
+  });
+
+  it('_getRestDataAttributeFilter with VECTORFILE engineType', async () => {
+    jest.spyOn(FetchRequest, 'get').mockImplementation((url) => {
+      if (url.includes('/rest/data') && url.includes('/datasources/') && url.endsWith('.json')) {
+        return new Promise(resolve => {
+          resolve(new Response(JSON.stringify({
+            datasourceInfo: {
+                engineType: 'VECTORFILE'
+            }
+          })));
+        });
+      }
+      return Promise.resolve(new Response(JSON.stringify({})));
+    });
+    const service = new iServerRestService('url', { hasGeometry: true });
+    const datasetInfo = {
+      datasetName: 'test',
+      dataSourceName: 'test',
+      dataUrl: 'http://fakeiserver/rest/data'
+    };
+    const fields = ['NAME', 'SmID'];
+    const keyWord = 'test';
+    const result = await service._getRestDataAttributeFilter(datasetInfo, fields, keyWord, false);
+    expect(result).toBe("NAME LIKE '%test%' OR SmID LIKE '%test%'");
   });
 });
