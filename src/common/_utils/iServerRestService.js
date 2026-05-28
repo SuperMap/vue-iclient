@@ -212,10 +212,12 @@ export default class iServerRestService extends Events {
     queryInfo.datasetNames = [dataSourceName + ':' + datasetName];
     this.projectionUrl = Util.urlPathAppend(dataUrl, `datasources/${dataSourceName}/datasets/${datasetName}`);
     let fieldsUrl = Util.urlAppend(Util.urlPathAppend(dataUrl, `datasources/${dataSourceName}/datasets/${datasetName}/fields`), 'returnAll=true');
-    this._getRestDataFields(fieldsUrl, queryInfo, (fields, result) => {
+    this._getRestDataFields(fieldsUrl, queryInfo, async (fields, result) => {
       this.fieldInfos = result;
       if (queryInfo.keyWord) {
-        const attributeFilter = this._getAttributeFilterByKeywords(fields, queryInfo.keyWord);
+        const attributeFilter = await this._getRestDataAttributeFilter(
+          datasetInfo, fields, queryInfo.keyWord, queryInfo.withCredentials
+        );
         this._queryDataFeatures(dataUrl, { ...queryInfo, attributeFilter });
       } else {
         this._queryDataFeatures(dataUrl, queryInfo);
@@ -519,12 +521,41 @@ export default class iServerRestService extends Events {
     queryBySQLSerice.processAsync(param);
   }
 
-  _getAttributeFilterByKeywords(fields, keyWord) {
+  // 获取引擎类型, 例如SHAPEFILE
+  _getRestDataEngineType(url, withCredentials) {
+    return FetchRequest.get(url + '.json', null, {
+      proxy: this.options.proxy,
+      withCredentials
+    })
+      .then(response => {
+        return response.json();
+      })
+      .then(results => {
+        const { datasourceInfo } = results;
+        return datasourceInfo?.engineType;
+      })
+      .catch(error => {
+        console.log(error);
+        this.fetchFailed(error);
+      });
+  }
+
+  async _getRestDataAttributeFilter(datasetInfo, fields, keyWord, withCredentials) {
+    let { dataSourceName, dataUrl } = datasetInfo;
+    const datasetUrl = Util.urlPathAppend(dataUrl, `datasources/${dataSourceName}`);
+    const engineType = await this._getRestDataEngineType(datasetUrl, withCredentials);
+    const isLower = engineType !== 'SHAPEFILE' && engineType !== 'VECTORFILE';
+    return this._getAttributeFilterByKeywords(fields, keyWord, isLower);
+  }
+
+  _getAttributeFilterByKeywords(fields, keyWord, isLower = false) {
     let attributeFilter = '';
     fields &&
       fields.forEach((field, index) => {
-        attributeFilter +=
-          index !== fields.length - 1 ? `${field} LIKE '%${keyWord}%' ` + 'OR ' : `${field} LIKE '%${keyWord}%'`;
+        const lowerStr = `LOWER(${field}) LIKE LOWER('%${keyWord}%')`;
+        const normalStr = `${field} LIKE '%${keyWord}%'`;
+        const filterStr = isLower ? lowerStr : normalStr;
+        attributeFilter += index !== fields.length - 1 ? filterStr + ' OR ' : filterStr;
       }, this);
     return attributeFilter;
   }

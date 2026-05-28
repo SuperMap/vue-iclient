@@ -123,4 +123,65 @@ describe('FeatureCascader.vue', () => {
     wrapper.vm.clearSelectOptions();
     expect(wrapper.vm.internalValue).toEqual([]);
   });
+
+  it('onChange with empty value should emit change with empty array and null', async () => {
+    const changeFn = jest.fn();
+    wrapper = mount(SmFeatureCascader, { propsData: { ...propsData, change: changeFn } });
+    wrapper.vm.$on('change', changeFn);
+    await flushPromises();
+
+    await wrapper.vm.onChange([]);
+
+    expect(changeFn).toHaveBeenCalledWith([], null);
+  });
+
+  it('onChange with null value should emit change with empty array and null', async () => {
+    const changeFn = jest.fn();
+    wrapper = mount(SmFeatureCascader, { propsData: { ...propsData, change: changeFn } });
+    wrapper.vm.$on('change', changeFn);
+    await flushPromises();
+
+    await wrapper.vm.onChange(null);
+
+    expect(changeFn).toHaveBeenCalledWith([], null);
+  });
+
+  it('onChange with target not found should emit change with value and null', async () => {
+    const changeFn = jest.fn();
+    wrapper = mount(SmFeatureCascader, { propsData: { ...propsData, change: changeFn } });
+    wrapper.vm.$on('change', changeFn);
+    await flushPromises();
+
+    await wrapper.vm.onChange(['non-existent-value']);
+
+    expect(changeFn).toHaveBeenCalledWith(['non-existent-value'], null);
+  });
+
+  it('onChange with target found should emit change with value and first feature', async () => {
+    const changeFn = jest.fn();
+    wrapper = mount(SmFeatureCascader, { propsData: { ...propsData, change: changeFn } });
+    wrapper.vm.$on('change', changeFn);
+    await flushPromises();
+
+    await wrapper.vm.onChange(['3301']);
+
+    expect(changeFn).toHaveBeenCalled();
+    const callArgs = changeFn.mock.calls[0];
+    expect(callArgs[0]).toEqual(['3301']);
+    expect(callArgs[1]).not.toBeNull();
+  });
+
+  it('onChange constructs correct attributeFilter for target', async () => {
+    const changeFn = jest.fn();
+    const postSpy = jest.spyOn(FetchRequest, 'post');
+    wrapper = mount(SmFeatureCascader, { propsData: { ...propsData, change: changeFn } });
+    wrapper.vm.$on('change', changeFn);
+    await flushPromises();
+
+    await wrapper.vm.onChange(['3301']);
+
+    const lastCall = postSpy.mock.calls[postSpy.mock.calls.length - 1];
+    console.log(lastCall);
+    expect(lastCall[1]).toContain(`(\\\"parent_cod\\\" = '%253301%25')`);
+  });
 });
