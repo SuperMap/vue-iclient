@@ -80,6 +80,7 @@
                       :placeholder="$t('query.sqlQueryPlaceholder')"
                     />
                     <a-popover
+                      v-if="jobInfo.queryParameter.showSqlBuilderButton !== false"
                       :ref="`sqlBuilderPopover-${index}`"
                       :visible="sqlBuilderVisibleIndex === index"
                       trigger="click"
