@@ -173,6 +173,7 @@
                                   v-model="condition.value"
                                   mode="combobox"
                                   showSearch
+                                  :filter-option="false"
                                   class="sm-component-query__sql-builder-control"
                                   :get-popup-container="getSqlBuilderSelectPopupContainer"
                                   :style="getTextColorStyle"
@@ -855,7 +856,7 @@ export default {
     handleSqlBuilderValueChange(conditionIndex, jobInfo) {
       const condition = this.sqlBuilderConditions[conditionIndex];
       if (!condition || !condition.value) {
-        this.$set(this.sqlBuilderFieldValueSearchMap, conditionIndex, '');
+      this.$set(this.sqlBuilderFieldValueSearchMap, conditionIndex, '');
       }
       this.syncSqlBuilderExpression(jobInfo);
     },
