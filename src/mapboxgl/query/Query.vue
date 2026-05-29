@@ -11,11 +11,6 @@
     :split-line="splitLine"
     class="sm-component-query"
   >
-    <div
-      v-if="sqlBuilderVisibleIndex !== null"
-      class="sm-component-query__sql-builder-mask"
-      @click="closeSqlBuilder"
-    />
     <div class="sm-component-query__body" :style="getTextColorStyle">
       <div class="sm-component-query__choose-panel clearfix">
         <div

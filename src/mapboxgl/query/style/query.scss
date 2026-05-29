@@ -134,15 +134,6 @@
       border-color: $primary-color;
     }
   }
-  @include e(sql-builder-mask) {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 1000;
-    background: rgba($white, 0.28);
-  }
   @include e(sql-builder-panel) {
     box-sizing: border-box;
     width: 100%;
