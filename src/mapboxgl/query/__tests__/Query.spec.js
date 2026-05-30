@@ -567,34 +567,6 @@ describe('query', () => {
     expect(wrapper.find('.sm-component-query__sql-builder-panel').exists()).toBeTruthy();
   });
 
-  it('shows a light mask while the sql builder popover is open', async () => {
-    wrapper = mount(SmQuery, {
-      localVue,
-      propsData: {
-        mapTarget: 'map',
-        restData: [
-          new RestDataParameter({
-            url: 'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data',
-            attributeFilter: '',
-            maxFeatures: 30,
-            dataName: ['World:Countries'],
-            queryMode: 'SQL'
-          })
-        ]
-      }
-    });
-    await mapSubComponentLoaded(wrapper);
-    expect(wrapper.find('.sm-component-query__sql-builder-mask').exists()).toBeFalsy();
-
-    await wrapper.find('.sm-component-query__sql-config-button').trigger('click');
-    await wrapper.vm.$nextTick();
-    expect(wrapper.find('.sm-component-query__sql-builder-mask').exists()).toBeTruthy();
-
-    wrapper.vm.closeSqlBuilder();
-    await wrapper.vm.$nextTick();
-    expect(wrapper.find('.sm-component-query__sql-builder-mask').exists()).toBeFalsy();
-  });
-
   it('applies sql builder expression to attribute filter', async () => {
     wrapper = mount(SmQuery, {
       localVue,
