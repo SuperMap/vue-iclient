@@ -170,6 +170,7 @@
                               <div class="sm-component-query__sql-builder-value-row">
                                 <sm-select
                                   v-if="!isSqlBuilderValueDisabled(condition.operator)"
+                                  :key="`${conditionIndex}-${condition.field}`"
                                   v-model="condition.value"
                                   mode="combobox"
                                   showSearch
@@ -177,7 +178,8 @@
                                   class="sm-component-query__sql-builder-control"
                                   :get-popup-container="getSqlBuilderSelectPopupContainer"
                                   :style="getTextColorStyle"
-                                  :placeholder="$t('query.sqlBuilderValue')"
+                                  :placeholder="getSqlBuilderValuePlaceholder(jobInfo, condition)"
+                                  :title="getSqlBuilderValuePlaceholder(jobInfo, condition)"
                                   @focus="handleSqlBuilderValueFocus(conditionIndex)"
                                   @search="handleSqlBuilderValueSearch(conditionIndex, $event)"
                                   @change="handleSqlBuilderValueChange(conditionIndex, jobInfo)"
@@ -190,6 +192,28 @@
                                     {{ valueOption.label }}
                                   </sm-select-option>
                                 </sm-select>
+                                <sm-button
+                                  v-if="!isSqlBuilderValueDisabled(condition.operator)"
+                                  size="small"
+                                  class="sm-component-query__sql-builder-value-button"
+                                  :title="getSqlBuilderValueButtonTitle(jobInfo, condition)"
+                                  :disabled="
+                                    !condition.field ||
+                                      isSqlBuilderFieldValueLoaded(jobInfo, condition.field) ||
+                                      isSqlBuilderFieldValueButtonLoading(conditionIndex) ||
+                                      isSqlBuilderFieldValueLoading(jobInfo, condition.field)
+                                  "
+                                  @click="handleSqlBuilderFieldValueLoad(conditionIndex, jobInfo)"
+                                >
+                                  <sm-icon
+                                    :type="
+                                      isSqlBuilderFieldValueButtonLoading(conditionIndex) ||
+                                        isSqlBuilderFieldValueLoading(jobInfo, condition.field)
+                                        ? 'loading'
+                                        : 'more'
+                                    "
+                                  />
+                                </sm-button>
                                 <span v-else class="sm-component-query__sql-builder-empty-value">--</span>
                               </div>
                             </div>
@@ -311,6 +335,7 @@ import Message from 'vue-iclient/src/common/message/Message.js';
 import SmLayerHighlight from 'vue-iclient/src/mapboxgl/layer-highlight/LayerHighlight';
 import { getValueCaseInsensitive } from 'vue-iclient/src/common/_utils/util';
 import getFeatures from 'vue-iclient/src/common/_utils/get-features';
+import { FetchRequest, Util } from 'vue-iclient/static/libs/iclient-common/iclient-common';
 import Popover from 'ant-design-vue/es/popover';
 import isEqual from 'lodash.isequal';
 import omit from 'omit.js';
@@ -465,9 +490,13 @@ export default {
       sqlBuilderConditions: [],
       sqlBuilderConnectors: [],
       sqlBuilderFieldMap: {},
+      sqlBuilderFieldJobMap: {},
+      sqlBuilderFieldJobPromiseMap: {},
       sqlBuilderFieldValueMap: {},
-      sqlBuilderValueFeatureMap: {},
-      sqlBuilderValueFeaturePromiseMap: {},
+      sqlBuilderFieldValueJobMap: {},
+      sqlBuilderFieldValueJobPromiseMap: {},
+      sqlBuilderFieldValueLoadingMap: {},
+      sqlBuilderFieldValueButtonLoadingMap: {},
       sqlBuilderFieldValueSearchMap: {}
     };
   },
@@ -750,24 +779,14 @@ export default {
       this.sqlBuilderConditions = parsedExpression ? parsedExpression.conditions : [this.createSqlBuilderCondition(jobInfo)];
       this.sqlBuilderConnectors = parsedExpression ? parsedExpression.connectors : [];
       this.refreshSqlBuilderPopoverAlign(index);
-      const fields = this.getSqlBuilderFields(jobInfo);
-      if (!fields.length) {
-        return this.loadSqlBuilderFieldValues(jobInfo, '').then(() => {
+      return this.loadSqlBuilderFields(jobInfo).then(() => {
+        const fields = this.getSqlBuilderFields(jobInfo);
+        if (fields.length) {
           if (!this.sqlBuilderConditions[0].field) {
-            const loadedFields = this.getSqlBuilderFields(jobInfo);
-            this.sqlBuilderConditions[0].field = (loadedFields[0] && loadedFields[0].value) || '';
+            this.sqlBuilderConditions[0].field = fields[0].value || '';
           }
-          const field = this.sqlBuilderConditions[0] && this.sqlBuilderConditions[0].field;
-          const loadValuesPromise = field ? this.loadSqlBuilderFieldValues(jobInfo, field) : Promise.resolve([]);
-          return loadValuesPromise.then(() => {
-            this.refreshSqlBuilderPopoverAlign(index);
-          });
-        });
-      }
-      this.sqlBuilderConditions.forEach(condition => {
-        this.loadSqlBuilderFieldValues(jobInfo, condition.field).then(() => {
           this.refreshSqlBuilderPopoverAlign(index);
-        });
+        }
       });
     },
     refreshSqlBuilderPopoverAlign(index = this.sqlBuilderVisibleIndex) {
@@ -844,7 +863,6 @@ export default {
       }
       condition.value = '';
       this.$set(this.sqlBuilderFieldValueSearchMap, this.sqlBuilderConditions.indexOf(condition), '');
-      this.loadSqlBuilderFieldValues(jobInfo, condition.field);
       this.syncSqlBuilderExpression(jobInfo);
     },
     handleSqlBuilderValueFocus(conditionIndex) {
@@ -856,7 +874,7 @@ export default {
     handleSqlBuilderValueChange(conditionIndex, jobInfo) {
       const condition = this.sqlBuilderConditions[conditionIndex];
       if (!condition || !condition.value) {
-      this.$set(this.sqlBuilderFieldValueSearchMap, conditionIndex, '');
+        this.$set(this.sqlBuilderFieldValueSearchMap, conditionIndex, '');
       }
       this.syncSqlBuilderExpression(jobInfo);
     },
@@ -867,6 +885,94 @@ export default {
     getSqlBuilderFieldValueCacheKey(jobInfo, field) {
       return `${this.getSqlBuilderJobCacheKey(jobInfo)}|${field}`;
     },
+    getSqlBuilderRestDataFieldsUrl(jobInfo) {
+      const queryParameter = (jobInfo && jobInfo.queryParameter) || {};
+      const dataName = Array.isArray(queryParameter.dataName) ? queryParameter.dataName[0] : queryParameter.dataName;
+      if (!queryParameter.url || !dataName) {
+        return '';
+      }
+      const [dataSourceName, datasetName] = `${dataName}`.split(':');
+      if (!dataSourceName || !datasetName) {
+        return '';
+      }
+      const fieldsPath = `datasources/${dataSourceName}/datasets/${datasetName}/fields.json`;
+      return Util.urlAppend(Util.urlPathAppend(queryParameter.url, fieldsPath), 'returnAll=true');
+    },
+    cacheSqlBuilderFieldInfos(jobInfo, fieldInfos) {
+      const fields = this.normalizeSqlBuilderFields([fieldInfos]);
+      if (fields.length) {
+        this.$set(this.sqlBuilderFieldMap, this.getSqlBuilderJobCacheKey(jobInfo), fields);
+      }
+      return fields;
+    },
+    querySqlBuilderRestDataFields(jobInfo) {
+      const queryParameter = (jobInfo && jobInfo.queryParameter) || {};
+      const fieldsUrl = this.getSqlBuilderRestDataFieldsUrl(jobInfo);
+      if (!fieldsUrl) {
+        return Promise.resolve([]);
+      }
+      return FetchRequest.get(fieldsUrl, null, {
+        proxy: queryParameter.proxy,
+        withCredentials: queryParameter.withCredentials
+      })
+        .then(response => response.json())
+        .then(fields => (Array.isArray(fields) ? fields.filter(field => `${field.name || ''}`.toLowerCase() !== 'smgeometry') : []));
+    },
+    async querySqlBuilderRestMapFields(jobInfo) {
+      const data = await this.querySqlBuilderValueFeatures(jobInfo, {
+        maxFeatures: 1,
+        fromIndex: 0,
+        toIndex: 0
+      });
+      const fields = Array.isArray(data.fields) ? data.fields : [];
+      const captions = Array.isArray(data.fieldCaptions) ? data.fieldCaptions : [];
+      const types = Array.isArray(data.fieldTypes) ? data.fieldTypes : [];
+      if (fields.length) {
+        return fields.map((field, index) => ({
+          name: field,
+          caption: captions[index] || field,
+          type: types[index]
+        }));
+      }
+      return this.getSqlBuilderFieldsFromFeatures(this.getSqlBuilderResultFeatures(data));
+    },
+    async querySqlBuilderFields(jobInfo) {
+      const queryParameter = (jobInfo && jobInfo.queryParameter) || {};
+      if (queryParameter.dataName) {
+        return this.querySqlBuilderRestDataFields(jobInfo);
+      }
+      if (queryParameter.layerName) {
+        return this.querySqlBuilderRestMapFields(jobInfo);
+      }
+      const data = await this.querySqlBuilderValueFeatures(jobInfo, {
+        maxFeatures: 1,
+        fromIndex: 0,
+        toIndex: 0
+      });
+      return this.getSqlBuilderFieldsFromFeatures(this.getSqlBuilderResultFeatures(data));
+    },
+    async loadSqlBuilderFields(jobInfo) {
+      const jobCacheKey = this.getSqlBuilderJobCacheKey(jobInfo);
+      if (this.sqlBuilderFieldJobMap[jobCacheKey]) {
+        return this.getSqlBuilderFields(jobInfo);
+      }
+      if (this.sqlBuilderFieldJobPromiseMap[jobCacheKey]) {
+        return this.sqlBuilderFieldJobPromiseMap[jobCacheKey];
+      }
+      const promise = Promise.resolve(this.querySqlBuilderFields(jobInfo))
+        .then(fieldInfos => {
+          const fields = this.cacheSqlBuilderFieldInfos(jobInfo, fieldInfos);
+          this.$set(this.sqlBuilderFieldJobMap, jobCacheKey, true);
+          this.$delete(this.sqlBuilderFieldJobPromiseMap, jobCacheKey);
+          return fields;
+        })
+        .catch(error => {
+          this.$delete(this.sqlBuilderFieldJobPromiseMap, jobCacheKey);
+          throw error;
+        });
+      this.$set(this.sqlBuilderFieldJobPromiseMap, jobCacheKey, promise);
+      return promise;
+    },
     getSqlBuilderFieldValueOptions(condition, conditionIndex) {
       const values = this.sqlBuilderFieldValueMap[this.getSqlBuilderFieldValueCacheKey(this.jobInfos[this.sqlBuilderVisibleIndex], condition.field)] || [];
       const searchValue = this.sqlBuilderFieldValueSearchMap[conditionIndex];
@@ -875,37 +981,153 @@ export default {
         : values;
       return matchedValues.slice(0, 100).map(value => ({ label: value, value }));
     },
-    async querySqlBuilderValueFeatures(jobInfo) {
+    getSqlBuilderValuePlaceholder(jobInfo, condition) {
+      return this.isSqlBuilderFieldValueLoaded(jobInfo, condition && condition.field)
+        ? this.$t('query.sqlBuilderValueLimitPlaceholder')
+        : this.$t('query.sqlBuilderValue');
+    },
+    getSqlBuilderValueButtonTitle(jobInfo, condition) {
+      return this.isSqlBuilderFieldValueLoaded(jobInfo, condition && condition.field)
+        ? this.$t('query.sqlBuilderValueLoaded')
+        : this.$t('query.sqlBuilderValueRequest');
+    },
+    getSqlBuilderResultFeatures(data) {
+      if (Array.isArray(data)) {
+        return data;
+      }
+      return (data && data.features) || [];
+    },
+    async querySqlBuilderValueFeatures(jobInfo, options = {}) {
       const queryParameter = (jobInfo && jobInfo.queryParameter) || {};
-      const data = await getFeatures({
+      const featureQueryParameter = {
         ...queryParameter,
         attributeFilter: '',
         keyWord: '',
-        maxFeatures: 1000,
         returnFeaturesOnly: true
+      };
+      if (queryParameter.type === 'iServer') {
+        if (options.maxFeatures) {
+          return getFeatures({
+            ...featureQueryParameter,
+            fromIndex: options.fromIndex,
+            toIndex: options.toIndex,
+            maxFeatures: options.maxFeatures
+          });
+        }
+        const features = [];
+        const pageSize = 1000;
+        let fromIndex = 0;
+        let nextFeatures = [];
+        do {
+          const data = await getFeatures({
+            ...featureQueryParameter,
+            fromIndex,
+            toIndex: fromIndex + pageSize - 1,
+            maxFeatures: pageSize
+          });
+          nextFeatures = data && data.features ? data.features : [];
+          features.push(...nextFeatures);
+          fromIndex += pageSize;
+        } while (nextFeatures.length === pageSize);
+        return { features };
+      }
+      const data = await getFeatures({
+        ...featureQueryParameter,
+        maxFeatures: undefined
       });
-      return data && data.features ? data.features : [];
+      return data || { features: [] };
     },
-    async loadSqlBuilderValueFeatures(jobInfo) {
-      const jobCacheKey = this.getSqlBuilderJobCacheKey(jobInfo);
-      if (this.sqlBuilderValueFeatureMap[jobCacheKey]) {
-        return this.sqlBuilderValueFeatureMap[jobCacheKey];
+    cacheSqlBuilderFieldValueMap(jobInfo, features) {
+      const fieldValueMap = {};
+      const fieldValueSetMap = {};
+      this.cacheSqlBuilderFields(jobInfo, features);
+      features.forEach(feature => {
+        const sqlBuilderFields = this.getSqlBuilderFields(jobInfo).map(field => field.value);
+        const fieldNames = sqlBuilderFields.length
+          ? sqlBuilderFields
+          : Array.isArray(feature.fieldNames)
+            ? feature.fieldNames
+            : Object.keys(feature.properties || {});
+        fieldNames.forEach(field => {
+          const properties = feature.properties || feature;
+          let value = getValueCaseInsensitive(properties, field);
+          if ((value === undefined || value === null || value === '') && Array.isArray(feature.fieldNames) && Array.isArray(feature.fieldValues)) {
+            const fieldIndex = feature.fieldNames.findIndex(fieldName => `${fieldName}`.toUpperCase() === `${field}`.toUpperCase());
+            value = fieldIndex > -1 ? feature.fieldValues[fieldIndex] : value;
+          }
+          if (value === null || value === undefined || value === '') {
+            return;
+          }
+          const valueKey = `${typeof value}:${value}`;
+          fieldValueSetMap[field] = fieldValueSetMap[field] || new Set();
+          fieldValueMap[field] = fieldValueMap[field] || [];
+          if (!fieldValueSetMap[field].has(valueKey)) {
+            fieldValueSetMap[field].add(valueKey);
+            fieldValueMap[field].push(value);
+          }
+        });
+      });
+      Object.keys(fieldValueMap).forEach(field => {
+        this.$set(this.sqlBuilderFieldValueMap, this.getSqlBuilderFieldValueCacheKey(jobInfo, field), fieldValueMap[field]);
+      });
+    },
+    isSqlBuilderFieldValueLoading(jobInfo, field) {
+      if (!field) {
+        return false;
       }
-      if (this.sqlBuilderValueFeaturePromiseMap[jobCacheKey]) {
-        return this.sqlBuilderValueFeaturePromiseMap[jobCacheKey];
+      return !!this.sqlBuilderFieldValueLoadingMap[this.getSqlBuilderFieldValueCacheKey(jobInfo, field)];
+    },
+    isSqlBuilderFieldValueLoaded(jobInfo, field) {
+      if (!field) {
+        return false;
       }
-      const promise = this.querySqlBuilderValueFeatures(jobInfo)
-        .then(features => {
-          this.$set(this.sqlBuilderValueFeatureMap, jobCacheKey, features);
-          this.cacheSqlBuilderFields(jobInfo, features);
-          this.$delete(this.sqlBuilderValueFeaturePromiseMap, jobCacheKey);
-          return features;
+      return Array.isArray(this.sqlBuilderFieldValueMap[this.getSqlBuilderFieldValueCacheKey(jobInfo, field)]);
+    },
+    isSqlBuilderFieldValueButtonLoading(conditionIndex) {
+      return !!this.sqlBuilderFieldValueButtonLoadingMap[conditionIndex];
+    },
+    handleSqlBuilderFieldValueLoad(conditionIndex, jobInfo) {
+      const condition = this.sqlBuilderConditions[conditionIndex];
+      if (
+        !condition ||
+        !condition.field ||
+        this.isSqlBuilderFieldValueLoaded(jobInfo, condition.field) ||
+        this.isSqlBuilderFieldValueLoading(jobInfo, condition.field)
+      ) {
+        return Promise.resolve([]);
+      }
+      this.$set(this.sqlBuilderFieldValueButtonLoadingMap, conditionIndex, true);
+      return this.loadSqlBuilderFieldValues(jobInfo, condition.field)
+        .then(values => {
+          this.$delete(this.sqlBuilderFieldValueButtonLoadingMap, conditionIndex);
+          this.refreshSqlBuilderPopoverAlign();
+          return values;
         })
         .catch(error => {
-          this.$delete(this.sqlBuilderValueFeaturePromiseMap, jobCacheKey);
+          this.$delete(this.sqlBuilderFieldValueButtonLoadingMap, conditionIndex);
           throw error;
         });
-      this.$set(this.sqlBuilderValueFeaturePromiseMap, jobCacheKey, promise);
+    },
+    async loadSqlBuilderFieldValueCache(jobInfo) {
+      const jobCacheKey = this.getSqlBuilderJobCacheKey(jobInfo);
+      if (this.sqlBuilderFieldValueJobMap[jobCacheKey]) {
+        return this.sqlBuilderFieldValueJobMap[jobCacheKey];
+      }
+      if (this.sqlBuilderFieldValueJobPromiseMap[jobCacheKey]) {
+        return this.sqlBuilderFieldValueJobPromiseMap[jobCacheKey];
+      }
+      const promise = this.querySqlBuilderValueFeatures(jobInfo)
+        .then(data => {
+          this.cacheSqlBuilderFieldValueMap(jobInfo, this.getSqlBuilderResultFeatures(data));
+          this.$set(this.sqlBuilderFieldValueJobMap, jobCacheKey, true);
+          this.$delete(this.sqlBuilderFieldValueJobPromiseMap, jobCacheKey);
+          return true;
+        })
+        .catch(error => {
+          this.$delete(this.sqlBuilderFieldValueJobPromiseMap, jobCacheKey);
+          throw error;
+        });
+      this.$set(this.sqlBuilderFieldValueJobPromiseMap, jobCacheKey, promise);
       return promise;
     },
     async loadSqlBuilderFieldValues(jobInfo, field) {
@@ -913,54 +1135,44 @@ export default {
       if (this.sqlBuilderFieldValueMap[cacheKey]) {
         return this.sqlBuilderFieldValueMap[cacheKey];
       }
-      const features = await this.loadSqlBuilderValueFeatures(jobInfo);
-      if (!field) {
-        return [];
-      }
-      const valueSet = new Set();
-      const values = [];
-      features.some(feature => {
-        const properties = feature.properties || feature;
-        let value = getValueCaseInsensitive(properties, field);
-        if ((value === undefined || value === null || value === '') && Array.isArray(feature.fieldNames) && Array.isArray(feature.fieldValues)) {
-          const fieldIndex = feature.fieldNames.findIndex(fieldName => `${fieldName}`.toUpperCase() === `${field}`.toUpperCase());
-          value = fieldIndex > -1 ? feature.fieldValues[fieldIndex] : value;
-        }
-        if (value === null || value === undefined || value === '') {
-          return false;
-        }
-        const valueKey = `${typeof value}:${value}`;
-        if (!valueSet.has(valueKey)) {
-          valueSet.add(valueKey);
-          values.push(value);
-        }
-        return values.length >= 100;
-      });
-      this.$set(this.sqlBuilderFieldValueMap, cacheKey, values);
-      return values;
+      this.$set(this.sqlBuilderFieldValueLoadingMap, cacheKey, true);
+      return this.loadSqlBuilderFieldValueCache(jobInfo)
+        .then(() => {
+          this.$delete(this.sqlBuilderFieldValueLoadingMap, cacheKey);
+          return this.sqlBuilderFieldValueMap[cacheKey] || [];
+        })
+        .catch(error => {
+          this.$delete(this.sqlBuilderFieldValueLoadingMap, cacheKey);
+          throw error;
+        });
     },
-    cacheSqlBuilderFields(jobInfo, features) {
+    getSqlBuilderFieldsFromFeatures(features) {
       const fieldMap = {};
       features.some(feature => {
         if (Array.isArray(feature.fieldNames)) {
           feature.fieldNames.forEach(fieldName => {
             if (fieldName && !fieldMap[fieldName]) {
-              fieldMap[fieldName] = fieldName;
+              fieldMap[fieldName] = { name: fieldName };
             }
           });
         }
         if (feature.properties) {
           Object.keys(feature.properties).forEach(fieldName => {
             if (fieldName && !fieldMap[fieldName]) {
-              fieldMap[fieldName] = fieldName;
+              fieldMap[fieldName] = { name: fieldName };
             }
           });
         }
         return Object.keys(fieldMap).length >= 100;
       });
-      if (Object.keys(fieldMap).length) {
-        this.$set(this.sqlBuilderFieldMap, this.getSqlBuilderJobCacheKey(jobInfo), Object.values(fieldMap));
+      return Object.values(fieldMap);
+    },
+    cacheSqlBuilderFields(jobInfo, features) {
+      const jobCacheKey = this.getSqlBuilderJobCacheKey(jobInfo);
+      if ((this.sqlBuilderFieldMap[jobCacheKey] || []).length) {
+        return;
       }
+      this.cacheSqlBuilderFieldInfos(jobInfo, this.getSqlBuilderFieldsFromFeatures(features));
     },
     addSqlBuilderCondition(jobInfo) {
       this.sqlBuilderConditions.push(this.createSqlBuilderCondition(jobInfo));

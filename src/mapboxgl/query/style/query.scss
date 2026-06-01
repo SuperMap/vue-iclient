@@ -259,8 +259,18 @@
   @include e(sql-builder-value-row) {
     display: flex;
     flex: 1;
-    gap: 8px;
     min-width: 0;
+  }
+  @include e(sql-builder-value-button) {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    box-sizing: border-box;
+    padding: 0;
+    line-height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
   @include e(sql-builder-empty-value) {
     flex: 1;

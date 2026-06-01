@@ -951,7 +951,7 @@ describe('query', () => {
     ]);
   });
 
-  it('loads first 100 unique sql builder values from queried features', async () => {
+  it('caches all unique sql builder field values from queried features', async () => {
     wrapper = mount(SmQuery, {
       localVue,
       propsData: {
@@ -979,13 +979,54 @@ describe('query', () => {
     jest.spyOn(wrapper.vm, 'querySqlBuilderValueFeatures').mockResolvedValue(features);
     const jobInfo = wrapper.vm.jobInfos[0];
     const values = await wrapper.vm.loadSqlBuilderFieldValues(jobInfo, 'Name');
-    expect(values).toHaveLength(100);
+    expect(values).toHaveLength(104);
     expect(values[0]).toBe('Name-0');
     expect(values[1]).toBe('Name-2');
-    expect(values[99]).toBe('Name-100');
+    expect(values[103]).toBe('Name-104');
+    expect(wrapper.vm.sqlBuilderFieldValueMap[wrapper.vm.getSqlBuilderFieldValueCacheKey(jobInfo, 'Name')]).toHaveLength(104);
   });
 
-  it('reuses queried sql builder features when loading values for different fields', async () => {
+  it('shows first 100 sql builder field values but searches all cached values', async () => {
+    wrapper = mount(SmQuery, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        restData: [
+          {
+            type: 'iServer',
+            name: 'restData',
+            url: 'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data',
+            attributeFilter: '',
+            maxFeatures: 30,
+            dataName: ['World:Countries'],
+            queryMode: 'SQL',
+            fields: [{ name: 'Name', type: 'WTEXT' }]
+          }
+        ]
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    const jobInfo = wrapper.vm.jobInfos[0];
+    wrapper.vm.sqlBuilderVisibleIndex = 0;
+    wrapper.vm.sqlBuilderConditions = [{ field: 'Name', operator: '=', value: '' }];
+    wrapper.vm.$set(
+      wrapper.vm.sqlBuilderFieldValueMap,
+      wrapper.vm.getSqlBuilderFieldValueCacheKey(jobInfo, 'Name'),
+      Array.from({ length: 120 }).map((item, index) => `Name-${index}`)
+    );
+
+    const defaultOptions = wrapper.vm.getSqlBuilderFieldValueOptions(wrapper.vm.sqlBuilderConditions[0], 0);
+    expect(defaultOptions).toHaveLength(100);
+    expect(defaultOptions[99]).toEqual({ label: 'Name-99', value: 'Name-99' });
+
+    wrapper.vm.handleSqlBuilderValueSearch(0, 'Name-119');
+
+    expect(wrapper.vm.getSqlBuilderFieldValueOptions(wrapper.vm.sqlBuilderConditions[0], 0)).toEqual([
+      { label: 'Name-119', value: 'Name-119' }
+    ]);
+  });
+
+  it('caches unique sql builder values for all fields from one feature query', async () => {
     wrapper = mount(SmQuery, {
       localVue,
       propsData: {
@@ -1129,7 +1170,7 @@ describe('query', () => {
     expect(wrapper.vm.parseSqlBuilderExpression('', jobInfo)).toBeNull();
   });
 
-  it('loads first discovered sql builder field values on first open', async () => {
+  it('loads restData sql builder fields from fields.json on first open', async () => {
     wrapper = mount(SmQuery, {
       localVue,
       propsData: {
@@ -1148,24 +1189,142 @@ describe('query', () => {
       }
     });
     await mapSubComponentLoaded(wrapper);
-    jest.spyOn(wrapper.vm, 'querySqlBuilderValueFeatures').mockResolvedValue([
-      {
-        fieldNames: ['SMID', 'Name'],
-        fieldValues: [1, 'Airport']
-      },
-      {
-        fieldNames: ['SMID', 'Name'],
-        fieldValues: [2, 'Station']
-      }
-    ]);
     const jobInfo = wrapper.vm.jobInfos[0];
 
     await wrapper.vm.openSqlBuilder(jobInfo, 0);
 
-    expect(wrapper.vm.sqlBuilderConditions[0].field).toBe('SMID');
+    expect(FetchRequest.get).toHaveBeenCalledWith(
+      expect.stringContaining('/datasources/World/datasets/Countries/fields.json?returnAll=true'),
+      null,
+      expect.any(Object)
+    );
+    expect(wrapper.vm.sqlBuilderConditions[0].field).toBe('SmID');
+    expect(wrapper.vm.getSqlBuilderFields(jobInfo).slice(0, 2)).toEqual([
+      { value: 'SmID', label: 'SmID', type: 'INT32' },
+      { value: 'NAME', label: '名称', type: 'WTEXT' }
+    ]);
+    expect(wrapper.vm.getSqlBuilderFields(jobInfo).some(field => `${field.value}`.toLowerCase() === 'smgeometry')).toBe(false);
+    expect(wrapper.vm.getSqlBuilderFieldValueOptions(wrapper.vm.sqlBuilderConditions[0], 0)).toEqual([]);
+
+    jest.spyOn(wrapper.vm, 'querySqlBuilderValueFeatures').mockResolvedValue([
+      {
+        properties: {
+          SMID: 1,
+          NAME: 'Airport'
+        }
+      }
+    ]);
+    await wrapper.vm.handleSqlBuilderFieldValueLoad(0, jobInfo);
+    expect(wrapper.vm.isSqlBuilderNumberField('SmID', jobInfo)).toBe(true);
     expect(wrapper.vm.getSqlBuilderFieldValueOptions(wrapper.vm.sqlBuilderConditions[0], 0)).toEqual([
-      { label: 1, value: 1 },
-      { label: 2, value: 2 }
+      { label: 1, value: 1 }
+    ]);
+  });
+
+  it('loads restMap sql builder fields from one feature request on first open', async () => {
+    wrapper = mount(SmQuery, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        restMap: [
+          {
+            type: 'iServer',
+            name: 'restMap',
+            url: 'https://fakeiserver.supermap.io/iserver/services/map-world/rest/maps/World',
+            attributeFilter: '',
+            maxFeatures: 30,
+            layerName: 'Countries@World',
+            queryMode: 'SQL'
+          }
+        ]
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    const querySpy = jest.spyOn(wrapper.vm, 'querySqlBuilderValueFeatures').mockResolvedValue({
+      fields: ['SMID', 'Name'],
+      fieldCaptions: ['SMID', 'Name'],
+      fieldTypes: ['INT32', 'WTEXT'],
+      features: [
+        {
+          fieldNames: ['SMID', 'Name'],
+          fieldValues: [1, 'Airport']
+        }
+      ]
+    });
+    const jobInfo = wrapper.vm.jobInfos[0];
+
+    await wrapper.vm.openSqlBuilder(jobInfo, 0);
+
+    expect(querySpy).toHaveBeenCalledWith(jobInfo, {
+      maxFeatures: 1,
+      fromIndex: 0,
+      toIndex: 0
+    });
+    expect(wrapper.vm.sqlBuilderConditions[0].field).toBe('SMID');
+    expect(wrapper.vm.getSqlBuilderFields(jobInfo)).toEqual([
+      { value: 'SMID', label: 'SMID', type: 'INT32' },
+      { value: 'Name', label: 'Name', type: 'WTEXT' }
+    ]);
+    expect(wrapper.vm.getSqlBuilderFieldValueOptions(wrapper.vm.sqlBuilderConditions[0], 0)).toEqual([]);
+  });
+
+  it('loads sql builder field values only after clicking the value button', async () => {
+    wrapper = mount(SmQuery, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        restData: [
+          {
+            type: 'iServer',
+            name: 'restData',
+            url: 'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data',
+            attributeFilter: '',
+            maxFeatures: 30,
+            dataName: ['World:Countries'],
+            queryMode: 'SQL'
+          }
+        ]
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    const jobInfo = wrapper.vm.jobInfos[0];
+    wrapper.vm.sqlBuilderVisibleIndex = 0;
+    wrapper.vm.sqlBuilderConditions = [{ field: 'Name', operator: '=', value: '' }];
+    let resolveFeatures;
+    const querySpy = jest.spyOn(wrapper.vm, 'querySqlBuilderValueFeatures').mockReturnValue(
+      new Promise(resolve => {
+        resolveFeatures = resolve;
+      })
+    );
+
+    const loadPromise = wrapper.vm.handleSqlBuilderFieldValueLoad(0, jobInfo);
+    const secondLoadPromise = wrapper.vm.handleSqlBuilderFieldValueLoad(0, jobInfo);
+
+    expect(querySpy).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.isSqlBuilderFieldValueLoading(jobInfo, 'Name')).toBe(true);
+    expect(wrapper.vm.isSqlBuilderFieldValueButtonLoading(0)).toBe(true);
+    await secondLoadPromise;
+    resolveFeatures([
+      {
+        properties: {
+          Name: 'Airport'
+        }
+      }
+    ]);
+    await loadPromise;
+
+    expect(wrapper.vm.isSqlBuilderFieldValueLoading(jobInfo, 'Name')).toBe(false);
+    expect(wrapper.vm.isSqlBuilderFieldValueButtonLoading(0)).toBe(false);
+    expect(wrapper.vm.isSqlBuilderFieldValueLoaded(jobInfo, 'Name')).toBe(true);
+    expect(wrapper.vm.getSqlBuilderValueButtonTitle(jobInfo, wrapper.vm.sqlBuilderConditions[0])).toBe(
+      wrapper.vm.$t('query.sqlBuilderValueLoaded')
+    );
+    expect(wrapper.vm.getSqlBuilderValuePlaceholder(jobInfo, wrapper.vm.sqlBuilderConditions[0])).toBe(
+      wrapper.vm.$t('query.sqlBuilderValueLimitPlaceholder')
+    );
+    await expect(wrapper.vm.handleSqlBuilderFieldValueLoad(0, jobInfo)).resolves.toEqual([]);
+    expect(wrapper.vm.getSqlBuilderFieldValueOptions(wrapper.vm.sqlBuilderConditions[0], 0)).toEqual([
+      { label: 'Airport', value: 'Airport' }
     ]);
   });
 
