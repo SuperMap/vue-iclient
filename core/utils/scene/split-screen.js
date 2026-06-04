@@ -1,6 +1,6 @@
 /**
- * 多视口分屏管理类
- * 支持 window.SuperMap3D.MultiViewportMode 所有枚举值
+ * 多视口分屏类
+ * 支持 window.SuperMap3D.MultiViewportMode   'QUAD', 'TRIPLE', 'VerticalTrisection', 'NONE', 'HORIZONTAL', 'VERTICAL'
  */
 
 // 每个视口的个数
@@ -90,16 +90,6 @@ export class SplitScreen {
 
   getCurrentType() {
     return this.currentType;
-  }
-  /**
-   * 清除分屏模式，恢复为 NONE
-   */
-  clear() {
-    if (this.viewer.scene) {
-      this.viewer.scene.multiViewportMode = window.SuperMap3D.MultiViewportMode.NONE;
-    }
-    this.currentType = 'NONE';
-    this.hide();
   }
 
   /**
@@ -239,7 +229,7 @@ export class SplitScreen {
     }
   }
 
-  destroyDividers() {
+  destroy() {
     Object.values(this.divs).forEach(div => div.remove());
     this.divs = {};
   }
