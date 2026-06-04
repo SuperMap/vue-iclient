@@ -4,7 +4,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import vueDevTools from 'vite-plugin-vue-devtools'
-
+const iportal = 'http://172.16.14.44:8190';
 // https://vite.dev/config/
 export default defineConfig({
   define: {
@@ -32,7 +32,19 @@ export default defineConfig({
         fileURLToPath(new URL('../../static/assets/iconfont', import.meta.url)),
         fileURLToPath(new URL('../', import.meta.url))
       ]
-    }
+    },
+    port: 8082,
+    proxy: {
+      '/iportal/web/tunnel': {
+        target: iportal,
+        changeOrigin: false
+      },
+      // 将 /iportal 请求代理到 localhost:8080
+      '/iportal': {
+        target: iportal,
+        changeOrigin: true
+      }
+    },
   },
   css: {
     preprocessorOptions: {
