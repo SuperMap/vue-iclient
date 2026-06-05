@@ -3,8 +3,20 @@
  * 支持 window.SuperMap3D.MultiViewportMode   'QUAD', 'TRIPLE', 'VerticalTrisection', 'NONE', 'HORIZONTAL', 'VERTICAL'
  */
 
+interface DividersStyleConfig {
+  [key: string]: {
+    left?: string;
+    right?: string;
+    top?: string;
+    bottom?: string;
+    width?: string;
+    height?: string;
+    transform?: string;
+  };
+}
+
 // 每个视口的个数
-const modeCount = {
+export const modeCount: Record<string, number> = {
   NONE: 1,
   HORIZONTAL: 2,
   VERTICAL: 2,
@@ -12,7 +24,8 @@ const modeCount = {
   TRIPLE: 3,
   VerticalTrisection: 3
 };
-const dividersStyleConfig = {
+
+export const dividersStyleConfig: DividersStyleConfig = {
   sm_split_up: {
     left: '50%',
     bottom: '50%',
@@ -54,15 +67,29 @@ const dividersStyleConfig = {
     width: '2px'
   }
 };
+
+interface Viewer {
+  container: HTMLElement;
+  scene: {
+    multiViewportMode: number;
+  };
+}
+
 export class SplitScreen {
-  constructor(viewer) {
+  viewer: Viewer;
+  parent: HTMLElement;
+  divs: Record<string, HTMLElement>;
+  currentType: string;
+
+  constructor(viewer: Viewer) {
     if (!viewer) throw new Error('viewer is required');
-    if (!window.SuperMap3D) throw new Error('SuperMap3D is not loaded');
+    const supermap3d = window.SuperMap3D;
+    if (!supermap3d) throw new Error('SuperMap3D is not loaded');
     this.viewer = viewer;
     this.currentType = 'NONE';
     // 初始化时设置为 NONE 模式
     this.setViewportType(this.currentType);
-    this.parent = this.viewer.container.parentElement;
+    this.parent = this.viewer.container.parentElement!;
     this.divs = {};
     // 确保父容器相对定位
     const pos = window.getComputedStyle(this.parent).position;
@@ -74,38 +101,34 @@ export class SplitScreen {
   }
 
   // 获取当前分屏模式下的视口数量
-  // @param {string} type - 分屏模式名称（与 MultiViewportMode 枚举一致）
-  // @returns {number} - 视口数量
-  getViewModeCount(type = this.currentType) {
+  getViewModeCount(type = this.currentType): number {
     return modeCount[type] || 1;
   }
 
   // 获取当前分屏模式下的默认视口索引
-  // @param {string} type - 分屏模式名称（与 MultiViewportMode 枚举一致）
-  // @returns {Array<number>} - 默认视口索引数组
-  getViewportIndices(type = this.currentType) {
+  getViewportIndices(type = this.currentType): number[] {
     const count = this.getViewModeCount(type);
     return Array.from({ length: count }, (_, i) => i);
   }
 
-  getCurrentType() {
+  getCurrentType(): string {
     return this.currentType;
   }
 
   /**
    * 设置分屏模式
-   * @param {string} type - 模式名称，如 'QUAD', 'TRIPLE', 'VerticalTrisection' 等
-   *                        必须与 window.SuperMap3D.MultiViewportMode 枚举属性名一致
+   * @param type - 模式名称，如 'QUAD', 'TRIPLE', 'VerticalTrisection' 等
    */
-  setViewportType(type) {
+  setViewportType(type: string): void {
     if (type === this.currentType) return;
+    const supermap3d = window.SuperMap3D;
     // 设置场景多视口模式
-    const modeEnum = window.SuperMap3D.MultiViewportMode[type];
+    const modeEnum = supermap3d.MultiViewportMode[type];
     if (modeEnum !== undefined && this.viewer.scene) {
       this.viewer.scene.multiViewportMode = modeEnum;
     } else {
       console.warn(`Unsupported or invalid MultiViewportMode: ${type}`);
-      this.viewer.scene.multiViewportMode = window.SuperMap3D.MultiViewportMode.NONE;
+      this.viewer.scene.multiViewportMode = supermap3d.MultiViewportMode.NONE;
       return;
     }
     this.currentType = type;
@@ -114,11 +137,15 @@ export class SplitScreen {
 
   /**
    * 设置图层在某（些）视口中的可见性
-   * @param {Object} layer - 图层对象（需有 setVisibleInViewport 方法）
-   * @param {number|number[]} viewportIndices - 视口索引 0~3
-   * @param {boolean} visible
+   * @param layer - 图层对象（需有 setVisibleInViewport 方法）
+   * @param viewportIndices - 视口索引 0~3
+   * @param visible - 是否可见
    */
-  setLayerVisibility(layer, viewportIndices, visible) {
+  setLayerVisibility(
+    layer: { setVisibleInViewport: (index: number, visible: boolean) => void },
+    viewportIndices: number | number[],
+    visible: boolean
+  ): void {
     if (!layer || typeof layer.setVisibleInViewport !== 'function') {
       console.error('Invalid layer or missing setVisibleInViewport method');
       return;
@@ -135,9 +162,10 @@ export class SplitScreen {
 
   /**
    * 删除图层（在所有视口中隐藏）
-   * @param {Object} layer
    */
-  removeLayer(layer) {
+  removeLayer(
+    layer: { setVisibleInViewport?: (index: number, visible: boolean) => void }
+  ): void {
     if (!layer) return;
     for (let i = 0; i < 4; i++) {
       if (layer.setVisibleInViewport) {
@@ -154,7 +182,7 @@ export class SplitScreen {
    * 创建所有分割线 DOM，并应用样式
    * @private
    */
-  _createDividers(config = dividersStyleConfig) {
+  _createDividers(config: DividersStyleConfig = dividersStyleConfig): void {
     const commonStyle = {
       position: 'absolute',
       backgroundColor: 'white',
@@ -176,9 +204,9 @@ export class SplitScreen {
 
   /**
    * 显示指定的分割线，隐藏其他所有分割线
-   * @param {string[]} divIds - 需要显示的分割线 ID 数组，如 ['split_up', 'split_left']
+   * @param divIds - 需要显示的分割线 ID 数组
    */
-  show(divIds = []) {
+  show(divIds: string[] = []): void {
     // 先隐藏所有
     this.hide(this.divs);
     // 显示指定的
@@ -188,25 +216,21 @@ export class SplitScreen {
       }
     });
   }
+
   /**
    * 隐藏所有分割线
    */
-  hide(divs = this.divs) {
+  hide(divs: Record<string, HTMLElement> = this.divs): void {
     Object.values(divs).forEach(div => {
       div.style.display = 'none';
     });
   }
+
   /**
-   * 根据分屏模式统一显示对应的分割线（对外主要方法）
-   * @param {string} mode - 分屏模式
-   *   'NONE'            -> 全部隐藏
-   *   'HORIZONTAL'      -> ['sm_split_up', 'sm_split_bottom']
-   *   'VERTICAL'        -> ['sm_split_left', 'sm_split_right']
-   *   'TRIPLE'          -> ['sm_split_up', 'sm_split_left', 'sm_split_right']
-   *   'VerticalTrisection' -> ['sm_split_vertical_trisection_left', 'sm_split_vertical_trisection_right']
-   *   其他（如 QUAD）    -> ['sm_split_up', 'sm_split_bottom', 'sm_split_left', 'sm_split_right']
+   * 根据分屏模式统一显示对应的分割线
+   * @param mode - 分屏模式
    */
-  showDividers(mode) {
+  showDividers(mode: string): void {
     switch (mode) {
       case 'NONE':
         this.show([]);
@@ -229,7 +253,7 @@ export class SplitScreen {
     }
   }
 
-  destroy() {
+  destroy(): void {
     Object.values(this.divs).forEach(div => div.remove());
     this.divs = {};
   }
