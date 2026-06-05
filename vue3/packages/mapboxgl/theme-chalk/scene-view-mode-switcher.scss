@@ -1,0 +1,27 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+@use '@supermapgis/common/theme-chalk/button';
+
+@include b(scene-view-mode-switcher) {
+  @include e(button) {
+    width: 40px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 2px;
+    color: inherit;
+    background-color: $gis-control-header-bg;
+    box-shadow: 0 3px 13px 0 $shadow-color;
+
+    &[ant-click-animating-without-extra-node='true'] {
+      &::after {
+        display: none;
+      }
+    }
+
+    &:hover {
+      color: inherit;
+      background-color: $gis-control-bg-secondary;
+    }
+  }
+}

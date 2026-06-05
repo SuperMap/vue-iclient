@@ -10,7 +10,7 @@ export * from './utils/epsg-define';
 export * from './utils/statistics';
 export * from './utils/util';
 export * from './utils/layerCatalogGroupUtil';
-export * from './utils/scene';
+export * as scene from './utils/scene';
 
 export * from './types/map-event';
 export { default as mapEvent } from './types/map-event';

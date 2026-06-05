@@ -420,6 +420,10 @@ export default {
     verticalHeight: '垂直高度',
     horizontalDistance: '水平距离'
   },
+  sceneViewModeSwitcher: {
+    switchTo2D: '切至平面',
+    switchTo3D: '切至三维'
+  },
   cascader: {
     placeholder: '请选择'
   },

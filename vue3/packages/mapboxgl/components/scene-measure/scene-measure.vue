@@ -118,9 +118,9 @@ useSceneGetter({
 })
 
 const rootEl = useTemplateRef('measureRef')
+useSceneControl(() => rootEl.value?.$el)
 
 onMounted(() => {
-  useSceneControl(rootEl.value.$el)
   checkReady();
 })
 

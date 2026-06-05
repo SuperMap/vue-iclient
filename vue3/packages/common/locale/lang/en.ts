@@ -31,6 +31,10 @@ export default {
     directoryTreeOperationPartialSummary:
       '{action} completed. {successCount} resource(s) succeeded, {failureCount} failed.'
   },
+  sceneViewModeSwitcher: {
+    switchTo2D: 'Switch to 2D',
+    switchTo3D: 'Switch to 3D'
+  },
   sm: {
     webmap: {
       test: 'tesssssssssssssssdsd'

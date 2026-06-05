@@ -22,6 +22,8 @@ import sceneEvent from 'vue-iclient-core/types/scene-event';
 import { watch, computed, onMounted, onBeforeUnmount } from 'vue';
 import SmSceneLayerList from '@supermapgis/mapboxgl/components/scene-layer-list/scene-layer-list.vue'
 import SmSceneMeasure from '@supermapgis/mapboxgl/components/scene-measure/scene-measure.vue'
+import SmSceneViewModeSwitcher from '@supermapgis/mapboxgl/components/scene-view-mode-switcher/scene-view-mode-switcher.vue'
+import SmSceneZoom from '@supermapgis/mapboxgl/components/scene-zoom/scene-zoom.vue'
 
 defineOptions({
   name: 'SmWebScene'
@@ -32,7 +34,9 @@ const emit = defineEmits<WebSceneEvents>()
 
 const componentMap: Record<string, any> = {
   SmSceneLayerList,
-  SmSceneMeasure
+  SmSceneMeasure,
+  SmSceneViewModeSwitcher,
+  SmSceneZoom
 };
 const controlComponents: Record<string, any> = computed(() => {
   const controls = []

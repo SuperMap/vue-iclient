@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, useTemplateRef, onMounted, onBeforeUnmount } from 'vue';
+import { ref, useTemplateRef, onBeforeUnmount } from 'vue';
 import type {
   SceneLayerListProps
 } from './types'
@@ -115,10 +115,7 @@ useSceneGetter({
   }
 });
 const rootEl = useTemplateRef('layerListRef')
-
-onMounted(() => {
-  useSceneControl(rootEl.value.$el)
-})
+useSceneControl(() => rootEl.value?.$el)
 
 onBeforeUnmount(() => {
   if(intervalID) {
