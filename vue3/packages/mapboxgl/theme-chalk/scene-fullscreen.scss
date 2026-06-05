@@ -1,0 +1,21 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+
+@include b(scene-fullscreen) {
+  position: relative;
+  z-index: 1;
+  border-radius: 4px;
+  box-shadow: 0 3px 13px 0 $shadow-color;
+
+  @include e(content) {
+    width: 32px;
+    height: 32px;
+    border: none;
+    padding: 0;
+
+    i {
+      display: block;
+      font-size: 18px;
+    }
+  }
+}

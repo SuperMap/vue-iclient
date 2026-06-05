@@ -21,6 +21,8 @@ import { isEqual } from 'lodash-es';
 import sceneEvent from 'vue-iclient-core/types/scene-event';
 import { watch, computed, onMounted, onBeforeUnmount } from 'vue';
 import SmSceneLayerList from '@supermapgis/mapboxgl/components/scene-layer-list/scene-layer-list.vue'
+import SmSceneFlyTo from '@supermapgis/mapboxgl/components/scene-fly-to/scene-fly-to.vue'
+import SmSceneFullscreen from '@supermapgis/mapboxgl/components/scene-fullscreen/scene-fullscreen.vue'
 import SmSceneMeasure from '@supermapgis/mapboxgl/components/scene-measure/scene-measure.vue'
 import SmSceneViewModeSwitcher from '@supermapgis/mapboxgl/components/scene-view-mode-switcher/scene-view-mode-switcher.vue'
 import SmSceneZoom from '@supermapgis/mapboxgl/components/scene-zoom/scene-zoom.vue'
@@ -34,6 +36,8 @@ const emit = defineEmits<WebSceneEvents>()
 
 const componentMap: Record<string, any> = {
   SmSceneLayerList,
+  SmSceneFlyTo,
+  SmSceneFullscreen,
   SmSceneMeasure,
   SmSceneViewModeSwitcher,
   SmSceneZoom
