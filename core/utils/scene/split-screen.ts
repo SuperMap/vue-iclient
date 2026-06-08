@@ -1,3 +1,5 @@
+/// <reference path="../../types/supermap3d.d.ts" />
+
 /**
  * 多视口分屏类
  * 支持 window.SuperMap3D.MultiViewportMode   'QUAD', 'TRIPLE', 'VerticalTrisection', 'NONE', 'HORIZONTAL', 'VERTICAL'

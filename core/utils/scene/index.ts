@@ -1,4 +1,15 @@
-export * from './view-mode-switcher'
-export * from './split-screen'
-export * from './fly-to-camera';
-export * from './fullscreen';
+export { SplitScreen, dividersStyleConfig, modeCount } from './split-screen';
+export {
+  createSceneViewModeSwitcherController,
+  type SceneViewModeSwitcherController,
+  type SceneViewModeSwitcherControllerOptions
+} from './view-mode-switcher';
+export {
+  flyToCamera,
+  getArrayPosition,
+  getSuperMap3DCartesian3,
+  getSuperMap3DHeadingPitchRoll,
+  type FlyToOptions,
+  type ScenePosition
+} from './fly-to-camera';
+export { closeFullscreen, openFullscreen, toggleFullscreen } from './fullscreen';

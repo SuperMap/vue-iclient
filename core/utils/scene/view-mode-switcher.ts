@@ -1,12 +1,19 @@
-interface SceneViewModeSwitcherControllerOptions {
+export interface SceneViewModeSwitcherControllerOptions {
   getViewer: () => any
   getForceScene3D?: () => boolean | undefined
   getViewMode?: () => '2D' | '3D' | string | undefined
 }
 
+export interface SceneViewModeSwitcherController {
+  clear: () => void
+  toggle: (callback?: () => void) => void
+  switchTo2D: (callback?: () => void) => void
+  switchTo3D: (callback?: () => void) => void
+}
+
 export function createSceneViewModeSwitcherController(
   options: SceneViewModeSwitcherControllerOptions
-) {
+): SceneViewModeSwitcherController {
   let tickHandler: (() => void) | null = null
   let restoreControllerState: (() => void) | null = null
 

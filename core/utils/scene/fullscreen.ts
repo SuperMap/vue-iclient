@@ -6,7 +6,7 @@ function getSuperMap3D(): any {
   return SuperMap3D;
 }
 
-export function openFullscreen(target: Element = document.body as Element) {
+export function openFullscreen(target: Element = document.body) {
   const SuperMap3D = getSuperMap3D();
   SuperMap3D.Fullscreen.requestFullscreen(target);
 }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import WebScene from '../webscene.vue'
-import { SplitScreen } from 'vue-iclient-core/utils/scene'
+import { SplitScreen } from 'vue-iclient-core/utils/scene/split-screen'
 import '../style'
 import { ref, shallowReactive, computed } from 'vue'
 
