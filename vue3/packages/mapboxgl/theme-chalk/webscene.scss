@@ -60,4 +60,12 @@
       float: left;
     }
   }
+
+  .drawCur {
+      cursor: url("../static/assets/img/draw.cur"), auto;
+  }
+
+  .measureCur {
+      cursor: url("../static/assets/img/measure.cur"), auto;
+  }
 }

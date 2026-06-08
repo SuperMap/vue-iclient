@@ -13,3 +13,4 @@ export {
   type ScenePosition
 } from './fly-to-camera';
 export { closeFullscreen, openFullscreen, toggleFullscreen } from './fullscreen';
+export { SkylineAnalysis } from './skyline-analysis';
