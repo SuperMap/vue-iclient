@@ -1,6 +1,7 @@
 import type { PropType } from 'vue'
 import type { ShortEmits, SceneGetterProps, ThemeProps } from '@supermapgis/common/utils/index.common'
 import type { ControlProps } from '@supermapgis/mapboxgl/utils'
+import type { ScenePosition } from 'vue-iclient-core/utils/scene/fly-to-camera'
 import { getPropsDefaults, sceneGetterProps, themeProps } from '@supermapgis/common/utils/index.common'
 import { controlProps } from '@supermapgis/mapboxgl/utils'
 
@@ -49,7 +50,7 @@ export const sceneFlyToProps = () => ({
 })
 
 export interface SceneFlyToProps extends ControlProps, ThemeProps, SceneGetterProps {
-  destination: number[] | SceneFlyToPosition;
+  destination: ScenePosition;
   flyOptions?: SceneFlyToOptions;
   iconClass?: string;
   title?: string;

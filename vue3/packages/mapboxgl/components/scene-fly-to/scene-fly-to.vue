@@ -29,7 +29,7 @@ const props = withDefaults(defineProps<SceneFlyToProps>(), sceneFlyToPropsDefaul
 const { t } = useLocale()
 const { textColorStyle, gisControlHeaderBgStyle } = useTheme(props)
 const buttonTitle = computed(() => props.title || t('flyTo.title'))
-const rootEl = useTemplateRef('flyToRef')
+const rootEl = useTemplateRef<HTMLElement>('flyToRef')
 let viewer = null
 
 useSceneGetter({
