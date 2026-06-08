@@ -1,8 +1,9 @@
 export { SplitScreen, dividersStyleConfig, modeCount } from './split-screen';
 export {
-  createSceneViewModeSwitcherController,
-  type SceneViewModeSwitcherController,
-  type SceneViewModeSwitcherControllerOptions
+  SceneViewModeSwitcher,
+  type SceneViewMode,
+  type SceneViewModeSwitcherChangeEvent,
+  type SceneViewModeSwitcherOptions
 } from './view-mode-switcher';
 export {
   flyToCamera,

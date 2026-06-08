@@ -1,42 +1,94 @@
-export interface SceneViewModeSwitcherControllerOptions {
-  getViewer: () => any
-  getForceScene3D?: () => boolean | undefined
-  getViewMode?: () => '2D' | '3D' | string | undefined
+import { Events } from 'vue-iclient-core/types/event/Events'
+
+export interface SceneViewModeSwitcherOptions {
+  viewer?: any
+  forceScene3D?: boolean
+  defaultViewMode?: '2D' | '3D'
 }
 
-export interface SceneViewModeSwitcherController {
-  clear: () => void
-  toggle: (callback?: () => void) => void
-  switchTo2D: (callback?: () => void) => void
-  switchTo3D: (callback?: () => void) => void
+export type SceneViewMode = '2D' | '3D'
+
+export interface SceneViewModeSwitcherChangeEvent {
+  currentMode: SceneViewMode
+  previousMode: SceneViewMode
 }
 
-export function createSceneViewModeSwitcherController(
-  options: SceneViewModeSwitcherControllerOptions
-): SceneViewModeSwitcherController {
-  let tickHandler: (() => void) | null = null
-  let restoreControllerState: (() => void) | null = null
+export class SceneViewModeSwitcher extends Events {
+  private tickHandler: (() => void) | null = null
+  private restoreControllerState: (() => void) | null = null
+  private _currentMode: SceneViewMode
 
-  const clear = () => {
-    const viewer = options.getViewer()
-    if (tickHandler && viewer?.clock?.onTick?.removeEventListener) {
-      viewer.clock.onTick.removeEventListener(tickHandler)
-    }
-    tickHandler = null
-    restoreControllerState?.()
-    restoreControllerState = null
+  triggerEvent: (name: 'change', event: SceneViewModeSwitcherChangeEvent) => any
+  on: (data: { change?: (event: SceneViewModeSwitcherChangeEvent) => any; scope?: any }) => void
+  un: (data: { change?: (event: SceneViewModeSwitcherChangeEvent) => any; scope?: any }) => void
+
+  constructor(private options: SceneViewModeSwitcherOptions) {
+    super()
+    this.eventTypes = ['change']
+    this._currentMode = options.defaultViewMode === '2D' ? '2D' : '3D'
   }
 
-  const rotateCameraPitch = (targetPitch: number, callback: () => void = () => {}) => {
-    const viewer = options.getViewer()
+  get currentMode() {
+    return this._currentMode
+  }
+
+  setViewer(viewer: any) {
+    this.options.viewer = viewer
+  }
+
+  clear() {
+    const viewer = this.options.viewer
+    if (this.tickHandler && viewer?.clock?.onTick?.removeEventListener) {
+      viewer.clock.onTick.removeEventListener(this.tickHandler)
+    }
+    this.tickHandler = null
+    this.restoreControllerState?.()
+    this.restoreControllerState = null
+  }
+
+  setCurrentMode(mode: SceneViewMode) {
+    if (this._currentMode === mode) {
+      return
+    }
+    const previousMode = this._currentMode
+    this._currentMode = mode
+    this.triggerEvent('change', {
+      currentMode: mode,
+      previousMode
+    })
+  }
+
+  toggle(callback?: () => void) {
+    if (this._currentMode === '3D') {
+      this.switchTo2D(callback)
+      return
+    }
+    this.switchTo3D(callback)
+  }
+
+  switchTo2D(callback?: () => void) {
+    this.rotateCameraPitch(-90, '2D', callback)
+  }
+
+  switchTo3D(callback?: () => void) {
+    this.rotateCameraPitch(-30, '3D', callback)
+  }
+
+  private rotateCameraPitch(
+    targetPitch: number,
+    nextMode: SceneViewMode,
+    callback: () => void = () => {}
+  ) {
+    const viewer = this.options.viewer
     const SuperMap3D = (window as any).SuperMap3D
     if (!viewer?.scene?.camera || !SuperMap3D) {
+      this.setCurrentMode(nextMode)
       return
     }
 
-    clear()
+    this.clear()
 
-    if (options.getForceScene3D?.()) {
+    if (this.options.forceScene3D) {
       viewer.scene.mode = SuperMap3D.SceneMode.SCENE3D
     }
 
@@ -81,14 +133,14 @@ export function createSceneViewModeSwitcherController(
     controller.enableRotate = false
     controller.enableTranslate = false
     controller.enableZoom = false
-    restoreControllerState = () => {
+    this.restoreControllerState = () => {
       Object.assign(controller, restoredState)
     }
 
     const targetPitchRadians = SuperMap3D.Math.toRadians(targetPitch)
     const stepRadians = Math.PI * 0.02
 
-    tickHandler = () => {
+    this.tickHandler = () => {
       const savedTransform = SuperMap3D.Matrix4.clone(
         camera.transform,
         new SuperMap3D.Matrix4()
@@ -110,27 +162,11 @@ export function createSceneViewModeSwitcherController(
         }
       }
 
-      clear()
+      this.clear()
+      this.setCurrentMode(nextMode)
       callback()
     }
 
-    viewer.clock.onTick.addEventListener(tickHandler)
-  }
-
-  const switchTo2D = (callback?: () => void) => rotateCameraPitch(-90, callback)
-  const switchTo3D = (callback?: () => void) => rotateCameraPitch(-30, callback)
-  const toggle = (callback?: () => void) => {
-    if (options.getViewMode?.() === '3D') {
-      switchTo2D(callback)
-      return
-    }
-    switchTo3D(callback)
-  }
-
-  return {
-    clear,
-    toggle,
-    switchTo2D,
-    switchTo3D
+    viewer.clock.onTick.addEventListener(this.tickHandler)
   }
 }

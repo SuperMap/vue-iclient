@@ -12,12 +12,13 @@
 </template>
 
 <script setup lang="ts">
+import type { SceneViewMode, SceneViewModeSwitcherChangeEvent } from 'vue-iclient-core/utils/scene'
 import type { SceneViewModeSwitcherProps } from './types'
 import { computed, ref, onBeforeUnmount } from 'vue'
 import { useLocale, useSceneGetter, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useSceneControl } from '@supermapgis/mapboxgl/hooks'
 import { sceneViewModeSwitcherPropsDefault } from './types'
-import { createSceneViewModeSwitcherController } from 'vue-iclient-core/utils/scene/view-mode-switcher'
+import { SceneViewModeSwitcher } from 'vue-iclient-core/utils/scene'
 import SmButton from '@supermapgis/common/components/button/Button'
 
 defineOptions({
@@ -28,35 +29,39 @@ const props = withDefaults(defineProps<SceneViewModeSwitcherProps>(), sceneViewM
 
 const rootEl = ref<HTMLElement | null>(null)
 const viewer = ref<any>(null)
-const currentMode = ref<'2D' | '3D'>('3D')
+const currentMode = ref<SceneViewMode>(normalizeViewMode(props.defaultViewMode))
+const viewModeController = ref<SceneViewModeSwitcher | null>(null)
 
 const { gisControlHeaderBgStyle, textColorHeadingStyle } = useTheme(props)
 const { t } = useLocale()
 useSceneControl(rootEl)
-const viewModeController = createSceneViewModeSwitcherController({
-  getViewer: () => viewer.value,
-  getForceScene3D: () => props.forceScene3D,
-  getViewMode: () => currentMode.value
-})
+
+const handleModeChange = (event: SceneViewModeSwitcherChangeEvent) => {
+  currentMode.value = event.currentMode
+}
 
 useSceneGetter({
   loaded: (sceneViewer: any) => {
-    viewModeController.clear()
+    destroyViewModeController()
     viewer.value = sceneViewer
-    if (props.defaultViewMode === '2D') {
-      switchTo2D()
-    }
-    currentMode.value = props.defaultViewMode || '3D'
+    viewModeController.value = new SceneViewModeSwitcher({
+      viewer: sceneViewer,
+      forceScene3D: props.forceScene3D,
+      defaultViewMode: '3D'
+    })
+    currentMode.value = viewModeController.value.currentMode
+    viewModeController.value.on({ change: handleModeChange })
+    applyViewMode(normalizeViewMode(props.defaultViewMode))
   },
   removed: () => {
-    viewModeController.clear()
+    destroyViewModeController()
     viewer.value = null
-    currentMode.value = '3D'
+    currentMode.value = normalizeViewMode(props.defaultViewMode)
   }
 })
 
 onBeforeUnmount(() => {
-  viewModeController.clear()
+  destroyViewModeController()
 })
 
 const toggleTitle = computed(() => {
@@ -66,26 +71,33 @@ const toggleTitle = computed(() => {
 })
 
 const toogle = () => {
-  if (currentMode.value === '3D') {
-    switchTo2D()
+  if (!viewer.value?.scene?.camera || !viewModeController.value) {
     return
   }
-  switchTo3D()
+  viewModeController.value.toggle()
 }
 
-const switchTo2D = () => {
-  if (!viewer.value?.scene?.camera || currentMode.value === '2D') {
+function applyViewMode(mode: SceneViewMode) {
+  if (!viewer.value?.scene?.camera || !viewModeController.value) {
     return
   }
-  currentMode.value = '2D'
-  viewModeController.switchTo2D()
+  if (mode === '2D') {
+    viewModeController.value.switchTo2D()
+    return
+  }
+  viewModeController.value.switchTo3D()
 }
 
-const switchTo3D = () => {
-  if (!viewer.value?.scene?.camera || currentMode.value === '3D') {
+function normalizeViewMode(mode?: string): SceneViewMode {
+  return mode === '2D' ? '2D' : '3D'
+}
+
+function destroyViewModeController() {
+  if (!viewModeController.value) {
     return
   }
-  currentMode.value = '3D'
-  viewModeController.switchTo3D()
+  viewModeController.value.un({ change: handleModeChange })
+  viewModeController.value.clear()
+  viewModeController.value = null
 }
 </script>
