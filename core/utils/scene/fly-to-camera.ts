@@ -1,7 +1,10 @@
+type ScenePositionLatLng = { lon?: number; lng?: number; lat: number; height?: number };
+type ScenePositionXYZ = { x?: number; y?: number; z?: number };
+
 export type ScenePosition =
   | [number, number, number?]
-  | { lon?: number; lng?: number; lat: number; height?: number }
-  | { x: number; y: number; z: number };
+  | ScenePositionLatLng
+  | ScenePositionXYZ;
 
 export interface FlyToOptions {
   hpr?: any;
@@ -25,14 +28,14 @@ function getSuperMap3D(): any {
   return SuperMap3D;
 }
 
-function isLngLatPosition(
-  position: ScenePosition
-): position is { lon?: number; lng?: number; lat: number; height?: number } {
-  return !Array.isArray(position) && 'lat' in position;
+function isDefined(value: any) {
+  return value != null;
 }
 
-function isCartesianPosition(position: ScenePosition): position is { x: number; y: number; z: number } {
-  return !Array.isArray(position) && 'x' in position && 'y' in position && 'z' in position;
+function isLngLatPosition(
+  position: ScenePosition
+): position is ScenePositionLatLng {
+  return !Array.isArray(position) && 'lat' in position && isDefined(position.lat);
 }
 
 export function getArrayPosition(position: ScenePosition) {
@@ -57,7 +60,7 @@ export function getSuperMap3DCartesian3(position: ScenePosition) {
     const nextPosition = getArrayPosition(position);
     return SuperMap3D.Cartesian3.fromDegrees(nextPosition[0], nextPosition[1], nextPosition[2]);
   }
-  if (isCartesianPosition(position)) {
+  if (isDefined(position?.x) && isDefined(position?.y) && isDefined(position?.z)) {
     return new SuperMap3D.Cartesian3(position.x, position.y, position.z);
   }
   return position;

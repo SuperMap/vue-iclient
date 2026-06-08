@@ -1,6 +1,4 @@
-interface SuperMap3DInstance {
-  MultiViewportMode: Record<string, number>;
-}
+type SuperMap3DInstance = any;
 
 declare global {
   interface Window {
