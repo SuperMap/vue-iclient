@@ -14,7 +14,6 @@ export {
   type ScenePosition
 } from './fly-to-camera';
 export { closeFullscreen, openFullscreen, toggleFullscreen } from './fullscreen';
-export { SkylineAnalysis } from './skyline-analysis';
 export {
   SceneRollerShutter,
   rollerShutterModes,
@@ -25,3 +24,5 @@ export {
   type RollerShutterLayerState,
   type SceneRollerShutterOptions
 } from './roller-shutter';
+export { SkylineAnalysis, type SkylineAnalysisOptions } from './skyline-analysis';
+export { SunlightAnalysis, type SunlightAnalysisOptions } from './sunlight-analysis'

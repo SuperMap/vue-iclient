@@ -3,7 +3,7 @@ import { DrawHandler } from './draw-handler';
  * 天际线分析封装类
  */
 
-interface SkylineAnalysisOptions {
+export interface SkylineAnalysisOptions {
   ignoreGlobe?: boolean;
   viewPosition?: [number, number, number];
   pitch?: number;

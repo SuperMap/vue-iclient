@@ -68,4 +68,38 @@
   .measureCur {
       cursor: url("../static/assets/img/measure.cur"), auto;
   }
+
+  .sm-scene-tooltip {
+      position: absolute;
+      background: rgb(20 25 35 / 92%);
+      backdrop-filter: blur(10px);
+      color: #f0f3fa;
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 8px 20px rgb(0 0 0 / 35%);
+      pointer-events: none;
+      z-index: 9999;
+      white-space: nowrap;
+      transition: opacity 0.12s ease;
+      opacity: 0;
+      visibility: hidden;
+      line-height: 1.5;
+      letter-spacing: 0.3px;
+  }
+
+   .sm-scene-tooltip::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: -6px;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 6px 6px 6px 0;
+      border-color: transparent rgb(20 25 35 / 92%) transparent transparent;
+      filter: drop-shadow(-1px 0 1px rgb(0 0 0 / 20%));
+  }
 }
