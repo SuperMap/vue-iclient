@@ -207,6 +207,7 @@ export default {
     seviceNotSupport: '此服务不支持查询！',
     keyQueryPlaceholder: '请输入关查询键字',
     sqlQueryPlaceholder: '请输入SQL表达式',
+    sqlBuilderTitle: 'SQL表达式',
     sqlBuilderField: '字段',
     sqlBuilderOperator: '条件',
     sqlBuilderValue: '值',

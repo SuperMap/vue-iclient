@@ -202,6 +202,7 @@ export default {
     seviceNotSupport: 'This service does not support queries!',
     keyQueryPlaceholder: 'Please enter the search keyword',
     sqlQueryPlaceholder: 'Please enter the SQL expression',
+    sqlBuilderTitle: 'SQL Expression',
     sqlBuilderField: 'Field',
     sqlBuilderOperator: 'Condition',
     sqlBuilderValue: 'Value',

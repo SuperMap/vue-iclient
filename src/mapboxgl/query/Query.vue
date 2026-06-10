@@ -93,6 +93,7 @@
                         <sm-icon type="more" />
                       </button>
                       <div slot="content" class="sm-component-query__sql-builder-panel" :style="getTextColorStyle">
+                        <div class="sm-component-query__sql-builder-title">{{ $t('query.sqlBuilderTitle') }}</div>
                         <template v-for="(condition, conditionIndex) in sqlBuilderConditions">
                           <div
                             v-if="conditionIndex > 0"

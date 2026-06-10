@@ -124,7 +124,7 @@
     border: 1px solid $border-color-base;
     border-left: 0;
     border-radius: 0 4px 4px 0;
-    background: $component-background;
+    background: rgba($white, 0.28);
     color: inherit;
     cursor: pointer;
     font-size: 14px;
@@ -141,30 +141,33 @@
     max-height: 100%;
     padding: 6px;
     overflow-y: auto;
-    background: $component-background;
+    background: $select-dropdown-bg;
     color: $heading-color;
     font-size: 12px;
-
-    &::before {
-      content: 'SQL表达式';
-      display: block;
-      margin: -6px -6px 8px;
-      padding: 8px 10px;
-      border-bottom: 1px solid $border-color-split;
-      color: $heading-color;
-      font-size: 14px;
-      font-weight: 500;
-      line-height: 20px;
-    }
 
     .sm-component-btn,
     .sm-component-input,
     .sm-component-select {
       font-size: 12px;
     }
+
+    .#{$ant-prefix}-input,
+    .#{$ant-prefix}-select-selection {
+      background-color: $select-dropdown-bg;
+    }
+  }
+  @include e(sql-builder-title) {
+    display: block;
+    margin: -6px -6px 8px;
+    padding: 8px 10px;
+    border-bottom: 1px solid $border-color-split;
+    color: $heading-color;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
   }
   @include e(sql-builder-popover) {
-    background-color: $background-color-light;
+    background-color: $select-dropdown-bg;
     position: absolute !important;
     top: 28px !important;
     right: 0;
@@ -177,22 +180,29 @@
     overflow: auto;
 
     .#{$ant-prefix}-popover-arrow,
-    .#{$ant-prefix}-popover-arrow::before {
+    .#{$ant-prefix}-popover-arrow::before,
+    .ant-popover-arrow,
+    .ant-popover-arrow::before {
       display: none;
     }
     .#{$ant-prefix}-popover-content,
     .#{$ant-prefix}-popover-inner,
-    .#{$ant-prefix}-popover-inner-content {
+    .#{$ant-prefix}-popover-inner-content,
+    .ant-popover-content,
+    .ant-popover-inner,
+    .ant-popover-inner-content {
       height: 100%;
       max-height: 100%;
       overflow: auto;
     }
-    .#{$ant-prefix}-popover-inner {
-      background: $component-background;
+    .#{$ant-prefix}-popover-inner,
+    .ant-popover-inner {
+      background-color: $select-dropdown-bg;
       border-radius: 4px;
       box-shadow: 0 2px 8px $shadow-color;
     }
-    .#{$ant-prefix}-popover-inner-content {
+    .#{$ant-prefix}-popover-inner-content,
+    .ant-popover-inner-content {
       padding: 0;
       color: $heading-color;
     }
@@ -207,7 +217,7 @@
     padding: 24px 8px 8px;
     border: 1px solid $border-color-base;
     border-radius: 4px;
-    background: $background-color-light;
+    background: $select-dropdown-bg;
   }
   @include e(sql-builder-condition-close) {
     position: absolute;
@@ -271,6 +281,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    background: rgba($white, 0.28);
+
+    &:hover,
+    &:focus {
+      background: rgba($white, 0.28);
+    }
   }
   @include e(sql-builder-empty-value) {
     flex: 1;
