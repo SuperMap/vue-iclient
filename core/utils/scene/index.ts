@@ -15,3 +15,13 @@ export {
 } from './fly-to-camera';
 export { closeFullscreen, openFullscreen, toggleFullscreen } from './fullscreen';
 export { SkylineAnalysis } from './skyline-analysis';
+export {
+  SceneRollerShutter,
+  rollerShutterModes,
+  clampRollerShutterRatio,
+  createRollerShutterLayerState,
+  applyRollerShutterModeToLayerState,
+  type RollerShutterMode,
+  type RollerShutterLayerState,
+  type SceneRollerShutterOptions
+} from './roller-shutter';
