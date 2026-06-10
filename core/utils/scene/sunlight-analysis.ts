@@ -48,14 +48,6 @@ export class SunlightAnalysis extends AnalysisBase {
     if (options.displayMode !== undefined) this.setDisplayMode(options.displayMode);
     if (options.sunshineColor) this.setSunshineColor(options.sunshineColor);
     if (options.maxDistance !== undefined) this.setMaxDistance(options.maxDistance);
-    this.init();
-  }
-
-  /**
-   * 初始化日照分析功能, 设置图层阴影模式
-   */
-  init(): void {
-    this._initAllLayersShadow();
     this.startMouseEventListener();
   }
 
@@ -201,6 +193,7 @@ export class SunlightAnalysis extends AnalysisBase {
    */
   execute(): void {
     if (!this.sunlightAnalysis) return;
+    this._initAllLayersShadow();
     this.sunlightAnalysis.run();
   }
 
