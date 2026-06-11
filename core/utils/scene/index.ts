@@ -16,12 +16,9 @@ export {
 export { closeFullscreen, openFullscreen, toggleFullscreen } from './fullscreen';
 export {
   SceneRollerShutter,
-  rollerShutterModes,
-  clampRollerShutterRatio,
-  createRollerShutterLayerState,
-  applyRollerShutterModeToLayerState,
+  type SceneRollerShutterLayerDisplay,
   type RollerShutterMode,
-  type RollerShutterLayerState,
+  type SceneRollerShutterLayerConfig,
   type SceneRollerShutterOptions
 } from './roller-shutter';
 export { SkylineAnalysis, type SkylineAnalysisOptions } from './skyline-analysis';

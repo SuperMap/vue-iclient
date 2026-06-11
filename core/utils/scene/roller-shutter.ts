@@ -1,38 +1,32 @@
-export const rollerShutterModes = ['NONE', 'HORIZONTAL', 'VERTICAL'] as const
+const rollerShutterModes = ['NONE', 'HORIZONTAL', 'VERTICAL'] as const
 
 export type RollerShutterMode = (typeof rollerShutterModes)[number]
+const rollerShutterLayerDisplays = ['all', 'none', 'first', 'second'] as const
 
-export interface RollerShutterLayerState {
-  left: boolean
-  right: boolean
-  top: boolean
-  bottom: boolean
+export type SceneRollerShutterLayerDisplay = (typeof rollerShutterLayerDisplays)[number]
+
+export interface SceneRollerShutterLayerConfig {
+  layer: any
+  // display 表示图层在当前卷帘模式下的显示状态：
+  // all 为两侧都显示，none 为两侧都隐藏，
+  // first 为第一侧显示（水平是左、垂直是上），second 为第二侧显示（水平是右、垂直是下）
+  display?: SceneRollerShutterLayerDisplay
 }
 
 export interface SceneRollerShutterOptions {
   mode?: RollerShutterMode
-  sliderX?: number
-  sliderY?: number
+  position?: number
+  sliderElement?: HTMLElement | null
+  layers?: SceneRollerShutterLayerConfig[]
 }
 
 interface RollerShutterRegions {
-  left: any
-  right: any
-  top: any
-  bottom: any
+  horizontalFirst: any
+  horizontalSecond: any
+  verticalFirst: any
+  verticalSecond: any
   none: any
 }
-
-type RollerShutterTarget =
-  | {
-      layers?: RollerShutterTarget[]
-      swipeEnabled?: boolean
-      swipeRegion?: any
-      name?: string
-    }
-  | RollerShutterTarget[]
-  | null
-  | undefined
 
 function getSuperMap3D(): any {
   const SuperMap3D = (window as any)?.SuperMap3D
@@ -42,7 +36,7 @@ function getSuperMap3D(): any {
   return SuperMap3D
 }
 
-export function clampRollerShutterRatio(value: number, fallback = 0.5): number {
+function clampRatio(value: number, fallback = 0.5): number {
   if (!Number.isFinite(value)) {
     return fallback
   }
@@ -55,209 +49,291 @@ export function clampRollerShutterRatio(value: number, fallback = 0.5): number {
   return value
 }
 
-export function createRollerShutterLayerState(
-  state: Partial<RollerShutterLayerState> = {}
-): RollerShutterLayerState {
-  return {
-    left: true,
-    right: true,
-    top: true,
-    bottom: true,
-    ...state
-  }
-}
-
-export function applyRollerShutterModeToLayerState(
-  mode: RollerShutterMode,
-  state: Partial<RollerShutterLayerState> = {}
-): RollerShutterLayerState {
-  const nextState = createRollerShutterLayerState(state)
-  switch (mode) {
-    case 'NONE':
-      return createRollerShutterLayerState()
-    case 'HORIZONTAL':
-      return {
-        ...nextState,
-        top: true,
-        bottom: true
-      }
-    case 'VERTICAL':
-      return {
-        ...nextState,
-        left: true,
-        right: true
-      }
-    default:
-      return nextState
-  }
-}
-
 function unpackBoundingRectangle(rectangle: any, x: number, y: number, width: number, height: number) {
   const SuperMap3D = getSuperMap3D()
   SuperMap3D.BoundingRectangle.unpack([x, y, width, height], 0, rectangle)
 }
 
-function resolveRollerShutterTargets(target: RollerShutterTarget): Array<Record<string, any>> {
-  if (!target) {
-    return []
-  }
-  if (Array.isArray(target)) {
-    return target.reduce<Array<Record<string, any>>>((result, item) => {
-      return result.concat(resolveRollerShutterTargets(item))
-    }, [])
-  }
-  if (Array.isArray(target.layers) && target.layers.length) {
-    return target.layers.reduce<Array<Record<string, any>>>((result, item) => {
-      return result.concat(resolveRollerShutterTargets(item))
-    }, [])
-  }
-  return [target]
+function isValidMode(mode: RollerShutterMode): boolean {
+  return rollerShutterModes.includes(mode)
 }
 
+function isValidLayerDisplay(display: unknown): display is SceneRollerShutterLayerDisplay {
+  return typeof display === 'string' && rollerShutterLayerDisplays.includes(display as SceneRollerShutterLayerDisplay)
+}
+
+function getDefaultLayerDisplay() {
+  return 'all' as SceneRollerShutterLayerDisplay
+}
+
+/**
+ * 管理场景图层和影像图层的卷帘状态，并可选接管滑块拖拽事件。
+ */
 export class SceneRollerShutter {
-  viewer: any
-  mode: RollerShutterMode
-  sliderX: number
-  sliderY: number
-  regions: RollerShutterRegions
-  trackedLayers: Set<Record<string, any>>
+  private viewer: any
+  private mode: RollerShutterMode
+  private controlledLayers: SceneRollerShutterLayerConfig[]
+  private horizontalPosition: number
+  private verticalPosition: number
+  private sliderElement: HTMLElement | null
+  private regions: RollerShutterRegions
+  private appliedLayers: Set<Record<string, any>>
+  private dragging: boolean
 
   constructor(viewer: any, options: SceneRollerShutterOptions = {}) {
     if (!viewer) {
       throw new Error('viewer is required')
     }
     const SuperMap3D = getSuperMap3D()
+    const initialPosition = clampRatio(options.position ?? 0.5)
     this.viewer = viewer
-    this.mode = options.mode ?? 'NONE'
-    this.sliderX = clampRollerShutterRatio(options.sliderX ?? 0.5)
-    this.sliderY = clampRollerShutterRatio(options.sliderY ?? 0.5)
-    this.trackedLayers = new Set()
+    this.mode = isValidMode(options.mode ?? 'NONE') ? options.mode ?? 'NONE' : 'NONE'
+    this.controlledLayers = []
+    this.horizontalPosition = initialPosition
+    this.verticalPosition = initialPosition
+    this.sliderElement = null
+    this.appliedLayers = new Set()
+    this.dragging = false
     this.regions = {
-      left: new SuperMap3D.BoundingRectangle(),
-      right: new SuperMap3D.BoundingRectangle(),
-      top: new SuperMap3D.BoundingRectangle(),
-      bottom: new SuperMap3D.BoundingRectangle(),
+      horizontalFirst: new SuperMap3D.BoundingRectangle(),
+      horizontalSecond: new SuperMap3D.BoundingRectangle(),
+      verticalFirst: new SuperMap3D.BoundingRectangle(),
+      verticalSecond: new SuperMap3D.BoundingRectangle(),
       none: new SuperMap3D.BoundingRectangle()
     }
     this.updateRegions()
+    this.attachSliderElement(options.sliderElement ?? null)
+    if (options.layers?.length) {
+      this.setLayers(options.layers)
+      return
+    }
+    this.renderSlider()
   }
 
+  /**
+   * 更新当前卷帘模式，并立即同步已管理图层的显示效果。
+   */
   setMode(mode: RollerShutterMode) {
-    this.mode = rollerShutterModes.includes(mode) ? mode : 'NONE'
+    this.mode = isValidMode(mode) ? mode : 'NONE'
+    this.renderSlider()
+    this.applyLayers()
     return this.mode
   }
 
-  setLeftRightSplitPosition(value: number) {
-    this.sliderX = clampRollerShutterRatio(value, this.sliderX)
-    this.updateRegions()
-    return this.sliderX
+  /**
+   * 替换当前受卷帘控制的图层列表，并立即应用显示状态。
+   */
+  setLayers(layers: SceneRollerShutterLayerConfig[] = []) {
+    this.controlledLayers = layers
+      .filter(layerState => layerState?.layer)
+      .map(layerState => this.normalizeLayerState(layerState))
+    this.applyLayers()
+    return this.controlledLayers
   }
 
-  setTopBottomSplitPosition(value: number) {
-    this.sliderY = clampRollerShutterRatio(value, this.sliderY)
-    this.updateRegions()
-    return this.sliderY
+  /**
+   * 更新单个图层在卷帘中的显示状态；如果该图层尚未加入控制列表，会自动追加进去。
+   */
+  setLayerDisplay(layer: any, display: SceneRollerShutterLayerDisplay = getDefaultLayerDisplay()) {
+    if (!layer) {
+      return null
+    }
+    const nextLayerState = this.normalizeLayerState({
+      layer,
+      display
+    })
+    const targetIndex = this.controlledLayers.findIndex(layerState => layerState.layer === layer)
+    if (targetIndex > -1) {
+      this.controlledLayers[targetIndex] = nextLayerState
+    } else {
+      this.controlledLayers.push(nextLayerState)
+    }
+    this.applyLayers()
+    return nextLayerState
   }
 
-  updateRegions() {
-    unpackBoundingRectangle(this.regions.left, 0, 0, this.sliderX, 1)
-    unpackBoundingRectangle(this.regions.right, this.sliderX, 0, 1 - this.sliderX, 1)
-    unpackBoundingRectangle(this.regions.top, 0, 0, 1, this.sliderY)
-    unpackBoundingRectangle(this.regions.bottom, 0, this.sliderY, 1, 1 - this.sliderY)
+  /**
+   * 更新当前模式下的滑块位置。
+   * HORIZONTAL 模式对应左右卷帘位置，VERTICAL 模式对应上下卷帘位置。
+   */
+  setPosition(value: number) {
+    const nextPosition = clampRatio(value, this.getCurrentPosition())
+    if (this.mode === 'VERTICAL') {
+      this.verticalPosition = nextPosition
+    } else if (this.mode === 'HORIZONTAL') {
+      this.horizontalPosition = nextPosition
+    } else {
+      this.horizontalPosition = nextPosition
+      this.verticalPosition = nextPosition
+    }
+    this.updateRegions()
+    this.renderSlider()
+    this.applyLayers()
+    return nextPosition
+  }
+
+  /**
+   * 释放当前实例维护的全部卷帘状态和拖拽事件。
+   */
+  destroy() {
+    this.stopDrag()
+    this.detachSliderElement()
+    this.clearAppliedLayers()
+  }
+
+  private normalizeLayerState(layerState: SceneRollerShutterLayerConfig): SceneRollerShutterLayerConfig {
+    return {
+      ...layerState,
+      display: isValidLayerDisplay(layerState.display) ? layerState.display : getDefaultLayerDisplay()
+    }
+  }
+
+  private attachSliderElement(sliderElement: HTMLElement | null) {
+    this.detachSliderElement()
+    this.sliderElement = sliderElement
+    this.sliderElement?.addEventListener('mousedown', this.handleSliderMouseDown)
+    this.renderSlider()
+  }
+
+  private detachSliderElement() {
+    this.sliderElement?.removeEventListener('mousedown', this.handleSliderMouseDown)
+    this.sliderElement = null
+  }
+
+  private updateRegions() {
+    unpackBoundingRectangle(this.regions.horizontalFirst, 0, 0, this.horizontalPosition, 1)
+    unpackBoundingRectangle(
+      this.regions.horizontalSecond,
+      this.horizontalPosition,
+      0,
+      1 - this.horizontalPosition,
+      1
+    )
+    unpackBoundingRectangle(this.regions.verticalFirst, 0, 0, 1, this.verticalPosition)
+    unpackBoundingRectangle(
+      this.regions.verticalSecond,
+      0,
+      this.verticalPosition,
+      1,
+      1 - this.verticalPosition
+    )
     unpackBoundingRectangle(this.regions.none, 0, 0, 0, 0)
-    return this.regions
   }
 
-  getLayerSwipeConfig(state: Partial<RollerShutterLayerState> = {}) {
-    const layerState = applyRollerShutterModeToLayerState(this.mode, state)
+  private getCurrentPosition() {
+    if (this.mode === 'VERTICAL') {
+      return this.verticalPosition
+    }
+    return this.horizontalPosition
+  }
+
+  private getLayerSwipeConfig(layerState: SceneRollerShutterLayerConfig) {
     if (this.mode === 'NONE') {
       return {
         enabled: false,
-        region: undefined,
-        state: layerState
+        region: undefined
       }
     }
 
-    if (this.mode === 'HORIZONTAL') {
-      if (layerState.left && !layerState.right) {
-        return { enabled: true, region: this.regions.left, state: layerState }
-      }
-      if (!layerState.left && layerState.right) {
-        return { enabled: true, region: this.regions.right, state: layerState }
-      }
-      if (!layerState.left && !layerState.right) {
-        return { enabled: true, region: this.regions.none, state: layerState }
-      }
-      return { enabled: false, region: undefined, state: layerState }
-    }
+    const firstRegion =
+      this.mode === 'HORIZONTAL' ? this.regions.horizontalFirst : this.regions.verticalFirst
+    const secondRegion =
+      this.mode === 'HORIZONTAL' ? this.regions.horizontalSecond : this.regions.verticalSecond
 
-    if (layerState.top && !layerState.bottom) {
-      return { enabled: true, region: this.regions.top, state: layerState }
+    switch (layerState.display ?? getDefaultLayerDisplay()) {
+      case 'first':
+        return { enabled: true, region: firstRegion }
+      case 'second':
+        return { enabled: true, region: secondRegion }
+      case 'none':
+        return { enabled: true, region: this.regions.none }
+      default:
+        return { enabled: false, region: undefined }
     }
-    if (!layerState.top && layerState.bottom) {
-      return { enabled: true, region: this.regions.bottom, state: layerState }
-    }
-    if (!layerState.top && !layerState.bottom) {
-      return { enabled: true, region: this.regions.none, state: layerState }
-    }
-    return { enabled: false, region: undefined, state: layerState }
   }
 
-  setTargetSwipeState(target: Record<string, any>, enabled: boolean, region?: any) {
-    target.swipeEnabled = enabled
-    target.swipeRegion = enabled ? region : undefined
+  private writeLayerSwipeState(layer: Record<string, any>, enabled: boolean, region?: any) {
+    layer.swipeEnabled = enabled
+    layer.swipeRegion = enabled ? region : undefined
   }
 
-  applyToTarget(target: RollerShutterTarget, state: Partial<RollerShutterLayerState> = {}) {
-    const layers = resolveRollerShutterTargets(target)
-    const config = this.getLayerSwipeConfig(state)
-    layers.forEach(layer => {
-      this.trackedLayers.add(layer)
+  private applyLayers() {
+    this.clearAppliedLayers()
+    this.controlledLayers.forEach(layerState => {
+      const config = this.getLayerSwipeConfig(layerState)
+      const layer = layerState.layer as Record<string, any>
+      this.appliedLayers.add(layer)
       try {
         if (!config.enabled) {
-          this.setTargetSwipeState(layer, false)
+          this.writeLayerSwipeState(layer, false)
           return
         }
-        this.setTargetSwipeState(layer, true, config.region)
+        this.writeLayerSwipeState(layer, true, config.region)
       } catch (error) {
         console.warn(`Failed to apply roller shutter on layer ${layer.name ?? ''}`.trim(), error)
       }
     })
-    return config
   }
 
-  applyToLayer(target: RollerShutterTarget, state: Partial<RollerShutterLayerState> = {}) {
-    return this.applyToTarget(target, state)
-  }
-
-  clearTarget(target: RollerShutterTarget) {
-    const layers = resolveRollerShutterTargets(target)
-    layers.forEach(layer => {
-      this.trackedLayers.delete(layer)
+  private clearAppliedLayers() {
+    this.appliedLayers.forEach(layer => {
       try {
-        this.setTargetSwipeState(layer, false)
+        this.writeLayerSwipeState(layer, false)
       } catch (error) {
         console.warn(`Failed to clear roller shutter on layer ${layer.name ?? ''}`.trim(), error)
       }
     })
+    this.appliedLayers.clear()
   }
 
-  clearLayer(target: RollerShutterTarget) {
-    this.clearTarget(target)
+  private renderSlider() {
+    if (!this.sliderElement) {
+      return
+    }
+    if (this.mode === 'VERTICAL') {
+      this.sliderElement.style.top = `${this.verticalPosition * 100}%`
+      this.sliderElement.style.left = '0'
+      return
+    }
+    this.sliderElement.style.left = `${this.horizontalPosition * 100}%`
+    this.sliderElement.style.top = '0'
   }
 
-  clearAll() {
-    this.trackedLayers.forEach(layer => {
-      try {
-        this.setTargetSwipeState(layer, false)
-      } catch (error) {
-        console.warn(`Failed to clear roller shutter on layer ${layer.name ?? ''}`.trim(), error)
-      }
-    })
-    this.trackedLayers.clear()
+  private handleSliderMouseDown = (event: MouseEvent) => {
+    if (this.mode === 'NONE') {
+      return
+    }
+    event.preventDefault()
+    this.dragging = true
+    document.body.style.cursor = this.mode === 'HORIZONTAL' ? 'col-resize' : 'row-resize'
+    window.addEventListener('mousemove', this.handleSliderMouseMove)
+    window.addEventListener('mouseup', this.handleSliderMouseUp)
   }
 
-  destroy() {
-    this.clearAll()
+  private handleSliderMouseMove = (event: MouseEvent) => {
+    if (!this.dragging) {
+      return
+    }
+    const container = this.viewer?.container
+    const rect = container?.getBoundingClientRect?.()
+    if (!rect) {
+      return
+    }
+    if (this.mode === 'VERTICAL') {
+      this.setPosition((event.clientY - rect.top) / rect.height)
+      return
+    }
+    this.setPosition((event.clientX - rect.left) / rect.width)
+  }
+
+  private handleSliderMouseUp = () => {
+    this.stopDrag()
+  }
+
+  private stopDrag() {
+    this.dragging = false
+    document.body.style.cursor = ''
+    window.removeEventListener('mousemove', this.handleSliderMouseMove)
+    window.removeEventListener('mouseup', this.handleSliderMouseUp)
   }
 }
