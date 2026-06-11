@@ -55,7 +55,7 @@ class MouseTip {
   }
 }
 
-interface DrawHandlerOptions {
+export interface DrawHandlerOptions {
   openMouseTip?: boolean;
   useDefaultTip?: boolean;
   tipContent?: {
@@ -68,7 +68,7 @@ interface DrawHandlerOptions {
   body?: HTMLElement;
 }
 
-interface DefaultTipContent {
+export interface DefaultTipContent {
   pointMoving: string;
   polylineMoving: string;
   polylineFinish: string;
@@ -76,7 +76,7 @@ interface DefaultTipContent {
   polygonFinish: string;
 }
 
-interface DrawHandlerResult {
+export interface DrawHandlerResult {
   object?: {
     position?: any;
     positions?: any[];
