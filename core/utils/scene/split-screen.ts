@@ -123,14 +123,13 @@ export class SplitScreen {
    */
   setViewportType(type: string): void {
     if (type === this.currentType) return;
-    const supermap3d = window.SuperMap3D;
     // 设置场景多视口模式
-    const modeEnum = supermap3d.MultiViewportMode[type];
+    const modeEnum = window.SuperMap3D.MultiViewportMode[type];
     if (modeEnum !== undefined && this.viewer.scene) {
       this.viewer.scene.multiViewportMode = modeEnum;
     } else {
       console.warn(`Unsupported or invalid MultiViewportMode: ${type}`);
-      this.viewer.scene.multiViewportMode = supermap3d.MultiViewportMode.NONE;
+      this.viewer.scene.multiViewportMode = window.SuperMap3D.MultiViewportMode.NONE;
       return;
     }
     this.currentType = type;
@@ -256,6 +255,8 @@ export class SplitScreen {
   }
 
   destroy(): void {
+    if (!this.viewer) return;
+    this.viewer.scene.multiViewportMode = window.SuperMap3D.MultiViewportMode.NONE;
     Object.values(this.divs).forEach(div => div.remove());
     this.divs = {};
   }

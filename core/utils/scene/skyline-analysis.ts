@@ -18,48 +18,17 @@ export interface SkylineAnalysisOptions {
   skylineSpatialUrl?: string;
 }
 
-interface Scene {
-  _context: any;
-  camera: Camera;
-  primitives: {
-    add(primitive: any): void;
-  };
-  layers: {
-    _layerQueue: Layer[];
-  };
-}
-
-interface Camera {
-  positionCartographic: any;
-  pitch: number;
-  heading: number;
-  roll: number;
-  flyTo(options: any): void;
-}
-
 interface Cartographic {
   longitude: number;
   latitude: number;
   height: number;
 }
 
-interface Layer {
-  _id: number;
-  setObjsColor(ids: number[], color: any): void;
-  removeAllObjsColor(): void;
-}
 
-interface Viewer {
-  scene: Scene;
-  addCameraMoveStartEvent(callback: () => void): void;
-  addCameraMoveEndEvent(callback: () => void): void;
-  removeCameraMoveStartEvent(callback: () => void): void;
-  removeCameraMoveEndEvent(callback: () => void): void;
-}
 
 // 天际线封装类
 export class SkylineAnalysis {
-  viewer: Viewer;
+  viewer: any;
   s3mInstance: any;
   skyline: any;
   skyBodyColor: any;
@@ -79,19 +48,20 @@ export class SkylineAnalysis {
    * @param viewer 需要传入
    * @param options 其他可不传，修改默认值
    */
-  constructor(viewer: Viewer, options?: SkylineAnalysisOptions) {
+  constructor(viewer: any, options?: SkylineAnalysisOptions) {
     this.viewer = viewer;
     // 绑定相机事件处理方法
     this._cameraStartEvent = this._onCameraMoveStart.bind(this);
     this._cameraEvent = this._onCameraMoveEnd.bind(this);
     this.initSkyline(viewer);
     this.updateOptionsParams(options);
+    this.startCameraEventListener();
   }
 
   /**
    * 初始化
    */
-  private initSkyline(viewer: Viewer): void {
+  private initSkyline(viewer: any): void {
     this.s3mInstance = new window.SuperMap3D.S3MInstanceCollection(viewer.scene._context);
     viewer.scene.primitives.add(this.s3mInstance);
     this.skyline = new window.SuperMap3D.Skyline(viewer.scene);
@@ -281,7 +251,7 @@ export class SkylineAnalysis {
   /**
    * 绘制限高体
    */
-  async drawLimitbody() {
+  async drawLimitBody() {
     if (!this.skyline) return undefined;
     const drawHandler = this.getDrawHandler();
     this.skyline.removeLimitbody('limitBody');
@@ -314,6 +284,7 @@ export class SkylineAnalysis {
       pitch: camera.pitch,
       roll: camera.roll
     };
+    position.height += 5;
     camera?.flyTo({
       destination: position,
       orientation: hpr
@@ -471,20 +442,20 @@ export class SkylineAnalysis {
    * 开始监听相机事件，自动重绘天际线
    */
   startCameraEventListener(): void {
-    if (this._cameraEventEnabled) return;
+    if (this._cameraEventEnabled || !this.viewer) return;
     this._cameraEventEnabled = true;
-    this.viewer.addCameraMoveStartEvent(this._cameraStartEvent);
-    this.viewer.addCameraMoveEndEvent(this._cameraEvent);
+    this.viewer.camera.moveStart.addEventListener(this._cameraStartEvent);
+    this.viewer.camera.moveEnd.addEventListener(this._cameraEvent);
   }
 
   /**
    * 停止监听相机事件
    */
   stopCameraEventListener(): void {
-    if (!this._cameraEventEnabled) return;
+    if (!this._cameraEventEnabled || !this.viewer) return;
     this._cameraEventEnabled = false;
-    this.viewer.removeCameraMoveStartEvent(this._cameraStartEvent);
-    this.viewer.removeCameraMoveEndEvent(this._cameraEvent);
+    this.viewer.camera.moveStart.removeEventListener(this._cameraStartEvent);
+    this.viewer.camera.moveEnd.removeEventListener(this._cameraEvent);
   }
 
   /**
