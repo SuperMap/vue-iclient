@@ -125,6 +125,7 @@ export class SkylineAnalysis {
     this.skyline!.build();
     if (this.skylineMode === 'BODY') setTimeout(() => this.setSkyLineBody(), 500);
     if (this.highlightBarrier) setTimeout(() => this.setBarrierColor(this.barrierColor), 500);
+    this._cameraEventEnabled = true;
   }
 
   /**
@@ -414,6 +415,7 @@ export class SkylineAnalysis {
     this.chart?.clear();
     this.s3mInstance!.removeCollection('SkyLineBody');
     this.drawHandler?.clear();
+    this._cameraEventEnabled = false;
   }
 
   /**
@@ -442,8 +444,7 @@ export class SkylineAnalysis {
    * 开始监听相机事件，自动重绘天际线
    */
   startCameraEventListener(): void {
-    if (this._cameraEventEnabled || !this.viewer) return;
-    this._cameraEventEnabled = true;
+    if (!this.viewer) return;
     this.viewer.camera.moveStart.addEventListener(this._cameraStartEvent);
     this.viewer.camera.moveEnd.addEventListener(this._cameraEvent);
   }
@@ -452,8 +453,7 @@ export class SkylineAnalysis {
    * 停止监听相机事件
    */
   stopCameraEventListener(): void {
-    if (!this._cameraEventEnabled || !this.viewer) return;
-    this._cameraEventEnabled = false;
+    if (!this.viewer) return;
     this.viewer.camera.moveStart.removeEventListener(this._cameraStartEvent);
     this.viewer.camera.moveEnd.removeEventListener(this._cameraEvent);
   }
@@ -462,6 +462,7 @@ export class SkylineAnalysis {
    * 相机开始移动事件处理
    */
   private _onCameraMoveStart(): void {
+    if (!this._cameraEventEnabled) return;
     this.skyline?.clear();
   }
 
