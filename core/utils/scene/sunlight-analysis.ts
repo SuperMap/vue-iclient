@@ -18,6 +18,8 @@ export interface SunlightAnalysisOptions {
     value: number;
     color: { red: number; green: number; blue: number; alpha?: number };
   }[];
+  /** 阴影色 CSS 颜色字符串，如 '#ff0000' 或 'rgba(255,0,0,0.5)'*/
+  visualizationColor?: string;
   /** 阴影分析最远距离（米） */
   maxDistance?: number;
 }
@@ -47,6 +49,7 @@ export class SunlightAnalysis extends AnalysisBase {
     if (options.endTime !== undefined) this.setEndTime(options.endTime);
     if (options.displayMode !== undefined) this.setDisplayMode(options.displayMode);
     if (options.sunshineColor) this.setSunshineColor(options.sunshineColor);
+    if (options.visualizationColor) this.setVisualizationColor(options.visualizationColor);
     if (options.maxDistance !== undefined) this.setMaxDistance(options.maxDistance);
     this.startMouseEventListener();
   }
