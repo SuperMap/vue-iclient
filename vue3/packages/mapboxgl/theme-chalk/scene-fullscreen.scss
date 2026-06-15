@@ -4,18 +4,21 @@
 @include b(scene-fullscreen) {
   position: relative;
   z-index: 1;
-  border-radius: 4px;
-  box-shadow: 0 3px 13px 0 $shadow-color;
 
   @include e(content) {
     width: 32px;
     height: 32px;
     border: none;
     padding: 0;
+    border-radius: 4px;
+    box-shadow: 0 3px 13px 0 $shadow-color;
 
     i {
       display: block;
       font-size: 18px;
+    }
+    .sm-components-icon-fullscreen {
+      transform: rotate(45deg);
     }
   }
 }
