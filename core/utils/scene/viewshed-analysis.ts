@@ -41,12 +41,6 @@ export interface ViewShedToolOptions {
 
 export type ViewShed3DInstance = any;
 
-declare global {
-  interface Window {
-    SuperMap3D: any;
-  }
-}
-
 function getDefaultViewShedOptions(): Required<
   Omit<ViewShedAnalysisOptions, 'drawHandlerOptions' | 'onAdd'>
 > {

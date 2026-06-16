@@ -24,6 +24,12 @@ export {
 export { SkylineAnalysis, type SkylineAnalysisOptions } from './skyline-analysis';
 export { SunlightAnalysis, type SunlightAnalysisOptions } from './sunlight-analysis'
 export {
+  OpennessAnalysis,
+  type OpennessAnalysisOptions,
+  type OpennessDisplayMode,
+  type OpennessViewPosition
+} from './openness-analysis';
+export {
   ViewShedAnalysis,
   type ViewShedAnalysisOptions,
   type ViewShedPosition,

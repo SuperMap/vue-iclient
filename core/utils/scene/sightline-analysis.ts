@@ -41,12 +41,6 @@ export interface SightlineCircleAnalysisOptions {
 
 const SIGHTLINE_VIEWPOINT_REQUIRED_ERROR = 'Sightline view point is not set';
 
-declare global {
-  interface Window {
-    SuperMap3D: any;
-  }
-}
-
 function isCartesianPosition(
   position: SightlinePosition | { x: number; y: number; z: number }
 ): position is { x: number; y: number; z: number } {
