@@ -13,6 +13,22 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.sm-components-icon-morenxianshi:before {
+  content: "\e901";
+}
+
+.sm-components-icon-jiazaishibai:before {
+  content: "\e663";
+}
+
+.sm-components-icon-left:before {
+  content: "\e7b4";
+}
+
+.sm-components-icon-arrow-right:before {
+  content: "\e7b5";
+}
+
 .sm-components-icon-dituqiehuan:before {
   content: "\e662";
 }
