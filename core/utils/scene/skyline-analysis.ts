@@ -137,8 +137,8 @@ export class SkylineAnalysis {
     };
     this.updateOptionsParams(observerObj);
     this.skyline!.build();
-    if (this.skylineMode === 'BODY') setTimeout(() => this.setSkyLineBody(), 500);
-    if (this.highlightBarrier) setTimeout(() => this.setBarrierColor(this.barrierColor), 500);
+    if (this.skylineMode === 'BODY')  { this.setSkyLineBody() }
+    if (this.highlightBarrier) { this.setBarrierColor(this.barrierColor) }
     this._cameraEventEnabled = true;
   }
 

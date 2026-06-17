@@ -217,7 +217,9 @@ export class SunlightAnalysis extends AnalysisBase {
    * 清除当前分析结果。
    */
   clear(): void {
-    this.sunlightAnalysis?.clear();
+    if (this.sunlightAnalysis?._shadowAccumulator){
+      this.sunlightAnalysis.clear();
+    }
   }
 
   /**
@@ -314,11 +316,10 @@ export class SunlightAnalysis extends AnalysisBase {
    * 销毁实例，但不会销毁外部传入的 Viewer。
    */
   destroy(): void {
+    // supmap3d会报错
+    this.clear();
     this.stopMouseEventListener();
     this._clearLayersShadow();
-    if (this.sunlightAnalysis) {
-      this.sunlightAnalysis.clear();
-    }
     this.sunlightAnalysis = null;
   }
 
