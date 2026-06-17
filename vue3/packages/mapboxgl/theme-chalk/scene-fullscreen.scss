@@ -15,8 +15,10 @@
 
     i {
       display: block;
+      /* stylelint-disable-next-line */
       font-size: 18px;
     }
+
     .sm-components-icon-fullscreen {
       transform: rotate(45deg);
     }

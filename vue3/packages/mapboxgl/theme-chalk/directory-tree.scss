@@ -1,5 +1,5 @@
-@use '@supermapgis/common/theme-chalk/collapse-card.scss';
-@use '@supermapgis/common/theme-chalk/card.scss';
+@use '@supermapgis/common/theme-chalk/collapse-card';
+@use '@supermapgis/common/theme-chalk/card';
 
 .sm-component-directory-tree {
   display: flex;
@@ -15,6 +15,7 @@
     .sm-component-collapse-card__header {
       height: 32px;
     }
+
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -44,6 +45,7 @@
     box-sizing: border-box;
     box-shadow: none;
     overflow: auto;
+
     > .sm-component-card-body {
       width: 100%;
     }
@@ -118,6 +120,7 @@
   }
 
   .sm-component-directory-tree__title-trigger--disabled {
+    /* stylelint-disable-next-line */
     color: #999;
     cursor: not-allowed;
   }
@@ -129,6 +132,7 @@
   .sm-component-directory-tree__title-text {
     display: inline-block;
     min-width: 0;
+    /* stylelint-disable-next-line */
     line-height: 24px;
   }
 
@@ -137,14 +141,18 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
+    /* stylelint-disable-next-line */
     color: #8c8c8c;
+    /* stylelint-disable-next-line */
     font-size: 12px;
+    /* stylelint-disable-next-line */
     line-height: 1;
     vertical-align: middle;
   }
 
   .sm-component-directory-tree__node-status--warning {
-    color: #d48806;
+    /* stylelint-disable-next-line */
+    color: $warning-color;
   }
 
   .sm-component-directory-tree__node-status--icon-only {
@@ -159,9 +167,12 @@
     height: 14px;
     border-radius: 50%;
     background: currentColor;
+    /* stylelint-disable-next-line */
     color: #fff;
+    /* stylelint-disable-next-line */
     font-size: 10px;
     font-style: normal;
+    /* stylelint-disable-next-line */
     font-weight: 700;
   }
 

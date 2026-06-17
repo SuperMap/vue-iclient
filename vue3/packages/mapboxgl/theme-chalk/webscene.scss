@@ -75,9 +75,12 @@
       min-width: 100px;
       padding: 3px 8px;
       background: rgb(17 21 28 / 94%);
+      /* stylelint-disable-next-line */
       color: #fff;
       border-radius: 4px;
+      /* stylelint-disable-next-line */
       font-size: 11px;
+      /* stylelint-disable-next-line */
       font-weight: 400;
       text-align: center;
       text-decoration: none;
@@ -88,8 +91,9 @@
       transition: opacity 0.12s ease, transform 0.12s ease;
       opacity: 0;
       display: none;
+      /* stylelint-disable-next-line */
       line-height: 1.4;
-      word-break: break-word;
+      overflow-wrap: break-word;
       transform: translateZ(0);
   }
 

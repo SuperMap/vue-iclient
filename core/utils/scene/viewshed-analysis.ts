@@ -106,6 +106,8 @@ export interface ViewShed3DInstance {
   };
   /** 根据目标点更新分析方向和距离。 */
   setDistDirByPoint: (targetPosition: ViewShedPosition) => void;
+  /** 构建或刷新当前分析对象。 */
+  build?: () => void;
   /** 销毁当前分析对象。 */
   destroy: () => void;
 }
@@ -399,10 +401,10 @@ class ViewShed3DLayer {
   add(record: ViewShedRecord | ViewShed3DInstance) {
     ensureViewShedPrototype();
     const SuperMap3D = window.SuperMap3D;
-    let item: ViewShed3DInstance;
+    let item: ViewShed3DInstance | undefined;
     let nextRecord: any = record;
     if (record instanceof SuperMap3D?.ViewShed3D) {
-      item = record;
+      item = record as ViewShed3DInstance;
       nextRecord = { id: item.id };
     } else {
       nextRecord = {
