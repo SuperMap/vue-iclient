@@ -1,16 +1,28 @@
 type ScenePositionLatLng = { lon?: number; lng?: number; lat: number; height?: number };
 type ScenePositionXYZ = { x?: number; y?: number; z?: number };
 
+/**
+ * 场景导航工具使用的目标位置。
+ * 支持经纬度数组、经纬度对象和笛卡尔坐标对象。
+ */
 export type ScenePosition =
   | [number, number, number?]
   | ScenePositionLatLng
   | ScenePositionXYZ;
 
+/**
+ * 场景相机飞行时使用的附加参数。
+ */
 export interface FlyToOptions {
+  /** 相机朝向配置。 */
   hpr?: any;
+  /** 飞行时长，单位为秒。 */
   duration?: number;
+  /** 飞行被取消时触发的回调。 */
   cancel?: () => void;
+  /** 飞行完成时触发的回调。 */
   complete?: () => void;
+  /** 飞行过程中使用的缓动函数。 */
   easingFunction?: any;
 }
 
@@ -38,6 +50,9 @@ function isLngLatPosition(
   return !Array.isArray(position) && 'lat' in position && isDefined(position.lat);
 }
 
+/**
+ * 将场景位置统一转换为 `[lng, lat, height]` 数组格式。
+ */
 export function getArrayPosition(position: ScenePosition) {
   if (position === void 0) {
     throw new Error('position is invalid');
@@ -51,6 +66,9 @@ export function getArrayPosition(position: ScenePosition) {
   return position;
 }
 
+/**
+ * 将场景位置转换为三维坐标对象。
+ */
 export function getSuperMap3DCartesian3(position: ScenePosition) {
   const SuperMap3D = getSuperMap3D();
   if (position === void 0) {
@@ -66,6 +84,9 @@ export function getSuperMap3DCartesian3(position: ScenePosition) {
   return position;
 }
 
+/**
+ * 将朝向配置统一转换为可用于相机飞行的格式。
+ */
 export function getSuperMap3DHeadingPitchRoll(hpr: any) {
   const SuperMap3D = getSuperMap3D();
   if (hpr === void 0) {
@@ -80,6 +101,9 @@ export function getSuperMap3DHeadingPitchRoll(hpr: any) {
   return hpr;
 }
 
+/**
+ * 控制场景相机飞行到指定位置。
+ */
 export function flyToCamera(viewer: ViewerLike, destination: ScenePosition, options: FlyToOptions = {}) {
   if (!viewer?.camera?.flyTo) {
     throw new Error('viewer.camera.flyTo is not available');

@@ -1,22 +1,47 @@
 const rollerShutterModes = ['NONE', 'HORIZONTAL', 'VERTICAL'] as const
 
+/**
+ * 卷帘模式。
+ * - NONE: 不启用卷帘
+ * - HORIZONTAL: 左右卷帘
+ * - VERTICAL: 上下卷帘
+ */
 export type RollerShutterMode = (typeof rollerShutterModes)[number]
 const rollerShutterLayerDisplays = ['all', 'none', 'first', 'second'] as const
 
+/**
+ * 图层在卷帘模式中的显示侧。
+ */
 export type SceneRollerShutterLayerDisplay = (typeof rollerShutterLayerDisplays)[number]
 
+/**
+ * 单个图层的卷帘显示配置。
+ */
 export interface SceneRollerShutterLayerConfig {
+  /** 需要参与卷帘控制的图层。*/
   layer: any
-  // display 表示图层在当前卷帘模式下的显示状态：
-  // all 为两侧都显示，none 为两侧都隐藏，
-  // first 为第一侧显示（水平是左、垂直是上），second 为第二侧显示（水平是右、垂直是下）
+  /** 
+   * 图层在卷帘模式下的显示侧。
+   * - display: 表示图层在当前卷帘模式下的显示状态
+   * - 'all': 两侧都显示
+   * - 'none': 两侧都隐藏
+   * - 'first': 第一侧显示（水平是左、垂直是上）
+   * - 'second': 第二侧显示（水平是右、垂直是下）
+   */
   display?: SceneRollerShutterLayerDisplay
 }
 
+/**
+ * 场景卷帘工具配置。
+ */
 export interface SceneRollerShutterOptions {
+  /** 初始卷帘模式。 */
   mode?: RollerShutterMode
+  /** 初始滑块位置，取值范围为 0 到 1。 */
   position?: number
+  /** 自定义滑块元素。 */
   sliderElement?: HTMLElement | null
+  /** 受卷帘控制的图层列表。 */
   layers?: SceneRollerShutterLayerConfig[]
 }
 

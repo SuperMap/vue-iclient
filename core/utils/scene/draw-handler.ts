@@ -55,36 +55,66 @@ class MouseTip {
   }
 }
 
+/**
+ * 绘制处理器配置。
+ */
 export interface DrawHandlerOptions {
+  /** 是否启用鼠标提示框。 */
   openMouseTip?: boolean;
+  /** 是否使用内置默认提示文案。 */
   useDefaultTip?: boolean;
+  /** 自定义提示文案。 */
   tipContent?: {
+    /** 绘制点位时显示的提示。 */
     pointMoving?: string;
+    /** 绘制折线过程中显示的提示。 */
     polylineMoving?: string;
+    /** 绘制折线结束前显示的提示。 */
     polylineFinish?: string;
+    /** 绘制多边形过程中显示的提示。 */
     polygonMoving?: string;
+    /** 绘制多边形结束前显示的提示。 */
     polygonFinish?: string;
   };
+  /** 提示框挂载的容器元素。 */
   body?: HTMLElement;
 }
 
+/**
+ * 默认提示文案集合。
+ */
 export interface DefaultTipContent {
+  /** 绘制点位时显示的提示。 */
   pointMoving: string;
+  /** 绘制折线过程中显示的提示。 */
   polylineMoving: string;
+  /** 绘制折线结束前显示的提示。 */
   polylineFinish: string;
+  /** 绘制多边形过程中显示的提示。 */
   polygonMoving: string;
+  /** 绘制多边形结束前显示的提示。 */
   polygonFinish: string;
 }
 
+/**
+ * 一次绘制操作返回的结果。
+ */
 export interface DrawHandlerResult {
+  /** 当前绘制生成的对象信息。 */
   object?: {
+    /** 点对象的坐标。 */
     position?: any;
+    /** 线或面的坐标集合。 */
     positions?: any[];
   };
+  /** 返回的坐标集合。 */
   positions?: any[];
 }
 
-export  class DrawHandler {
+/**
+ * 场景绘制处理器，负责点、线、面的交互式拾取与结果返回。
+ */
+export class DrawHandler {
   viewer: any;
   handlerPoint: any;
   handlePolyline: any;

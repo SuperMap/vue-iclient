@@ -1,3 +1,7 @@
+/**
+ * 场景工具统一导出入口。
+ * 包含分屏、视图切换、相机飞行、卷帘分析以及多种三维分析能力。
+ */
 export { SplitScreen, dividersStyleConfig, modeCount } from './split-screen';
 export {
   SceneViewModeSwitcher,

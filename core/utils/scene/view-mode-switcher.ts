@@ -1,18 +1,35 @@
 import { Events } from 'vue-iclient-core/types/event/Events'
 
+/**
+ * 场景视图模式切换器配置。
+ */
 export interface SceneViewModeSwitcherOptions {
+  /** 场景 Viewer 实例。 */
   viewer?: any
+  /** 切换过程中是否强制保持三维场景模式。 */
   forceScene3D?: boolean
+  /** 默认视图模式。 */
   defaultViewMode?: '2D' | '3D'
 }
 
+/**
+ * 场景视图模式。
+ */
 export type SceneViewMode = '2D' | '3D'
 
+/**
+ * 场景视图模式切换事件。
+ */
 export interface SceneViewModeSwitcherChangeEvent {
+  /** 切换后的模式。 */
   currentMode: SceneViewMode
+  /** 切换前的模式。 */
   previousMode: SceneViewMode
 }
 
+/**
+ * 管理场景在 2D / 3D 之间的平滑切换，并派发 `change` 事件。
+ */
 export class SceneViewModeSwitcher extends Events {
   private tickHandler: (() => void) | null = null
   private restoreControllerState: (() => void) | null = null
@@ -28,14 +45,17 @@ export class SceneViewModeSwitcher extends Events {
     this._currentMode = options.defaultViewMode === '2D' ? '2D' : '3D'
   }
 
+  /** 当前视图模式。 */
   get currentMode() {
     return this._currentMode
   }
 
+  /** 更新内部持有的 Viewer 实例。 */
   setViewer(viewer: any) {
     this.options.viewer = viewer
   }
 
+  /** 清理切换过程中挂载的 tick 和控制器状态。 */
   clear() {
     const viewer = this.options.viewer
     if (this.tickHandler && viewer?.clock?.onTick?.removeEventListener) {
@@ -46,6 +66,7 @@ export class SceneViewModeSwitcher extends Events {
     this.restoreControllerState = null
   }
 
+  /** 主动设置当前模式，并在需要时触发 `change` 事件。 */
   setCurrentMode(mode: SceneViewMode) {
     if (this._currentMode === mode) {
       return
@@ -58,6 +79,7 @@ export class SceneViewModeSwitcher extends Events {
     })
   }
 
+  /** 在 2D / 3D 之间切换。 */
   toggle(callback?: () => void) {
     if (this._currentMode === '3D') {
       this.switchTo2D(callback)
@@ -66,10 +88,12 @@ export class SceneViewModeSwitcher extends Events {
     this.switchTo3D(callback)
   }
 
+  /** 切换到 2D 视图。 */
   switchTo2D(callback?: () => void) {
     this.rotateCameraPitch(-90, '2D', callback)
   }
 
+  /** 切换到 3D 视图。 */
   switchTo3D(callback?: () => void) {
     this.rotateCameraPitch(-30, '3D', callback)
   }
@@ -113,9 +137,6 @@ export class SceneViewModeSwitcher extends Events {
     )
     const controller = viewer.scene._screenSpaceCameraController
 
-    // Align the final tilt capability with the target mode before snapshotting.
-    // This matches the reference implementation: switching to 2D leaves tilt disabled,
-    // switching back to 3D leaves tilt enabled.
     if (targetPitch === -90) {
       controller.enableTilt = false
     } else if (targetPitch === -30) {

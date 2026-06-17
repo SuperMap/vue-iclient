@@ -9,6 +9,9 @@ interface ScreenPosition {
   y: number;
 }
 
+/**
+ * 场景分析和绘制工具共用的提示框辅助类。
+ */
 export class Tooltip {
   viewer: any;
   scene: any;
@@ -37,6 +40,7 @@ export class Tooltip {
     this.container.appendChild(div);
   }
 
+  /** 在指定屏幕位置显示提示框。 */
   showAt(position: ScreenPosition, htmlString: string): boolean {
     if (!position || !htmlString) {
       return false;
@@ -47,6 +51,7 @@ export class Tooltip {
     return true;
   }
 
+  /** 更新提示框的屏幕坐标。 */
   updatePosition(screenX: number, screenY: number): void {
     const tooltipWidth = this.tooltipDiv.offsetWidth;
     const tooltipHeight = this.tooltipDiv.offsetHeight;
@@ -74,10 +79,12 @@ export class Tooltip {
     this.tooltipDiv.style.top = `${top}px`;
   }
 
+  /** 仅更新提示框内容，不改变可见状态。 */
   setContent(htmlString: string): void {
     this.tooltipDiv.innerHTML = htmlString;
   }
 
+  /** 控制提示框是否可见。 */
   setVisible(visible: boolean): void {
     this.isVisible = visible;
     if (visible) {
@@ -89,12 +96,14 @@ export class Tooltip {
     this.tooltipDiv.style.opacity = '0';
   }
 
+  /** 从 DOM 中移除提示框元素。 */
   remove(): void {
     if (this.tooltipDiv && this.tooltipDiv.parentNode) {
       this.tooltipDiv.parentNode.removeChild(this.tooltipDiv);
     }
   }
 
+  /** 销毁提示框实例。 */
   destroy(): void {
     this.remove();
   }

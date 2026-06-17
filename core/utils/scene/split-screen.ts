@@ -1,8 +1,8 @@
 /// <reference path="../../types/supermap3d.d.ts" />
 
 /**
- * 多视口分屏类
- * 支持 window.SuperMap3D.MultiViewportMode   'QUAD', 'TRIPLE', 'VerticalTrisection', 'NONE', 'HORIZONTAL', 'VERTICAL'
+ * 多视口分屏类。
+ * 支持单屏、左右分屏、上下分屏、三分屏和四分屏等视图布局。
  */
 
 interface DividersStyleConfig {
@@ -18,6 +18,9 @@ interface DividersStyleConfig {
 }
 
 // 每个视口的个数
+/**
+ * 不同分屏模式对应的视窗数量。
+ */
 export const modeCount: Record<string, number> = {
   NONE: 1,
   HORIZONTAL: 2,
@@ -27,6 +30,9 @@ export const modeCount: Record<string, number> = {
   VerticalTrisection: 3
 };
 
+/**
+ * 分屏分隔条的样式配置。
+ */
 export const dividersStyleConfig: DividersStyleConfig = {
   sm_split_up: {
     left: '50%',
@@ -77,6 +83,9 @@ interface Viewer {
   };
 }
 
+/**
+ * 场景多视口分屏管理器，用于切换分屏模式和控制图层在不同视口中的可见性。
+ */
 export class SplitScreen {
   viewer: Viewer;
   parent: HTMLElement;
@@ -103,24 +112,24 @@ export class SplitScreen {
   }
 
   // 获取当前分屏模式下的视口数量
+  /** 获取指定分屏模式下的视口数量。 */
   getViewModeCount(type = this.currentType): number {
     return modeCount[type] || 1;
   }
 
   // 获取当前分屏模式下的默认视口索引
+  /** 获取指定分屏模式下的全部视口索引。 */
   getViewportIndices(type = this.currentType): number[] {
     const count = this.getViewModeCount(type);
     return Array.from({ length: count }, (_, i) => i);
   }
 
+  /** 获取当前分屏模式名称。 */
   getCurrentType(): string {
     return this.currentType;
   }
 
-  /**
-   * 设置分屏模式
-   * @param type - 模式名称，如 'QUAD', 'TRIPLE', 'VerticalTrisection' 等
-   */
+  /** 切换场景的分屏模式，并同步更新分隔条显示。 */
   setViewportType(type: string): void {
     if (type === this.currentType) return;
     // 设置场景多视口模式
@@ -137,7 +146,7 @@ export class SplitScreen {
   }
 
   /**
-   * 设置图层在某（些）视口中的可见性
+   * 设置图层在指定视口中的可见性。
    * @param layer - 图层对象（需有 setVisibleInViewport 方法）
    * @param viewportIndices - 视口索引 0~3
    * @param visible - 是否可见
@@ -162,7 +171,7 @@ export class SplitScreen {
   }
 
   /**
-   * 删除图层（在所有视口中隐藏）
+   * 从全部视口中隐藏指定图层。
    */
   removeLayer(
     layer: { setVisibleInViewport?: (index: number, visible: boolean) => void }
@@ -180,7 +189,7 @@ export class SplitScreen {
   }
 
   /**
-   * 创建所有分割线 DOM，并应用样式
+   * 创建并缓存分屏分隔条元素。
    * @private
    */
   _createDividers(config: DividersStyleConfig = dividersStyleConfig): void {
@@ -204,7 +213,7 @@ export class SplitScreen {
   }
 
   /**
-   * 显示指定的分割线，隐藏其他所有分割线
+   * 显示指定的分隔条元素。
    * @param divIds - 需要显示的分割线 ID 数组
    */
   show(divIds: string[] = []): void {
@@ -219,7 +228,7 @@ export class SplitScreen {
   }
 
   /**
-   * 隐藏所有分割线
+   * 隐藏指定的分隔条元素；默认隐藏全部分隔条。
    */
   hide(divs: Record<string, HTMLElement> = this.divs): void {
     Object.values(divs).forEach(div => {
@@ -228,7 +237,7 @@ export class SplitScreen {
   }
 
   /**
-   * 根据分屏模式统一显示对应的分割线
+   * 按当前分屏模式控制分隔条显隐。
    * @param mode - 分屏模式
    */
   showDividers(mode: string): void {
@@ -254,6 +263,9 @@ export class SplitScreen {
     }
   }
 
+  /**
+   * 销毁分屏状态并移除已创建的分隔条元素。
+   */
   destroy(): void {
     if (!this.viewer) return;
     this.viewer.scene.multiViewportMode = window.SuperMap3D.MultiViewportMode.NONE;

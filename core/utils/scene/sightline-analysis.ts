@@ -8,34 +8,66 @@ export {
   type ViewShedRecord
 } from './viewshed-analysis';
 
+/**
+ * 通视分析使用的位置，格式为 `[lng, lat, height]`。
+ */
 export type SightlinePosition = [number, number, number];
 
+/**
+ * 通视分析配置。
+ */
 export interface SightlineAnalysisOptions {
+  /** 通视线宽。 */
   lineWidth?: number;
+  /** 可见线段颜色。 */
   visibleColor?: string;
+  /** 不可见线段颜色。 */
   hiddenColor?: string;
+  /** 视点附加高度。 */
   offsetHeight?: number;
+  /** 添加视点时触发的回调。 */
   onAddViewPoint?: (position: SightlinePosition) => void;
+  /** 添加目标点时触发的回调。 */
   onAddTargetPoint?: (targetPoint: SightlineTargetPoint) => void;
+  /** 绘制处理器配置。 */
   drawHandlerOptions?: DrawHandlerOptions;
+  /** 是否显示视点。 */
   showViewPoint?: boolean;
+  /** 是否显示目标点。 */
   showTargetPoint?: boolean;
+  /** 视点颜色。 */
   viewPointColor?: string;
+  /** 目标点颜色。 */
   targetPointColor?: string;
+  /** 点位描边颜色。 */
   pointOutlineColor?: string;
+  /** 点位像素大小。 */
   pointPixelSize?: number;
 }
 
+/**
+ * 通视分析中的目标点。
+ */
 export interface SightlineTargetPoint {
+  /** 目标点位置。 */
   position: SightlinePosition;
+  /** 目标点名称。 */
   name?: string;
 }
 
+/**
+ * 环形通视分析配置。
+ */
 export interface SightlineCircleAnalysisOptions {
+  /** 圆形分析中心点。 */
   center: SightlinePosition | { x: number; y: number; z: number };
+  /** 分析半径。 */
   radius: number;
+  /** 圆周采样点数量。 */
   steps?: number;
+  /** 分析前是否先清空历史结果。 */
   clear?: boolean;
+  /** 目标点附加高度。 */
   offsetHeight?: number;
 }
 
@@ -138,6 +170,9 @@ class CirclePreview {
   }
 }
 
+/**
+ * 通视分析工具，负责管理视点选择和目标点可见性结果。
+ */
 export class SightlineAnalysis {
   viewer: any;
   sightline: any;
@@ -166,6 +201,7 @@ export class SightlineAnalysis {
     this.hasViewPointFlag = false;
   }
 
+  /** 当前视点位置。 */
   get viewPosition(): SightlinePosition | undefined {
     const sightline = this.ensureSightline();
     if (!sightline?.viewPosition) {
@@ -174,10 +210,12 @@ export class SightlineAnalysis {
     return [...sightline.viewPosition] as SightlinePosition;
   }
 
+  /** 是否已经创建视点。 */
   get hasViewPoint(): boolean {
     return this.hasViewPointFlag;
   }
 
+  /** 合并并重新应用运行时配置。 */
   updateOptions(options: SightlineAnalysisOptions = {}) {
     this.options = {
       ...this.options,
@@ -187,6 +225,7 @@ export class SightlineAnalysis {
     this.applyStyle();
   }
 
+  /** 使用经纬高坐标设置视点。 */
   setViewPosition(position: SightlinePosition) {
     const sightline = this.ensureSightline();
     if (!sightline) {
@@ -486,12 +525,25 @@ export class SightlineAnalysis {
   }
 }
 
+/**
+ * 通视网分析配置。
+ */
 export interface SightNetworkAnalysisOptions extends SightlineAnalysisOptions {
+  /** 通视网分析中心点。 */
+  center?: SightlinePosition | { x: number; y: number; z: number };
+  /** 通视网分析半径。 */
   radius?: number;
+  /** 圆周采样点数量。 */
+  steps?: number;
+  /** 圆形预览区域的填充颜色。 */
   previewRadiusColor?: string;
+  /** 圆形预览区域的描边颜色。 */
   previewRadiusOutlineColor?: string;
 }
 
+/**
+ * 用于网络式可见性批量计算的通视网分析工具。
+ */
 export class SightNetworkAnalysis extends SightlineAnalysis {
   options: SightNetworkAnalysisOptions;
   circleDrawHandler: any;
@@ -515,7 +567,7 @@ export class SightNetworkAnalysis extends SightlineAnalysis {
     this.circleTooltip = null;
   }
 
-  updateOptions(options: SightNetworkAnalysisOptions = {}) {
+  updateOptions(options: Partial<SightNetworkAnalysisOptions> = {}) {
     super.updateOptions(options);
     this.options = {
       ...this.options,

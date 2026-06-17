@@ -2,44 +2,113 @@ import type { DrawHandlerOptions } from './draw-handler';
 import { getArrayPosition, getSuperMap3DCartesian3 } from './fly-to-camera';
 import { Tooltip } from './tooltip';
 
+/**
+ * 可视域观察点位置，格式为 `[lng, lat, height]`。
+ */
 export type ViewShedPosition = [number, number, number];
 
+/**
+ * 可视域分析配置。
+ */
 export interface ViewShedAnalysisOptions {
+  /** 观察方向角。 */
   direction?: number;
+  /** 俯仰角。 */
   pitch?: number;
+  /** 可视域距离。 */
   distance?: number;
+  /** 观察点附加高度。 */
   offsetHeight?: number;
+  /** 垂直视场角。 */
   verticalFov?: number;
+  /** 水平视场角。 */
   horizontalFov?: number;
+  /** 可见区域颜色。 */
   visibleAreaColor?: string;
+  /** 不可见区域颜色。 */
   hiddenAreaColor?: string;
+  /** 辅助线颜色。 */
   hintLineColor?: string;
+  /** 是否显示观察点。 */
   showViewPoint?: boolean;
+  /** 添加可视域分析对象时触发的回调。 */
   onAdd?: (viewShed3D: ViewShed3DInstance) => void;
+  /** 绘制处理器配置。 */
   drawHandlerOptions?: DrawHandlerOptions;
 }
 
+/**
+ * 用于恢复可视域分析项的可序列化记录。
+ */
 export interface ViewShedRecord extends ViewShedAnalysisOptions {
+  /** 记录唯一标识。 */
   id?: string;
+  /** 记录名称。 */
   name?: string;
+  /** 观察点位置。 */
   viewPosition: ViewShedPosition;
 }
 
+/**
+ * 交互式可视域绘制工具配置。
+ */
 export interface ViewShedToolOptions {
+  /** 可视域对象的默认配置。 */
   viewShed: {
-    visibleAreaColor?: any;
-    hiddenAreaColor?: any;
-    hintLineColor?: any;
+    /** 可见区域颜色。 */
+    visibleAreaColor?: string;
+    /** 不可见区域颜色。 */
+    hiddenAreaColor?: string;
+    /** 辅助线颜色。 */
+    hintLineColor?: string;
+    /** 垂直视场角。 */
     verticalFov?: number;
+    /** 水平视场角。 */
     horizontalFov?: number;
   };
+  /** 观察点附加高度。 */
   offsetHeight?: number;
+  /** 绘制处理器配置。 */
   drawHandlerOptions?: DrawHandlerOptions;
+  /** 添加可视域分析对象时触发的回调。 */
   onAdd?: (viewShed3D: ViewShed3DInstance) => void;
+  /** 生成记录唯一标识的方法。 */
   generateId?: () => string;
 }
 
-export type ViewShed3DInstance = any;
+/**
+ * 分析工具暴露的可视域分析对象实例。
+ */
+export interface ViewShed3DInstance {
+  /** 对象唯一标识。 */
+  id: string;
+  /** 观察点位置。 */
+  viewPosition: ViewShedPosition;
+  /** 观察方向角。 */
+  direction: number;
+  /** 俯仰角。 */
+  pitch: number;
+  /** 可视域距离。 */
+  distance: number;
+  /** 垂直视场角。 */
+  verticalFov: number;
+  /** 水平视场角。 */
+  horizontalFov: number;
+  /** 可见区域颜色。 */
+  visibleAreaColor: any;
+  /** 不可见区域颜色。 */
+  hiddenAreaColor: any;
+  /** 辅助线颜色。 */
+  hintLineColor: any;
+  /** 观察点对应的辅助实体。 */
+  pointEntity?: {
+    show: boolean;
+  };
+  /** 根据目标点更新分析方向和距离。 */
+  setDistDirByPoint: (targetPosition: ViewShedPosition) => void;
+  /** 销毁当前分析对象。 */
+  destroy: () => void;
+}
 
 function getDefaultViewShedOptions(): Required<
   Omit<ViewShedAnalysisOptions, 'drawHandlerOptions' | 'onAdd'>
@@ -575,6 +644,9 @@ class ViewShedTool {
   }
 }
 
+/**
+ * 用于创建、更新和移除场景可视域对象的管理器。
+ */
 export class ViewShedAnalysis {
   viewer: any;
   options: Required<Omit<ViewShedAnalysisOptions, 'drawHandlerOptions' | 'onAdd'>> & {

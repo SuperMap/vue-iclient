@@ -1,6 +1,5 @@
 /**
- * 场景分析基类
- * 提供 viewer 和 SuperMap3D 校验，以及基础方法
+ * 场景分析工具基类，负责提供基础校验和统一生命周期约束。
  */
 export abstract class AnalysisBase {
   viewer: any;
@@ -18,17 +17,17 @@ export abstract class AnalysisBase {
   }
 
   /**
-   * 执行分析
+   * 执行分析。
    */
   abstract execute(): void;
 
   /**
-   * 清除分析结果
+   * 清除分析结果。
    */
   abstract clear(): void;
 
   /**
-   * 销毁实例
+   * 销毁实例。
    */
   abstract destroy(): void;
 }

@@ -1,20 +1,32 @@
 import { DrawHandler } from './draw-handler';
 /**
- * 天际线分析封装类
+ * 天际线分析配置。
  */
 
 export interface SkylineAnalysisOptions {
+  /** 是否忽略地球表面参与分析。 */
   ignoreGlobe?: boolean;
+  /** 观察点位置，格式为 [lng, lat, height]。 */
   viewPosition?: [number, number, number];
+  /** 俯仰角。 */
   pitch?: number;
+  /** 朝向角。 */
   direction?: number;
+  /** 分析半径。 */
   radius?: number;
+  /** 天际线线宽。 */
   lineWidth?: number;
+  /** 天际线颜色。 */
   color?: string;
+  /** 显示样式。 */
   displayStyle?: number;
+  /** 天际线体颜色。 */
   skyBodyColor?: any;
+  /** 障碍物高亮颜色。 */
   barrierColor?: any;
+  /** 是否高亮障碍物。 */
   highlightBarrier?: boolean;
+  /** 天际线体分析服务地址。 */
   skylineSpatialUrl?: string;
 }
 
@@ -26,7 +38,9 @@ interface Cartographic {
 
 
 
-// 天际线封装类
+/**
+ * 天际线分析工具，支持执行分析、绘制观察点和限高体，并展示二维天际线图表。
+ */
 export class SkylineAnalysis {
   viewer: any;
   s3mInstance: any;
@@ -44,9 +58,9 @@ export class SkylineAnalysis {
   private _cameraEventEnabled: boolean = false;
 
   /**
-   * Creates an instance of SkylineAnalysis.
-   * @param viewer 需要传入
-   * @param options 其他可不传，修改默认值
+   * 创建天际线分析实例。
+   * @param viewer 已初始化的场景视图实例。
+   * @param options 分析和展示相关的可选配置。
    */
   constructor(viewer: any, options?: SkylineAnalysisOptions) {
     this.viewer = viewer;
@@ -59,7 +73,7 @@ export class SkylineAnalysis {
   }
 
   /**
-   * 初始化
+   * 初始化分析相关对象
    */
   private initSkyline(viewer: any): void {
     this.s3mInstance = new window.SuperMap3D.S3MInstanceCollection(viewer.scene._context);
@@ -108,8 +122,8 @@ export class SkylineAnalysis {
   }
 
   /**
-   * 开始执行分析
-   * @param cartographic 相机位置，默认为当前相机位置
+   * 执行天际线分析。
+   * @param cartographic 相机位置，默认使用当前相机位置。
    */
   excute(cartographic = this.viewer?.scene.camera.positionCartographic): void {
     this.clear();
@@ -307,9 +321,9 @@ export class SkylineAnalysis {
   }
 
   /**
-   * 显示二维天际线图表
-   * @param echarts echarts实例
-   * @param containerId 容器ID，如 'echartsSkyLine'
+   * 在指定容器中显示二维天际线图表。
+   * @param echarts echarts 实例。
+   * @param containerId 图表容器选择器，例如 `#echartsSkyLine`。
    */
   showSkyline2DChart(echarts: any, containerId: string, theme?: 'light' | 'dark'): void {
     const container = document.querySelector(containerId);

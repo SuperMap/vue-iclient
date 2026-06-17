@@ -1,17 +1,38 @@
 import { AnalysisBase } from './common-analysis';
 
+/**
+ * 开敞度分析使用的观察点位置，格式为 `[lng, lat, height]`。
+ */
 export type OpennessViewPosition = [number, number, number];
+/**
+ * 开敞度分析显示模式。
+ * - `0`: 仅显示可见区域
+ * - `1`: 仅显示不可见区域
+ * - `2`: 同时显示可见和不可见区域
+ */
 export type OpennessDisplayMode = 0 | 1 | 2;
 
+/**
+ * 开敞度分析配置。
+ */
 export interface OpennessAnalysisOptions {
+  /** 分析半径。 */
   distance?: number;
+  /** 起始角度。 */
   startAngle?: number;
+  /** 结束角度。 */
   endAngle?: number;
+  /** 可见区域颜色。 */
   visibleAreaColor?: string;
+  /** 不可见区域颜色。 */
   hiddenAreaColor?: string;
+  /** 显示模式。 */
   displayMode?: OpennessDisplayMode;
+  /** 是否闭合显示结果。 */
   isClosed?: boolean;
+  /** 初始观察点位置。 */
   viewPosition?: OpennessViewPosition;
+  /** 观察点变化时触发的回调。 */
   onPositionChange?: (position?: OpennessViewPosition) => void;
 }
 
@@ -42,6 +63,9 @@ function clampHeight(height: number) {
   return height < 0 ? 0 : height;
 }
 
+/**
+ * 开敞度分析工具，用于计算观察点周边区域的可视情况。
+ */
 export class OpennessAnalysis extends AnalysisBase {
   options: Required<Omit<OpennessAnalysisOptions, 'onPositionChange'>> & {
     onPositionChange?: (position?: OpennessViewPosition) => void;
@@ -70,10 +94,12 @@ export class OpennessAnalysis extends AnalysisBase {
     }
   }
 
+  /** 当前激活的分析结果实例。 */
   get currentViewDome() {
     return this.viewDomeArray[this.viewDomeArray.length - 1];
   }
 
+  /** 当前保存的观察点位置。 */
   get currentViewPosition(): OpennessViewPosition | undefined {
     if (
       typeof this.longitude === 'number' &&
@@ -85,6 +111,7 @@ export class OpennessAnalysis extends AnalysisBase {
     return undefined;
   }
 
+  /** 开始拾取场景位置并执行分析。 */
   execute() {
     const SuperMap3D = window.SuperMap3D;
     if (!SuperMap3D?.ScreenSpaceEventHandler || !this.scene?.pickPositionAsync) {
@@ -113,6 +140,7 @@ export class OpennessAnalysis extends AnalysisBase {
     }, SuperMap3D.ScreenSpaceEventType.LEFT_CLICK);
   }
 
+  /** 清除当前分析结果；如果存在上一次分析状态，则回退到上一次状态。 */
   clear() {
     this.clearPoint();
     const current = this.currentViewDome;
@@ -134,6 +162,7 @@ export class OpennessAnalysis extends AnalysisBase {
     this.destroyHandler();
   }
 
+  /** 销毁处理器、辅助实体以及当前工具创建的全部分析结果实例。 */
   destroy() {
     this.enablePickStatus(false);
     this.destroyHandler();
@@ -151,6 +180,7 @@ export class OpennessAnalysis extends AnalysisBase {
     }
   }
 
+  /** 手动设置分析观察点位置。 */
   setViewPosition(position: OpennessViewPosition) {
     if (!isValidPosition(position)) {
       return;
@@ -171,6 +201,7 @@ export class OpennessAnalysis extends AnalysisBase {
     }, 500);
   }
 
+  /** 更新分析半径。 */
   setDistance(distance: number) {
     if (distance <= 0) {
       return;
@@ -209,6 +240,7 @@ export class OpennessAnalysis extends AnalysisBase {
     }
   }
 
+  /** 更新当前分析结果的显示模式。 */
   setDisplayMode(mode: OpennessDisplayMode) {
     this.options.displayMode = mode;
     if (this.currentViewDome) {

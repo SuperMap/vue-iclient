@@ -2,31 +2,44 @@ import { AnalysisBase } from './common-analysis';
 import { Tooltip } from './tooltip';
 
 /**
- * 日照分析配置选项
+ * 日照分析配置选项。
  */
 export interface SunlightAnalysisOptions {
-  /** 分析日期，格式 YYYY-MM-DD */
+  /** 分析日期，格式为 YYYY-MM-DD。 */
   date?: string;
-  /** 开始时间（小时），0-24 */
+  /** 开始时间，单位为小时，取值范围 0-24。 */
   startTime?: number;
-  /** 结束时间（小时），0-24 */
+  /** 结束时间，单位为小时，取值范围 0-24。 */
   endTime?: number;
-  /** 显示模式，0:日照模式，1:阴影模式 */
+  /** 显示模式。
+   * - `0`: 日照模式
+   * - `1`: 阴影模式
+   */
   displayMode?: number;
-  /** 预设色带 '1'~'5' 或自定义颜色数组 */
+  /** 日照模式下使用的色带配置。 */
   sunshineColor?: {
+    /** 颜色对应的数值位置。 */
     value: number;
-    color: { red: number; green: number; blue: number; alpha?: number };
+    /** 颜色值。 */
+    color: {
+      /** 红色通道值。 */
+      red: number;
+      /** 绿色通道值。 */
+      green: number;
+      /** 蓝色通道值。 */
+      blue: number;
+      /** 透明度。 */
+      alpha?: number;
+    };
   }[];
-  /** 阴影色 CSS 颜色字符串，如 '#ff0000' 或 'rgba(255,0,0,0.5)'*/
+  /** 阴影模式下使用的颜色。 */
   visualizationColor?: string;
-  /** 阴影分析最远距离（米） */
+  /** 阴影分析的最远距离，单位为米。 */
   maxDistance?: number;
 }
 
 /**
- * 日照分析核心类（纯逻辑，Viewer 外部传入，不负责场景初始化）
- * 依赖：SuperMap3D (全局)
+ * 日照/阴影分析工具，负责配置分析参数、执行分析并读取指定位置的时长结果。
  */
 export class SunlightAnalysis extends AnalysisBase {
   sunlightAnalysis: any;
@@ -36,7 +49,7 @@ export class SunlightAnalysis extends AnalysisBase {
   tooltip: Tooltip;
 
   /**
-   * @param viewer - 已初始化的 SuperMap3D.Viewer 实例（场景已包含建筑物模型）
+   * @param viewer - 已初始化的场景视图实例（场景中已加载用于分析的模型数据）
    * @param options - 可选配置项
    */
   constructor(viewer: any, options: SunlightAnalysisOptions = {}) {
@@ -192,7 +205,7 @@ export class SunlightAnalysis extends AnalysisBase {
   }
 
   /**
-   * 执行日照/阴影分析
+   * 执行日照或阴影分析。
    */
   execute(): void {
     if (!this.sunlightAnalysis) return;
@@ -201,7 +214,7 @@ export class SunlightAnalysis extends AnalysisBase {
   }
 
   /**
-   * 清除分析结果
+   * 清除当前分析结果。
    */
   clear(): void {
     this.sunlightAnalysis?.clear();
@@ -291,14 +304,14 @@ export class SunlightAnalysis extends AnalysisBase {
   }
 
   /**
-   * 检查分析是否已启用
+   * 返回当前分析是否处于启用状态。
    */
   isEnabled(): boolean {
     return this.sunlightAnalysis ? this.sunlightAnalysis.enabled : false;
   }
 
   /**
-   * 销毁实例（不销毁外部传入的 viewer）
+   * 销毁实例，但不会销毁外部传入的 Viewer。
    */
   destroy(): void {
     this.stopMouseEventListener();

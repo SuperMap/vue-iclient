@@ -5,7 +5,7 @@
     "composite": true,
     "checkJs": false,
     // "declaration": false, 
-    "removeComments": true,
+    "removeComments": false,
     "jsx": "preserve",
     "lib": [
       "ES2018",
