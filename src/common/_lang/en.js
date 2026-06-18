@@ -206,6 +206,9 @@ export default {
   cascader: {
     placeholder: 'Please select'
   },
+  attributePopup: {
+    selectLayer: 'Select Layer'
+  },
   identify: {
     layerNotExit: "The layer '{layer}' does not exist in the map's style",
     noData: 'no Data'

@@ -74,6 +74,35 @@ interface identifyParam {
   clickAreaAround?: number;
 }
 
+interface attributePopupParam {
+  show?: boolean;
+  clickTolerance?: number;
+  multiSelect?: boolean;
+  useMapPopup?: boolean;
+  popupConfig?: {
+    width?: string;
+    height?: string;
+    autoResize?: boolean;
+    maxWidth?: string;
+    maxHeight?: string;
+    backgroundImage?: string;
+    keyWordWrap?: 'ellipsis' | 'wrap';
+    valueWordWrap?: 'ellipsis' | 'wrap';
+  };
+  popupInfos?: Array<{
+    title?: string;
+    layerId?: string | string[];
+    fieldCaptions?: Object;
+    identifyField?: string;
+    elements?: Array<Object>;
+  }>;
+  layerStyle?: Object;
+  highlightStyle?: Object;
+  featureFieldsMap?: Object;
+  displayFieldsMap?: Object;
+  layerIds?: string[];
+}
+
 interface layerManageParam {
   show?: boolean;
   layers?: Array<Object>;
@@ -90,6 +119,7 @@ interface controlProps {
   queryControl?: queryParam;
   searchControl?: searchParam;
   identifyControl?: identifyParam;
+  attributePopupControl?: attributePopupParam;
   layerManagerControl?: layerManageParam;
 }
 
@@ -246,6 +276,15 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
       return {
         show: false,
         layers: []
+      };
+    }
+  })
+  attributePopupControl: attributePopupParam;
+
+  @Prop({
+    default: () => {
+      return {
+        show: false
       };
     }
   })

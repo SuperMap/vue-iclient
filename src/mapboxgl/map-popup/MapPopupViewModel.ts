@@ -1,3 +1,4 @@
+import type { Map, Popup, LngLatLike } from 'mapbox-gl';
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 
 /**
@@ -7,10 +8,16 @@ import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
  * @extends mapboxgl.Evented
  */
 export default class MapPopupViewModel extends mapboxgl.Evented {
+  popup: Popup = null;
+  map: Map;
   constructor(map) {
     super();
     this.map = map;
     this.popup = null;
+  }
+
+  setMap({ map }: { map: Map }) {
+    this.map = map;
   }
 
   /**
@@ -19,7 +26,7 @@ export default class MapPopupViewModel extends mapboxgl.Evented {
    * @param {Array} coordinates - 弹窗坐标。
    * @param {HTMLElement} popupContainer - 弹窗 DOM 对象。
    */
-  addPopup(coordinates, popupContainer) {
+  addPopup(coordinates: GeoJSON.Position, popupContainer: HTMLElement) {
     this.removePopup();
     if (popupContainer) {
       popupContainer.style.display = 'block';
@@ -28,7 +35,7 @@ export default class MapPopupViewModel extends mapboxgl.Evented {
         className: 'sm-mapboxgl-map-popup sm-mapboxgl-tabel-popup',
         closeButton: false
       })
-        .setLngLat(coordinates)
+        .setLngLat(coordinates as LngLatLike)
         .setDOMContent(popupContainer)
         .addTo(this.map);
     }
@@ -45,7 +52,8 @@ export default class MapPopupViewModel extends mapboxgl.Evented {
 
   removePopup() {
     if (this.popup) {
-      this.popup.remove() && (this.popup = null);
+      this.popup.remove();
+      this.popup = null;
     }
   }
 }
