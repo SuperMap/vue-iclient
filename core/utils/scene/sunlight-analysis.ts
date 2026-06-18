@@ -70,7 +70,7 @@ export class SunlightAnalysis extends AnalysisBase {
   /**
    * 初始化所有图层（所有模型都产生阴影）
    */
-  _initAllLayersShadow(): void {
+  private _initAllLayersShadow(): void {
     const layerArr = this.scene.layers.layerQueue;
     console.log(layerArr);
     layerArr?.forEach((layer: any) => {
@@ -81,7 +81,7 @@ export class SunlightAnalysis extends AnalysisBase {
   /**
    * 清除所有图层的阴影
    */
-  _clearLayersShadow(): void {
+  private _clearLayersShadow(): void {
     const layerArr = this.scene.layers.layerQueue;
     console.log(layerArr);
     layerArr?.forEach((layer: any) => {

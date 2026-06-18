@@ -127,7 +127,7 @@ const loadS3MLayers = async () => {
 
 const handleModeChange = (mode: string) => {
   if (splitScreen) {
-    splitScreen.setViewportType(mode)
+    splitScreen.setSplitMode(mode)
     // 重置图层可见性为全选
     const defaultIndices = splitScreen.getViewportIndices()
     layersInfo.forEach((layer, index) => {

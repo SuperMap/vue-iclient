@@ -12,12 +12,12 @@ const rollerShutterLayerDisplays = ['all', 'none', 'first', 'second'] as const
 /**
  * 图层在卷帘模式中的显示侧。
  */
-export type SceneRollerShutterLayerDisplay = (typeof rollerShutterLayerDisplays)[number]
+export type RollerShutterLayerDisplay = (typeof rollerShutterLayerDisplays)[number]
 
 /**
  * 单个图层的卷帘显示配置。
  */
-export interface SceneRollerShutterLayerConfig {
+export interface RollerShutterLayerConfig {
   /** 需要参与卷帘控制的图层。*/
   layer: any
   /** 
@@ -28,13 +28,13 @@ export interface SceneRollerShutterLayerConfig {
    * - 'first': 第一侧显示（水平是左、垂直是上）
    * - 'second': 第二侧显示（水平是右、垂直是下）
    */
-  display?: SceneRollerShutterLayerDisplay
+  display?: RollerShutterLayerDisplay
 }
 
 /**
  * 场景卷帘工具配置。
  */
-export interface SceneRollerShutterOptions {
+export interface RollerShutterOptions {
   /** 初始卷帘模式。 */
   mode?: RollerShutterMode
   /** 初始滑块位置，取值范围为 0 到 1。 */
@@ -42,7 +42,7 @@ export interface SceneRollerShutterOptions {
   /** 自定义滑块元素。 */
   sliderElement?: HTMLElement | null
   /** 受卷帘控制的图层列表。 */
-  layers?: SceneRollerShutterLayerConfig[]
+  layers?: RollerShutterLayerConfig[]
 }
 
 interface RollerShutterRegions {
@@ -83,12 +83,12 @@ function isValidMode(mode: RollerShutterMode): boolean {
   return rollerShutterModes.includes(mode)
 }
 
-function isValidLayerDisplay(display: unknown): display is SceneRollerShutterLayerDisplay {
-  return typeof display === 'string' && rollerShutterLayerDisplays.includes(display as SceneRollerShutterLayerDisplay)
+function isValidLayerDisplay(display: unknown): display is RollerShutterLayerDisplay {
+  return typeof display === 'string' && rollerShutterLayerDisplays.includes(display as RollerShutterLayerDisplay)
 }
 
 function getDefaultLayerDisplay() {
-  return 'all' as SceneRollerShutterLayerDisplay
+  return 'all' as RollerShutterLayerDisplay
 }
 
 /**
@@ -97,7 +97,7 @@ function getDefaultLayerDisplay() {
 export class SceneRollerShutter {
   private viewer: any
   private mode: RollerShutterMode
-  private controlledLayers: SceneRollerShutterLayerConfig[]
+  private controlledLayers: RollerShutterLayerConfig[]
   private horizontalPosition: number
   private verticalPosition: number
   private sliderElement: HTMLElement | null
@@ -105,7 +105,7 @@ export class SceneRollerShutter {
   private appliedLayers: Set<Record<string, any>>
   private dragging: boolean
 
-  constructor(viewer: any, options: SceneRollerShutterOptions = {}) {
+  constructor(viewer: any, options: RollerShutterOptions = {}) {
     if (!viewer) {
       throw new Error('viewer is required')
     }
@@ -148,7 +148,7 @@ export class SceneRollerShutter {
   /**
    * 替换当前受卷帘控制的图层列表，并立即应用显示状态。
    */
-  setLayers(layers: SceneRollerShutterLayerConfig[] = []) {
+  setLayers(layers: RollerShutterLayerConfig[] = []) {
     this.controlledLayers = layers
       .filter(layerState => layerState?.layer)
       .map(layerState => this.normalizeLayerState(layerState))
@@ -159,7 +159,7 @@ export class SceneRollerShutter {
   /**
    * 更新单个图层在卷帘中的显示状态；如果该图层尚未加入控制列表，会自动追加进去。
    */
-  setLayerDisplay(layer: any, display: SceneRollerShutterLayerDisplay = getDefaultLayerDisplay()) {
+  setLayerDisplay(layer: any, display: RollerShutterLayerDisplay = getDefaultLayerDisplay()) {
     if (!layer) {
       return null
     }
@@ -206,7 +206,7 @@ export class SceneRollerShutter {
     this.clearAppliedLayers()
   }
 
-  private normalizeLayerState(layerState: SceneRollerShutterLayerConfig): SceneRollerShutterLayerConfig {
+  private normalizeLayerState(layerState: RollerShutterLayerConfig): RollerShutterLayerConfig {
     return {
       ...layerState,
       display: isValidLayerDisplay(layerState.display) ? layerState.display : getDefaultLayerDisplay()
@@ -252,7 +252,7 @@ export class SceneRollerShutter {
     return this.horizontalPosition
   }
 
-  private getLayerSwipeConfig(layerState: SceneRollerShutterLayerConfig) {
+  private getLayerSwipeConfig(layerState: RollerShutterLayerConfig) {
     if (this.mode === 'NONE') {
       return {
         enabled: false,

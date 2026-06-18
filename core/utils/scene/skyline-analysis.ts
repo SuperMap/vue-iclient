@@ -68,7 +68,7 @@ export class SkylineAnalysis {
     this._cameraStartEvent = this._onCameraMoveStart.bind(this);
     this._cameraEvent = this._onCameraMoveEnd.bind(this);
     this.initSkyline(viewer);
-    this.updateOptionsParams(options);
+    this.updateOptions(options);
     this.startCameraEventListener();
   }
 
@@ -99,7 +99,7 @@ export class SkylineAnalysis {
    * 更新可配置的内部参数
    * @param options 配置项
    */
-  updateOptionsParams(options?: SkylineAnalysisOptions): void {
+  updateOptions(options?: SkylineAnalysisOptions): void {
     if (!options) return;
     const SuperMap3D = window.SuperMap3D;
     if (SuperMap3D.defined(options.ignoreGlobe)) this.skyline!.ignoreGlobe = options.ignoreGlobe!;
@@ -125,7 +125,7 @@ export class SkylineAnalysis {
    * 执行天际线分析。
    * @param cartographic 相机位置，默认使用当前相机位置。
    */
-  excute(cartographic = this.viewer?.scene.camera.positionCartographic): void {
+  execute(cartographic = this.viewer?.scene.camera.positionCartographic): void {
     this.clear();
     const lon = window.SuperMap3D.Math.toDegrees(cartographic.longitude);
     const lat = window.SuperMap3D.Math.toDegrees(cartographic.latitude);
@@ -135,7 +135,7 @@ export class SkylineAnalysis {
       pitch: window.SuperMap3D.Math.toDegrees(this.viewer.scene.camera.pitch),
       direction: window.SuperMap3D.Math.toDegrees(this.viewer.scene.camera.heading)
     };
-    this.updateOptionsParams(observerObj);
+    this.updateOptions(observerObj);
     this.skyline!.build();
     if (this.skylineMode === 'BODY')  { this.setSkyLineBody() }
     if (this.highlightBarrier) { this.setBarrierColor(this.barrierColor) }
@@ -225,7 +225,7 @@ export class SkylineAnalysis {
    * 设置天际线体颜色
    * @param color 颜色
    */
-  setSkyLineBodyColor(color: any): void {
+  setSkylineBodyColor(color: any): void {
     this.s3mInstance!.getInstance('SkyLineBody', 1).updateColor(color);
   }
 
@@ -485,7 +485,7 @@ export class SkylineAnalysis {
    */
   private _onCameraMoveEnd(): void {
     if (this.skyline && this._cameraEventEnabled) {
-      this.excute();
+      this.execute();
     }
   }
 }

@@ -95,7 +95,7 @@ export class OpennessAnalysis extends AnalysisBase {
   }
 
   /** 当前激活的分析结果实例。 */
-  get currentViewDome() {
+  private get currentViewDome() {
     return this.viewDomeArray[this.viewDomeArray.length - 1];
   }
 

@@ -12,13 +12,13 @@
 </template>
 
 <script setup lang="ts">
-import type { SceneViewMode, SceneViewModeSwitcherChangeEvent } from 'vue-iclient-core/utils/scene'
+import type { ViewMode, ViewModeSwitcherChangeEvent } from 'vue-iclient-core/utils/scene'
 import type { SceneViewModeSwitcherProps } from './types'
 import { computed, ref, onBeforeUnmount } from 'vue'
 import { useLocale, useSceneGetter, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useSceneControl } from '@supermapgis/mapboxgl/hooks'
 import { sceneViewModeSwitcherPropsDefault } from './types'
-import { SceneViewModeSwitcher } from 'vue-iclient-core/utils/scene'
+import { ViewModeSwitcher } from 'vue-iclient-core/utils/scene'
 import SmButton from '@supermapgis/common/components/button/Button'
 
 defineOptions({
@@ -29,14 +29,14 @@ const props = withDefaults(defineProps<SceneViewModeSwitcherProps>(), sceneViewM
 
 const rootEl = ref<HTMLElement | null>(null)
 const viewer = ref<any>(null)
-const currentMode = ref<SceneViewMode>(normalizeViewMode(props.defaultViewMode))
-const viewModeController = ref<SceneViewModeSwitcher | null>(null)
+const currentMode = ref<ViewMode>(normalizeViewMode(props.defaultViewMode))
+const viewModeController = ref<ViewModeSwitcher | null>(null)
 
 const { gisControlHeaderBgStyle, textColorHeadingStyle } = useTheme(props)
 const { t } = useLocale()
 useSceneControl(rootEl)
 
-const handleModeChange = (event: SceneViewModeSwitcherChangeEvent) => {
+const handleModeChange = (event: ViewModeSwitcherChangeEvent) => {
   currentMode.value = event.currentMode
 }
 
@@ -44,7 +44,7 @@ useSceneGetter({
   loaded: (sceneViewer: any) => {
     destroyViewModeController()
     viewer.value = sceneViewer
-    viewModeController.value = new SceneViewModeSwitcher({
+    viewModeController.value = new ViewModeSwitcher({
       viewer: sceneViewer,
       forceScene3D: props.forceScene3D,
       defaultViewMode: '3D'
@@ -77,7 +77,7 @@ const toogle = () => {
   viewModeController.value.toggle()
 }
 
-function applyViewMode(mode: SceneViewMode) {
+function applyViewMode(mode: ViewMode) {
   if (!viewer.value?.scene?.camera || !viewModeController.value) {
     return
   }
@@ -88,7 +88,7 @@ function applyViewMode(mode: SceneViewMode) {
   viewModeController.value.switchTo3D()
 }
 
-function normalizeViewMode(mode?: string): SceneViewMode {
+function normalizeViewMode(mode?: string): ViewMode {
   return mode === '2D' ? '2D' : '3D'
 }
 

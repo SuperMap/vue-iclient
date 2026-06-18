@@ -3,7 +3,7 @@ import { Events } from 'vue-iclient-core/types/event/Events'
 /**
  * 场景视图模式切换器配置。
  */
-export interface SceneViewModeSwitcherOptions {
+export interface ViewModeSwitcherOptions {
   /** 场景 Viewer 实例。 */
   viewer?: any
   /** 切换过程中是否强制保持三维场景模式。 */
@@ -15,31 +15,31 @@ export interface SceneViewModeSwitcherOptions {
 /**
  * 场景视图模式。
  */
-export type SceneViewMode = '2D' | '3D'
+export type ViewMode = '2D' | '3D'
 
 /**
  * 场景视图模式切换事件。
  */
-export interface SceneViewModeSwitcherChangeEvent {
+export interface ViewModeSwitcherChangeEvent {
   /** 切换后的模式。 */
-  currentMode: SceneViewMode
+  currentMode: ViewMode
   /** 切换前的模式。 */
-  previousMode: SceneViewMode
+  previousMode: ViewMode
 }
 
 /**
  * 管理场景在 2D / 3D 之间的平滑切换，并派发 `change` 事件。
  */
-export class SceneViewModeSwitcher extends Events {
+export class ViewModeSwitcher extends Events {
   private tickHandler: (() => void) | null = null
   private restoreControllerState: (() => void) | null = null
-  private _currentMode: SceneViewMode
+  private _currentMode: ViewMode
 
-  triggerEvent: (name: 'change', event: SceneViewModeSwitcherChangeEvent) => any
-  on: (data: { change?: (event: SceneViewModeSwitcherChangeEvent) => any; scope?: any }) => void
-  un: (data: { change?: (event: SceneViewModeSwitcherChangeEvent) => any; scope?: any }) => void
+  triggerEvent: (name: 'change', event: ViewModeSwitcherChangeEvent) => any
+  on: (data: { change?: (event: ViewModeSwitcherChangeEvent) => any; scope?: any }) => void
+  un: (data: { change?: (event: ViewModeSwitcherChangeEvent) => any; scope?: any }) => void
 
-  constructor(private options: SceneViewModeSwitcherOptions) {
+  constructor(private options: ViewModeSwitcherOptions) {
     super()
     this.eventTypes = ['change']
     this._currentMode = options.defaultViewMode === '2D' ? '2D' : '3D'
@@ -67,7 +67,7 @@ export class SceneViewModeSwitcher extends Events {
   }
 
   /** 主动设置当前模式，并在需要时触发 `change` 事件。 */
-  setCurrentMode(mode: SceneViewMode) {
+  setCurrentMode(mode: ViewMode) {
     if (this._currentMode === mode) {
       return
     }
@@ -100,7 +100,7 @@ export class SceneViewModeSwitcher extends Events {
 
   private rotateCameraPitch(
     targetPitch: number,
-    nextMode: SceneViewMode,
+    nextMode: ViewMode,
     callback: () => void = () => {}
   ) {
     const viewer = this.options.viewer

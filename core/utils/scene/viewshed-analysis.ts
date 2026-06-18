@@ -32,7 +32,7 @@ export interface ViewShedAnalysisOptions {
   /** 是否显示观察点。 */
   showViewPoint?: boolean;
   /** 添加可视域分析对象时触发的回调。 */
-  onAdd?: (viewShed3D: ViewShed3DInstance) => void;
+  onAdd?: (viewShed3D: ViewShedInstance) => void;
   /** 绘制处理器配置。 */
   drawHandlerOptions?: DrawHandlerOptions;
 }
@@ -71,7 +71,7 @@ export interface ViewShedToolOptions {
   /** 绘制处理器配置。 */
   drawHandlerOptions?: DrawHandlerOptions;
   /** 添加可视域分析对象时触发的回调。 */
-  onAdd?: (viewShed3D: ViewShed3DInstance) => void;
+  onAdd?: (viewShed3D: ViewShedInstance) => void;
   /** 生成记录唯一标识的方法。 */
   generateId?: () => string;
 }
@@ -79,7 +79,7 @@ export interface ViewShedToolOptions {
 /**
  * 分析工具暴露的可视域分析对象实例。
  */
-export interface ViewShed3DInstance {
+export interface ViewShedInstance {
   /** 对象唯一标识。 */
   id: string;
   /** 观察点位置。 */
@@ -385,8 +385,8 @@ function ensureViewShedPrototype() {
 
 class ViewShed3DLayer {
   viewer: any;
-  values: ViewShed3DInstance[];
-  map: Record<string, ViewShed3DInstance>;
+  values: ViewShedInstance[];
+  map: Record<string, ViewShedInstance>;
   pointLayer: EntitiesLayer;
 
   constructor(viewer: any) {
@@ -398,13 +398,13 @@ class ViewShed3DLayer {
     });
   }
 
-  add(record: ViewShedRecord | ViewShed3DInstance) {
+  add(record: ViewShedRecord | ViewShedInstance) {
     ensureViewShedPrototype();
     const SuperMap3D = window.SuperMap3D;
-    let item: ViewShed3DInstance | undefined;
+    let item: ViewShedInstance | undefined;
     let nextRecord: any = record;
     if (record instanceof SuperMap3D?.ViewShed3D) {
-      item = record as ViewShed3DInstance;
+      item = record as ViewShedInstance;
       nextRecord = { id: item.id };
     } else {
       nextRecord = {
@@ -464,7 +464,7 @@ class ViewShed3DLayer {
     return this.map[id];
   }
 
-  remove(item: ViewShed3DInstance) {
+  remove(item: ViewShedInstance) {
     item.distance = 0.01;
     item.destroy?.();
     this.values = this.values.filter(value => value.id !== item.id);
@@ -490,7 +490,7 @@ class ViewShedTool {
   pointHandler: any;
   handler: any;
   tooltip: Tooltip | null;
-  viewShed3D: ViewShed3DInstance | undefined;
+  viewShed3D: ViewShedInstance | undefined;
   viewFlag: boolean;
   viewPosition: any;
 
@@ -653,11 +653,11 @@ export class ViewShedAnalysis {
   viewer: any;
   options: Required<Omit<ViewShedAnalysisOptions, 'drawHandlerOptions' | 'onAdd'>> & {
     drawHandlerOptions?: DrawHandlerOptions;
-    onAdd?: (viewShed3D: ViewShed3DInstance) => void;
+    onAdd?: (viewShed3D: ViewShedInstance) => void;
   };
-  viewShedTool: ViewShedTool | undefined;
-  viewShedLayer: ViewShed3DLayer | undefined;
-  currentViewShed3D: ViewShed3DInstance | undefined;
+  private viewShedTool: ViewShedTool | undefined;
+  private viewShedLayer: ViewShed3DLayer | undefined;
+  private currentViewShed3D: ViewShedInstance | undefined;
 
   constructor(viewer: any, options: ViewShedAnalysisOptions = {}) {
     this.viewer = viewer;
@@ -820,7 +820,7 @@ export class ViewShedAnalysis {
         offsetHeight: this.options.offsetHeight,
         drawHandlerOptions: this.options.drawHandlerOptions,
         generateId: () => this.generateId(),
-        onAdd: (viewShed3D: ViewShed3DInstance) => {
+        onAdd: (viewShed3D: ViewShedInstance) => {
           this.currentViewShed3D = viewShed3D;
           this.options.direction = viewShed3D.direction;
           this.options.pitch = viewShed3D.pitch;
@@ -888,6 +888,3 @@ export class ViewShedAnalysis {
     return generateViewShedId();
   }
 }
-
-export type { ViewShed3DInstance as ViewShed3DLayerItem };
-export { EntitiesLayer, ViewShed3DLayer, ViewShedTool };

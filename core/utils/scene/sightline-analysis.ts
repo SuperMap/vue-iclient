@@ -58,7 +58,7 @@ export interface SightlineTargetPoint {
 /**
  * 环形通视分析配置。
  */
-export interface SightlineCircleAnalysisOptions {
+export interface SightlineCircularAnalysisOptions {
   /** 圆形分析中心点。 */
   center: SightlinePosition | { x: number; y: number; z: number };
   /** 分析半径。 */
@@ -334,7 +334,7 @@ export class SightlineAnalysis {
     return this.addTargetPoint(name);
   }
 
-  async analyzeByCircle(options: SightlineCircleAnalysisOptions) {
+  async analyzeByCircle(options: SightlineCircularAnalysisOptions) {
     const center = this.normalizePosition(options.center, options.offsetHeight);
     if (!center) {
       return [];
@@ -708,5 +708,3 @@ export class SightNetworkAnalysis extends SightlineAnalysis {
     });
   }
 }
-
-export { SIGHTLINE_VIEWPOINT_REQUIRED_ERROR };

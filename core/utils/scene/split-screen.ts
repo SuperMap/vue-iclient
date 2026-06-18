@@ -21,7 +21,7 @@ interface DividersStyleConfig {
 /**
  * 不同分屏模式对应的视窗数量。
  */
-export const modeCount: Record<string, number> = {
+const modeCount: Record<string, number> = {
   NONE: 1,
   HORIZONTAL: 2,
   VERTICAL: 2,
@@ -33,7 +33,7 @@ export const modeCount: Record<string, number> = {
 /**
  * 分屏分隔条的样式配置。
  */
-export const dividersStyleConfig: DividersStyleConfig = {
+const dividersStyleConfig: DividersStyleConfig = {
   sm_split_up: {
     left: '50%',
     bottom: '50%',
@@ -87,10 +87,10 @@ interface Viewer {
  * 场景多视口分屏管理器，用于切换分屏模式和控制图层在不同视口中的可见性。
  */
 export class SplitScreen {
-  viewer: Viewer;
-  parent: HTMLElement;
-  divs: Record<string, HTMLElement>;
-  currentType: string;
+  private viewer: Viewer;
+  private parent: HTMLElement;
+  private divs: Record<string, HTMLElement>;
+  private currentType: string;
 
   constructor(viewer: Viewer) {
     if (!viewer) throw new Error('viewer is required');
@@ -99,7 +99,7 @@ export class SplitScreen {
     this.viewer = viewer;
     this.currentType = 'NONE';
     // 初始化时设置为 NONE 模式
-    this.setViewportType(this.currentType);
+    this.setSplitMode(this.currentType);
     this.parent = this.viewer.container.parentElement!;
     this.divs = {};
     // 确保父容器相对定位
@@ -125,12 +125,12 @@ export class SplitScreen {
   }
 
   /** 获取当前分屏模式名称。 */
-  getCurrentType(): string {
+  getCurrentMode(): string {
     return this.currentType;
   }
 
   /** 切换场景的分屏模式，并同步更新分隔条显示。 */
-  setViewportType(type: string): void {
+  setSplitMode(type: string): void {
     if (type === this.currentType) return;
     // 设置场景多视口模式
     const modeEnum = window.SuperMap3D.MultiViewportMode[type];
@@ -192,7 +192,7 @@ export class SplitScreen {
    * 创建并缓存分屏分隔条元素。
    * @private
    */
-  _createDividers(config: DividersStyleConfig = dividersStyleConfig): void {
+  private _createDividers(config: DividersStyleConfig = dividersStyleConfig): void {
     const commonStyle = {
       position: 'absolute',
       backgroundColor: 'white',
@@ -216,7 +216,7 @@ export class SplitScreen {
    * 显示指定的分隔条元素。
    * @param divIds - 需要显示的分割线 ID 数组
    */
-  show(divIds: string[] = []): void {
+  private show(divIds: string[] = []): void {
     // 先隐藏所有
     this.hide(this.divs);
     // 显示指定的
@@ -230,7 +230,7 @@ export class SplitScreen {
   /**
    * 隐藏指定的分隔条元素；默认隐藏全部分隔条。
    */
-  hide(divs: Record<string, HTMLElement> = this.divs): void {
+  private hide(divs: Record<string, HTMLElement> = this.divs): void {
     Object.values(divs).forEach(div => {
       div.style.display = 'none';
     });
@@ -240,7 +240,7 @@ export class SplitScreen {
    * 按当前分屏模式控制分隔条显隐。
    * @param mode - 分屏模式
    */
-  showDividers(mode: string): void {
+  private showDividers(mode: string): void {
     switch (mode) {
       case 'NONE':
         this.show([]);
