@@ -111,7 +111,7 @@
     flex: 1;
     width: auto;
     min-width: 0;
-    .sm-component-input__inner {
+    .sm-component-input {
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;
     }
@@ -124,11 +124,13 @@
     border: 1px solid $border-color-base;
     border-left: 0;
     border-radius: 0 4px 4px 0;
-    background: rgba($white, 0.28);
+    background: $search-arrow-icon-bg;
     color: inherit;
     cursor: pointer;
-    font-size: 14px;
-    line-height: 30px;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     &:hover {
       color: $primary-color;
       border-color: $primary-color;
@@ -145,7 +147,6 @@
     color: $heading-color;
     font-size: 12px;
 
-    .sm-component-btn,
     .sm-component-input,
     .sm-component-select {
       font-size: 12px;
@@ -154,6 +155,8 @@
     .#{$ant-prefix}-input,
     .#{$ant-prefix}-select-selection {
       background-color: $select-dropdown-bg;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
     }
   }
   @include e(sql-builder-title) {
@@ -173,6 +176,7 @@
     right: 0;
     bottom: 0;
     left: 0 !important;
+    z-index: 3;
     width: 100%;
     height: 254px;
     max-height: 254px;
@@ -277,16 +281,13 @@
     min-width: 32px;
     box-sizing: border-box;
     padding: 0;
-    line-height: 30px;
+    font-size: 16px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: rgba($white, 0.28);
-
-    &:hover,
-    &:focus {
-      background: rgba($white, 0.28);
-    }
+    background: $search-arrow-icon-bg;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
   }
   @include e(sql-builder-empty-value) {
     flex: 1;

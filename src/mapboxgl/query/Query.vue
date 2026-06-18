@@ -656,7 +656,7 @@ export default {
       return (triggerNode && triggerNode.closest && triggerNode.closest('.sm-component-query')) || document.body;
     },
     getSqlBuilderSelectPopupContainer() {
-      return document.body;
+      return this.$el.querySelector('.sm-component-query__body') || document.body;
     },
     getSqlBuilderFields(jobInfo) {
       return this.normalizeSqlBuilderFields([
