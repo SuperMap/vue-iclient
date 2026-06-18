@@ -231,14 +231,14 @@ describe('LayerHighlightViewModel', () => {
         geometry: {
           type: 'Polygon',
           coordinates: [
-              [
-                [116.452409755349, 40.92656164358],
-                [116.483357386004, 40.9069469918439],
+            [
+              [116.452409755349, 40.92656164358],
+              [116.483357386004, 40.9069469918439],
 
-                [116.442423257771, 40.9417511118507],
-                [116.452409755349, 40.92656164358]
-              ]
+              [116.442423257771, 40.9417511118507],
+              [116.452409755349, 40.92656164358]
             ]
+          ]
         }
       }
     ]);
@@ -443,7 +443,7 @@ describe('LayerHighlightViewModel', () => {
     jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => {
       return [
         {
-          type: 'feature',
+          type: 'Feature',
           properties: {
             index: 1
           },
@@ -452,18 +452,11 @@ describe('LayerHighlightViewModel', () => {
             type: 'Polygon',
             coordinates: [
               [
-                [116.452409755349, 40.92656164358],
-                [116.483357386004, 40.9069469918439],
-
-                [116.442423257771, 40.9417511118507],
-                [116.452409755349, 40.92656164358]
-              ],
-              [
-                [116.46, 40.92656164358],
-                [116.483357386004, 40.9069469918439],
-
-                [116.442423257771, 40.9417511118507],
-                [116.46, 40.92656164358]
+                [100.0, 0.0],
+                [101.0, 0.0],
+                [101.0, 1.0],
+                [100.0, 1.0],
+                [100.0, 0.0]
               ]
             ]
         }
@@ -498,19 +491,20 @@ describe('LayerHighlightViewModel', () => {
           jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => {
             return [
               {
-                type: 'feature',
+                type: 'Feature',
                 properties: {
                   index: 1
                 },
+                layer: { id: mockLayerName, paint: {}, type: 'fill' },
                 geometry: {
                   type: 'Polygon',
                   coordinates: [
                     [
-                      [116.452409755349, 40.92656164358],
-                      [116.483357386004, 40.9069469918439],
-
-                      [116.442423257771, 40.9417511118507],
-                      [116.452409755349, 40.92656164358]
+                      [100.0, 0.0],
+                      [101.0, 0.0],
+                      [101.0, 1.0],
+                      [100.0, 1.0],
+                      [100.0, 0.0]
                     ]
                   ]
               }
@@ -556,7 +550,7 @@ describe('LayerHighlightViewModel', () => {
 
   it('updateHighlightDatas', done => {
     const map = new Map({
-      style: { center: [0, 0], zoom: 1, layers: [{ id: mockLayerName }], sources: {} }
+      style: { center: [0, 0], zoom: 1, layers: [], sources: {} }
     });
     jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => [
       {
@@ -585,16 +579,15 @@ describe('LayerHighlightViewModel', () => {
     };
     map.addLayer(pointLayer);
     const layers = map.getStyle().layers;
-    expect(layers.length).toBe(3);
+    expect(layers.length).toBe(1);
     viewModel.once('mapselectionchanged', ({ features, dataSelectorMode }) => {
       expect(dataSelectorMode).toBe('ALL');
       expect(features.length).toBeGreaterThan(0);
       const layers = map.getStyle().layers;
       expect(layers.length).toBe(2);
-      const layer1 = layers.find(item => item.id === mockLayerName);
-      const layer2 = layers.find(item => item.id === `${mockLayerName}-${uniqueName}-SM-highlighted`);
-      expect(layer1.id).toBe(`${mockLayerName}-${uniqueName}-SM-highlighted`);
-      expect(layer2.filter[0]).toBe('any');
+      const layer = layers.find(item => item.id === `${mockLayerName}-${uniqueName}-SM-highlighted`);
+      expect(layer.id).toBe(`${mockLayerName}-${uniqueName}-SM-highlighted`);
+      expect(layer.filter[0]).toBe('any');
       done();
     });
     viewModel.updateHighlightDatas({

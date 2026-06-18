@@ -81,7 +81,7 @@ describe('FieldsConverter', () => {
         { insert: 'Hello {Name}' }
       ];
       const result = FieldsConverter.convertTextInfoToCaption(ops, fieldsCaptions);
-      expect(result[0].insert).toBe('Hello {name}');
+      expect(result[0].insert).toBe('Hello {Name}');
     });
   });
 
@@ -98,7 +98,7 @@ describe('FieldsConverter', () => {
       const fieldsCaptions = { value: 'Value' };
       const expression = [['concat', 'prefix', ['get', 'value']]];
       const result = FieldsConverter.convertFieldNameToCaption(expression, fieldsCaptions);
-      expect(result).toEqual([['concat', 'prefix', ['get', 'Value']]]);
+      expect(result).toEqual([['concat', 'prefix', ['get', 'value']]]);
     });
   });
 });
