@@ -25,3 +25,29 @@ export { FillStyle };
 export { LineStyle };
 export { HeatMapStyle };
 export { SymbolStyle };
+
+export const getDefaultLayerStyle = (highligtColor = '#409eff') => ({
+  line: new LineStyle({
+    'line-width': 3,
+    'line-color': highligtColor,
+    'line-opacity': 1
+  }),
+  circle: new CircleStyle({
+    'circle-color': highligtColor,
+    'circle-opacity': 0.6,
+    'circle-radius': 8,
+    'circle-stroke-width': 2,
+    'circle-stroke-color': highligtColor,
+    'circle-stroke-opacity': 1
+  }),
+  fill: new FillStyle({
+    'fill-color': highligtColor,
+    'fill-opacity': 0.6,
+    'fill-outline-color': highligtColor
+  }),
+  strokeLine: new LineStyle({
+    'line-width': 3,
+    'line-color': highligtColor,
+    'line-opacity': 1
+  })
+});

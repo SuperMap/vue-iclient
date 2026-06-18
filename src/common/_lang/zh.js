@@ -203,6 +203,9 @@ export default {
     keyQueryPlaceholder: '请输入关查询键字',
     sqlQueryPlaceholder: '请输入SQL表达式'
   },
+  attributePopup: {
+    selectLayer: '选择图层'
+  },
   identify: {
     layerNotExit: "地图上不存在该图层: '{layer}'",
     noData: '无数据'

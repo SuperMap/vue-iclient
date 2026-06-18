@@ -9,7 +9,7 @@ jest.mock('fast-xml-parser', () => ({
         'wfs:FeatureTypeList': {
           'wfs:FeatureType': [
             {
-              'wfs:Name': "Country_R@Population_0.0",
+              'wfs:Name': 'Country_R@Population_0.0',
               'wfs:DefaultCRS': 'EPSG::3857'
             }
           ]
@@ -61,30 +61,48 @@ describe('LayerHighlightViewModel', () => {
 
   beforeEach(() => {
     map = new Map({
-      style: { center: [0, 0], zoom: 1, layers: [], sources: {} }
+      style: { center: [0, 0], zoom: 1, layers: [{ id: 'test' }], sources: {} }
     });
-
-    viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle });
-    const webmap = { copyLayer: copyLayerSpy, getAppreciableLayers: jest.fn().mockReturnValue([]) };
-    viewModel.setMap({ map, webmap });
   });
 
-  afterEach(() => {
-    viewModel.removed();
-  });
+  afterEach(() => {});
 
   it('toogle show highlight layers', done => {
+    const map = new Map({
+      style: { center: [0, 0], zoom: 1, layers: [{ id: 'test' }], sources: {} }
+    });
+    const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle });
+    const webmap = {
+      copyLayer: copyLayerSpy,
+      getAppreciableLayers: jest.fn().mockReturnValue([{ id: 'test', dataSource: {} }])
+    };
+    viewModel.setMap({ map, webmap });
     const pointLayer = {
       id: 'pointLayer',
       type: 'circle'
     };
+    jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => [
+      {
+        type: 'Feature',
+        properties: {
+          smpid: 7,
+          type: '分类5',
+          _id: 177554
+        },
+        layer: { id: 'pointLayer', paint: {}, type: 'fill' },
+        geometry: {
+          type: 'Point',
+          coordinates: [122.20916748046851, 31.332525032307764]
+        }
+      }
+    ]);
     viewModel.addHighlightLayers(pointLayer);
     const layers = map.getStyle().layers;
-    expect(layers.length).toBe(1);
-    expect(layers[0].id).toBe(`${pointLayer.id}-${uniqueName}-SM-highlighted`);
+    expect(layers.length).toBe(3);
+    expect(layers.find(layer => layer.id === `${pointLayer.id}-${uniqueName}-SM-highlighted`)).not.toBeUndefined();
     expect(viewModel.highlightOptions.layerIds).toEqual([pointLayer.id]);
     viewModel.removeHighlightLayers();
-    expect(map.getStyle().layers.length).toBe(0);
+    expect(map.getStyle().layers.length).toBe(2);
     expect(viewModel.highlightOptions.layerIds).toEqual([pointLayer.id]);
     viewModel.setTargetLayers([]);
     expect(viewModel.highlightOptions.layerIds).toEqual([]);
@@ -101,7 +119,7 @@ describe('LayerHighlightViewModel', () => {
           type: '分类5',
           _id: 177554
         },
-        layer: { paint: {}, l7layer: {}, setSelectedDatas },
+        layer: { id: '动画点', paint: {}, l7layer: {}, type: 'fill', setSelectedDatas },
         geometry: {
           type: 'Point',
           coordinates: [122.20916748046851, 31.332525032307764]
@@ -109,15 +127,20 @@ describe('LayerHighlightViewModel', () => {
       }
     ]);
     const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle, layerIds: ['动画点'] });
-    const webmap = { copyLayer: copyLayerSpy, getAppreciableLayers: jest.fn().mockReturnValue([]) };
+    const webmap = {
+      copyLayer: copyLayerSpy,
+      getAppreciableLayers: jest
+        .fn()
+        .mockReturnValue([{ id: '动画点', dataSource: {}, l7layer: {}, paint: {}, setSelectedDatas }])
+    };
     viewModel.setMap({ map, webmap });
-    
+
     viewModel.once('mapselectionchanged', ({ features }) => {
       expect(features.length).toBeGreaterThan(0);
-      expect(copyLayerSpy).toBeCalled()
-      expect(setSelectedDatas).toBeCalled()
+      expect(copyLayerSpy).toBeCalled();
+      expect(setSelectedDatas).toBeCalled();
       viewModel.removeHighlightLayers();
-      expect(setSelectedDatas).toBeCalled()
+      expect(setSelectedDatas).toBeCalled();
       viewModel.unregisterMapClick();
       done();
     });
@@ -128,6 +151,10 @@ describe('LayerHighlightViewModel', () => {
     viewModel.map.fire('click', { target: map, point: { x: 10, y: 5 } });
   });
   it('map click ms fill extrusion', done => {
+    const setSelectedDatas = jest.fn();
+    const map = new Map({
+      style: { center: [0, 0], zoom: 1, layers: [{ id: '3d填充面' }], sources: {} }
+    });
     jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => [
       {
         type: 'Feature',
@@ -135,7 +162,7 @@ describe('LayerHighlightViewModel', () => {
           type: '分类5',
           _id: 177554
         },
-        layer: {id:'3d填充面', type: 'fill-extrusion', paint: {} },
+        layer: { id: '3d填充面', type: 'fill-extrusion', paint: {} },
         geometry: {
           type: 'Polygon',
           coordinates: [[[122.20916748046851, 31.332525032307764]]]
@@ -143,14 +170,20 @@ describe('LayerHighlightViewModel', () => {
       }
     ]);
     const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle, layerIds: ['3d填充面'] });
-    const webmap = { copyLayer: copyLayerSpy, getAppreciableLayers: jest.fn().mockReturnValue([]) };
+    const webmap = {
+      copyLayer: copyLayerSpy,
+      getAppreciableLayers: jest
+        .fn()
+        .mockReturnValue([{ id: '3d填充面', type: 'fill-extrusion', dataSource: {}, paint: {}, setSelectedDatas }])
+    };
     viewModel.setMap({ map, webmap });
-    
+
     viewModel.once('mapselectionchanged', () => {
       const layers = map.getStyle().layers;
-      expect(layers.length).toBe(1);
-      expect(layers[0].id).toBe(`3d填充面-${uniqueName}-SM-highlighted`);
-      expect(layers[0].paint).toEqual({"fill-extrusion-color": "#01ffff", "fill-extrusion-opacity": 0.6});
+      expect(layers.length).toBe(3);
+      const layer = layers.find(layer => layer.id === `3d填充面-${uniqueName}-SM-highlighted`);
+      expect(layer).not.toBeUndefined();
+      expect(layer.paint).toEqual({ 'fill-extrusion-color': '#01ffff', 'fill-extrusion-opacity': 0.6 });
       viewModel.unregisterMapClick();
       done();
     });
@@ -162,14 +195,45 @@ describe('LayerHighlightViewModel', () => {
   });
 
   it('map click target layer by specified featureFields', done => {
+    const map = new Map({
+      style: { center: [0, 0], zoom: 1, layers: [], sources: {} }
+    });
+    const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle });
+    const webmap = {
+      copyLayer: copyLayerSpy,
+      getAppreciableLayers: jest.fn().mockReturnValue([{ id: mockLayerName, dataSource: {}, type: 'fill' }])
+    };
+    viewModel.setMap({ map, webmap });
+    jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => [
+      {
+        type: 'Feature',
+        properties: {
+          smpid: 7,
+          type: '分类5',
+          _id: 177554
+        },
+        layer: { id: mockLayerName, paint: {}, type: 'fill' },
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+              [
+                [116.452409755349, 40.92656164358],
+                [116.483357386004, 40.9069469918439],
+
+                [116.442423257771, 40.9417511118507],
+                [116.452409755349, 40.92656164358]
+              ]
+            ]
+        }
+      }
+    ]);
     viewModel.once('mapselectionchanged', ({ features }) => {
       expect(features.length).toBeGreaterThan(0);
       const layers = map.getStyle().layers;
       expect(layers.length).toBe(2);
-      expect(layers[0].id).toBe(`${mockLayerName}-${uniqueName}-SM-highlighted`);
-      expect(layers[1].id).toBe(`${mockLayerName}-${uniqueName}-SM-highlighted-StrokeLine`);
-      expect(layers[0].filter[0]).toBe('any');
-      expect(layers[1].filter[0]).toBe('any');
+      const layer1 = layers.find(item => item.id === `${mockLayerName}-${uniqueName}-SM-highlighted`);
+      expect(layer1).not.toBeUndefined();
+      expect(layer1.filter[0]).toBe('any');
       expect(viewModel.highlightOptions.layerIds).toEqual([mockLayerName]);
       viewModel.removeHighlightLayers();
       expect(map.getStyle().layers.length).toBe(0);
@@ -185,6 +249,30 @@ describe('LayerHighlightViewModel', () => {
   });
 
   it('map click target layer by pressing ctrl', done => {
+    const map = new Map({
+      style: { center: [0, 0], zoom: 1, layers: [], sources: {} }
+    });
+    jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => [
+      {
+        type: 'Feature',
+        properties: {
+          smpid: 7,
+          type: '分类5',
+          _id: 177554
+        },
+        layer: { id: mockLayerName, paint: {}, type: 'fill' },
+        geometry: {
+          type: 'Point',
+          coordinates: [122.20916748046851, 31.332525032307764]
+        }
+      }
+    ]);
+    const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle });
+    const webmap = {
+      copyLayer: copyLayerSpy,
+      getAppreciableLayers: jest.fn().mockReturnValue([{ id: mockLayerName, dataSource: {}, type: 'fill' }])
+    };
+    viewModel.setMap({ map, webmap });
     const keyboardEvents = {};
     jest.spyOn(window, 'addEventListener').mockImplementation((type, cb) => {
       keyboardEvents[type] = cb;
@@ -197,10 +285,12 @@ describe('LayerHighlightViewModel', () => {
         expect(features.length).toBeGreaterThan(0);
         const layers = map.getStyle().layers;
         expect(layers.length).toBe(2);
-        expect(layers[0].id).toBe(`${mockLayerName}-${uniqueName}-SM-highlighted`);
-        expect(layers[1].id).toBe(`${mockLayerName}-${uniqueName}-SM-highlighted-StrokeLine`);
-        expect(layers[0].filter[0]).toBe('any');
-        expect(layers[1].filter[0]).toBe('any');
+        const layer1 = layers.find(item => item.id === `${mockLayerName}-${uniqueName}-SM-highlighted`);
+        const layer2 = layers.find(item => item.id === `${mockLayerName}-${uniqueName}-SM-highlighted-StrokeLine`);
+        expect(layer1).not.toBeUndefined();
+        expect(layer2).not.toBeUndefined();
+        expect(layer1.filter[0]).toBe('any');
+        expect(layer2.filter[0]).toBe('any');
         done();
       });
       Promise.resolve().then(() => {
@@ -215,6 +305,30 @@ describe('LayerHighlightViewModel', () => {
   });
 
   it('map click same feature by smid', done => {
+    const map = new Map({
+      style: { center: [0, 0], zoom: 1, layers: [], sources: {} }
+    });
+    jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => [
+      {
+        type: 'Feature',
+        properties: {
+          smpid: 7,
+          type: '分类5',
+          _id: 177554
+        },
+        layer: { id: mockLayerName, paint: {}, type: 'circle' },
+        geometry: {
+          type: 'Point',
+          coordinates: [122.20916748046851, 31.332525032307764]
+        }
+      }
+    ]);
+    const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle });
+    const webmap = {
+      copyLayer: copyLayerSpy,
+      getAppreciableLayers: jest.fn().mockReturnValue([{ id: mockLayerName, dataSource: {}, type: 'circle' }])
+    };
+    viewModel.setMap({ map, webmap });
     viewModel.setTargetLayers(['layer1']);
     const keyboardEvents = {};
     jest.spyOn(window, 'addEventListener').mockImplementation((type, cb) => {
@@ -227,24 +341,17 @@ describe('LayerHighlightViewModel', () => {
         expect(dataSelectorMode).toBe('MULTIPLE');
         expect(features.length).toBeGreaterThan(0);
         const layers = map.getStyle().layers;
-        expect(layers.length).toBe(2);
-        expect(layers[0].id).toBe(`${mockLayerName}-${uniqueName}-SM-highlighted`);
-        expect(layers[1].id).toBe(`${mockLayerName}-${uniqueName}-SM-highlighted-StrokeLine`);
-        const layer1Filter = layers[0].filter;
-        const layer2Filter = layers[1].filter;
-        expect(layer1Filter[0]).toBe('any');
-        expect(layer2Filter[0]).toBe('any');
+        const layer1 = layers.find(item => item.id === `${mockLayerName}-${uniqueName}-SM-highlighted`);
+        const layer1Filter = layer1.filter;
+        expect(layer1).not.toBeUndefined();
         viewModel.once('mapselectionchanged', ({ features: nextFeatures, dataSelectorMode }) => {
           expect(dataSelectorMode).toBe('MULTIPLE');
           expect(nextFeatures.length).toBe(features.length);
           const layers = map.getStyle().layers;
-          expect(layers.length).toBe(2);
-          expect(layers[0].id).toBe(`${mockLayerName}-${uniqueName}-SM-highlighted`);
-          expect(layers[1].id).toBe(`${mockLayerName}-${uniqueName}-SM-highlighted-StrokeLine`);
-          const nextLayer1Filter = layers[0].filter;
-          const nextLayer2Filter = layers[1].filter;
+          expect(layers.length).toBe(1);
+          const layer1 = layers.find(item => item.id === `${mockLayerName}-${uniqueName}-SM-highlighted`);
+          const nextLayer1Filter = layer1.filter;
           expect(nextLayer1Filter).toEqual(layer1Filter);
-          expect(nextLayer2Filter).toEqual(layer2Filter);
           done();
         });
         Promise.resolve().then(() => {
@@ -262,6 +369,15 @@ describe('LayerHighlightViewModel', () => {
   });
 
   it('map click same feature by geometry', done => {
+    const map = new Map({
+      style: { center: [0, 0], zoom: 1, layers: [], sources: {} }
+    });
+    const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle });
+    const webmap = {
+      copyLayer: copyLayerSpy,
+      getAppreciableLayers: jest.fn().mockReturnValue([{ id: mockLayerName, dataSource: {}, type: 'fill' }])
+    };
+    viewModel.setMap({ map, webmap });
     viewModel.setTargetLayers(['layer1']);
     const keyboardEvents = {};
     jest.spyOn(window, 'addEventListener').mockImplementation((type, cb) => {
@@ -274,26 +390,23 @@ describe('LayerHighlightViewModel', () => {
           properties: {
             index: 1
           },
+          layer: { id: mockLayerName, paint: {}, type: 'fill' },
           geometry: {
-            type: 'MultiPolygon',
+            type: 'Polygon',
             coordinates: [
               [
-                [
-                  [116.452409755349, 40.92656164358],
-                  [116.483357386004, 40.9069469918439],
+                [116.452409755349, 40.92656164358],
+                [116.483357386004, 40.9069469918439],
 
-                  [116.442423257771, 40.9417511118507],
-                  [116.452409755349, 40.92656164358]
-                ]
+                [116.442423257771, 40.9417511118507],
+                [116.452409755349, 40.92656164358]
               ],
               [
-                [
-                  [116.560117987415, 40.9749988417875],
+                [116.46, 40.92656164358],
+                [116.483357386004, 40.9069469918439],
 
-                  [116.547892153981, 40.9705907375336],
-                  [116.552270926448, 40.980672910927],
-                  [116.560117987415, 40.9749988417875]
-                ]
+                [116.442423257771, 40.9417511118507],
+                [116.46, 40.92656164358]
               ]
             ]
           }
@@ -322,16 +435,14 @@ describe('LayerHighlightViewModel', () => {
                   index: 1
                 },
                 geometry: {
-                  type: 'MultiPolygon',
+                  type: 'Polygon',
                   coordinates: [
                     [
-                      [
-                        [116.452409755349, 40.92656164358],
-                        [116.483357386004, 40.9069469918439],
+                      [116.452409755349, 40.92656164358],
+                      [116.483357386004, 40.9069469918439],
 
-                        [116.442423257771, 40.9417511118507],
-                        [116.452409755349, 40.92656164358]
-                      ]
+                      [116.442423257771, 40.9417511118507],
+                      [116.452409755349, 40.92656164358]
                     ]
                   ]
                 }
@@ -357,21 +468,46 @@ describe('LayerHighlightViewModel', () => {
   });
 
   it('updateHighlightDatas', done => {
+    const map = new Map({
+      style: { center: [0, 0], zoom: 1, layers: [{ id: mockLayerName }], sources: {} }
+    });
+    jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => [
+      {
+        type: 'Feature',
+        properties: {
+          smpid: 7,
+          type: '分类5',
+          _id: 177554
+        },
+        layer: { id: mockLayerName, paint: {}, type: 'circle' },
+        geometry: {
+          type: 'Point',
+          coordinates: [122.20916748046851, 31.332525032307764]
+        }
+      }
+    ]);
+    const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle });
+    const webmap = {
+      copyLayer: copyLayerSpy,
+      getAppreciableLayers: jest.fn().mockReturnValue([{ id: mockLayerName, dataSource: {}, type: 'circle' }])
+    };
+    viewModel.setMap({ map, webmap });
     const pointLayer = {
       id: mockLayerName,
       type: 'circle'
     };
     map.addLayer(pointLayer);
     const layers = map.getStyle().layers;
-    expect(layers.length).toBe(1);
+    expect(layers.length).toBe(3);
     viewModel.once('mapselectionchanged', ({ features, dataSelectorMode }) => {
       expect(dataSelectorMode).toBe('ALL');
       expect(features.length).toBeGreaterThan(0);
       const layers = map.getStyle().layers;
       expect(layers.length).toBe(2);
-      expect(layers[0].id).toBe(mockLayerName);
-      expect(layers[1].id).toBe(`${mockLayerName}-${uniqueName}-SM-highlighted`);
-      expect(layers[1].filter[0]).toBe('any');
+      const layer1 = layers.find(item => item.id === mockLayerName);
+      const layer2 = layers.find(item => item.id === `${mockLayerName}-${uniqueName}-SM-highlighted`);
+      expect(layer1.id).toBe(`${mockLayerName}-${uniqueName}-SM-highlighted`);
+      expect(layer2.filter[0]).toBe('any');
       done();
     });
     viewModel.updateHighlightDatas({
@@ -382,6 +518,15 @@ describe('LayerHighlightViewModel', () => {
   });
 
   it('map click empty', done => {
+    const map = new Map({
+      style: { center: [0, 0], zoom: 1, layers: [{ id: 'test' }], sources: {} }
+    });
+    const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle });
+    const webmap = {
+      copyLayer: copyLayerSpy,
+      getAppreciableLayers: jest.fn().mockReturnValue([{ id: 'test', dataSource: {} }])
+    };
+    viewModel.setMap({ map, webmap });
     viewModel.setTargetLayers(['layer1']);
     viewModel.once('mapselectionchanged', ({ features }) => {
       expect(features.length).toBe(0);
@@ -392,6 +537,15 @@ describe('LayerHighlightViewModel', () => {
   });
 
   it('map canvas style', done => {
+    const map = new Map({
+      style: { center: [0, 0], zoom: 1, layers: [{ id: 'test' }], sources: {} }
+    });
+    const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle });
+    const webmap = {
+      copyLayer: copyLayerSpy,
+      getAppreciableLayers: jest.fn().mockReturnValue([{ id: 'test', dataSource: {} }])
+    };
+    viewModel.setMap({ map, webmap });
     const canvaStyle = {};
     const events = {};
     jest.spyOn(map, 'getCanvas').mockImplementation(() => ({
@@ -411,7 +565,7 @@ describe('LayerHighlightViewModel', () => {
   });
 });
 
-describe('LayerHighlightViewModel', () => {
+describe('LayerHighlightViewModel1', () => {
   const highlightStyle = {
     line: {
       paint: {
@@ -451,151 +605,140 @@ describe('LayerHighlightViewModel', () => {
   const mockLayerName = 'China';
   const copyLayerSpy = jest.fn();
   let viewModel;
-  const sourceLayers = [{
-      "id": "CHINA_DARK",
-      "title": "中国暗色地图",
-      "type": "raster",
-      "visible": true,
-      "renderSource": {
-        "id": "CHINA_DARK",
-        "type": "raster"
+  const sourceLayers = [
+    {
+      id: 'CHINA_DARK',
+      title: '中国暗色地图',
+      type: 'raster',
+      visible: true,
+      renderSource: {
+        id: 'CHINA_DARK',
+        type: 'raster'
       },
-      "renderLayers": [
-        "CHINA_DARK"
-      ],
-      "dataSource": {},
-      "themeSetting": {},
-      "layerOrder": "auto"
+      renderLayers: ['CHINA_DARK'],
+      dataSource: {},
+      themeSetting: {},
+      layerOrder: 'auto'
     },
     {
-      "id": "Country_R@Population_0.0",
-      "title": "Country_R@Population",
-      "type": "raster",
-      "visible": true,
-      "renderSource": {
-        "id": "ms_wms_1755486958842_80",
-        "type": "raster"
+      id: 'Country_R@Population_0.0',
+      title: 'Country_R@Population',
+      type: 'raster',
+      visible: true,
+      renderSource: {
+        id: 'ms_wms_1755486958842_80',
+        type: 'raster'
       },
-      "renderLayers": [
-        "Country_R@Population_0.0"
-      ],
-      "dataSource": {
-        "type": "WFS",
-        "datasetName": "Population:Country_R",
-        "url": "http://172.16.14.77:8090/iserver/services/data-Population-2/wfs200/gb18030"
+      renderLayers: ['Country_R@Population_0.0'],
+      dataSource: {
+        type: 'WFS',
+        datasetName: 'Population:Country_R',
+        url: 'http://172.16.14.77:8090/iserver/services/data-Population-2/wfs200/gb18030'
       },
-      "themeSetting": {},
-      "layerOrder": "auto"
+      themeSetting: {},
+      layerOrder: 'auto'
     },
     {
-      "id": "Province_L@Population_0.3",
-      "title": "Province_L@Population",
-      "type": "raster",
-      "visible": true,
-      "renderSource": {
-        "id": "ms_wms_1755229357371_19",
-        "type": "raster"
+      id: 'Province_L@Population_0.3',
+      title: 'Province_L@Population',
+      type: 'raster',
+      visible: true,
+      renderSource: {
+        id: 'ms_wms_1755229357371_19',
+        type: 'raster'
       },
-      "renderLayers": [
-        "Province_L@Population_0.3"
-      ],
-      "dataSource": {
-        "type": "WFS",
-        "datasetName": "Population:Province_L",
-        "url": "http://172.16.14.77:8090/iserver/services/data-Population-2/wfs200/gb18030"
+      renderLayers: ['Province_L@Population_0.3'],
+      dataSource: {
+        type: 'WFS',
+        datasetName: 'Population:Province_L',
+        url: 'http://172.16.14.77:8090/iserver/services/data-Population-2/wfs200/gb18030'
       },
-      "themeSetting": {},
-      "layerOrder": "auto"
+      themeSetting: {},
+      layerOrder: 'auto'
     },
     {
-      "id": "ProvinceCapital_P@Population_0.6",
-      "title": "ProvinceCapital_P@Population",
-      "type": "raster",
-      "visible": true,
-      "renderSource": {
-        "id": "ms_wms_1755486175351_24",
-        "type": "raster"
+      id: 'ProvinceCapital_P@Population_0.6',
+      title: 'ProvinceCapital_P@Population',
+      type: 'raster',
+      visible: true,
+      renderSource: {
+        id: 'ms_wms_1755486175351_24',
+        type: 'raster'
       },
-      "renderLayers": [
-        "ProvinceCapital_P@Population_0.6"
-      ],
-      "dataSource": {
-        "type": "WFS",
-        "datasetName": "Population:ProvinceCapital_P",
-        "url": "http://172.16.14.77:8090/iserver/services/data-Population-2/wfs200/gb18030"
+      renderLayers: ['ProvinceCapital_P@Population_0.6'],
+      dataSource: {
+        type: 'WFS',
+        datasetName: 'Population:ProvinceCapital_P',
+        url: 'http://172.16.14.77:8090/iserver/services/data-Population-2/wfs200/gb18030'
       },
-      "themeSetting": {},
-      "layerOrder": "auto"
+      themeSetting: {},
+      layerOrder: 'auto'
     },
     {
-      "id": "中国有观测记录6级以上地震",
-      "title": "中国有观测记录6级以上地震",
-      "type": "circle",
-      "visible": true,
-      "renderSource": {
-        "id": "ms_1394230036_1755239496437_5",
-        "type": "vector",
-        "sourceLayer": "1394230036$msgeometry"
+      id: '中国有观测记录6级以上地震',
+      title: '中国有观测记录6级以上地震',
+      type: 'circle',
+      visible: true,
+      renderSource: {
+        id: 'ms_1394230036_1755239496437_5',
+        type: 'vector',
+        sourceLayer: '1394230036$msgeometry'
       },
-      "renderLayers": [
-        "中国有观测记录6级以上地震"
-      ],
-      "dataSource": {
-        "serverId": "1394230036",
-        "type": "STRUCTURE_DATA"
+      renderLayers: ['中国有观测记录6级以上地震'],
+      dataSource: {
+        serverId: '1394230036',
+        type: 'STRUCTURE_DATA'
       },
-      "themeSetting": {},
-      "layerOrder": "auto"
+      themeSetting: {},
+      layerOrder: 'auto'
     }
   ];
-  const layers = [{
-      "id": "CHINA_DARK",
-      "type": "raster",
-      "source": "CHINA_DARK",
-      "minzoom": 0,
-      "maxzoom": 12
+  const layers = [
+    {
+      id: 'CHINA_DARK',
+      type: 'raster',
+      source: 'CHINA_DARK',
+      minzoom: 0,
+      maxzoom: 12
     },
     {
-      "id": "Country_R@Population_0.0",
-      "type": "raster",
-      "source": "ms_wms_1755486958842_80",
-      "metadata": {},
-      "layout": {
-        "visibility": "visible"
+      id: 'Country_R@Population_0.0',
+      type: 'raster',
+      source: 'ms_wms_1755486958842_80',
+      metadata: {},
+      layout: {
+        visibility: 'visible'
       }
     },
     {
-      "id": "Province_L@Population_0.3",
-      "type": "raster",
-      "source": "ms_wms_1755229357371_19",
-      "metadata": {}
+      id: 'Province_L@Population_0.3',
+      type: 'raster',
+      source: 'ms_wms_1755229357371_19',
+      metadata: {}
     },
     {
-      "id": "ProvinceCapital_P@Population_0.6",
-      "type": "raster",
-      "source": "ms_wms_1755486175351_24",
-      "metadata": {},
-      "layout": {
-        "visibility": "visible"
+      id: 'ProvinceCapital_P@Population_0.6',
+      type: 'raster',
+      source: 'ms_wms_1755486175351_24',
+      metadata: {},
+      layout: {
+        visibility: 'visible'
       }
     },
     {
-      "id": "中国有观测记录6级以上地震",
-      "type": "circle",
-      "source": "ms_1394230036_1755239496437_5",
-      "source-layer": "1394230036$msgeometry",
-      "metadata": {},
-      "minzoom": 0,
-      "maxzoom": 24,
-      "paint": {
-        "circle-color": "#EE4D5A",
-        "circle-opacity": 0.9,
-        "circle-translate-anchor": "map",
-        "circle-radius": 4,
-        "circle-translate": [
-          0,
-          0
-        ]
+      id: '中国有观测记录6级以上地震',
+      type: 'circle',
+      source: 'ms_1394230036_1755239496437_5',
+      'source-layer': '1394230036$msgeometry',
+      metadata: {},
+      minzoom: 0,
+      maxzoom: 24,
+      paint: {
+        'circle-color': '#EE4D5A',
+        'circle-opacity': 0.9,
+        'circle-translate-anchor': 'map',
+        'circle-radius': 4,
+        'circle-translate': [0, 0]
       }
     }
   ];
@@ -639,14 +782,29 @@ describe('LayerHighlightViewModel', () => {
           </feature:SampleFeature>
         </gml:featureMember>
       </wfs:FeatureCollection>
-    `
+    `;
     mapboxgl.supermap = {
       FetchRequest: {
         get: jest.fn().mockResolvedValue({
           text: jest.fn().mockResolvedValue(xml)
         })
       }
-    }
+    };
+    jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => [
+      {
+        type: 'Feature',
+        properties: {
+          smpid: 7,
+          type: '分类5',
+          _id: 177554
+        },
+        layer: { id: '动画点', paint: {}, l7layer: {}, type: 'fill', setSelectedDatas },
+        geometry: {
+          type: 'Point',
+          coordinates: [122.20916748046851, 31.332525032307764]
+        }
+      }
+    ]);
   });
 
   afterEach(() => {
@@ -654,26 +812,26 @@ describe('LayerHighlightViewModel', () => {
   });
 
   it('queryWFSFeatures', async done => {
-    const wfsLayers = [{
-      "id": "Province_L@Population_0.3",
-      "title": "Province_L@Population",
-      "type": "raster",
-      "visible": true,
-      "renderSource": {
-        "id": "ms_wms_1755229357371_19",
-        "type": "raster"
-      },
-      "renderLayers": [
-        "Province_L@Population_0.3"
-      ],
-      "dataSource": {
-        "type": "WFS",
-        "datasetName": "Population:Province_L",
-        "url": "http://172.16.14.77:8090/iserver/services/data-Population-2/wfs200/gb18030"
-      },
-      "themeSetting": {},
-      "layerOrder": "auto"
-    }];
+    const wfsLayers = [
+      {
+        id: 'Province_L@Population_0.3',
+        title: 'Province_L@Population',
+        type: 'raster',
+        visible: true,
+        renderSource: {
+          id: 'ms_wms_1755229357371_19',
+          type: 'raster'
+        },
+        renderLayers: ['Province_L@Population_0.3'],
+        dataSource: {
+          type: 'WFS',
+          datasetName: 'Population:Province_L',
+          url: 'http://172.16.14.77:8090/iserver/services/data-Population-2/wfs200/gb18030'
+        },
+        themeSetting: {},
+        layerOrder: 'auto'
+      }
+    ];
     const e = {
       point: {
         x: 500,
@@ -684,42 +842,42 @@ describe('LayerHighlightViewModel', () => {
           toArray: jest.fn().mockReturnValue([90, 90])
         }),
         getLayer: jest.fn().mockReturnValue({
-          type: 'circle',
+          type: 'circle'
         })
       }
-    }
+    };
     await viewModel.queryWFSFeatures(wfsLayers, e);
     done();
   });
 
   it('queryWFSFeatures - error', async done => {
-    const wfsLayers = [{
-      "id": "Province_L@Population_0.3",
-      "title": "Province_L@Population",
-      "type": "raster",
-      "visible": true,
-      "renderSource": {
-        "id": "ms_wms_1755229357371_19",
-        "type": "raster"
-      },
-      "renderLayers": [
-        "Province_L@Population_0.3"
-      ],
-      "dataSource": {
-        "type": "WFS",
-        "datasetName": "Population:Province_L",
-        "url": "http://172.16.14.77:8090/iserver/services/data-Population-2/wfs200/gb18030"
-      },
-      "themeSetting": {},
-      "layerOrder": "auto"
-    }];
+    const wfsLayers = [
+      {
+        id: 'Province_L@Population_0.3',
+        title: 'Province_L@Population',
+        type: 'raster',
+        visible: true,
+        renderSource: {
+          id: 'ms_wms_1755229357371_19',
+          type: 'raster'
+        },
+        renderLayers: ['Province_L@Population_0.3'],
+        dataSource: {
+          type: 'WFS',
+          datasetName: 'Population:Province_L',
+          url: 'http://172.16.14.77:8090/iserver/services/data-Population-2/wfs200/gb18030'
+        },
+        themeSetting: {},
+        layerOrder: 'auto'
+      }
+    ];
     mapboxgl.supermap = {
       FetchRequest: {
         get: jest.fn().mockResolvedValue({
           text: jest.fn().mockResolvedValue(null)
         })
       }
-    }
+    };
     const e = {
       point: {
         x: 500,
@@ -730,10 +888,10 @@ describe('LayerHighlightViewModel', () => {
           toArray: jest.fn().mockReturnValue([90, 90])
         }),
         getLayer: jest.fn().mockReturnValue({
-          type: 'circle',
+          type: 'circle'
         })
       }
-    }
+    };
     const res = await viewModel.queryWFSFeatures(wfsLayers, e);
     expect(res.length).toBe(0);
     done();

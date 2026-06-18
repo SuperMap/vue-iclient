@@ -82,6 +82,7 @@
   "map-popup": "vue-iclient/src/mapboxgl/map-popup/index.js",
   "layer-highlight": "vue-iclient/src/mapboxgl/layer-highlight/index.js",
   "identify": "vue-iclient/src/mapboxgl/web-map/control/identify/index.js",
+  "attribute-popup": "vue-iclient/src/mapboxgl/web-map/control/attribute-popup/index.js",
   "layer-color": "vue-iclient/src/mapboxgl/web-map/control/layer-color/index.js",
   "layer-list": "vue-iclient/src/mapboxgl/web-map/control/layer-list/index.js",
   "layer-manager": "vue-iclient/src/mapboxgl/web-map/control/layer-manager/index.js",
