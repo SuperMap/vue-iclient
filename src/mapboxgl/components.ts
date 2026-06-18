@@ -89,6 +89,7 @@ import { default as Pan } from 'vue-iclient/src/mapboxgl/web-map/control/pan/ind
 import { default as Scale } from 'vue-iclient/src/mapboxgl/web-map/control/scale/index.js';
 import { default as Zoom } from 'vue-iclient/src/mapboxgl/web-map/control/zoom/index.js';
 import { default as ResetView } from 'vue-iclient/src/mapboxgl/web-map/control/reset-view/index.js';
+import { default as AttributePopup } from 'vue-iclient/src/mapboxgl/web-map/control/attribute-popup/index.js';
 
 import { default as TdtMapSwitcher } from 'vue-iclient/src/mapboxgl/tdt/map-switcher/index.js';
 import { default as TdtRoute } from 'vue-iclient/src/mapboxgl/tdt/route/index.js';
@@ -201,6 +202,7 @@ const components = {
   Draw,
   FlyTo,
   Identify,
+  AttributePopup,
   MapPopup,
   HighlightLayer,
   LayerColor,
@@ -333,6 +335,7 @@ export {
   Draw,
   FlyTo,
   Identify,
+  AttributePopup,
   MapPopup,
   LayerColor,
   LayerList,

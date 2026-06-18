@@ -1,8 +1,8 @@
 @font-face {
   font-family: "sm-components-icon-"; /* Project id 2236405 */
-  src: url('icon-sm-components.woff2?t=1770606681509') format('woff2'),
-       url('icon-sm-components.woff?t=1770606681509') format('woff'),
-       url('icon-sm-components.ttf?t=1770606681509') format('truetype');
+  src: url('icon-sm-components.woff2?t=1754981391771') format('woff2'),
+       url('icon-sm-components.woff?t=1754981391771') format('woff'),
+       url('icon-sm-components.ttf?t=1754981391771') format('truetype');
 }
 
 [class^="sm-components-icon-"], [class*=" sm-components-icon-"], .sm-components-icon {

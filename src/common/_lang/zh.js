@@ -222,6 +222,9 @@ export default {
   cascader: {
     placeholder: '请选择'
   },
+  attributePopup: {
+    selectLayer: '选择图层'
+  },
   identify: {
     layerNotExit: "地图上不存在该图层: '{layer}'",
     noData: '无数据'

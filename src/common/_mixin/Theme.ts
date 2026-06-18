@@ -67,6 +67,12 @@ export default class Theme extends Vue {
     };
   }
 
+  get tablePopupBgColor() {
+    return {
+      backgroundColor: this.tablePopupBgData
+    };
+  }
+
   get getTextColorStyle() {
     return {
       color: this.textColorsData
