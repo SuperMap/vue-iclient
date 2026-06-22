@@ -197,6 +197,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
   map: mapboxglTypes.Map;
   webmap: InstanceType<typeof WebMapViewModel>;
   fire: (type: string, params?: any) => void;
+  on: (type: string, callback: (params?: any) => void) => void;
   handleMapClick: any;
 
   constructor(options: HighlightLayerOptions) {
