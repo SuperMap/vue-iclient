@@ -57,7 +57,6 @@ describe('LayerHighlightViewModel', () => {
   const uniqueName = 'Test';
   const mockLayerName = 'China';
   const copyLayerSpy = jest.fn();
-  let viewModel;
 
   beforeEach(() => {
     map = new Map({
@@ -126,12 +125,12 @@ describe('LayerHighlightViewModel', () => {
         }
       }
     ]);
+    const layer = { id: '动画点', dataSource: {}, l7layer: {}, paint: {}, setSelectedDatas };
+    jest.spyOn(map, 'getLayer').mockImplementation(() => layer);
     const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle, layerIds: ['动画点'] });
     const webmap = {
       copyLayer: copyLayerSpy,
-      getAppreciableLayers: jest
-        .fn()
-        .mockReturnValue([{ id: '动画点', dataSource: {}, l7layer: {}, paint: {}, setSelectedDatas }])
+      getAppreciableLayers: jest.fn().mockReturnValue([layer])
     };
     viewModel.setMap({ map, webmap });
 
@@ -152,8 +151,9 @@ describe('LayerHighlightViewModel', () => {
   });
   it('map click ms fill extrusion', done => {
     const setSelectedDatas = jest.fn();
+    const layer = { id: '3d填充面', sources: {}, type: 'fill-extrusion', paint: {} };
     const map = new Map({
-      style: { center: [0, 0], zoom: 1, layers: [{ id: '3d填充面' }], sources: {} }
+      style: { center: [0, 0], zoom: 1, layers: [layer], sources: {} }
     });
     jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => [
       {
@@ -169,6 +169,8 @@ describe('LayerHighlightViewModel', () => {
         }
       }
     ]);
+    jest.spyOn(map, 'getLayer').mockImplementation(() => layer);
+
     const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle, layerIds: ['3d填充面'] });
     const webmap = {
       copyLayer: copyLayerSpy,
@@ -198,6 +200,8 @@ describe('LayerHighlightViewModel', () => {
     const map = new Map({
       style: { center: [0, 0], zoom: 1, layers: [], sources: {} }
     });
+    const layer = { id: mockLayerName, source: '', type: 'fill' };
+    jest.spyOn(map, 'getLayer').mockImplementation(() => layer);
     const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle });
     const webmap = {
       copyLayer: copyLayerSpy,
@@ -252,6 +256,8 @@ describe('LayerHighlightViewModel', () => {
     const map = new Map({
       style: { center: [0, 0], zoom: 1, layers: [], sources: {} }
     });
+    const layer = { id: mockLayerName, source: '', type: 'fill' };
+    jest.spyOn(map, 'getLayer').mockImplementation(() => layer);
     jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => [
       {
         type: 'Feature',
@@ -308,6 +314,8 @@ describe('LayerHighlightViewModel', () => {
     const map = new Map({
       style: { center: [0, 0], zoom: 1, layers: [], sources: {} }
     });
+    const layer = { id: mockLayerName, source: '', type: 'circle' };
+    jest.spyOn(map, 'getLayer').mockImplementation(() => layer);
     jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => [
       {
         type: 'Feature',
@@ -372,6 +380,8 @@ describe('LayerHighlightViewModel', () => {
     const map = new Map({
       style: { center: [0, 0], zoom: 1, layers: [], sources: {} }
     });
+    const layer = { id: mockLayerName, source: '', type: 'fill' };
+    jest.spyOn(map, 'getLayer').mockImplementation(() => layer);
     const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle });
     const webmap = {
       copyLayer: copyLayerSpy,
