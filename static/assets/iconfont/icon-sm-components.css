@@ -13,6 +13,14 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.sm-components-icon-user:before {
+  content: "\e669";
+}
+
+.sm-components-icon-morenxianshi:before {
+  content: "\e901";
+}
+
 .sm-components-icon-jiazaishibai:before {
   content: "\e663";
 }
