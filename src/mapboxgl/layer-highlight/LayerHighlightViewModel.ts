@@ -645,6 +645,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
     this.removeHighlightLayers();
     let popupDatas: PopupFeatureInfo[] = [];
     let topLayerIndex = 0;
+    // 获取所有图层 L7+ 普通图层
     const layers = this.webmap?.getAppreciableLayers();
     features.forEach((f) => {
       const idx = layers.findIndex(l => l.id === f.layer.id);
@@ -654,7 +655,12 @@ export default class HighlightLayer extends mapboxgl.Evented {
     const matchTargetFeature = features.find(f => f.layer?.id === topLayerId) ?? features[0];
     const layerId = matchTargetFeature?.layer.id;
     const highlightLayerIds = this.getMoreHighlightLayerIds(layerId);
-    let activeTargetLayers = layers.filter(layer => highlightLayerIds.includes(layer.id));
+    // 获取mapboxgl上图的原生layer
+    const mapLayers = this.map?.getStyle().layers;
+    let activeTargetLayers = layers.filter(layer => highlightLayerIds.includes(layer.id))?.map(item => {
+      const findLayer = mapLayers?.find(layer => layer.id === item.id);
+      return findLayer ?? this.map.getLayer(item.id);
+    });
     if (activeTargetLayers && matchTargetFeature) {
       switch (this.dataSelectorMode) {
         case DataSelectorMode.ALL:
