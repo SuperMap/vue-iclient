@@ -11,6 +11,7 @@ export * from './utils/statistics';
 export * from './utils/util';
 export * from './utils/layerCatalogGroupUtil';
 export { scene } from './utils/scene';
+export { user } from './utils/user';
 
 export * from './types/map-event';
 export { default as mapEvent } from './types/map-event';

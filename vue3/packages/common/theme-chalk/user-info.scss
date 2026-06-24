@@ -1,0 +1,49 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+@use '@supermapgis/common/theme-chalk/tooltip';
+
+.sm-component-user-info {
+  display: flex;
+  min-width: 24px;
+  position: relative;
+  color: $text-color;
+  font-size: 14px;
+  gap: 6px;
+  padding-left: 4px;
+  display: flex;
+  align-items: center;
+  &:hover {
+    color: $primary-color-hover;
+  }
+  .user-icon-holder {
+    cursor: pointer;
+    background: $primary-color-hover;
+    border-radius: 4px;
+    > i {
+      color: $icon-color-secondary;
+    }
+  }
+  > span {
+    cursor: pointer;
+    overflow: hidden;
+    flex: 0 1 auto;
+    min-width: fit-content;
+    max-width: 120px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .user-logined {
+    display: inline-block;
+    vertical-align: top;
+    width: 24px;
+    line-height: 24px;
+    height: 24px;
+    text-align: center;
+    cursor: pointer;
+    background: transparent;
+    i {
+      font-size: 16px;
+      color: $primary-color;
+    }
+  }
+}
