@@ -118,7 +118,7 @@ interface MapHandler {
   getLayers: () => any[];
   rectifyLayersOrder: (appreciableLayers: any[], topLayerBeforeId?: string) => void;
   getWebMapType: () => any;
-  setLayersVisible: (layers: Array<Record<string, any>>, visibility: 'visible' | 'none') => void;
+  setLayersVisible: (layers: Array<Record<string, any>>, visibility: 'visible' | 'none', isSetVisible: boolean) => void;
   toggleLayerVisible: (layer: Record<string, any>, visible: boolean) => void;
   echartsLayerResize: () => void;
   updateOverlayLayer: (layerInfo: Record<string, any>, features: any, mergeByField?: string, featureProjection?: string) => void;
@@ -500,10 +500,10 @@ export default class WebMapViewModel extends Events {
     return opacity === undefined ? 1 : opacity;
   }
 
-  setLayersVisible(isShow: boolean, ignoreIds: string[] = []) {
+  setLayersVisible(isShow: boolean, ignoreIds: string[] = [], isSetVisible = true) {
     const visibility = isShow ? 'visible' : 'none';
     const layers = this._cacheCleanLayers.filter(item => !ignoreIds.some(sub => sub === item.id));
-    this._handler.setLayersVisible(layers, visibility);
+    this._handler.setLayersVisible(layers, visibility, isSetVisible);
   }
 
   clean() {

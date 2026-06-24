@@ -495,6 +495,33 @@ describe('WebMapViewModel.spec', () => {
     jest.advanceTimersByTime(0);
   });
 
+  it('setLayersVisible with isSetVisible parameter', async done => {
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+    const callback = async function (data) {
+      const spy = jest.spyOn(viewModel.map, 'getLayer');
+      spy.mockReturnValue({ type: 'test' });
+      const setLayersVisibleSpy = jest.spyOn(viewModel._handler, 'setLayersVisible');
+      const ignoreIds = ['China'];
+      viewModel.setLayersVisible(false, ignoreIds, true);
+      expect(setLayersVisibleSpy).toHaveBeenLastCalledWith(
+        expect.arrayContaining([]),
+        'none',
+        true
+      );
+      setLayersVisibleSpy.mockClear();
+      viewModel.setLayersVisible(true, [], false);
+      expect(setLayersVisibleSpy).toHaveBeenLastCalledWith(
+        expect.arrayContaining([]),
+        'visible',
+        false
+      );
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
+  });
+
   it('cleanLayers', async done => {
     const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
     const callback = function () {
