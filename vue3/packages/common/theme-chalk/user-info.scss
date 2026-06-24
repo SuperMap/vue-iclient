@@ -2,7 +2,7 @@
 @use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
 @use '@supermapgis/common/theme-chalk/tooltip';
 
-.sm-component-user-info {
+@include b(user-info) {
   display: flex;
   min-width: 24px;
   position: relative;
