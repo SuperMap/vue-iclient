@@ -143,7 +143,19 @@ describe('AttributePopup.vue', () => {
   it('loaded method calls lodedCb', async () => {
     wrapper = mount(AttributePopup);
     const lodedCbSpy = jest.spyOn(wrapper.vm, 'lodedCb');
-    wrapper.vm.loaded();
+     const mockWebmap = {
+      _handler: {
+        getPopupInfos: jest.fn().mockReturnValue([{ title: 'test' }])
+      }
+    };
+
+    wrapper.vm.viewModel = {
+      webmap: mockWebmap,
+      setTargetLayers: jest.fn(),
+      clear: jest.fn()
+    };
+    wrapper.vm.$options.lodedCb = wrapper.vm.lodedCb;
+     wrapper.vm.$options.loaded();
     expect(lodedCbSpy).toHaveBeenCalled();
   });
 
@@ -160,7 +172,8 @@ describe('AttributePopup.vue', () => {
     };
 
     wrapper.vm.viewModel = {
-      webmap: mockWebmap
+      webmap: mockWebmap,
+      clear: jest.fn()
     };
 
     wrapper.vm.lodedCb(mockWebmap);
@@ -184,7 +197,8 @@ describe('AttributePopup.vue', () => {
     };
 
     wrapper.vm.viewModel = {
-      webmap: mockWebmap
+      webmap: mockWebmap,
+      clear: jest.fn()
     };
 
     wrapper.vm.lodedCb();
