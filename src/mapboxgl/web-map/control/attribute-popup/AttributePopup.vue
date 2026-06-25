@@ -52,6 +52,7 @@ import AttributePopupViewModel from './AttributePopupViewModel';
 import { setPopupArrowStyle } from 'vue-iclient/src/common/_utils/util';
 import isEqual from 'lodash.isequal';
 import { getDefaultLayerStyle } from 'vue-iclient/src/mapboxgl/_types/index.js';
+import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
 
 export default {
   name: 'SmAttributePopup',
@@ -306,16 +307,22 @@ export default {
   },
   beforeDestroy() {
     this.clearPopupData();
+    mapEvent.$off('load-webmap-view-model', this.lodedCb);
     this.removed();
     this.removeResizeListener(this.$refs.popupContentRef?.$el);
   },
   loaded() {
-    this.removePopup();
-    this.removed();
-    this.mapPopupInfos = this.viewModel.webmap._handler.getPopupInfos();
-    this.setLayerIds(this.highlightLayerIds, this.sourceLayers);
+    this.lodedCb();
+    // 监听MD webmap-view-model事件，初始化弹窗数据
+    mapEvent.$on('load-webmap-view-model', this.lodedCb);
   },
   methods: {
+    lodedCb(webMapViewModel = this.viewModel.webmap) {
+      this.removePopup();
+      this.removed();
+      this.mapPopupInfos = webMapViewModel._handler.getPopupInfos();
+      this.setLayerIds(this.highlightLayerIds, this.sourceLayers);
+    },
     init() {
       this.viewModel = new AttributePopupViewModel({
         name: 'popup',
