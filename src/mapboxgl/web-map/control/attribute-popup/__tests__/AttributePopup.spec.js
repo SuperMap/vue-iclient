@@ -139,4 +139,56 @@ describe('AttributePopup.vue', () => {
     expect(wrapper.vm.showSelectLayer).toBe(false);
     expect(wrapper.vm.currentLayerId).toBe('');
   });
+
+  it('loaded method calls lodedCb', async () => {
+    wrapper = mount(AttributePopup);
+    const lodedCbSpy = jest.spyOn(wrapper.vm, 'lodedCb');
+    wrapper.vm.loaded();
+    expect(lodedCbSpy).toHaveBeenCalled();
+  });
+
+  it('lodedCb removes popup and sets layer ids', async () => {
+    wrapper = mount(AttributePopup);
+    wrapper.vm.removePopup = jest.fn();
+    wrapper.vm.removed = jest.fn();
+    wrapper.vm.setLayerIds = jest.fn();
+
+    const mockWebmap = {
+      _handler: {
+        getPopupInfos: jest.fn().mockReturnValue([{ title: 'test' }])
+      }
+    };
+
+    wrapper.vm.viewModel = {
+      webmap: mockWebmap
+    };
+
+    wrapper.vm.lodedCb(mockWebmap);
+
+    expect(wrapper.vm.removePopup).toHaveBeenCalled();
+    expect(wrapper.vm.removed).toHaveBeenCalled();
+    expect(mockWebmap._handler.getPopupInfos).toHaveBeenCalled();
+    expect(wrapper.vm.setLayerIds).toHaveBeenCalledWith(wrapper.vm.highlightLayerIds, wrapper.vm.sourceLayers);
+  });
+
+  it('lodedCb uses default webmap when no argument passed', async () => {
+    wrapper = mount(AttributePopup);
+    wrapper.vm.removePopup = jest.fn();
+    wrapper.vm.removed = jest.fn();
+    wrapper.vm.setLayerIds = jest.fn();
+
+    const mockWebmap = {
+      _handler: {
+        getPopupInfos: jest.fn().mockReturnValue([{ title: 'test' }])
+      }
+    };
+
+    wrapper.vm.viewModel = {
+      webmap: mockWebmap
+    };
+
+    wrapper.vm.lodedCb();
+
+    expect(mockWebmap._handler.getPopupInfos).toHaveBeenCalled();
+  });
 });
