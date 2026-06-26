@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { VueEditor } from 'vue2-editor';
+import { VueEditor, Quill } from 'vue2-editor';
 import ConvertUtil from './util/ExpressionConverter';
 import Delta from 'quill-delta';
 
@@ -62,6 +62,9 @@ export default {
     },
     initQuill() {
       const editor = this.$refs.editor;
+      const Font = Quill.import('attributors/style/font');
+      Font.whitelist = ['Microsoft-YaHei', 'SimSun', 'SimHei', 'KaiTi', 'FangSong', 'Arial', 'Times-New-Roman', 'sans-serif'];
+      Quill.register(Font, true);
       if (editor) {
         this.quill = editor.quill;
         this.quill.setContents(this.contentDelta);
