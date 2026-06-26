@@ -16,6 +16,8 @@
       :dialogStyle="fullScreenStyle.dialogStyle"
       :bodyStyle="fullScreenStyle.bodyStyle"
       :footer="null"
+      :destroyOnClose="true"
+      :mask="false"
     >
       <img :src="src" @click="endPreview" :style="{ 'object-fit': 'contain', width: '100%', height: '100%' }" />
     </sm-modal>
