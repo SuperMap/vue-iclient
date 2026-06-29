@@ -972,8 +972,9 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
       options.series = []
     } else {
       options.series = options.series.map((element: any, index: number) => {
-        return Object.assign({}, element, dataOptions.series[index] || {})
+        return Object.assign({name:''},element, dataOptions.series[index] || {})
       })
+      
 
       const parallelShowNumber = getParallelShowNumber(options.series)
 
