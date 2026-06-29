@@ -522,13 +522,39 @@ describe('WebMapViewModel.spec', () => {
     jest.advanceTimersByTime(0);
   });
 
-  it('cleanLayers', async done => {
+  it('cleanLayers with default params', async done => {
     const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
     const callback = function () {
-      expect(viewModel._cacheCleanLayers.length).not.toBe(0);
       const cleanLayers = jest.spyOn(viewModel._handler, 'cleanLayers');
       viewModel.cleanLayers();
-      expect(cleanLayers).toBeCalled();
+      expect(cleanLayers).toBeCalledWith(undefined, true);
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
+  });
+
+  it('cleanLayers with custom layers', async done => {
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+    const callback = function () {
+      const cleanLayers = jest.spyOn(viewModel._handler, 'cleanLayers');
+      const customLayers = [{ id: 'layer1' }, { id: 'layer2' }];
+      viewModel.cleanLayers(customLayers);
+      expect(cleanLayers).toBeCalledWith(customLayers, true);
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
+  });
+
+  it('cleanLayers with isClean false', async done => {
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+    const callback = function () {
+      const cleanLayers = jest.spyOn(viewModel._handler, 'cleanLayers');
+      viewModel.cleanLayers(undefined, false);
+      expect(cleanLayers).toBeCalledWith(undefined, false);
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
