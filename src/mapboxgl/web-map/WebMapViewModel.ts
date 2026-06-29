@@ -112,7 +112,7 @@ interface BaseLayerItem {
 
 interface MapHandler {
   clean: () => void;
-  cleanLayers: () => void;
+  cleanLayers: (layers?: Array<Record<string, any>>, isClean?: boolean) => void;
   getLayerCatalog: () => any[];
   getLegends: () => any[];
   getLayers: () => any[];
@@ -314,8 +314,8 @@ export default class WebMapViewModel extends Events {
     return this._handler.getWebMapType();
   }
 
-  protected cleanLayers() {
-    this._handler.cleanLayers();
+  protected cleanLayers(layers?: Array<Record<string, any>>, isClean = true) {
+    this._handler.cleanLayers(layers, isClean);
   }
 
   attributesDataAvailable(item) {
