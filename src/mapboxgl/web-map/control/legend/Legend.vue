@@ -80,6 +80,7 @@ import SmCollapsePanel from 'vue-iclient/src/common/collapse/Panel.vue';
 import LegendViewModel from './LegendViewModel';
 import StyleItem from './subs/StyleItem.vue';
 import StyleField from './subs/StyleField.vue';
+import debounce from 'lodash.debounce';
 
 export default {
   name: 'SmLegend',
@@ -157,7 +158,7 @@ export default {
   },
   created() {
     this.viewModel = new LegendViewModel();
-    this.initLegendListFn = this.initLegendList.bind(this);
+    this.initLegendListFn = debounce(this.initLegendList.bind(this), 300);
     this.viewModel.on('layersupdated', this.initLegendListFn);
   },
   beforeDestroy() {
