@@ -58,7 +58,14 @@ export default {
       return resultElements;
     },
     maxHeight() {
-      return this.popupConfig.height || this.popupConfig.maxHeight || {};
+      const { height, maxHeight } = this.popupConfig || {};
+      if (height) {
+        return { height };
+      }
+      if (maxHeight) {
+        return { maxHeight };
+      }
+      return {};
     }
   }
 };
