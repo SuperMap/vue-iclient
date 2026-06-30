@@ -82,6 +82,38 @@ describe('PopupContent.vue', () => {
     expect(wrapper.vm.ellipsisStyle).toBeTruthy();
   });
 
+  it('computes maxHeight with height priority', () => {
+    wrapper = mount(PopupContent, {
+      propsData: {
+        popupConfig: {
+          height: '400px',
+          maxHeight: '300px'
+        }
+      }
+    });
+    expect(wrapper.vm.maxHeight).toEqual({ height: '400px' });
+  });
+
+  it('computes maxHeight with maxHeight only', () => {
+    wrapper = mount(PopupContent, {
+      propsData: {
+        popupConfig: {
+          maxHeight: '300px'
+        }
+      }
+    });
+    expect(wrapper.vm.maxHeight).toEqual({ maxHeight: '300px' });
+  });
+
+  it('computes maxHeight with empty popupConfig', () => {
+    wrapper = mount(PopupContent, {
+      propsData: {
+        popupConfig: {}
+      }
+    });
+    expect(wrapper.vm.maxHeight).toEqual({});
+  });
+
   it('renders content with multiple elements', () => {
     const data = {
       features: [

@@ -170,7 +170,7 @@
         img {
           visibility: visible !important;
           max-width: 100%;
-          max-height: 100%;
+          max-height: 100% !important;
           width: auto;
           height: auto;
         }
@@ -293,6 +293,7 @@
   }
   .ql-editor {
     padding: 0;
+    min-height: auto;
   }
   .sm-divider {
     display: flex;
