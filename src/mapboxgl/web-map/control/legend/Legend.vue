@@ -80,6 +80,7 @@ import SmCollapsePanel from 'vue-iclient/src/common/collapse/Panel.vue';
 import LegendViewModel from './LegendViewModel';
 import StyleItem from './subs/StyleItem.vue';
 import StyleField from './subs/StyleField.vue';
+import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
 import debounce from 'lodash.debounce';
 
 export default {
@@ -105,7 +106,11 @@ export default {
     },
     layerNames: {
       type: Array,
-      required: true
+      required: false
+    },
+    useMapLegend: {
+      type: Boolean,
+      default: false
     },
     isShowTitle: {
       type: Boolean,
@@ -131,11 +136,17 @@ export default {
     return {
       legendList: {},
       // 控制第一个图例默认展开
-      activeLegend: []
+      activeLegend: [],
+      isMapLoaded: false
     };
   },
+  computed: {
+    layerNamesValue() {
+      return this.getLayerNames();
+    }
+  },
   watch: {
-    layerNames: function () {
+    layerNamesValue: function () {
       this.initLegendList();
     }
   },
@@ -144,8 +155,8 @@ export default {
       this.legendList = {};
       let defaultChoosenLayers = [];
       if (this.viewModel) {
-        this.legendList = this.layerNames.reduce((list, name) => {
-          const styles = this.viewModel.getStyle(name);
+        this.legendList = this.getLayerNames(this.webMapViewModel).reduce((list, name) => {
+          const styles = this.viewModel.getStyle(name, this.webMapViewModel);
           if (styles && styles.length > 0) {
             list[name] = styles;
             !defaultChoosenLayers.length && defaultChoosenLayers.push(name);
@@ -154,21 +165,35 @@ export default {
         }, {});
         this.activeLegend = this.isShowTitle ? defaultChoosenLayers : Object.keys(this.legendList);
       }
+    },
+    getLayerNames(webMapViewModel) {
+      if (this.useMapLegend && this.isMapLoaded) {
+        return this.viewModel?.getLayerNamesFromWebmap(webMapViewModel) || [];
+      }
+      return this.layerNames;
+    },
+    loadedCb(webMapViewModel = this.viewModel.webmap) {
+      this.webMapViewModel = webMapViewModel;
+      this.initLegendList();
     }
   },
   created() {
     this.viewModel = new LegendViewModel();
-    this.initLegendListFn = debounce(this.initLegendList.bind(this), 300);
+    this.initLegendListFn = debounce(this.initLegendList, 300);
     this.viewModel.on('layersupdated', this.initLegendListFn);
   },
   beforeDestroy() {
+    this.webMapViewModel = null;
     this.viewModel.off('layersupdated', this.initLegendListFn);
   },
   loaded() {
-    this.initLegendList();
+    this.isMapLoaded = true;
+    this.loadedCb();
+    mapEvent.$on('load-webmap-view-model', this.loadedCb);
   },
   removed() {
     this.legendList = {};
+    mapEvent.$off('load-webmap-view-model', this.loadedCb);
   }
 };
 </script>

@@ -562,6 +562,25 @@ describe('WebMapViewModel.spec', () => {
     jest.advanceTimersByTime(0);
   });
 
+  it('getLegendInfos', async done => {
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+    const callback = function () {
+      const mockLegendInfos = [{ layerId: 'layer1' }, { layerId: 'layer2' }];
+      // Mock the handler's getLegendInfos method
+      viewModel._handler = {
+        ...viewModel._handler,
+        getLegendInfos: jest.fn().mockReturnValue(mockLegendInfos)
+      };
+      const result = viewModel.getLegendInfos();
+      expect(viewModel._handler.getLegendInfos).toHaveBeenCalled();
+      expect(result).toEqual(mockLegendInfos);
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
+  });
+
   // 在 MD 调用
   it('updateOverlayLayer unique', async done => {
     const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
