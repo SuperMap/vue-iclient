@@ -19,9 +19,9 @@ class LegendViewModel extends mapboxgl.Evented {
     });
   }
 
-  getStyle(layerName) {
-    const appreciableLayers = this.webmap?.getAppreciableLayers() || [];
-    const legendInfo = this.webmap?.getLegendInfo() || [];
+  getStyle(layerName, webMapViewModel = this.webmap) {
+    const appreciableLayers = webMapViewModel?.getAppreciableLayers() || [];
+    const legendInfo = webMapViewModel?.getLegendInfo() || [];
     return legendInfo.filter(info => {
       return (
         info.layerId === layerName &&
@@ -29,6 +29,11 @@ class LegendViewModel extends mapboxgl.Evented {
         appreciableLayers.some(layer => layer.id === info.layerId && layer.visible)
       );
     });
+  }
+
+  getLayerNamesFromWebmap(webMapViewModel = this.webmap) {
+    const legendInfos = webMapViewModel?.getLegendInfos?.() || [];
+    return legendInfos.filter(item => item.showLegend).map(info => info.id);
   }
 
   removed() {
