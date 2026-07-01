@@ -115,6 +115,7 @@ interface MapHandler {
   cleanLayers: (layers?: Array<Record<string, any>>, isClean?: boolean) => void;
   getLayerCatalog: () => any[];
   getLegends: () => any[];
+  getLegendInfos: () => any[];
   getLayers: () => any[];
   rectifyLayersOrder: (appreciableLayers: any[], topLayerBeforeId?: string) => void;
   getWebMapType: () => any;
@@ -296,6 +297,10 @@ export default class WebMapViewModel extends Events {
 
   getAppreciableLayers() {
     return this._handler.getLayers();
+  }
+
+  getLegendInfos() {
+    return this._handler.getLegendInfos();
   }
 
   getLegendInfo() {
