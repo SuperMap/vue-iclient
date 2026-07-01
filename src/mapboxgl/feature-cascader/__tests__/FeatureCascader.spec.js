@@ -182,6 +182,6 @@ describe('FeatureCascader.vue', () => {
 
     const lastCall = postSpy.mock.calls[postSpy.mock.calls.length - 1];
     console.log(lastCall);
-    expect(lastCall[1]).toContain(`(\\\"parent_cod\\\" = '%253301%25')`);
+    expect(lastCall[1]).toContain(`(\\\"parent_cod\\\" = '3301')`);
   });
 });
