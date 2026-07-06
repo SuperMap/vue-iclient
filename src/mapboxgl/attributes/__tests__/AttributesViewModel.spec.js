@@ -259,7 +259,7 @@ describe('AttributesViewModel.ts', () => {
   });
 
   it('setsorter', () => {
-    const viewModel = new AttributesViewModel(options);
+    const viewModel = new AttributesViewModel({ ...options, layerName: undefined });
     const sorter = () => jest.fn();
     viewModel.setSorter(sorter);
     expect(viewModel.sorter).toBe(sorter);
@@ -278,7 +278,7 @@ describe('AttributesViewModel.ts', () => {
   });
 
   it('setFieldInfo', () => {
-    const viewModel = new AttributesViewModel(options);
+    const viewModel = new AttributesViewModel({ ...options, layerName: undefined });
     const fieldConfigs = { value: '最低气温', visible: false };
     viewModel.setFieldInfo(fieldConfigs);
     expect(viewModel.fieldConfigs).toBe(fieldConfigs);
