@@ -672,6 +672,45 @@ describe('LayerHighlightViewModel', () => {
   });
 
   it('removeHighlightLayers with no map style', done => {
+    const map = new Map({
+      style: { center: [0, 0], zoom: 1, layers: [], sources: {} }
+    });
+    const layer = { id: mockLayerName, source: '', type: 'fill' };
+    jest.spyOn(map, 'getLayer').mockImplementation(() => layer);
+    jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => [
+      {
+        type: 'Feature',
+        properties: {
+          smpid: 7,
+          type: '分类5',
+          _id: 177554
+        },
+        layer: { id: mockLayerName, paint: {}, type: 'fill' },
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [116.452409755349, 40.92656164358],
+              [116.483357386004, 40.9069469918439],
+              [116.442423257771, 40.9417511118507],
+              [116.452409755349, 40.92656164358]
+            ]
+          ]
+        }
+      }
+    ]);
+    const viewModel = new LayerHighlightViewModel({
+      name: uniqueName,
+      style: highlightStyle
+    });
+    const webmap = {
+      copyLayer: copyLayerSpy,
+      getAppreciableLayers: jest.fn().mockReturnValue([{ id: mockLayerName, dataSource: {}, type: 'fill' }])
+    };
+    viewModel.setMap({
+      map,
+      webmap
+    });
     viewModel.once('mapselectionchanged', ({
       features
     }) => {

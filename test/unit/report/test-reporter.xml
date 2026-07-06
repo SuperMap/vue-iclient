@@ -1,0 +1,1249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\__tests__\WebMapViewModel.spec.js">
+        <testCase name="WebMapViewModel.spec add uniqueLayer point preferServer true" duration="24"/>
+        <testCase name="WebMapViewModel.spec add uniqueLayer point" duration="17"/>
+        <testCase name="WebMapViewModel.spec resize resize normal" duration="5"/>
+        <testCase name="WebMapViewModel.spec resize resize keepbounds" duration="2"/>
+        <testCase name="WebMapViewModel.spec setCrs take epsgcode" duration="5"/>
+        <testCase name="WebMapViewModel.spec setCrs do not take epsgcode" duration="2"/>
+        <testCase name="WebMapViewModel.spec setCenter set valid data" duration="4"/>
+        <testCase name="WebMapViewModel.spec setRenderWorldCopies" duration="8"/>
+        <testCase name="WebMapViewModel.spec setBearing" duration="3"/>
+        <testCase name="WebMapViewModel.spec setPitch" duration="4"/>
+        <testCase name="WebMapViewModel.spec setStyle" duration="3"/>
+        <testCase name="WebMapViewModel.spec setWithCredentials" duration="2"/>
+        <testCase name="WebMapViewModel.spec setProxy" duration="5"/>
+        <testCase name="WebMapViewModel.spec setRasterTileSize" duration="1"/>
+        <testCase name="WebMapViewModel.spec setLayersVisible" duration="13"/>
+        <testCase name="WebMapViewModel.spec setLayersVisible with isSetVisible parameter" duration="5"/>
+        <testCase name="WebMapViewModel.spec cleanLayers with default params" duration="2"/>
+        <testCase name="WebMapViewModel.spec cleanLayers with custom layers" duration="3"/>
+        <testCase name="WebMapViewModel.spec cleanLayers with isClean false" duration="2"/>
+        <testCase name="WebMapViewModel.spec getLegendInfos" duration="4"/>
+        <testCase name="WebMapViewModel.spec updateOverlayLayer unique" duration="1"/>
+        <testCase name="WebMapViewModel.spec add baselayer which is baidu" duration="1"/>
+        <testCase name="WebMapViewModel.spec crs not support" duration="2"/>
+        <testCase name="WebMapViewModel.spec add baselayer which is bing" duration="2"/>
+        <testCase name="WebMapViewModel.spec add baselayer which is goole_cn" duration="1"/>
+        <testCase name="WebMapViewModel.spec add wmtsLayer with error url" duration="4"/>
+        <testCase name="WebMapViewModel.spec different projection" duration="6"/>
+        <testCase name="WebMapViewModel.spec xyztilelayernotsupport" duration="1"/>
+        <testCase name="WebMapViewModel.spec layerFilter" duration="2"/>
+        <testCase name="WebMapViewModel.spec xyztilelayernotsupport" duration="1"/>
+        <testCase name="WebMapViewModel.spec webmap3.0" duration="2"/>
+        <testCase name="WebMapViewModel.spec exclude source and layer" duration="1"/>
+        <testCase name="WebMapViewModel.spec switch map and reset center zoom" duration="4"/>
+        <testCase name="WebMapViewModel.spec copy layer" duration="8"/>
+        <testCase name="WebMapViewModel.spec changeItemVisible" duration="11"/>
+        <testCase name="WebMapViewModel.spec getLayerDatas" duration="7"/>
+        <testCase name="WebMapViewModel.spec getLayerDatas - filter" duration="17"/>
+        <testCase name="WebMapViewModel.spec mapbeforeremove" duration="1"/>
+        <testCase name="WebMapViewModel.spec zoomToBounds" duration="8"/>
+        <testCase name="WebMapViewModel.spec zoomToBounds migrationLayer" duration="2"/>
+        <testCase name="WebMapViewModel.spec should handle source without bounds but with markers" duration="2"/>
+        <testCase name="WebMapViewModel.spec should handle source with geojson data" duration="1"/>
+        <testCase name="WebMapViewModel.spec should handle layer with opacity property" duration="2"/>
+        <testCase name="WebMapViewModel.spec should handle CLASS_INSTANCE with markers" duration="4"/>
+        <testCase name="WebMapViewModel.spec should handle L7Layer" duration="3"/>
+        <testCase name="WebMapViewModel.spec should return undefined when layer not found" duration="1"/>
+        <testCase name="WebMapViewModel.spec should return opacity from CLASS_INSTANCE marker element" duration="2"/>
+        <testCase name="WebMapViewModel.spec should return opacity from L7Layer" duration="2"/>
+        <testCase name="WebMapViewModel.spec should return opacity from map paint property" duration="2"/>
+        <testCase name="WebMapViewModel.spec should return 1 when opacity is undefined" duration="5"/>
+        <testCase name="WebMapViewModel.spec attributesDataAvailable" duration="2"/>
+        <testCase name="WebMapViewModel.spec _mapCreateSucceededHandlerHandler should emit addlayerssucceeded with mapData.mapOptions (formatted)" duration="1"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\__tests__\WebMap.spec.js">
+        <testCase name="WebMap.vue initial_serverUrl" duration="108"/>
+        <testCase name="WebMap.vue initial_serverUrl preferServer true" duration="40"/>
+        <testCase name="WebMap.vue xyztilelayernotsupport" duration="0"/>
+        <testCase name="WebMap.vue initial_Control" duration="48"/>
+        <testCase name="WebMap.vue initial_mapObject" duration="23"/>
+        <testCase name="WebMap.vue initial_markerLayer" duration="0"/>
+        <testCase name="WebMap.vue initial_heatLayer" duration="0"/>
+        <testCase name="WebMap.vue initial_vectorLayer_point" duration="0"/>
+        <testCase name="WebMap.vue initial_vectorLayer_line" duration="1"/>
+        <testCase name="WebMap.vue initial_ranksymbolLayer" duration="0"/>
+        <testCase name="WebMap.vue initial_uniqueLayer_polygon" duration="0"/>
+        <testCase name="WebMap.vue initial_wmsLayer" duration="2039"/>
+        <testCase name="WebMap.vue initial_wmtsLayer" duration="2029"/>
+        <testCase name="WebMap.vue initial_TiandituLayer" duration="0"/>
+        <testCase name="WebMap.vue initial_xyzLayer" duration="0"/>
+        <testCase name="WebMap.vue initial_mapboxstyleLayer" duration="2016"/>
+        <testCase name="WebMap.vue initial_migrationLayer" duration="0"/>
+        <testCase name="WebMap.vue initial-rangeLayer-point" duration="0"/>
+        <testCase name="WebMap.vue setProps" duration="31"/>
+        <testCase name="WebMap.vue fix trigger map loading success event repeatedly when only base map is available" duration="22"/>
+        <testCase name="WebMap.vue ISVJ-7952 CSV nullXY" duration="0"/>
+        <testCase name="WebMap.vue listen layercreatefailed error is object" duration="51"/>
+        <testCase name="WebMap.vue listen layercreatefailed error is string" duration="24"/>
+        <testCase name="WebMap.vue listen other vm event" duration="174"/>
+        <testCase name="WebMap.vue bing map" duration="0"/>
+        <testCase name="WebMap.vue registerEvents addlayerssucceeded -&gt; calls mapEvent.$options.setMap with (target, map, mapData)" duration="15"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\chart\__tests__\ChartMixin.spec.js">
+        <testCase name="Chart Mixin Component toggle component by isShow props show component" duration="237"/>
+        <testCase name="Chart Mixin Component toggle component by isShow props hide component" duration="43"/>
+        <testCase name="Chart Mixin Component has echarts instance" duration="167"/>
+        <testCase name="Chart Mixin Component render empty chart" duration="130"/>
+        <testCase name="Chart Mixin Component render pie chart" duration="119"/>
+        <testCase name="Chart Mixin Component render rankBar chart" duration="341"/>
+        <testCase name="Chart Mixin Component decimals smart label" duration="147"/>
+        <testCase name="Chart Mixin Component render special chart which type is 2.5Bar static data" duration="69"/>
+        <testCase name="Chart Mixin Component render special chart which type is 2.5Bar fetch data" duration="404"/>
+        <testCase name="Chart Mixin Component render special chart which type is 2.5Bar render cylinder chart" duration="488"/>
+        <testCase name="Chart Mixin Component render special chart which type is 2.5Bar render cylinder chart keeps custom color function for caps" duration="114"/>
+        <testCase name="Chart Mixin Component render special chart which type is 2.5Bar render cylinder chart with Multiple feature" duration="155"/>
+        <testCase name="Chart Mixin Component render special chart which customType is customRingsSeries" duration="260"/>
+        <testCase name="Chart Mixin Component render special pie chart which ring is shine" duration="120"/>
+        <testCase name="Chart Mixin Component specify itemStyle.color which ring is shine" duration="119"/>
+        <testCase name="Chart Mixin Component render special pie chart which is named Rose" duration="105"/>
+        <testCase name="Chart Mixin Component trigger echarts events" duration="141"/>
+        <testCase name="Chart Mixin Component radar decimals" duration="139"/>
+        <testCase name="Chart Mixin Component highlightOptions, dataZoom" duration="588"/>
+        <testCase name="Chart Mixin Component misc internal methods coverage showDetailInfo returns early when mapNotLoadedTip is true" duration="189"/>
+        <testCase name="Chart Mixin Component misc internal methods coverage _dataZoomChanged does not call _optionsHandler when smart labels not enabled" duration="222"/>
+        <testCase name="Chart Mixin Component misc internal methods coverage delegate methods call through to smChart" duration="180"/>
+        <testCase name="Chart Mixin Component misc internal methods coverage chart static methods delegate to ECharts when available" duration="113"/>
+        <testCase name="Chart Mixin Component xBar with visualMap and highlightOptions should disable visualMap when xBar has highlightOptions" duration="75"/>
+        <testCase name="Chart Mixin Component xBar with visualMap and highlightOptions should keep visualMap when not xBar chart" duration="71"/>
+        <testCase name="Chart Mixin Component xBar with visualMap and highlightOptions should keep visualMap when xBar has no highlightOptions" duration="62"/>
+        <testCase name="Chart Mixin Component computed properties isPie returns true when series type is pie" duration="66"/>
+        <testCase name="Chart Mixin Component computed properties isPie returns false when options has no series" duration="45"/>
+        <testCase name="Chart Mixin Component computed properties isPie returns false when options is empty" duration="52"/>
+        <testCase name="Chart Mixin Component computed properties maxFeatures returns dataset maxFeatures when not pie chart" duration="71"/>
+        <testCase name="Chart Mixin Component computed properties maxFeatures returns PIE_MAX_FEATURES when pie chart and maxFeatures is empty string" duration="65"/>
+        <testCase name="Chart Mixin Component computed properties maxFeatures returns PIE_MAX_FEATURES when pie chart and maxFeatures &gt; 300" duration="80"/>
+        <testCase name="Chart Mixin Component computed properties maxFeatures returns original value when pie chart and maxFeatures &lt;= 300" duration="49"/>
+        <testCase name="Chart Mixin Component computed properties _dataset returns null when dataset is null" duration="59"/>
+        <testCase name="Chart Mixin Component computed properties isStastic returns true when datasetOptions has isStastic true" duration="45"/>
+        <testCase name="Chart Mixin Component computed properties isStastic returns false when datasetOptions has isStastic false" duration="57"/>
+        <testCase name="Chart Mixin Component computed properties isStastic returns false when datasetOptions has no isStastic" duration="54"/>
+        <testCase name="Chart Mixin Component computed properties isStastic returns false when datasetOptions is null" duration="58"/>
+        <testCase name="Chart Mixin Component colorNumber computed property returns colorGroupsData length when no series" duration="70"/>
+        <testCase name="Chart Mixin Component _isRequestData computed property returns false when dataset is empty" duration="47"/>
+        <testCase name="Chart Mixin Component _isRequestData computed property returns false when datasetOptions is empty" duration="59"/>
+        <testCase name="Chart Mixin Component _isRequestData computed property returns true when dataset has url and datasetOptions is not empty" duration="50"/>
+        <testCase name="Chart Mixin Component _isRequestData computed property returns true when dataset has geoJSON and datasetOptions is not empty" duration="46"/>
+        <testCase name="Chart Mixin Component methods - timing sets dataSeriesCache and echartOptions when echartsDataService exists" duration="67"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\leaflet\web-map\__tests__\WebMapViewModel.spec.js">
+        <testCase name="WebMapViewModel.spec constructor options = undefined, id is Object" duration="7"/>
+        <testCase name="WebMapViewModel.spec uniqueLayer" duration="119"/>
+        <testCase name="WebMapViewModel.spec rangeLayer" duration="1"/>
+        <testCase name="WebMapViewModel.spec heatLayer" duration="1"/>
+        <testCase name="WebMapViewModel.spec add vectorLayer_point" duration="110"/>
+        <testCase name="WebMapViewModel.spec add vectorLayer_point with SYMBOL_POINT" duration="2"/>
+        <testCase name="WebMapViewModel.spec add vectorLayer_line road" duration="1"/>
+        <testCase name="WebMapViewModel.spec add DATAFLOW_POINT_TRACKLayer" duration="1"/>
+        <testCase name="WebMapViewModel.spec add DATAFLOW_POINT_TRACKLayer with style is IMAGE_POINT" duration="1"/>
+        <testCase name="WebMapViewModel.spec add DATAFLOW_POINT_TRACKLayer with style is SVG_POINT" duration="2"/>
+        <testCase name="WebMapViewModel.spec initial_wmtsLayer" duration="2"/>
+        <testCase name="WebMapViewModel.spec initial_wmsLayer" duration="1"/>
+        <testCase name="WebMapViewModel.spec initial_TiandituLayer" duration="1"/>
+        <testCase name="WebMapViewModel.spec initial_xyzLayer" duration="1"/>
+        <testCase name="WebMapViewModel.spec initial_rankSymbolLayer" duration="1"/>
+        <testCase name="WebMapViewModel.spec initial_markerLayer" duration="0"/>
+        <testCase name="WebMapViewModel.spec initial_migrationLayer" duration="1"/>
+        <testCase name="WebMapViewModel.spec initial_mapboxstyleLayer" duration="112"/>
+        <testCase name="WebMapViewModel.spec setCenter" duration="117"/>
+        <testCase name="WebMapViewModel.spec clean" duration="109"/>
+        <testCase name="WebMapViewModel.spec updateDataFlowFeature" duration="3"/>
+        <testCase name="WebMapViewModel.spec accessKey credentialKey" duration="1"/>
+        <testCase name="WebMapViewModel.spec accessToken credentialKey" duration="0"/>
+        <testCase name="WebMapViewModel.spec unsupport mvt" duration="1"/>
+        <testCase name="WebMapViewModel.spec unspport sample data" duration="1"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\chart\__tests__\Chart.spec.js">
+        <testCase name="Chart bar" duration="276"/>
+        <testCase name="Chart default 2.5BarSquare" duration="153"/>
+        <testCase name="Chart default 2.5BarRectangle" duration="118"/>
+        <testCase name="Chart default 2.5BarCylinder" duration="176"/>
+        <testCase name="Chart default xbar" duration="114"/>
+        <testCase name="Chart default RankXBar" duration="152"/>
+        <testCase name="Chart default RingShine" duration="179"/>
+        <testCase name="Chart scatter" duration="109"/>
+        <testCase name="Chart default line" duration="127"/>
+        <testCase name="Chart line" duration="115"/>
+        <testCase name="Chart radar" duration="110"/>
+        <testCase name="Chart pie" duration="92"/>
+        <testCase name="Chart gauge" duration="108"/>
+        <testCase name="Chart change props" duration="126"/>
+        <testCase name="Chart init rankbar AxisLabel" duration="74"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\layer-highlight\__tests__\LayerHighlightViewModel.spec.js">
+        <testCase name="LayerHighlightViewModel toogle show highlight layers" duration="7"/>
+        <testCase name="LayerHighlightViewModel map click l7 animate marker" duration="11"/>
+        <testCase name="LayerHighlightViewModel map click ms fill extrusion" duration="3"/>
+        <testCase name="LayerHighlightViewModel map click target layer by specified featureFields" duration="4"/>
+        <testCase name="LayerHighlightViewModel map click target layer by pressing ctrl" duration="10"/>
+        <testCase name="LayerHighlightViewModel map click same feature by smid" duration="15"/>
+        <testCase name="LayerHighlightViewModel map click same feature by geometry" duration="7"/>
+        <testCase name="LayerHighlightViewModel updateHighlightDatas" duration="15"/>
+        <testCase name="LayerHighlightViewModel map click empty" duration="6"/>
+        <testCase name="LayerHighlightViewModel map canvas style" duration="2"/>
+        <testCase name="LayerHighlightViewModel removeHighlightLayers with no map style" duration="2">
+            <failure message="TypeError: Cannot read properties of undefined (reading &apos;once&apos;)"><![CDATA[TypeError: Cannot read properties of undefined (reading 'once')
+    at Object.<anonymous> (G:\projects\vue-iclient-dev\src\mapboxgl\layer-highlight\__tests__\LayerHighlightViewModel.spec.js:675:15)
+    at G:\projects\vue-iclient-dev\node_modules\jest-jasmine2\build\queueRunner.js:45:12
+    at new Promise (<anonymous>)
+    at mapper (G:\projects\vue-iclient-dev\node_modules\jest-jasmine2\build\queueRunner.js:28:19)
+    at G:\projects\vue-iclient-dev\node_modules\jest-jasmine2\build\queueRunner.js:75:41
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)]]></failure>
+        </testCase>
+        <testCase name="LayerHighlightViewModel1 queryWFSFeatures" duration="25"/>
+        <testCase name="LayerHighlightViewModel1 queryWFSFeatures - error" duration="4"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\text-list\__tests__\TextList.spec.js">
+        <testCase name="TextList.vue render default correctly" duration="66"/>
+        <testCase name="TextList.vue render index correctly" duration="142"/>
+        <testCase name="TextList.vue change contents" duration="203"/>
+        <testCase name="TextList.vue fixinfo" duration="62"/>
+        <testCase name="TextList.vue change dataset" duration="42"/>
+        <testCase name="TextList.vue clear dataset when change dataset is empty" duration="87"/>
+        <testCase name="TextList.vue content is empty" duration="95"/>
+        <testCase name="TextList.vue Sort columns by field" duration="54"/>
+        <testCase name="TextList.vue Sort columns by field real sort" duration="95"/>
+        <testCase name="TextList.vue click animateContent" duration="68"/>
+        <testCase name="TextList.vue vm destory" duration="156"/>
+        <testCase name="TextList.vue handleClick highlightColor string" duration="203"/>
+        <testCase name="TextList.vue handleMouseEnter rowHoverColor string" duration="138"/>
+        <testCase name="TextList.vue setCurrentRow activeClickRowIndex number" duration="119"/>
+        <testCase name="TextList.vue setCurrentRow activeClickRowIndex object" duration="315"/>
+        <testCase name="TextList.vue setContent" duration="142"/>
+        <testCase name="TextList.vue highlightOptions" duration="260"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\query\__tests__\Query.spec.js">
+        <testCase name="query iPortal Data" duration="506"/>
+        <testCase name="query iPortal unpublished Data" duration="386"/>
+        <testCase name="query restData Service" duration="503"/>
+        <testCase name="query restMap Service" duration="267"/>
+        <testCase name="query change iPortal Data" duration="269"/>
+        <testCase name="query change restData Service" duration="278"/>
+        <testCase name="query change restMap Service" duration="288"/>
+        <testCase name="query change same restMap Service" duration="295"/>
+        <testCase name="query select query item" duration="335"/>
+        <testCase name="query restMap Service with bounds" duration="241"/>
+        <testCase name="query restData Service with bounds" duration="211"/>
+        <testCase name="query query keyWord" duration="240"/>
+        <testCase name="query shows sql builder button when enabled" duration="211"/>
+        <testCase name="query hides sql builder button when disabled" duration="106"/>
+        <testCase name="query renders sql builder content in the fixed popover panel" duration="401"/>
+        <testCase name="query applies sql builder expression to attribute filter" duration="322"/>
+        <testCase name="query keeps sql builder operators to basic attribute filter conditions" duration="66"/>
+        <testCase name="query shows not equal operator as != but keeps &lt;&gt; in sql expression" duration="224"/>
+        <testCase name="query builds sql expression from multiple condition rows" duration="653"/>
+        <testCase name="query removes connector when deleting sql builder condition row" duration="526"/>
+        <testCase name="query uses the sql builder condition close icon instead of a delete button" duration="494"/>
+        <testCase name="query does not require value for sql builder null operators" duration="250"/>
+        <testCase name="query limits sql builder operators by selected field value type" duration="129"/>
+        <testCase name="query shows friendly sql builder operator labels without changing stored operator values" duration="148"/>
+        <testCase name="query formats sql builder values by selected field value type" duration="123"/>
+        <testCase name="query resets sql builder operator and value when field changes to a field with different operators" duration="104"/>
+        <testCase name="query clears sql builder value when field changes without changing operator" duration="101"/>
+        <testCase name="query shows sql builder value options again after clearing a typed value" duration="432"/>
+        <testCase name="query caches all unique sql builder field values from queried features" duration="119"/>
+        <testCase name="query shows first 100 sql builder field values but searches all cached values" duration="504"/>
+        <testCase name="query caches unique sql builder values for all fields from one feature query" duration="109"/>
+        <testCase name="query loads sql builder fields from queried feature fieldNames" duration="236"/>
+        <testCase name="query loads sql builder field values from fieldValues arrays and removes duplicates" duration="144"/>
+        <testCase name="query returns null when sql builder expression cannot be parsed" duration="274"/>
+        <testCase name="query loads restData sql builder fields from fields.json on first open" duration="881"/>
+        <testCase name="query loads restMap sql builder fields from one feature request on first open" duration="279"/>
+        <testCase name="query loads sql builder field values only after clicking the value button" duration="362"/>
+        <testCase name="query does not use configured fields for sql builder field options" duration="88"/>
+        <testCase name="query query clear result" duration="241"/>
+        <testCase name="query multiSelect true" duration="247"/>
+        <testCase name="query showPopup false" duration="137"/>
+        <testCase name="query identifyField" duration="112"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\tdt\route\__tests__\TdtRoute.spec.js">
+        <testCase name="TdtRoute.vue render" duration="76"/>
+        <testCase name="TdtRoute.vue change route" duration="122"/>
+        <testCase name="TdtRoute.vue switch route" duration="56"/>
+        <testCase name="TdtRoute.vue search route" duration="1047"/>
+        <testCase name="TdtRoute.vue clear route" duration="407"/>
+        <testCase name="TdtRoute.vue finish route" duration="1476"/>
+        <testCase name="TdtRoute.vue setData" duration="36"/>
+        <testCase name="TdtRoute.vue switch route" duration="77"/>
+        <testCase name="TdtRoute.vue switch statistics route" duration="86"/>
+        <testCase name="TdtRoute.vue switch bus mode" duration="3325"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\_utils\__tests__\EchartsDataService.spec.js">
+        <testCase name="EchartsDataService test radar" duration="25"/>
+        <testCase name="EchartsDataService isStastic" duration="8"/>
+        <testCase name="EchartsDataService isStastic with string statisticFunction" duration="10"/>
+        <testCase name="EchartsDataService isStastic with function statisticFunction" duration="2"/>
+        <testCase name="EchartsDataService without datasetOptions" duration="5"/>
+        <testCase name="EchartsDataService EchartsDataService._createStatisticOriginData should create statistic origin data with all parameters provided" duration="5"/>
+        <testCase name="EchartsDataService EchartsDataService._createStatisticOriginData should use default datasetOptions and statisticDataCache when not provided" duration="11"/>
+        <testCase name="EchartsDataService EchartsDataService._createStatisticOriginData should handle null or undefined features parameter" duration="0"/>
+        <testCase name="EchartsDataService EchartsDataService._createStatisticOriginData should handle empty data.features array" duration="4"/>
+        <testCase name="EchartsDataService EchartsDataService._createStatisticOriginData should handle when xField value not found in data.features" duration="1"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\layer-list\__tests__\LayerList.spec.js">
+        <testCase name="LayerList.vue render index correctly" duration="235"/>
+        <testCase name="LayerList.vue layerGroupVisibility tile" duration="237"/>
+        <testCase name="LayerList.vue layerGroupVisibility vector-tile" duration="137"/>
+        <testCase name="LayerList.vue attributes style" duration="81"/>
+        <testCase name="LayerList.vue render v3 layers" duration="130"/>
+        <testCase name="LayerList.vue render setmap" duration="656"/>
+        <testCase name="LayerList.vue onDrop" duration="1269"/>
+        <testCase name="LayerList.vue icons hover" duration="957"/>
+        <testCase name="LayerList.vue geojson vector attributes" duration="1314"/>
+        <testCase name="LayerList.vue treenode textcolor changed" duration="348"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\_utils\__tests__\get-features.spec.js">
+        <testCase name="getFeatures test getStructureddata" duration="66"/>
+        <testCase name="getFeatures test getStructureddata transformedFeatures" duration="5"/>
+        <testCase name="getFeatures test getStructureddata pagination" duration="33"/>
+        <testCase name="getFeatures test getStructureddata without dataType param" duration="20"/>
+        <testCase name="getFeatures test iserver support bounds and keyWord" duration="6"/>
+        <testCase name="getFeatures test event featureisempty" duration="216"/>
+        <testCase name="getFeatures test event getdatafailed" duration="10"/>
+        <testCase name="getFeatures test iServer - should handle filterConditions correctly" duration="6"/>
+        <testCase name="getFeatures test STRUCTUREDDATA - should handle filterConditions correctly" duration="3"/>
+        <testCase name="getFeatures test filterConditions concat attribute filter" duration="4"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\drill-map\__tests__\DrillMap.spec.js">
+        <testCase name="DrillMap.vue initial_same_map" duration="113"/>
+        <testCase name="DrillMap.vue initial_Control" duration="56"/>
+        <testCase name="DrillMap.vue initial_diffrent_map" duration="27"/>
+        <testCase name="DrillMap.vue drill_next_map" duration="49"/>
+        <testCase name="DrillMap.vue go_back" duration="48"/>
+        <testCase name="DrillMap.vue click_blank" duration="31"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\layer\track\__tests__\TrackLayer.spec.js">
+        <testCase name="TrackLayer.vue render" duration="13"/>
+        <testCase name="TrackLayer.vue set loaderType" duration="7"/>
+        <testCase name="TrackLayer.vue set empty loaderType" duration="8"/>
+        <testCase name="TrackLayer.vue set url" duration="4"/>
+        <testCase name="TrackLayer.vue set empty url" duration="9"/>
+        <testCase name="TrackLayer.vue set url width loadertype" duration="2026"/>
+        <testCase name="TrackLayer.vue set displayLine" duration="50"/>
+        <testCase name="TrackLayer.vue set trackPoints" duration="21"/>
+        <testCase name="TrackLayer.vue set matchCurrentPosition position" duration="30"/>
+        <testCase name="TrackLayer.vue addImageLayer" duration="1026"/>
+        <testCase name="TrackLayer.vue set matchNextPosition position" duration="8"/>
+        <testCase name="TrackLayer.vue set layerStyle" duration="8"/>
+        <testCase name="TrackLayer.vue set direction" duration="4"/>
+        <testCase name="TrackLayer.vue set unit" duration="3"/>
+        <testCase name="TrackLayer.vue set scale" duration="9"/>
+        <testCase name="TrackLayer.vue set fitBounds" duration="4"/>
+        <testCase name="TrackLayer.vue set followCamera" duration="10"/>
+        <testCase name="TrackLayer.vue set direction front -x bottom x" duration="3"/>
+        <testCase name="TrackLayer.vue set direction front y bottom -x" duration="5"/>
+        <testCase name="TrackLayer.vue set direction front -y bottom x" duration="5"/>
+        <testCase name="TrackLayer.vue set direction front z bottom -y" duration="7"/>
+        <testCase name="TrackLayer.vue set direction front -z bottom z" duration="3"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\tdt\search\__tests__\TdtSearch.spec.js">
+        <testCase name="TdtSearch.vue render" duration="61"/>
+        <testCase name="TdtSearch.vue search" duration="1153"/>
+        <testCase name="TdtSearch.vue search lineString detail" duration="546"/>
+        <testCase name="TdtSearch.vue search point detail" duration="526"/>
+        <testCase name="TdtSearch.vue keyboard event" duration="657"/>
+        <testCase name="TdtSearch.vue select search item" duration="1355"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\search\__tests__\Search.spec.js">
+        <testCase name="Search.vue layerNames" duration="184"/>
+        <testCase name="Search.vue onlineLocalSearch" duration="114"/>
+        <testCase name="Search.vue restMap" duration="210"/>
+        <testCase name="Search.vue restData" duration="125"/>
+        <testCase name="Search.vue iportal data" duration="131"/>
+        <testCase name="Search.vue addressMatch" duration="123"/>
+        <testCase name="Search.vue change address match" duration="156"/>
+        <testCase name="Search.vue change iportal data" duration="74"/>
+        <testCase name="Search.vue change restMap" duration="138"/>
+        <testCase name="Search.vue change restData" duration="115"/>
+        <testCase name="Search.vue ketup down" duration="1159"/>
+        <testCase name="Search.vue ketup up" duration="1197"/>
+        <testCase name="Search.vue click search result" duration="1187"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\layer\animate-marker\__tests__\AnimateMarkerLayer.spec.js">
+        <testCase name="AnimateMarkerLayer.vue render" duration="33"/>
+        <testCase name="AnimateMarkerLayer.vue rotatingAperture" duration="17"/>
+        <testCase name="AnimateMarkerLayer.vue haloRing" duration="50"/>
+        <testCase name="AnimateMarkerLayer.vue diffusedAperture" duration="14"/>
+        <testCase name="AnimateMarkerLayer.vue rotatingTextBorder" duration="9"/>
+        <testCase name="AnimateMarkerLayer.vue fluorescence" duration="22"/>
+        <testCase name="AnimateMarkerLayer.vue change fluorescence width" duration="48"/>
+        <testCase name="AnimateMarkerLayer.vue change fluorescence colors" duration="7"/>
+        <testCase name="AnimateMarkerLayer.vue change rotatingTextBorder width" duration="104"/>
+        <testCase name="AnimateMarkerLayer.vue change rotatingTextBorder colors" duration="178"/>
+        <testCase name="AnimateMarkerLayer.vue change rotatingAperture width" duration="19"/>
+        <testCase name="AnimateMarkerLayer.vue change rotatingAperture colors" duration="134"/>
+        <testCase name="AnimateMarkerLayer.vue change diffusedAperture width" duration="14"/>
+        <testCase name="AnimateMarkerLayer.vue change diffusedAperture colors" duration="67"/>
+        <testCase name="AnimateMarkerLayer.vue change breathingAperture width" duration="13"/>
+        <testCase name="AnimateMarkerLayer.vue change breathingAperture color" duration="37"/>
+        <testCase name="AnimateMarkerLayer.vue change haloRing width" duration="9"/>
+        <testCase name="AnimateMarkerLayer.vue change haloRing colors" duration="7"/>
+        <testCase name="AnimateMarkerLayer.vue change props" duration="51"/>
+        <testCase name="AnimateMarkerLayer.vue change features fitBounds" duration="16"/>
+        <testCase name="AnimateMarkerLayer.vue test layerId" duration="25"/>
+        <testCase name="AnimateMarkerLayer.vue change layerId" duration="6"/>
+        <testCase name="AnimateMarkerLayer.vue change marker opacity" duration="11"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\measure\__tests__\Measure.spec.js">
+        <testCase name="measure reads visible measure units from dashboard config and falls back to the first available unit" duration="176"/>
+        <testCase name="measure updates viewModel config and normalizes units when visible units change" duration="123"/>
+        <testCase name="measure normalizes the active unit before opening a draw mode" duration="96"/>
+        <testCase name="measure line default" duration="205"/>
+        <testCase name="measure line change defaultUnit" duration="97"/>
+        <testCase name="measure area default" duration="107"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\_types\__tests__\map-event.spec.js">
+        <testCase name="map-event-mapboxgl webmap changeItemVisible" duration="11"/>
+        <testCase name="map-event-mapboxgl webmap setLayersVisible" duration="2"/>
+        <testCase name="map-event-mapboxgl webmap getAppreciableLayers" duration="1"/>
+        <testCase name="map-event-mapboxgl webmap getLayerList" duration="2"/>
+        <testCase name="map-event-mapboxgl webmap getLegendInfo" duration="3"/>
+        <testCase name="map-event-mapboxgl webmap get ordered LayerList" duration="7"/>
+        <testCase name="map-event-mapboxgl webmap get ordered AppreciableLayers" duration="1"/>
+        <testCase name="map-event-mapboxgl group visible is determined by children" duration="3"/>
+        <testCase name="map-event-mapboxgl Rearrange LayerList by layerorder" duration="5"/>
+        <testCase name="map-event-mapboxgl mapDataCache setMap -&gt; getMapData returns latest mapData" duration="2"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\attributes\__tests__\Attributes.spec.js">
+        <testCase name="Attributes.vue render default correctly" duration="749"/>
+        <testCase name="Attributes.vue selection" duration="593"/>
+        <testCase name="Attributes.vue associate map" duration="470"/>
+        <testCase name="Attributes.vue hidden columns" duration="606"/>
+        <testCase name="Attributes.vue search Data" duration="535"/>
+        <testCase name="Attributes.vue handleChange" duration="890"/>
+        <testCase name="Attributes.vue Switch from page 1 to page 2 and refresh data" duration="889"/>
+        <testCase name="Attributes.vue select all dataset" duration="665"/>
+        <testCase name="Attributes.vue no selection" duration="331"/>
+        <testCase name="Attributes.vue map select feature should change total number" duration="758"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\layer\track\__tests__\TrackLayerViewModel.spec.js">
+        <testCase name="TrackLayerViewModel.ts set url to add layer and IMAGE type from mapsource" duration="7"/>
+        <testCase name="TrackLayerViewModel.ts set url to add layer with line data and IMAGE type from maploadimage" duration="1"/>
+        <testCase name="TrackLayerViewModel.ts set url to add layer with line data and OBJ2 type and map has image" duration="24"/>
+        <testCase name="TrackLayerViewModel.ts set url to add layer with line data and GLTF type and map has image" duration="5"/>
+        <testCase name="TrackLayerViewModel.ts request animation frame" duration="22"/>
+        <testCase name="TrackLayerViewModel.ts add Track line Layer rotate(-x,x)" duration="2"/>
+        <testCase name="TrackLayerViewModel.ts add Track line Layer rotate(y,-x)" duration="9"/>
+        <testCase name="TrackLayerViewModel.ts add Track line Layer rotate(-y,y)" duration="1"/>
+        <testCase name="TrackLayerViewModel.ts add Track line Layer rotate(z,-y)" duration="2"/>
+        <testCase name="TrackLayerViewModel.ts add Track line Layer rotate(-z,z)" duration="1"/>
+        <testCase name="TrackLayerViewModel.ts to reset lineData" duration="1"/>
+        <testCase name="TrackLayerViewModel.ts add model 4326Map" duration="4"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\slideshow\__tests__\Slideshow.spec.js">
+        <testCase name="Slideshow.vue change props" duration="93"/>
+        <testCase name="Slideshow.vue Dynamic change props" duration="141"/>
+        <testCase name="Slideshow.vue change activeIndex" duration="107"/>
+        <testCase name="Slideshow.vue change activeIndex when loop is false" duration="48"/>
+        <testCase name="Slideshow.vue about slot" duration="48"/>
+        <testCase name="Slideshow.vue change autoplay props" duration="109"/>
+        <testCase name="Slideshow.vue slideChange emits change and indexChange once for same realIndex" duration="21"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\_utils\__tests__\iServerRestService.spec.js">
+        <testCase name="iServerRestService getMapFeatures hasGeometry false" duration="28"/>
+        <testCase name="iServerRestService getMapFeatures hasGeometry default" duration="3"/>
+        <testCase name="iServerRestService getMapFeatures hasGeometry true" duration="4"/>
+        <testCase name="iServerRestService getMapFeatures by keyWord" duration="7"/>
+        <testCase name="iServerRestService getDataFeatures preferServer true" duration="6"/>
+        <testCase name="iServerRestService getDataFeatures" duration="161"/>
+        <testCase name="iServerRestService _getAttributeFilterByKeywords with isLower true" duration="0"/>
+        <testCase name="iServerRestService _getAttributeFilterByKeywords with isLower false (SHAPEFILE)" duration="1"/>
+        <testCase name="iServerRestService _getAttributeFilterByKeywords with empty fields" duration="0"/>
+        <testCase name="iServerRestService _getRestDataEngineType returns SHAPEFILE" duration="6"/>
+        <testCase name="iServerRestService _getRestDataAttributeFilter with SHAPEFILE engineType" duration="2"/>
+        <testCase name="iServerRestService _getRestDataAttributeFilter with VECTORFILE engineType" duration="1"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\measure\__tests__\MeasureViewModel.spec.js">
+        <testCase name="MeasureViewModel stores dashboard config and resolves labels for built-in and custom units" duration="13"/>
+        <testCase name="MeasureViewModel updates line popups and result when switching to a custom distance unit" duration="4"/>
+        <testCase name="MeasureViewModel keeps line popup values in sync when switching across extreme custom distance units" duration="5"/>
+        <testCase name="MeasureViewModel updates polygon hover popup and result when switching to a custom area unit" duration="8"/>
+        <testCase name="MeasureViewModel keeps polygon popup and result in sync when switching units after finishing a draw" duration="3"/>
+        <testCase name="MeasureViewModel restarts drawing when mode changes during continuous editing" duration="28"/>
+        <testCase name="MeasureViewModel resets drawing state and unregisters listeners when continuing a draw" duration="4"/>
+        <testCase name="MeasureViewModel stores non-continuous area popups and removes tracked popups" duration="4"/>
+        <testCase name="MeasureViewModel removes selected measurement popups when trashing features" duration="5"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\coordinate-conversion\__tests__\CoordinateConversion.spec.js">
+        <testCase name="CoordinateConversion.vue render index correctly" duration="137"/>
+        <testCase name="CoordinateConversion.vue Judge click" duration="177"/>
+        <testCase name="CoordinateConversion.vue set props formats object" duration="92"/>
+        <testCase name="CoordinateConversion.vue trigger input" duration="94"/>
+        <testCase name="CoordinateConversion.vue handle location" duration="65"/>
+        <testCase name="CoordinateConversion.vue change format to BASEMAP" duration="341"/>
+        <testCase name="CoordinateConversion.vue change format to XY" duration="97"/>
+        <testCase name="CoordinateConversion.vue change format to UTM" duration="80"/>
+        <testCase name="CoordinateConversion.vue change format to Mercator" duration="120"/>
+        <testCase name="CoordinateConversion.vue change format to DD" duration="66"/>
+        <testCase name="CoordinateConversion.vue change format to DOM" duration="101"/>
+        <testCase name="CoordinateConversion.vue change format to DMS" duration="73"/>
+        <testCase name="CoordinateConversion.vue isCapture" duration="65"/>
+        <testCase name="CoordinateConversion.vue change lib DOM DMS parseInt" duration="35"/>
+        <testCase name="CoordinateConversion.vue change lib DOM DMS float" duration="36"/>
+        <testCase name="CoordinateConversion.vue change lib Lnglat DOM DMS float" duration="53"/>
+        <testCase name="CoordinateConversion.vue change lib Lnglat DOM DMS" duration="39"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\tdt\map-switcher\__tests__\TdtMapSwitcherViewModel.spec.js">
+        <testCase name="TdtMapSwitcherViewModel test addLayer and restLayer" duration="9"/>
+        <testCase name="TdtMapSwitcherViewModel toggle Label Layer visibility" duration="4"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\base-layer-switcher\__tests__\BaseLayerSwitcher.spec.js">
+        <testCase name="SmBaseLayerSwitcher render default correctly" duration="206"/>
+        <testCase name="SmBaseLayerSwitcher change baseLayer" duration="123"/>
+        <testCase name="SmBaseLayerSwitcher change layers when otherlayer is selected" duration="96"/>
+        <testCase name="SmBaseLayerSwitcher change layers when baselayer is selected" duration="92"/>
+        <testCase name="SmBaseLayerSwitcher not show origin layer" duration="59"/>
+        <testCase name="SmBaseLayerSwitcher empty layers" duration="36"/>
+        <testCase name="SmBaseLayerSwitcher set baselayer thumbnail" duration="39"/>
+        <testCase name="SmBaseLayerSwitcher set baselayer title" duration="53"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\time-slider\__tests__\TimeSlider.spec.js">
+        <testCase name="TimeSlider.vue render default correctly" duration="57"/>
+        <testCase name="TimeSlider.vue render data correctly" duration="28"/>
+        <testCase name="TimeSlider.vue render duration correctly" duration="28"/>
+        <testCase name="TimeSlider.vue render timeSliderProps correctly" duration="17"/>
+        <testCase name="TimeSlider.vue change lineheight" duration="18"/>
+        <testCase name="TimeSlider.vue change sliderBarWidth" duration="15"/>
+        <testCase name="TimeSlider.vue change draggable" duration="11"/>
+        <testCase name="TimeSlider.vue duration change to play " duration="76"/>
+        <testCase name="TimeSlider.vue data change to play " duration="51"/>
+        <testCase name="TimeSlider.vue theme-style-change" duration="12"/>
+        <testCase name="TimeSlider.vue handleMouseClick" duration="18"/>
+        <testCase name="TimeSlider.vue handleMouseClick not play" duration="18"/>
+        <testCase name="TimeSlider.vue handleDragMove" duration="32"/>
+        <testCase name="TimeSlider.vue cancelAnimationFrame rafIds_null" duration="9"/>
+        <testCase name="TimeSlider.vue cancelAnimationFrame rafIds_" duration="10"/>
+        <testCase name="TimeSlider.vue test defaultPostion default value" duration="11"/>
+        <testCase name="TimeSlider.vue test defaultPostion with duration" duration="12"/>
+        <testCase name="TimeSlider.vue test defaultPostion with data" duration="15"/>
+        <testCase name="TimeSlider.vue test defaultPostion change" duration="17"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\legend\__tests__\legend.spec.js">
+        <testCase name="Legend.vue render default correctly" duration="284"/>
+        <testCase name="Legend.vue mapload" duration="110"/>
+        <testCase name="Legend.vue map not load" duration="19"/>
+        <testCase name="Legend.vue useMapLegend is false, use layerNames prop" duration="74"/>
+        <testCase name="Legend.vue useMapLegend is true, use getLegendInfos from webmap" duration="32"/>
+        <testCase name="Legend.vue layerNamesValue updates when useMapLegend changes" duration="36"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\measure\__tests__\measure-unit.spec.js">
+        <testCase name="measure-unit uses built-in registries when dashboard config is missing" duration="21"/>
+        <testCase name="measure-unit builds option maps from configured built-in and custom units" duration="11"/>
+        <testCase name="measure-unit ignores invalid and duplicate unit entries and warns about them" duration="24"/>
+        <testCase name="measure-unit falls back to built-in registries when configured units are all invalid" duration="11"/>
+        <testCase name="measure-unit falls back to built-in registries for blank configured entries and empty unit keys" duration="10"/>
+        <testCase name="measure-unit rejects invalid conversion factors and duplicate custom units" duration="12"/>
+        <testCase name="measure-unit normalizes default units with current, fallback, and visible unit precedence" duration="11"/>
+        <testCase name="measure-unit converts native and custom distance and area units" duration="16"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\attribute-popup\__tests__\AttributePopupViewModel.spec.js">
+        <testCase name="AttributePopupViewModel constructor initializes with default options" duration="17"/>
+        <testCase name="AttributePopupViewModel constructor initializes with custom layerIds" duration="1"/>
+        <testCase name="AttributePopupViewModel constructor initializes with multiSelection enabled" duration="1"/>
+        <testCase name="AttributePopupViewModel setMap sets map and webmap" duration="3"/>
+        <testCase name="AttributePopupViewModel handleMapClickCover handles click event and fires layerclick event" duration="9"/>
+        <testCase name="AttributePopupViewModel handleMapClickCover sets activeTargetId based on dataSelectorMode" duration="2"/>
+        <testCase name="AttributePopupViewModel queryFeaturesByLayerId queries features for specific layer" duration="2"/>
+        <testCase name="AttributePopupViewModel queryFeaturesByLayerId returns early if layerId is empty" duration="2"/>
+        <testCase name="AttributePopupViewModel setHighlightLayerFilter sets filter on highlight layer" duration="0"/>
+        <testCase name="AttributePopupViewModel saveClickedFeatures listens to mapselectionchanged event" duration="2"/>
+        <testCase name="AttributePopupViewModel saveClickedFeatures handles multiple selection mode" duration="5"/>
+        <testCase name="AttributePopupViewModel saveClickedFeatures removes features when selection is cleared in multiple mode" duration="1"/>
+        <testCase name="AttributePopupViewModel clear clears state and removes highlight layers" duration="1"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\layer-manager\__tests__\LayerManagerViewModel.spec.js">
+        <testCase name="LayerManagerViewModel addIServerLayer and remove" duration="19"/>
+        <testCase name="LayerManagerViewModel addMapStyle and remove" duration="3"/>
+        <testCase name="LayerManagerViewModel addLayer and remove" duration="7"/>
+        <testCase name="LayerManagerViewModel removeLayerLoop" duration="2"/>
+        <testCase name="LayerManagerViewModel projectionnotmatch" duration="2"/>
+        <testCase name="LayerManagerViewModel layersadded" duration="2"/>
+        <testCase name="LayerManagerViewModel layersremoved" duration="1"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\layer-manager\__tests__\LayerManager.spec.js">
+        <testCase name="LayerManager.vue render" duration="201"/>
+        <testCase name="LayerManager.vue select layer" duration="103"/>
+        <testCase name="LayerManager.vue change layers" duration="175"/>
+        <testCase name="LayerManager.vue projectionnotmatch" duration="74"/>
+        <testCase name="LayerManager.vue toggle mapCombination" duration="60"/>
+        <testCase name="LayerManager.vue defaultCheckedKeys" duration="101"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\feature-cascader\__tests__\FeatureCascader.spec.js">
+        <testCase name="FeatureCascader.vue render default correctly" duration="254"/>
+        <testCase name="FeatureCascader.vue click" duration="58"/>
+        <testCase name="FeatureCascader.vue should initialize internalValue as empty array" duration="22"/>
+        <testCase name="FeatureCascader.vue should update internalValue when SmCascader emits change" duration="58"/>
+        <testCase name="FeatureCascader.vue should clear internalValue when clearSelectOptions is called" duration="74"/>
+        <testCase name="FeatureCascader.vue should work with empty internalValue" duration="25"/>
+        <testCase name="FeatureCascader.vue should be callable from parent component via ref" duration="66"/>
+        <testCase name="FeatureCascader.vue onChange with empty value should emit change with empty array and null" duration="48"/>
+        <testCase name="FeatureCascader.vue onChange with null value should emit change with empty array and null" duration="65"/>
+        <testCase name="FeatureCascader.vue onChange with target not found should emit change with value and null" duration="62"/>
+        <testCase name="FeatureCascader.vue onChange with target found should emit change with value and first feature" duration="62"/>
+        <testCase name="FeatureCascader.vue onChange constructs correct attributeFilter for target" duration="64"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\layer-highlight\__tests__\LayersHighlight.spec.js">
+        <testCase name="LayerHighlight.vue render default correctly" duration="108"/>
+        <testCase name="LayerHighlight.vue set layers" duration="60"/>
+        <testCase name="LayerHighlight.vue set highlightStyle" duration="61"/>
+        <testCase name="LayerHighlight.vue set multiSelection" duration="65"/>
+        <testCase name="LayerHighlight.vue set featureFieldsMap" duration="45"/>
+        <testCase name="LayerHighlight.vue set clickTolerance" duration="46"/>
+        <testCase name="LayerHighlight.vue events" duration="52"/>
+        <testCase name="LayerHighlight.vue mapopup change index" duration="45"/>
+        <testCase name="LayerHighlight.vue set multiSelection more layers valueRener" duration="59"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\fly-to\__tests__\FlyTo.spec.js">
+        <testCase name="FlyTo.vue render" duration="30"/>
+        <testCase name="FlyTo.vue no data" duration="19"/>
+        <testCase name="FlyTo.vue change props" duration="27"/>
+        <testCase name="FlyTo.vue click pre-next-pause goto" duration="88"/>
+        <testCase name="FlyTo.vue watch props change" duration="134"/>
+        <testCase name="FlyTo.vue _playSlides &amp; _changeActiveIndex" duration="34"/>
+        <testCase name="FlyTo.vue _setActiveItem" duration="57"/>
+        <testCase name="FlyTo.vue _flyTo -flyOptions is invalid" duration="63"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\attribute-popup\__tests__\AttributePopup.spec.js">
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\pan\__tests__\Pan.spec.js">
+        <testCase name="Pan.vue default" duration="101"/>
+        <testCase name="Pan.vue default index" duration="31"/>
+        <testCase name="Pan.vue isControl SmWebMap" duration="39"/>
+        <testCase name="Pan.vue parallel single SmWebMap" duration="23"/>
+        <testCase name="Pan.vue parallel multi SmWebMap" duration="74"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\attribute-popup\__tests__\PopupUtil.spec.js">
+        <testCase name="PopupUtil formatValue2String returns empty string for undefined" duration="3"/>
+        <testCase name="PopupUtil formatValue2String returns string as is" duration="0"/>
+        <testCase name="PopupUtil formatValue2String converts number to string" duration="3"/>
+        <testCase name="PopupUtil formatValue2String converts boolean to string" duration="0"/>
+        <testCase name="PopupUtil getLayoutElements handles FIELD elements" duration="4"/>
+        <testCase name="PopupUtil getLayoutElements handles TEXT elements" duration="0"/>
+        <testCase name="PopupUtil getLayoutElements handles IMAGE elements" duration="1"/>
+        <testCase name="PopupUtil getLayoutElements handles VIDEO elements" duration="1"/>
+        <testCase name="PopupUtil getLayoutElements handles DIVIDER elements" duration="1"/>
+        <testCase name="PopupUtil getLayoutElements groups consecutive IMAGE and VIDEO as MEDIA" duration="1"/>
+        <testCase name="PopupUtil getLayoutElements separates MEDIA and FIELD groups" duration="0"/>
+        <testCase name="PopupUtil getLayoutElements handles empty array" duration="1"/>
+        <testCase name="PopupUtil getResult returns empty string when attributes is undefined" duration="0"/>
+        <testCase name="PopupUtil getResult returns string value directly" duration="1"/>
+        <testCase name="PopupUtil getResult evaluates expression array" duration="1"/>
+        <testCase name="PopupUtil getResult returns undefined as empty string" duration="0"/>
+        <testCase name="PopupUtil getResultElement returns empty array for empty input" duration="1"/>
+        <testCase name="PopupUtil getResultElement processes FIELD elements" duration="6"/>
+        <testCase name="PopupUtil getResultElement processes MEDIA elements" duration="10"/>
+        <testCase name="PopupUtil getResultElement processes TEXT elements" duration="3"/>
+        <testCase name="PopupUtil getResultElement handles fieldCaptions" duration="0"/>
+        <testCase name="PopupUtil getResultElement marks editable fields" duration="1"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\open-file\__tests__\OpenFile.spec.js">
+        <testCase name="OpenFile.vue default" duration="59"/>
+        <testCase name="OpenFile.vue custom setting" duration="15"/>
+        <testCase name="OpenFile.vue fileType is error" duration="29"/>
+        <testCase name="OpenFile.vue open csv data" duration="53"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\date-picker\__tests__\DatePicker.spec.js">
+        <testCase name="DatePicker.vue render index correctly" duration="69"/>
+        <testCase name="DatePicker.vue prop locale should works" duration="164"/>
+        <testCase name="DatePicker.vue prop openChange should works" duration="161"/>
+        <testCase name="DatePicker.vue RangePicker should works" duration="24"/>
+        <testCase name="DatePicker.vue WeekPicker should works" duration="31"/>
+        <testCase name="DatePicker.vue render MonthPicker" duration="24"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\layer-color\__tests__\LayerColor.spec.js">
+        <testCase name="LayerColor.vue filter layer type 统计图表" duration="101"/>
+        <testCase name="LayerColor.vue v3 复合图层" duration="135"/>
+        <testCase name="LayerColor.vue render default correctly" duration="79"/>
+        <testCase name="LayerColor.vue capture" duration="94"/>
+        <testCase name="LayerColor.vue reset" duration="87"/>
+        <testCase name="LayerColor.vue changePropertyColor" duration="72"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\layer\data-flow\__tests__\DataFlowLayer.spec.js">
+        <testCase name="DataFlowLayer.vue render" duration="43"/>
+        <testCase name="DataFlowLayer.vue wrapperWebMap-Point" duration="21"/>
+        <testCase name="DataFlowLayer.vue wrapperWebMap-LineString" duration="31"/>
+        <testCase name="DataFlowLayer.vue wrapperWebMap-MultiLineString" duration="19"/>
+        <testCase name="DataFlowLayer.vue wrapperWebMap-Line" duration="32"/>
+        <testCase name="DataFlowLayer.vue wrapperWebMap-Polygon" duration="16"/>
+        <testCase name="DataFlowLayer.vue wrapperWebMap-MultiPolygon" duration="32"/>
+        <testCase name="DataFlowLayer.vue wrapperWebMap-source" duration="24"/>
+        <testCase name="DataFlowLayer.vue wrapperWebMap-source-has-false" duration="20"/>
+        <testCase name="DataFlowLayer.vue setLayerStyle" duration="23"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\legend\__tests__\LegendViewModel.spec.js">
+        <testCase name="LegendViewModel getStyle returns styles for given layerName" duration="6"/>
+        <testCase name="LegendViewModel getStyle returns empty array when layer not visible" duration="0"/>
+        <testCase name="LegendViewModel getStyle returns empty array when styleGroup is empty" duration="1"/>
+        <testCase name="LegendViewModel getLayerNamesFromWebmap returns layer ids with showLegend true" duration="1"/>
+        <testCase name="LegendViewModel getLayerNamesFromWebmap returns empty array when no showLegend" duration="1"/>
+        <testCase name="LegendViewModel setMap registers layerupdatechanged event" duration="1"/>
+        <testCase name="LegendViewModel removed unbinds layerupdatechanged event" duration="1"/>
+        <testCase name="LegendViewModel _layersUpdatedHandler fires layersupdated event" duration="2"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\breadcrumb\__tests__\Breadcrumb.spec.js">
+        <testCase name="Breadcrumb.vue warns on non-sm-breadcrumb-item and non-Breadcrumb.Separator children" duration="56"/>
+        <testCase name="Breadcrumb.vue render breadcrumb correctly" duration="21"/>
+        <testCase name="Breadcrumb.vue render index correctly" duration="28"/>
+        <testCase name="Breadcrumb.vue should render a menu" duration="58"/>
+        <testCase name="Breadcrumb.vue should support custom separator" duration="23"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\checkbox\__tests__\Checkbox.spec.js">
+        <testCase name="Checkbox.vue render default correctly" duration="124"/>
+        <testCase name="Checkbox.vue render index correctly" duration="20"/>
+        <testCase name="Checkbox.vue Checke All" duration="185"/>
+        <testCase name="Checkbox.vue Checked-Enabled" duration="96"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\video-player\__tests__\VideoPlayer.spec.js">
+        <testCase name="VideoPlayer.vue render" duration="34"/>
+        <testCase name="VideoPlayer.vue change props" duration="75"/>
+        <testCase name="VideoPlayer.vue clear src when url is empty" duration="17"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\border\__tests__\Border.spec.js">
+        <testCase name="Border.vue render default correctly" duration="51"/>
+        <testCase name="Border.vue render index correctly" duration="15"/>
+        <testCase name="Border.vue custom border" duration="16"/>
+        <testCase name="Border.vue render set props type" duration="44"/>
+        <testCase name="Border.vue render chart in border correctly" duration="264"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\time-line\__tests__\TimeLine.spec.js">
+        <testCase name="TimeLine.vue render default correctly" duration="73"/>
+        <testCase name="TimeLine.vue render index correctly" duration="19"/>
+        <testCase name="TimeLine.vue render timeLineProps correctly" duration="17"/>
+        <testCase name="TimeLine.vue timelineChange nextEnable null" duration="10"/>
+        <testCase name="TimeLine.vue timelineChange nextEnable true" duration="13"/>
+        <testCase name="TimeLine.vue timelineplaychanged" duration="14"/>
+        <testCase name="TimeLine.vue setPlayState" duration="11"/>
+        <testCase name="TimeLine.vue render margin" duration="20"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\ncp-map\__tests__\NcpMapViewModel.spec.js">
+        <testCase name="NcpMapViewModel.spec initNcpMap" duration="13"/>
+        <testCase name="NcpMapViewModel.spec set props" duration="122"/>
+        <testCase name="NcpMapViewModel.spec add layers succeed" duration="29"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\zoom\__tests__\Zoom.spec.js">
+        <testCase name="Zoom.vue default" duration="303"/>
+        <testCase name="Zoom.vue zoomIn" duration="144"/>
+        <testCase name="Zoom.vue zoomOut" duration="114"/>
+        <testCase name="Zoom.vue zoomSlider" duration="138"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\attribute-popup\__tests__\FieldsConverter.spec.js">
+        <testCase name="FieldsConverter getFieldCaption returns caption when field exists in fieldsCaptions" duration="2"/>
+        <testCase name="FieldsConverter getFieldCaption returns fieldName when caption does not exist" duration="1"/>
+        <testCase name="FieldsConverter getFieldCaption handles undefined fieldsCaptions" duration="0"/>
+        <testCase name="FieldsConverter getFieldNameByCaption returns fieldName when caption matches" duration="1"/>
+        <testCase name="FieldsConverter getFieldNameByCaption returns original caption when no match found" duration="0"/>
+        <testCase name="FieldsConverter convertFieldNameToCaption converts field names in template string" duration="0"/>
+        <testCase name="FieldsConverter convertFieldNameToCaption keeps unmatched placeholders unchanged" duration="1"/>
+        <testCase name="FieldsConverter convertFieldNameToCaption handles string without placeholders" duration="0"/>
+        <testCase name="FieldsConverter convertCaptionToFieldName converts captions to field names in template string" duration="12"/>
+        <testCase name="FieldsConverter convertCaptionToFieldName keeps unmatched placeholders unchanged" duration="1"/>
+        <testCase name="FieldsConverter convertTextInfoToFieldName converts ops array with field names to captions" duration="0"/>
+        <testCase name="FieldsConverter convertTextInfoToCaption converts ops array with captions to field names" duration="1"/>
+        <testCase name="FieldsConverter convertFieldNameToCaption with Expression converts Expression array field names to captions" duration="2"/>
+        <testCase name="FieldsConverter convertFieldNameToCaption with Expression handles nested expression arrays" duration="1"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\compare\__tests__\Compare.spec.js">
+        <testCase name="Copmpare.vue render default correctly" duration="34"/>
+        <testCase name="Copmpare.vue copmpare slot" duration="63"/>
+        <testCase name="Copmpare.vue copmpare atrributes" duration="27"/>
+        <testCase name="Copmpare.vue methods refreshRect" duration="5"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\map-popup\__tests__\MapPopup.spec.js">
+        <testCase name="MapPopup.vue render default correctly" duration="336"/>
+        <testCase name="MapPopup.vue showIcon" duration="165"/>
+        <testCase name="MapPopup.vue changeDefaultIndex" duration="204"/>
+        <testCase name="MapPopup.vue trigger change index" duration="151"/>
+        <testCase name="MapPopup.vue change background" duration="100"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\button\__tests__\button.spec.js">
+        <testCase name="Button.vue render correctly" duration="51"/>
+        <testCase name="Button.vue render index correctly" duration="11"/>
+        <testCase name="Button.vue button type" duration="87"/>
+        <testCase name="Button.vue render buttonGroup" duration="32"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\_utils\__tests__\epsg-define.spec.js">
+        <testCase name="epsg-define get and register" duration="14"/>
+        <testCase name="epsg-define toEpsgCode" duration="1"/>
+        <testCase name="epsg-define register cover" duration="93"/>
+        <testCase name="epsg-define transformCoodinates" duration="13"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\indicator\__tests__\Indicator.spec.js">
+        <testCase name="Indicator.vue render default correctly" duration="113"/>
+        <testCase name="Indicator.vue render index correctly" duration="12"/>
+        <testCase name="Indicator.vue render default correctly" duration="34"/>
+        <testCase name="Indicator.vue change props" duration="49"/>
+        <testCase name="Indicator.vue Decimals" duration="41"/>
+        <testCase name="Indicator.vue changeIndicatorColor" duration="36"/>
+        <testCase name="Indicator.vue click" duration="141"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\leaflet\identify\__tests__\Identify.spec.js">
+        <testCase name="Identify.vue change props layerNames" duration="38"/>
+        <testCase name="Identify.vue layer click" duration="12"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\card\__tests__\Card.spec.js">
+        <testCase name="Card.vue render default correctly" duration="175"/>
+        <testCase name="Card.vue render index correctly" duration="17"/>
+        <testCase name="Card.vue onTabChange should work" duration="1071"/>
+        <testCase name="Card.vue render correctly" duration="619"/>
+        <testCase name="Card.vue render correctly" duration="24"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\leaflet\web-map\__tests__\WebMap.spec.js">
+        <testCase name="WebMap.vue initial_serverUrl" duration="93"/>
+        <testCase name="WebMap.vue webmap resize" duration="43"/>
+        <testCase name="WebMap.vue webmap layercreatefailed" duration="76"/>
+        <testCase name="WebMap.vue webmap mapcreatefailed" duration="62"/>
+        <testCase name="WebMap.vue webmap mvtnotsupport" duration="47"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\_utils\__tests__\statistics.spec.js">
+        <testCase name="statisticsFeatures should return correct data structure with provided fields and fieldCaptions" duration="20"/>
+        <testCase name="statisticsFeatures should infer fields and fieldCaptions from features when not provided" duration="1"/>
+        <testCase name="statisticsFeatures should infer fields only when fieldCaptions is provided" duration="5"/>
+        <testCase name="statisticsFeatures should handle empty features array" duration="46"/>
+        <testCase name="statisticsFeatures should handle features with missing properties" duration="1"/>
+        <testCase name="statisticsFeatures should preserve originalFields in returned data" duration="8"/>
+        <testCase name="statisticsFeatures should handle single feature" duration="1"/>
+        <testCase name="statisticsFeatures should handle single field" duration="0"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\input\__tests__\Input.spec.js">
+        <testCase name="Input.vue render default correctly" duration="83"/>
+        <testCase name="Input.vue render index correctly" duration="20"/>
+        <testCase name="Input.vue render search correctly" duration="36"/>
+        <testCase name="Input.vue render textarea correctly" duration="34"/>
+        <testCase name="Input.vue render password correctly" duration="31"/>
+        <testCase name="Input.vue render group correctly" duration="43"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\ncp-map\__tests__\NcpMap.spec.js">
+        <testCase name="NcpMap.vue initial" duration="76"/>
+        <testCase name="NcpMap.vue change props" duration="34"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\attribute-popup\__tests__\PopupContent.spec.js">
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\tdt\map-switcher\__tests__\TdtMapSwitcher.spec.js">
+        <testCase name="TdtMapSwitcher.vue render" duration="106"/>
+        <testCase name="TdtMapSwitcher.vue change token" duration="22"/>
+        <testCase name="TdtMapSwitcher.vue toggle LabelLayer" duration="26"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\reset-view\__tests__\RestView.spec.js">
+        <testCase name="ResetView.vue click button -&gt; calls viewModel.resetView when map is loaded" duration="52"/>
+        <testCase name="ResetView.vue click button -&gt; does not call resetView when mapNotLoadedTip returns true" duration="9"/>
+        <testCase name="ResetView.vue loadMap -&gt; viewModel.setMap receives { map, webmap, mapTarget, mapData }" duration="18"/>
+        <testCase name="ResetView.vue loadMap -&gt; does not call viewModel.setMap when setMap is not a function" duration="21"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\map-popup\__tests__\MapPopupViewModel.spec.js">
+        <testCase name="MapPopupViewModel constructor creates instance with map" duration="5"/>
+        <testCase name="MapPopupViewModel setMap sets the map instance" duration="6"/>
+        <testCase name="MapPopupViewModel addPopup creates popup with coordinates and container" duration="4"/>
+        <testCase name="MapPopupViewModel addPopup removes existing popup before adding new one" duration="1"/>
+        <testCase name="MapPopupViewModel addPopup returns null when popupContainer is null" duration="0"/>
+        <testCase name="MapPopupViewModel removePopup removes popup and sets to null" duration="1"/>
+        <testCase name="MapPopupViewModel removePopup does nothing when popup is already null" duration="1"/>
+        <testCase name="MapPopupViewModel removed calls removePopup" duration="1"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\layer\ranksymbol-theme\__tests__\RanksymbolThemeLayer.spec.js">
+        <testCase name="SmRanksymbolThemeLayer.vue render" duration="15"/>
+        <testCase name="SmRanksymbolThemeLayer.vue change props" duration="7"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\reset-view\__tests__\RestViewModel.spec.js">
+        <testCase name="ResetViewModel setMap should set map and mapOptions correctly" duration="3"/>
+        <testCase name="ResetViewModel resetView should call flyTo with correct parameters and default duration" duration="2"/>
+        <testCase name="ResetViewModel resetView should call flyTo with custom duration" duration="1"/>
+        <testCase name="ResetViewModel resetView should not call flyTo when map is null" duration="0"/>
+        <testCase name="ResetViewModel resetView should handle empty mapOptions" duration="1"/>
+        <testCase name="ResetViewModel resetView should handle partial mapOptions" duration="5"/>
+        <testCase name="ResetViewModel removed should set map and mapOptions to null" duration="1"/>
+        <testCase name="ResetViewModel removed should not throw error when called without setMap" duration="1"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\layer\geojson\__tests__\GeojsonLayer.spec.js">
+        <testCase name="GeojsonLayer.vue render" duration="31"/>
+        <testCase name="GeojsonLayer.vue geojson layerStyle" duration="6"/>
+        <testCase name="GeojsonLayer.vue geojson setdata" duration="5"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\video-plus\layer\__tests__\VideoLayer.spec.js">
+        <testCase name="SmVideoLayer.vue render" duration="2023"/>
+        <testCase name="SmVideoLayer.vue change props" duration="2025"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\layer\mapv\__tests__\MapvLayer.spec.js">
+        <testCase name="MapvLayer.vue render" duration="10"/>
+        <testCase name="MapvLayer.vue change props" duration="7"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\attributes\__tests__\AttributesViewModel.spec.js">
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\layer\cluster\__tests__\ClusterLayer.spec.js">
+        <testCase name="ClusterLayer.vue render default correctly" duration="46"/>
+        <testCase name="ClusterLayer.vue setData" duration="7"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\avatar\__tests__\Avatar.spec.js">
+        <testCase name="SmAvatar.vue Render correctly" duration="49"/>
+        <testCase name="SmAvatar.vue render index correctly" duration="9"/>
+        <testCase name="SmAvatar.vue should render props defalut correctly" duration="10"/>
+        <testCase name="SmAvatar.vue should render props in components correctly" duration="19"/>
+        <testCase name="SmAvatar.vue this.$slot.icon" duration="11"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\identify\__tests__\Identify.spec.js">
+        <testCase name="Identify.vue render index correctly" duration="123"/>
+        <testCase name="Identify.vue fields is array object" duration="41"/>
+        <testCase name="Identify.vue fields is object" duration="45"/>
+        <testCase name="Identify.vue fields is string" duration="56"/>
+        <testCase name="Identify.vue render showPopup false" duration="38"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\video-plus\__tests__\VideoPlus.spec.js">
+        <testCase name="VideoPlus.vue render" duration="2042"/>
+        <testCase name="VideoPlus.vue render no url" duration="2014"/>
+        <testCase name="VideoPlus.vue video type flv" duration="2028"/>
+        <testCase name="VideoPlus.vue change size" duration="2541"/>
+        <testCase name="VideoPlus.vue change size error" duration="2032"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\layer\range-theme\__tests__\RangeThemeLayer.spec.js">
+        <testCase name="RangeThemeLayer.vue render" duration="99"/>
+        <testCase name="RangeThemeLayer.vue change props" duration="33"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\layer\deckgl\__tests__\DeckglLayer.spec.js">
+        <testCase name="DeckglLayer.vue render" duration="10"/>
+        <testCase name="DeckglLayer.vue change props" duration="92"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\layer\echarts\__tests__\EchartsLayer.spec.js">
+        <testCase name="EchartsLayer.vue render default correctly" duration="27"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\layer\unique-theme\__tests__\UniqueThemeLayer.spec.js">
+        <testCase name="UniqueThemeLayer.vue render default correctly" duration="11"/>
+        <testCase name="UniqueThemeLayer.vue change props" duration="13"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\attribute-popup\__tests__\FieldInfo.spec.js">
+        <testCase name="FieldInfo.vue renders field name and value" duration="25"/>
+        <testCase name="FieldInfo.vue renders without caption, uses fieldName" duration="6"/>
+        <testCase name="FieldInfo.vue renders with empty value" duration="7"/>
+        <testCase name="FieldInfo.vue renders with null value" duration="16"/>
+        <testCase name="FieldInfo.vue renders multiple fields" duration="8"/>
+        <testCase name="FieldInfo.vue renders with attributeStyle" duration="5"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\_mixin\__tests__\Theme.spec.js">
+        <testCase name="Theme.ts render default correctly" duration="98"/>
+        <testCase name="Theme.ts change theme" duration="38"/>
+        <testCase name="Theme.ts change theme without backgound" duration="10"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\time-range\__tests__\TimeRange.spec.js">
+        <testCase name="TimeRange.vue render default correctly" duration="69"/>
+        <testCase name="TimeRange.vue render index correctly" duration="17"/>
+        <testCase name="TimeRange.vue render timeRangeProps correctly" duration="13"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\attribute-popup\__tests__\CalcExpression.spec.js">
+        <testCase name="CalcExpression basic operations handles get operator" duration="3"/>
+        <testCase name="CalcExpression basic operations handles get operator with number" duration="0"/>
+        <testCase name="CalcExpression basic operations handles concat operator" duration="1"/>
+        <testCase name="CalcExpression basic operations handles nested expressions" duration="1"/>
+        <testCase name="CalcExpression basic operations handles deeply nested expressions" duration="0"/>
+        <testCase name="CalcExpression edge cases returns undefined value when attribute not found" duration="0"/>
+        <testCase name="CalcExpression edge cases handles empty attributes object" duration="1"/>
+        <testCase name="CalcExpression edge cases handles concat with literal strings" duration="0"/>
+        <testCase name="CalcExpression edge cases handles single value in expression" duration="3"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\draw\__tests__\Draw.spec.js">
+        <testCase name="Draw.vue render default correctly" duration="41"/>
+        <testCase name="Draw.vue start draw" duration="540"/>
+        <testCase name="Draw.vue change layerStyle" duration="533"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\layout\__tests__\Layout.spec.js">
+        <testCase name="Layout.vue render default correctly" duration="54"/>
+        <testCase name="Layout.vue render index correctly" duration="7"/>
+        <testCase name="Layout.vue render layout correctly" duration="40"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\_utils\vue-types\__tests__\utils.spec.js">
+        <testCase name="vue-types utils test getType null" duration="7"/>
+        <testCase name="vue-types utils test getNativeType null" duration="0"/>
+        <testCase name="vue-types utils test getNativeType undefined" duration="1"/>
+        <testCase name="vue-types utils test has" duration="0"/>
+        <testCase name="vue-types utils test has not" duration="1"/>
+        <testCase name="vue-types utils test withDefault def function " duration="0"/>
+        <testCase name="vue-types utils test withDefault def num " duration="1"/>
+        <testCase name="vue-types utils test withRequired get " duration="0"/>
+        <testCase name="vue-types utils test validateType Function " duration="5"/>
+        <testCase name="vue-types utils test validateType object " duration="2"/>
+        <testCase name="vue-types utils test validateType Array" duration="0"/>
+        <testCase name="vue-types utils test validateType false" duration="1"/>
+        <testCase name="vue-types utils test isInteger not" duration="1"/>
+        <testCase name="vue-types utils test isInteger int" duration="0"/>
+        <testCase name="vue-types utils test toType " duration="0"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\_utils\__tests__\iPortalDataService.spec.js">
+        <testCase name="iPortalDataService StructureData query attributeFilter" duration="11"/>
+        <testCase name="iPortalDataService StructureData query failed with error message" duration="17"/>
+        <testCase name="iPortalDataService StructureData query failed with no-error message" duration="2"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\layer\graph-theme\__tests__\GraphThemeLayer.spec.js">
+        <testCase name="GraphThemeLayer.vue render" duration="11"/>
+        <testCase name="GraphThemeLayer.vue change props" duration="18"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\transfer\__tests__\Transfer.spec.js">
+        <testCase name="Transfer.vue render default correctly" duration="133"/>
+        <testCase name="Transfer.vue render index correctly" duration="43"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\graph-map\__tests__\GraphMap.spec.js">
+        <testCase name="SmGraphMap render default container" duration="33"/>
+        <testCase name="SmGraphMap render specified container" duration="6"/>
+        <testCase name="SmGraphMap watch root dom resize" duration="19"/>
+        <testCase name="SmGraphMap watch serviceUrl" duration="10"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\collapse\__tests__\Collapse.spec.js">
+        <testCase name="Collapse.vue render default correctly" duration="246"/>
+        <testCase name="Collapse.vue render index correctly" duration="31"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\text\__tests__\Text.spec.js">
+        <testCase name="Text.vue render text correctly" duration="127"/>
+        <testCase name="Text.vue text fontStyle" duration="39"/>
+        <testCase name="Text.vue text href" duration="14"/>
+        <testCase name="Text.vue text timing()" duration="77"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\layer\heatmap\__tests__\HeatmapLayer.spec.js">
+        <testCase name="HeatmapLayer.vue render" duration="18"/>
+        <testCase name="HeatmapLayer.vue setData" duration="6"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\cascader\__tests__\Cascader.spec.js">
+        <testCase name="Cascader.vue render default correctly" duration="277"/>
+        <testCase name="Cascader.vue click" duration="24"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\liquid-fill\__tests__\LiquidFill.spec.js">
+        <testCase name="LiquidFill.vue render default correctly" duration="246"/>
+        <testCase name="LiquidFill.vue render index correctly" duration="53"/>
+        <testCase name="LiquidFill.vue render waveAnimation" duration="88"/>
+        <testCase name="LiquidFill.vue render watch props correctly" duration="56"/>
+        <testCase name="LiquidFill.vue set theme change liquidFill" duration="127"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\_utils\__tests__\epsg-define-mock.spec.js">
+        <testCase name="epsg-define (mock proj4) transformCoordinate" duration="110"/>
+        <testCase name="epsg-define (mock proj4) transformCoodinates" duration="35"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-scene\__tests__\WebSceneViewModel.spec.js">
+        <testCase name="WebSceneViewModel.spec version is 1.x" duration="17"/>
+        <testCase name="WebSceneViewModel.spec version is 2.x" duration="1"/>
+        <testCase name="WebSceneViewModel.spec pass iserver url" duration="1"/>
+        <testCase name="WebSceneViewModel.spec do not pass url" duration="1"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\collapse-card\__tests__\CollapseCard.spec.js">
+        <testCase name="CollapseCard.vue render default correctly" duration="190"/>
+        <testCase name="CollapseCard.vue render index correctly" duration="69"/>
+        <testCase name="CollapseCard.vue has icon in CollapseCard" duration="59"/>
+        <testCase name="CollapseCard.vue change props" duration="77"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\video-plus\ui\popup\__tests__\Popup.spec.js">
+        <testCase name="SmvideoPlusPupup.vue render" duration="2061"/>
+        <testCase name="SmvideoPlusPupup.vue change props" duration="2606"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\_types\__tests__\getDefaultLayerStyle.spec.js">
+        <testCase name="getDefaultLayerStyle returns default style with default color" duration="9"/>
+        <testCase name="getDefaultLayerStyle returns style with custom highlight color" duration="1"/>
+        <testCase name="getDefaultLayerStyle returns four style objects" duration="6"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\nav\__tests__\Nav.spec.js">
+        <testCase name="Nav.vue render default correctly" duration="46"/>
+        <testCase name="Nav.vue render default correctly" duration="95"/>
+        <testCase name="Nav.vue base props" duration="152"/>
+        <testCase name="Nav.vue goTo" duration="63"/>
+        <testCase name="Nav.vue prev" duration="55"/>
+        <testCase name="Nav.vue next" duration="139"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\draw\__tests__\DrawViewModel.spec.js">
+        <testCase name="DrawViewModel setMap" duration="6"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\compass\__tests__\Compass.spec.js">
+        <testCase name="Compass.vue render default correctly" duration="28"/>
+        <testCase name="Compass.vue change visualizePitch" duration="29"/>
+        <testCase name="Compass.vue reset" duration="23"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\mini-map\__tests__\MiniMap.spec.js">
+        <testCase name="MiniMap.vue render default correctly" duration="124"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\layer\fire\__tests__\FireLayer.spec.js">
+        <testCase name="FireLayer.vue render" duration="13"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\layer\vector-tile\__tests__\VectorTileLayer.spec.js">
+        <testCase name="VectorTileLayer.vue render" duration="8"/>
+        <testCase name="VectorTileLayer.vue change styleOptions" duration="5"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\video-plus\control\draw\__tests__\Draw.spec.js">
+        <testCase name="SmVideoPlusDraw.vue render" duration="2029"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\_utils\style\theme\__tests__\set-theme.spec.js">
+        <testCase name="set-theme test setTheme null" duration="49"/>
+        <testCase name="set-theme test setTheme string dark" duration="30"/>
+        <testCase name="set-theme test setTheme string themeFactory[1]" duration="28"/>
+        <testCase name="set-theme test setTheme componentBackground" duration="15"/>
+        <testCase name="set-theme test setTheme collapseCardBackground" duration="11"/>
+        <testCase name="set-theme test setTheme ignoreElements" duration="13"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\video-plus\ui\marker\__tests__\Marker.spec.js">
+        <testCase name="SmVideoPlusMarker.vue render" duration="2012"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\color-picker\__tests__\ColorPicker.spec.js">
+        <testCase name="ColorPicker.vue render default correctly" duration="188"/>
+        <testCase name="ColorPicker.vue render index correctly" duration="35"/>
+        <testCase name="ColorPicker.vue has displayPicker work correctly" duration="48"/>
+        <testCase name="ColorPicker.vue render text correctly" duration="82"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\progress\__tests__\Progress.spec.js">
+        <testCase name="Progress.vue render default correctly" duration="66"/>
+        <testCase name="Progress.vue render index correctly" duration="28"/>
+        <testCase name="Progress.vue change percent" duration="20"/>
+        <testCase name="Progress.vue render circle correctly" duration="48"/>
+        <testCase name="Progress.vue decimals" duration="11"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\scale\__tests__\Scale.spec.js">
+        <testCase name="Scale.vue render default correctly" duration="29"/>
+        <testCase name="Scale.vue change props" duration="19"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\time-picker\__tests__\TimePicker.spec.js">
+        <testCase name="TimeLine.vue render index correctly" duration="120"/>
+        <testCase name="TimeLine.vue prop locale should works" duration="48"/>
+        <testCase name="TimeLine.vue prop size is middle" duration="15"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\image\__tests__\Image.spec.js">
+        <testCase name="Image.vue render default correctly" duration="113"/>
+        <testCase name="Image.vue render index correctly" duration="22"/>
+        <testCase name="Image.vue no preview" duration="50"/>
+        <testCase name="Image.vue preview" duration="168"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\_utils\style\theme\__tests__\chart.spec.js">
+        <testCase name="chart test handleMultiGradient" duration="9"/>
+        <testCase name="chart test getMultiColorGroup &lt;" duration="1"/>
+        <testCase name="chart test getMultiColorGroup &gt; colorGroup[0] = object" duration="0"/>
+        <testCase name="chart test chartThemeUtil null" duration="26"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\layer\raster-tile\__tests__\RasterTileLayer.spec.js">
+        <testCase name="SmRasterTileLayer.vue render" duration="60"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\icon\__tests__\Icon.spec.js">
+        <testCase name="Icon.vue render default correctly" duration="75"/>
+        <testCase name="Icon.vue render index correctly" duration="48"/>
+        <testCase name="Icon.vue render icon iconClass correctly" duration="21"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\empty\__tests__\Empty.spec.js">
+        <testCase name="Empty.vue render index correctly" duration="54"/>
+        <testCase name="Empty.vue render default correctly" duration="10"/>
+        <testCase name="Empty.vue description can be false" duration="15"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\_types\event\__tests__\Pixel.spec.js">
+        <testCase name="Pixel toString" duration="2"/>
+        <testCase name="Pixel toEqual" duration="3"/>
+        <testCase name="Pixel distanceTo" duration="0"/>
+        <testCase name="Pixel add" duration="13"/>
+        <testCase name="Pixel offset" duration="1"/>
+        <testCase name="Pixel destroy" duration="0"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\input-number\__tests__\InputNumber.spec.js">
+        <testCase name="InputNumber.vue render default correctly" duration="83"/>
+        <testCase name="InputNumber.vue render index correctly" duration="44"/>
+        <testCase name="InputNumber.vue props correctly" duration="41"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\iframe\__tests__\Iframe.spec.js">
+        <testCase name="Iframe.vue render default correctly" duration="58"/>
+        <testCase name="Iframe.vue index render default" duration="7"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\attribute-panel\__test__\AttributePanel.spec.js">
+        <testCase name="AttributePanel.vue render" duration="140"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\select\__tests__\Select.spec.js">
+        <testCase name="Select.vue render default correctly" duration="449"/>
+        <testCase name="Select.vue render index correctly" duration="204"/>
+        <testCase name="Select.vue change" duration="232"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\test\unit\__tests__\leaflet\leaflet-wrapper.spec.js">
+        <testCase name="leaflet-wrapper addLayer_removeLayer" duration="6"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\compare\__tests__\CompareViewModel.spec.js">
+        <testCase name="CompareViewModel refreshRect" duration="26"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\layer-select\__tests__\LayerSelectViewModel.spec.js">
+        <testCase name="LayerSelectViewModel layersupdated" duration="37"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\_utils\__tests__\geometry-util.spec.js">
+        <testCase name="geometry-util test handleMultyPolygon" duration="16"/>
+        <testCase name="geometry-util test handleMultyPolygon not polygon" duration="0"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\layer\label-theme\__tests__\LabelThemeLayer.spec.js">
+        <testCase name="LabelThemeLayer.vue render" duration="19"/>
+        <testCase name="LabelThemeLayer.vue change props" duration="34"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\tree-select\__tests__\TreeSelect.spec.js">
+        <testCase name="TreeSelect.vue render default correctly" duration="270"/>
+        <testCase name="TreeSelect.vue render index correctly" duration="39"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\_types\__tests__\SymbolStyle.spec.js">
+        <testCase name="SymbolStyle test SymbolStyle" duration="15"/>
+        <testCase name="SymbolStyle test SymbolStyle no paint no layout" duration="1"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\tabs\__tests__\tabs.spec.js">
+        <testCase name="Tabs.vue render default correctly" duration="201"/>
+        <testCase name="Tabs.vue render text correctly" duration="76"/>
+        <testCase name="Tabs.vue render index correctly" duration="56"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\pagination\__tests__\Pagination.spec.js">
+        <testCase name="Pagination.vue render default correctly" duration="198"/>
+        <testCase name="Pagination.vue render index correctly" duration="53"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\layer-select\__tests__\LayerSelect.spec.js">
+        <testCase name="LayerSelect.vue render default correctly" duration="101"/>
+        <testCase name="LayerSelect.vue render index correctly" duration="26"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\slider\__tests__\Slider.spec.js">
+        <testCase name="Slider.vue render default correctly" duration="117"/>
+        <testCase name="Slider.vue render index correctly" duration="21"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\table-popup\__tests__\TablePopup.spec.js">
+        <testCase name="TablePopup.vue render default correctly" duration="127"/>
+        <testCase name="TablePopup.vue render index correctly" duration="57"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\table\__tests__\Table.spec.js">
+        <testCase name="Table.vue render default correctly" duration="137"/>
+        <testCase name="Table.vue render index correctly" duration="65"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\test\unit\__tests__\leaflet\components.spec.js">
+        <testCase name="leaflet_components init" duration="76"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\switch\__tests__\Switch.spec.js">
+        <testCase name="Switch.vue render default correctly" duration="202"/>
+        <testCase name="Switch.vue render index correctly" duration="69"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\radio\__tests__\Radio.spec.js">
+        <testCase name="Radio.vue render default correctly" duration="37"/>
+        <testCase name="Radio.vue render index correctly" duration="14"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\tree\__tests__\Tree.spec.js">
+        <testCase name="Tree.vue render default correctly" duration="56"/>
+        <testCase name="Tree.vue render index correctly" duration="11"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\spin\__tests__\Spin.spec.js">
+        <testCase name="Spin.vue render default correctly" duration="32"/>
+        <testCase name="Spin.vue render index correctly" duration="12"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\steps\__tests__\Step.spec.js">
+        <testCase name="Step.vue render default correctly" duration="41"/>
+        <testCase name="Step.vue render index correctly" duration="15"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\_types\event\__tests__\BaseTypes.spec.js">
+        <testCase name="BaseTypes bind" duration="4"/>
+        <testCase name="BaseTypes bindAsEventListener" duration="0"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\time-text\__tests__\TimeText.spec.js">
+        <testCase name="TimeText.vue render" duration="90"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\modal\__tests__\Modal.spec.js">
+        <testCase name="Modal.vue render default correctly" duration="46"/>
+        <testCase name="Modal.vue render default correctly" duration="10"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-scene\__tests__\WebScene.spec.js">
+        <testCase name="WebScene.vue render default correctly" duration="18"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\_utils\style\color\__tests__\colorPalette.spec.js">
+        <testCase name="colorPalette test colorPalette" duration="3"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\tooltip\__tests__\Tooltip.spec.js">
+        <testCase name="Tooltip.vue render default correctly" duration="43"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\common\_utils\__tests__\util.spec.js">
+        <testCase name="util test getDateTime " duration="3"/>
+    </file>
+    <file path="G:\projects\vue-iclient-dev\src\mapboxgl\web-map\control\fill-extrusion\__tests__\FillExtrusion.spec.js">
+        <testCase name="FillExtrusion.vue render default correctly" duration="129"/>
+    </file>
+</testExecutions>
