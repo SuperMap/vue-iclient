@@ -57,6 +57,9 @@ export const webSceneProps = () => ({
   },
   sceneZoomControl: {
     type: Object,
+  },
+  sceneMapSwitchControl: {
+    type: Object,
   }
 })
 
@@ -75,6 +78,7 @@ export type WebSceneProps = {
   sceneMeasureControl?: Object
   sceneViewModeSwitcherControl?: Object
   sceneZoomControl?: Object
+  sceneMapSwitchControl?: Object
 }
 
 export const webScenePropsDefault = getPropsDefaults<WebSceneProps>(webSceneProps())

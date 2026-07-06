@@ -35,6 +35,11 @@ export default {
     switchTo2D: 'Switch to 2D',
     switchTo3D: 'Switch to 3D'
   },
+  sceneMapSwitch: {
+    title: 'Map Switch',
+    annotation: 'Place Name Annotation',
+    terrain: 'Terrain Service'
+  },
   sm: {
     webmap: {
       test: 'tesssssssssssssssdsd'

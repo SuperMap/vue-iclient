@@ -10,6 +10,22 @@ export {
   type ViewModeSwitcherOptions
 } from './view-mode-switcher';
 export {
+  MapSwitch,
+  type MapSwitchOptions,
+  type MapSwitchChangeEvent,
+  type BaseMapLayer,
+  type BaseMapLayerType,
+  type Terrain,
+  type TerrainType,
+  type Annotation,
+  type AnnotationType,
+  type ImageLayerConfig,
+  type TiandituLayerConfig,
+  type TerrainLayerConfig,
+  type TiandituTerrainLayerConfig,
+  type TiandituAnnotationConfig
+} from './map-switch';
+export {
   flyToCamera,
   type FlyToOptions,
   type ScenePosition

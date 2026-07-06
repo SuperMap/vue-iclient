@@ -26,6 +26,7 @@ import SmSceneFullscreen from '@supermapgis/mapboxgl/components/scene-fullscreen
 import SmSceneMeasure from '@supermapgis/mapboxgl/components/scene-measure/scene-measure.vue'
 import SmSceneViewModeSwitcher from '@supermapgis/mapboxgl/components/scene-view-mode-switcher/scene-view-mode-switcher.vue'
 import SmSceneZoom from '@supermapgis/mapboxgl/components/scene-zoom/scene-zoom.vue'
+import SmSceneMapSwitch from '@supermapgis/mapboxgl/components/scene-map-switch/scene-map-switch.vue'
 
 defineOptions({
   name: 'SmWebScene'
@@ -40,7 +41,8 @@ const componentMap: Record<string, any> = {
   SmSceneFullscreen,
   SmSceneMeasure,
   SmSceneViewModeSwitcher,
-  SmSceneZoom
+  SmSceneZoom,
+  SmSceneMapSwitch
 };
 const controlComponents: Record<string, any> = computed(() => {
   const controls = []

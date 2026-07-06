@@ -1,0 +1,101 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+@use '@supermapgis/common/theme-chalk/collapse-card';
+@use '@supermapgis/common/theme-chalk/card';
+
+@include b(scene-map-switch) {
+  z-index: 1;
+  width: 380px;
+  /* stylelint-disable-next-line */
+  color: $text-color-heading;
+
+  @include e(panel) {
+    padding: 0;
+  }
+
+  @include e(content) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 4px;
+  }
+
+  @include e(layer-preview) {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $color-fill-tertiary;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    i {
+      /* stylelint-disable-next-line */
+      font-size: 28px;
+      /* stylelint-disable-next-line */
+      color: $icon-color-secondary;
+    }
+  }
+
+  @include e(layer-name) {
+    width: 64px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  @include e(footer) {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    min-height: 48px;
+    padding: 14px 12px;
+    border-top: 1px solid $border-color-secondary;
+  }
+
+  @include e(footer-item) {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    label {
+      white-space: nowrap;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+  }
+
+  @include e(layer-item) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+
+    @include e(layer-preview) {
+      &:hover {
+        border: 1px solid $primary-color;
+        cursor: pointer;
+      }
+    }
+
+    @include m(active) {
+      border: 1px solid $primary-color;
+
+      .#{$N}__layer-preview {
+        border: 2px solid $primary-color;
+      }
+    }
+  }
+}

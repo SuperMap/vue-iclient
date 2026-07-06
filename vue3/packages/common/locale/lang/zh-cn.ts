@@ -298,6 +298,11 @@ export default {
   flyTo: {
     title: '飞行定位'
   },
+  sceneMapSwitch: {
+    title: '底图切换',
+    annotation: '地名标注',
+    terrain: '地形服务'
+  },
   tdtResults: {
     on: '在',
     station: '站',
