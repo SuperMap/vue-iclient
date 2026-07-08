@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../_utils/style/mixins/mixins.scss';
 @import '../../_utils/style/theme/theme.scss';
 @import '../../select/style/select.scss';
@@ -8,7 +9,7 @@
   & li ul {
     overflow: hidden;
     padding: 0px;
-    padding: 0 0 0 8px;
+    @include spacing-complate-padding(0 0 0 8px, false);
   }
 
   & li span#{$prefix}-switcher,

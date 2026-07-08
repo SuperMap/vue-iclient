@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../../common/_utils/style/theme/theme.scss';
 @import '../../../../../common/button/style/button.scss';
@@ -30,19 +31,19 @@
       }
     }
     @include m(zoomin) {
-      border-bottom-right-radius: 0;
-      border-bottom-left-radius: 0;
+      @include border-corner-radius(bottom, right, 0, false);
+      @include border-corner-radius(bottom, left, 0, false);
     }
     @include m(zoomout) {
-      border-top-right-radius: 0;
-      border-top-left-radius: 0;
+      @include border-corner-radius(top, right, 0, false);
+      @include border-corner-radius(top, left, 0, false);
       &.follow-zoom-value {
         border-radius: 0;
       }
     }
     @include m(show-zoom) {
-      border-top-right-radius: 0;
-      border-top-left-radius: 0;
+      @include border-corner-radius(top, right, 0, false);
+      @include border-corner-radius(top, left, 0, false);
       height: 20px;
       line-height: 20px;
       font-size: 12px;
@@ -72,7 +73,7 @@
         width: 6px;
       }
       .sm-component-slider-handle {
-        margin-left: -4px;
+        @include spacing-margin(-4px, left, false);
       }
     }
   }

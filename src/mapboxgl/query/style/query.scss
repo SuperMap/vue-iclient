@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../common/_utils/style/theme/theme.scss';
 @import '../../../common/input/style/input.scss';
@@ -30,10 +31,10 @@
   }
   @include e((job-button, result-button)) {
     padding-bottom: 7px;
-    text-align: center;
+    @include text-align-transform(center, false);
     width: 50%;
     border-bottom: 1px solid $border-color-base;
-    float: left;
+    @include float-row(left, false);
     cursor: pointer;
     @include when(active) {
       color: $primary-color;
@@ -51,7 +52,7 @@
   }
   @include e(job-info-header result-header) {
     cursor: pointer;
-    padding: 6px 8px 6px 0;
+    @include spacing-complate-padding(6px 8px 6px 0, false);
     border-bottom: 1px solid $border-color-split;
     display: flex;
     justify-content: space-between;
@@ -145,7 +146,7 @@
       padding: 0;
       margin: 0;
       & > li {
-        padding: 6px 16px 6px 24px;
+        @include spacing-complate-padding(6px 16px 6px 24px, false);
         line-height: 20px;
         cursor: pointer;
         overflow: hidden;
@@ -161,7 +162,7 @@
         }
         > i {
           position: absolute;
-          right: 16px;
+          @include position-row(right, 16px, false, false);
           top: 0;
         }
       }

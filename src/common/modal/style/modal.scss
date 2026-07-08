@@ -1,4 +1,4 @@
-
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import "../../_utils/style/mixins/mixins.scss";
 @import '../../_utils/style/theme/theme.scss';
 
@@ -44,11 +44,11 @@
     }
     &-body {
       .#{$iconfont-css-prefix} {
-        margin-right: 12px;
+        @include spacing-margin(12px, right, false);
         font-size: 24px;
         
         + #{$modal-prefix}-title + #{$modal-prefix}-content {
-          margin-left: 36px;
+          @include spacing-margin(36px, left, false);
         }
       }
     }

@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../_utils/style/mixins/mixins.scss';
 @import '../../_utils/style/theme/theme.scss';
 
@@ -20,25 +21,25 @@
 
   @include e(left-bar, '-') {
     #{$prefix} & {
-      border-right-color: $border-color-base;
+      @include border-line-color(right, $border-color-base, false);
     }
   }
 
   @include e(right-bar, '-') {
     #{$prefix} & {
-      border-left-color: $border-color-base;
+      @include border-line-color(left, $border-color-base, false);
     }
   }
 
   @include e(left-content, '-') {
     #{$prefix} & {
-      border-left-color: transparent;
+      @include border-line-color(left, transparent, false);
     }
   }
 
   @include e(right-content, '-') {
     #{$prefix} & {
-      border-right-color: transparent;
+      @include border-line-color(right, transparent, false);
     }
   }
 

@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../common/_utils/style/theme/theme.scss';
 @import '../../../../common/checkbox/style/checkbox.scss';
@@ -18,8 +19,8 @@
           height: 64px;
           border-radius: 2px;
           position: relative;
-          margin-right: 8px;
-          float: left;
+          @include spacing-margin(8px, right, false);
+          @include float-row(left, false);
           background: url('#{$--tdt-assets-path}/sprite.png') no-repeat;
           cursor: pointer;
           border: 1px solid transparent;
@@ -39,7 +40,7 @@
             background-position: -162px -51px;
           }
           &:last-of-type {
-            margin-right: 0;
+            @include spacing-margin(0, right, false);
           }
           &.active-item {
             #{$map-switch-prefix}__layer-name {
@@ -58,7 +59,7 @@
             width: 64px;
             height: 16px;
             line-height: 16px;
-            text-align: center;
+            @include text-align-transform(center, false);
             z-index: 10;
             background: $tdt-map-switcher-layer-name-bg;
             box-sizing: content-box;

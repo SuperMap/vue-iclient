@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../_utils/style/mixins/mixins.scss';
 @import '../../_utils/style/theme/theme.scss';
 
@@ -11,7 +12,7 @@
     height: calc(100% - 32px);
   }
   @include e(content) {
-    text-align: center;
+    @include text-align-transform(center, false);
     height: 100%;
   }
   @include b(slideshowitem) {

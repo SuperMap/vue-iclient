@@ -1,10 +1,11 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../common/_utils/style/theme/theme.scss';
 
 @include b(tdtNoResults) {
   padding-top: 10px;
   .title {
-    padding-left: 16px;
+    @include spacing-padding(16px, left, false);
     .region {
       color: $primary-color;
     }

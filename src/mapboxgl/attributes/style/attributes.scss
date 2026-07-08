@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../common/_utils/style/theme/theme.scss';
 @import '../../../common/table/style/table.scss';
@@ -31,7 +32,7 @@
           display: block;
           .sm-component-table-column-sorter {
             position: absolute;
-            right: 4px;
+            @include position-row(right, 4px, false, false);
             top: 50%;
             margin-top: -6px;
           }
@@ -41,6 +42,7 @@
         color: inherit;
         background: inherit;
         padding: 6px 6px;
+        @include text-align-transform(left, true);
         &.sm-component-table-column-sort {
           background: $select-item-hover-bg;
         }
@@ -52,7 +54,8 @@
       }
       tr > th .anticon-filter,
       tr > th .sm-component-table-filter-icon {
-        right: 15px;
+        @include position-row(right, 15px, false, false);
+        @include position-row(left, auto, false, false);
         display: flex;
         align-items: center;
       }
@@ -85,6 +88,7 @@
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+        @include text-align-transform(left, true);
       }
     }
   }
@@ -100,9 +104,9 @@
     align-items: center;
   }
   @include e(count) {
-    margin-left: 15px;
+    @include spacing-margin(15px, left, false);
     > span {
-      margin-right: 8px;
+      @include spacing-margin(8px, right, false);
       font-size: 16px;
       font-weight: 500;
     }
@@ -119,6 +123,9 @@
 }
 .sm-component-attribute_dropdown-menu {
   .sm-component-dropdown-menu-submenu-title > span > .anticon:first-child {
-    margin-right: 0;
+    @include spacing-margin(0, right, false);
   }
+}
+.sm-component-table-pagination.sm-component-pagination {
+  @include float-row(right, false);
 }

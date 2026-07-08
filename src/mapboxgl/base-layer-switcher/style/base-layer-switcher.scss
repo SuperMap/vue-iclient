@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../common/_utils/style/theme/theme.scss';
 
@@ -25,7 +26,7 @@
             border-color: $hover-color;
           }
           &:last-of-type {
-            margin-right: 0;
+            @include spacing-margin(0, right, false);
           }
           &.active-item {
             border-color: $primary-color;
@@ -44,11 +45,11 @@
           @include e(layer-name) {
             position: absolute;
             bottom: 0;
-            left: 0;
+            @include position-row(left, 0, false, false);
             width: 100%;
             height: 20px;
             line-height: 20px;
-            text-align: center;
+            @include text-align-transform(center, false);
             z-index: 10;
             text-overflow: ellipsis;
             overflow: hidden;

@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../../common/_utils/style/theme/theme.scss';
 @import '../../../../../common/collapse-card/style/collapse-card.scss';
@@ -28,7 +29,7 @@
         }
       }
       > label {
-        margin-right: 12px;
+        @include spacing-margin(12px, right, false);
         width: 25%;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -51,7 +52,7 @@
       }
       .#{$ant-prefix}-radio-button-wrapper {
         flex: 1;
-        text-align: center;
+        @include text-align-transform(center, false);
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
@@ -105,7 +106,7 @@
         > * {
           flex: 1;
           &:last-child {
-            margin-left: 6px;
+            @include spacing-margin(6px, left, false);
           }
         }
       }
@@ -116,9 +117,9 @@
       padding: 8px 0;
       .content-item {
         > label {
-          padding-left: 12px;
+          @include spacing-padding(12px, left, false);
           & + * {
-            margin-right: 10px;
+            @include spacing-margin(10px, right, false);
           }
         }
       }
@@ -127,12 +128,12 @@
   .is-not-header {
     &.is-top-left, &.is-bottom-left {
       #{$fill-extrusion-prefix}__content {
-        padding-left: 32px;
+        @include spacing-padding(32px, left, false);
       }
     }
     &.is-top-right, &.is-bottom-right {
       #{$fill-extrusion-prefix}__content {
-        padding-right: 32px;
+        @include spacing-padding(32px, right, false);
       }
     }
   }

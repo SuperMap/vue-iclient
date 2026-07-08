@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../common/_utils/style/theme/theme.scss';
 
@@ -6,7 +7,7 @@
     margin: 0;
     padding: 0;
     width: 100%;
-    text-align: center;
+    @include text-align-transform(center, false);
     font-size: 12px;
     padding-top: 8px;
     padding-bottom: 16px;
@@ -23,7 +24,7 @@
       &.pagination-item {
         padding: 0;
         width: 22px;
-        text-align: center;
+        @include text-align-transform(center, false);
       }
       &.active-item {
         background: $primary-color;
