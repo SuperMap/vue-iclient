@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../modal/style/modal.scss';
 // TODO 待重构 考虑下 modal 中的 player
 
@@ -25,7 +26,7 @@
 
 .sm-component-video-player__player > .video-js .vjs-control.vjs-live-control {
   width: auto;
-  padding-left: 0.5em;
+  @include spacing-padding(0.5em, left, false);
   letter-spacing: 0.1em;
 }
 
@@ -66,8 +67,8 @@
 
 .sm-component-video-player__player > .video-js .vjs-big-play-button {
   top: 50%;
-  left: 50%;
-  margin-left: -1.5em;
+  @include position-row(left, 50%, false, false);
+  @include spacing-margin(-1.5em, left, false);
   margin-top: -1em;
 }
 
@@ -114,7 +115,7 @@
 }
 
 .vjs-menu-button-popup.vjs-volume-menu-button-vertical .vjs-menu {
-  left: 0em;
+  @include position-row(left, 0em, false, false);
 }
 
 .sm-component-video-player__player > .video-js .vjs-menu li {
@@ -137,11 +138,11 @@
 
 .sm-component-video-player__player > .video-js .vjs-menu-button-popup .vjs-menu {
   width: 5em;
-  left: -1em;
+  @include position-row(left, -1em, false, false);
 }
 
 .sm-component-video-player__player > .video-js .vjs-menu-button-popup.vjs-volume-menu-button-vertical .vjs-menu {
-  left: 0;
+  @include position-row(left, 0, false, false);
 }
 
 /*排序顺序*/
@@ -153,7 +154,7 @@
   min-width: 1em;
   padding: 0;
   margin: 0 0.1em;
-  text-align: center;
+  @include text-align-transform(center, false);
   display: block;
   order: 1;
 }
@@ -229,7 +230,7 @@
   background: rgba(0, 0, 0, 0.7);
   .sm-component-modal-close {
     color: #a2a3a5;
-    right: -5%;
+    @include position-row(right, -5%, false, false);
     top: -3%;
     &:hover {
       color: #ff5c38;

@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../common/_utils/style/theme/theme.scss';
 
@@ -8,7 +9,7 @@
   & > div:not(.mapboxgl-compare) {
     position: absolute;
     top: 0;
-    left: 0;
+    @include position-row(left, 0, false, false);
     width: 100%;
     height: 100%;
   }
@@ -19,7 +20,7 @@
     .compare-swiper-vertical,
     .compare-swiper-horizontal {
       box-shadow: inset 0 0 0 2px;
-      left: 50%;
+      @include position-row(left, 50%, false, false);
       margin: 0;
       box-shadow: none;
       border: 2px solid;
@@ -28,7 +29,7 @@
       box-sizing: content-box;
       background-size: contain;
       background-image: none;
-      text-align: center;
+      @include text-align-transform(center, false);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -42,7 +43,7 @@
       transform: translate(-50%, -50%) rotate(90deg);
     }
     .compare-swiper-vertical {
-      transform: translate(-50%, -50%);
+      @include transform-translate(-50%, -50%, false);
     }
   }
 }

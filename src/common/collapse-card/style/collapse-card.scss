@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import "../../_utils/style/mixins/mixins.scss";
 @import '../../../common/_utils/style/theme/theme.scss';
 
@@ -21,7 +22,7 @@
     width: 32px;
     height: 32px;
     line-height: 32px;
-    text-align: center;
+    @include text-align-transform(center, false);
     &:hover {
       background: #ffffff;
       border-color: $hover-color !important;
@@ -43,16 +44,16 @@
     @include when(click-in) {
       border-radius: 4px;
       @include when(top-right) {
-        float: right;
+        @include float-row(right, false);
       }
       @include when(bottom-right) {
-        float: right;
+        @include float-row(right, false);
       }
       @include when(top-left) {
-        float: left !important;
+        @include float-row(left, true);
       }
       @include when(bottom-left) {
-        float: left !important;
+        @include float-row(left, true);
       }
     }
     @include when(click-out) {
@@ -61,28 +62,28 @@
     }
     @include when(top-left) {
       top: 0;
-      left: 0;
+      @include position-row(left, 0, false, false);
       & .sm-component-collapse-card__component-icon.is-auto-rotate {
         transform: rotate(45deg);
       }
     }
     @include when(bottom-left) {
       top: 0;
-      left: 0;
+      @include position-row(left, 0, false, false);
       & .sm-component-collapse-card__component-icon.is-auto-rotate {
         transform: rotate(45deg);
       }
     }
     @include when(top-right) {
       top: 0;
-      right: 0;
+      @include position-row(right, 0, false, false);
       & .sm-component-collapse-card__component-icon.is-auto-rotate {
         transform: rotate(135deg);
       }
     }
     @include when(bottom-right) {
       top: 0;
-      right: 0;
+      @include position-row(right, 0, false, false);
       & .sm-component-collapse-card__component-icon.is-auto-rotate {
         transform: rotate(135deg);
       }
@@ -92,29 +93,29 @@
   @include e(header) {
     height: 32px;
     line-height: 32px;
-    padding-left: 8px;
+    @include spacing-padding(8px, left, false);
     box-shadow: 0px 1px 0px 0px $shadow-color;
     color: $heading-color;
     background: $collapse-card-header-bg;
-    border-radius: 4px 4px 0 0;
+    @include spacing-complate-radius(4px 4px 0 0, false);
     &.with-split-line {
       border-bottom: 1px solid $collapse-card-split-line;
     }
     + #{$collapse-card-prefix}__body {
-      border-top-left-radius: 0;
-      border-top-right-radius: 0;
+      @include border-corner-radius(top, left, 0, false);
+      @include border-corner-radius(top, right, 0, false);
     }
     @include when(top-right) {
-      padding-right: 30px;
+      @include spacing-padding(30px, right, false);
     }
     @include when(bottom-right) {
-      padding-right: 30px;
+      @include spacing-padding(30px, right, false);
     }
     @include when(top-left) {
-      padding-left: 30px;
+      @include spacing-padding(30px, left, false);
     }
     @include when(bottom-left) {
-      padding-left: 30px;
+      @include spacing-padding(30px, left, false);
     }
   }
   @include e(content) {
@@ -142,7 +143,7 @@
       transform-origin: top left;
       @include when(icon) {
         & > .sm-component-collapse-card__header {
-          padding-left: 38px;
+          @include spacing-padding(38px, left, false);
         }
       }
     }
@@ -150,7 +151,7 @@
       transform-origin: top left;
       @include when(icon) {
         & > .sm-component-collapse-card__header {
-          padding-left: 38px;
+          @include spacing-padding(38px, left, false);
         }
       }
     }

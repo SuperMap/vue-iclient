@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../../common/_utils/style/theme/theme.scss';
 @import '../../../../../common/collapse-card/style/collapse-card.scss';
@@ -5,7 +6,7 @@
 @include b(draw) {
   @include e(panel) {
     padding: 16px;
-    padding-right: 0px;
+    @include spacing-padding(0px, right, false);
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.26);
   }
 
@@ -15,19 +16,19 @@
     width: 40px;
     height: 28px;
     line-height: 28px;
-    text-align: center;
+    @include text-align-transform(center, false);
     cursor: pointer;
     &:hover {
       color: $hover-color;
     }
     &:first-child {
-      border-radius: 4px 0px 0px 4px;
+      @include spacing-complate-radius(4px 0px 0px 4px, false);
     }
     &:nth-child(2) {
       margin: 0 1px;
     }
     &:nth-child(3) {
-      border-radius: 0px 4px 4px 0px;
+      @include spacing-complate-radius(0px 4px 4px 0px, false);
     }
     &:last-child {
       background-color: transparent !important;

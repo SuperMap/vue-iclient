@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../_utils/style/mixins/mixins.scss';
 @import '../../_utils/style/theme/theme.scss';
 @import 'mixin.scss';
@@ -64,8 +65,8 @@
     }
     &-md > #{$prefix}.#{$ant-prefix}-btn-icon-only {
       @include square($btn-height-md);
-      padding-right: 0;
-      padding-left: 0;
+      @include spacing-padding(0, right, false);
+      @include spacing-padding(0, left, false);
     }
   }
   @include e(md, '-') {
@@ -85,7 +86,7 @@
   @include e(round, '-') {
     &#{$prefix}-md {
       @include button-md-size();
-      padding: 0 calc(#{$btn-height-md} / 2);
+      @include spacing-complate-padding(0 calc(#{$btn-height-md} / 2), false);
     }
   }
 }

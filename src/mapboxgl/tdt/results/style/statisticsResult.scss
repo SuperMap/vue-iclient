@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../common/_utils/style/theme/theme.scss';
 @import '../../../../common/tree/style/tree.scss';
@@ -13,8 +14,8 @@
       content: '';
       position: absolute;
       bottom: 0;
-      left: 16px;
-      right: 16px;
+      @include position-row(left, 16px, false, false);
+      @include position-row(right, 16px, false, false);
       height: 1px;
       border-bottom: 1px solid $border-color-split;
     }
@@ -35,7 +36,7 @@
         }
         li {
           &:not(:last-child):before {
-            border-left-color: transparent;
+            @include border-line-color(left, transparent, false);
           }
           .#{$tree-prefix}-switcher {
             background: transparent;
@@ -64,7 +65,7 @@
     .priority-cities {
       overflow: hidden;
       .city-item {
-        float: left;
+        @include float-row(left, false);
         padding: 6px 16px;
         width: 35%;
         box-sizing: content-box;
@@ -79,15 +80,15 @@
         vertical-align: middle;
       }
       i {
-        margin-left: 2px;
+        @include spacing-margin(2px, left, false);
         font-size: 12px;
-        float: right;
+        @include float-row(right, false);
       }
     }
 
     .cities-group {
       .results {
-        padding: 6px 16px 0 10px;
+        @include spacing-complate-padding(6px 16px 0 10px, false);
         ul {
           li {
             font-size: 12px;
