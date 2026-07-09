@@ -127,6 +127,56 @@ describe('AttributePopupViewModel', () => {
       await viewModel.handleMapClickCover(mockEvent);
       expect(viewModel.activeTargetId).toBeNull();
     });
+
+    it('filters layerIds by existing map layers when activeTargetId is empty', async () => {
+      viewModel = new AttributePopupViewModel({
+        name: 'test',
+        style: highlightStyle,
+        layerIds: ['layer1', 'missing-layer']
+      });
+      const webmap = { getAppreciableLayers: jest.fn().mockReturnValue([]), copyLayer: jest.fn() };
+      viewModel.setMap({ map, webmap });
+
+      map.getLayer = jest.fn(id => (id === 'layer1' ? { type: 'circle' } : null));
+
+      const querySpy = jest.spyOn(viewModel, 'queryLayerFeatures').mockResolvedValue([]);
+      jest.spyOn(viewModel, 'removeHighlightLayers').mockImplementation(() => {});
+      jest.spyOn(viewModel, 'getClickedLayers').mockReturnValue([]);
+
+      const mockEvent = {
+        target: map,
+        point: { x: 100, y: 100 },
+        lngLat: { lng: 1, lat: 1 }
+      };
+
+      await viewModel.handleMapClickCover(mockEvent);
+      expect(querySpy).toHaveBeenCalledWith(mockEvent, ['layer1']);
+    });
+
+    it('queries only activeTargetId layer in multiple selection mode', async () => {
+      viewModel = new AttributePopupViewModel({
+        name: 'test',
+        style: highlightStyle,
+        layerIds: ['layer1', 'layer2']
+      });
+      const webmap = { getAppreciableLayers: jest.fn().mockReturnValue([]), copyLayer: jest.fn() };
+      viewModel.setMap({ map, webmap });
+      viewModel.dataSelectorMode = DataSelectorMode.MULTIPLE;
+      viewModel.activeTargetId = 'layer2';
+
+      const querySpy = jest.spyOn(viewModel, 'queryLayerFeatures').mockResolvedValue([]);
+      jest.spyOn(viewModel, 'removeHighlightLayers').mockImplementation(() => {});
+      jest.spyOn(viewModel, 'getClickedLayers').mockReturnValue([]);
+
+      const mockEvent = {
+        target: map,
+        point: { x: 100, y: 100 },
+        lngLat: { lng: 1, lat: 1 }
+      };
+
+      await viewModel.handleMapClickCover(mockEvent);
+      expect(querySpy).toHaveBeenCalledWith(mockEvent, ['layer2']);
+    });
   });
 
   describe('queryFeaturesByLayerId', () => {
@@ -147,10 +197,36 @@ describe('AttributePopupViewModel', () => {
         properties: { name: 'test' }
       };
 
-      jest.spyOn(map, 'queryRenderedFeatures').mockResolvedValue([mockFeature]);
-      map.getLayer = jest.fn().mockReturnValue({ type: 'circle' });
+      const handleMapSelectionsSpy = jest.spyOn(viewModel, 'handleMapSelections').mockImplementation(() => {});
+      jest.spyOn(viewModel, 'queryLayerFeatures').mockResolvedValue([mockFeature]);
 
       await viewModel.queryFeaturesByLayerId('layer1');
+      expect(handleMapSelectionsSpy).toHaveBeenCalledWith([mockFeature]);
+      expect(viewModel.activeTargetId).toBeNull();
+    });
+
+    it('sets activeTargetId in multiple selection mode', async () => {
+      viewModel = new AttributePopupViewModel({ name: 'test', style: highlightStyle, multiSelection: true });
+      const webmap = { getAppreciableLayers: jest.fn().mockReturnValue([]), copyLayer: jest.fn() };
+      viewModel.setMap({ map, webmap });
+      viewModel.dataSelectorMode = DataSelectorMode.MULTIPLE;
+      viewModel.e = {
+        target: map,
+        point: { x: 100, y: 100 },
+        lngLat: { lng: 1, lat: 1 }
+      };
+
+      const mockFeature = {
+        layer: { id: 'layer1' },
+        geometry: { type: 'Point', coordinates: [1, 1] },
+        properties: { name: 'test' }
+      };
+
+      jest.spyOn(viewModel, 'handleMapSelections').mockImplementation(() => {});
+      jest.spyOn(viewModel, 'queryLayerFeatures').mockResolvedValue([mockFeature]);
+
+      await viewModel.queryFeaturesByLayerId('layer1');
+      expect(viewModel.activeTargetId).toBe('layer1');
     });
 
     it('returns early if layerId is empty', async () => {
@@ -158,34 +234,58 @@ describe('AttributePopupViewModel', () => {
       const webmap = { getAppreciableLayers: jest.fn().mockReturnValue([]), copyLayer: jest.fn() };
       viewModel.setMap({ map, webmap });
 
+      const querySpy = jest.spyOn(viewModel, 'queryLayerFeatures');
       await viewModel.queryFeaturesByLayerId('');
-      // Should not throw and return early
+      expect(querySpy).not.toHaveBeenCalled();
     });
   });
 
   describe('setHighlightLayerFilter', () => {
-    xit('sets filter on highlight layer', () => {
+    it('sets filter on highlight layer', () => {
       viewModel = new AttributePopupViewModel({ name: 'test', style: highlightStyle });
       const webmap = { getAppreciableLayers: jest.fn().mockReturnValue([]), copyLayer: jest.fn() };
       viewModel.setMap({ map, webmap });
 
       viewModel.clickedFeatures = {
         layer1: [
-          { properties: { field1: 'value1' } }
+          { properties: { field1: 'value1' } },
+          { properties: { field1: 'value2' } }
         ]
       };
 
       map.getLayer = jest.fn().mockReturnValue({ type: 'circle' });
       map.setFilter = jest.fn();
-      map.getStyle = jest.fn().mockReturnValue({ layers: [] });
 
-      const highlightLayerIds = jest.fn().mockReturnValue(['layer1-SM-highlighted']);
-      viewModel.getHighlightLayerIds = highlightLayerIds;
+      jest.spyOn(viewModel, 'getHighlightLayerIds').mockReturnValue(['layer1-test-SM-highlighted']);
+      jest.spyOn(viewModel, 'createFilterExps').mockReturnValue(['==', ['get', 'field1'], 'value1']);
 
       const identifyFields = { field: 'field1', values: ['value1'] };
       viewModel.setHighlightLayerFilter('layer1', identifyFields, true);
 
-      expect(map.setFilter).toHaveBeenCalled();
+      expect(map.setFilter).toHaveBeenCalledWith(
+        'layer1-test-SM-highlighted',
+        ['==', ['get', 'field1'], 'value1']
+      );
+    });
+
+    it('delegates to setL7Filter for l7 layers', () => {
+      viewModel = new AttributePopupViewModel({ name: 'test', style: highlightStyle });
+      const webmap = { getAppreciableLayers: jest.fn().mockReturnValue([]), copyLayer: jest.fn() };
+      viewModel.setMap({ map, webmap });
+
+      const l7Layer = { type: 'circle', l7layer: {} };
+      map.getLayer = jest.fn().mockReturnValue(l7Layer);
+      map.setFilter = jest.fn();
+      viewModel.clickedFeatures = {
+        layer1: [{ properties: { field1: 'value1' } }]
+      };
+
+      const setL7FilterSpy = jest.spyOn(viewModel, 'setL7Filter').mockImplementation(() => {});
+      const identifyFields = { field: 'field1', values: ['value1'] };
+      viewModel.setHighlightLayerFilter('layer1', identifyFields, true);
+
+      expect(setL7FilterSpy).toHaveBeenCalledWith(l7Layer, [{ properties: { field1: 'value1' } }]);
+      expect(map.setFilter).not.toHaveBeenCalled();
     });
   });
 

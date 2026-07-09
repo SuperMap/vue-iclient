@@ -101,4 +101,36 @@ describe('FieldsConverter', () => {
       expect(result).toEqual([['concat', 'prefix', ['get', 'value']]]);
     });
   });
+
+  describe('convertCaptionToFieldName with Expression', () => {
+    it('converts Expression array captions to field names', () => {
+      const fieldsCaptions = { name: 'Name' };
+      const expression = [['get', 'Name']];
+      const result = FieldsConverter.convertCaptionToFieldName(expression, fieldsCaptions);
+      expect(result).toEqual([['get', 'name']]);
+    });
+
+    it('handles nested expression arrays at top level only', () => {
+      const fieldsCaptions = { value: 'Value' };
+      const expression = [['concat', 'Value', ['get', 'Value']]];
+      const result = FieldsConverter.convertCaptionToFieldName(expression, fieldsCaptions);
+      expect(result).toEqual([['concat', 'value', ['get', 'Value']]]);
+    });
+  });
+
+  describe('convertTextInfoToFieldName and convertTextInfoToCaption', () => {
+    it('skips ops without insert field', () => {
+      const fieldsCaptions = { name: 'Name' };
+      const ops = [{ attributes: { bold: true } }];
+      const result = FieldsConverter.convertTextInfoToFieldName(ops, fieldsCaptions);
+      expect(result[0]).toEqual({ attributes: { bold: true } });
+    });
+
+    it('does not mutate original ops array reference items unexpectedly', () => {
+      const fieldsCaptions = { city: 'City' };
+      const ops = [{ insert: 'Live in {City}' }];
+      const result = FieldsConverter.convertTextInfoToFieldName(ops, fieldsCaptions);
+      expect(result[0].insert).toBe('Live in {city}');
+    });
+  });
 });
