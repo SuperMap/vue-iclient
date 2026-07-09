@@ -299,7 +299,10 @@ export default {
   },
   mounted() {
     const resizeCallback = el => {
-      this.contentHeight = el.scrollHeight ? el.scrollHeight + 'px' : '';
+      const nextHeight = el.scrollHeight ? `${el.scrollHeight}px` : '';
+      if (nextHeight !== this.contentHeight) {
+        this.contentHeight = nextHeight;
+      }
     };
     this.$nextTick(() => {
       this.addResizeListener(this.$refs.popupContentRef?.$el, resizeCallback);

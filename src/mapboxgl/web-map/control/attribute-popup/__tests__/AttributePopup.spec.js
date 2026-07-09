@@ -600,15 +600,27 @@ describe('AttributePopup.vue', () => {
     });
   });
 
-  it('registers resize listener on mounted and updates contentHeight', async () => {
+  it('registers debounced resize listener on mounted', async () => {
     wrapper = mountPopup();
     await wrapper.vm.$nextTick();
     expect(addListener).toHaveBeenCalled();
     const resizeCallback = addListener.mock.calls[0][1];
+    expect(typeof resizeCallback.cancel).toBe('function');
     resizeCallback({ scrollHeight: 120 });
+    await new Promise(resolve => setTimeout(resolve, 150));
+    await new Promise(resolve => requestAnimationFrame(resolve));
     expect(wrapper.vm.contentHeight).toBe('120px');
-    resizeCallback({ scrollHeight: 0 });
-    expect(wrapper.vm.contentHeight).toBe('');
+  });
+
+  it('does not update contentHeight when scrollHeight is unchanged', async () => {
+    wrapper = mountPopup();
+    await wrapper.vm.$nextTick();
+    wrapper.vm.contentHeight = '120px';
+    const resizeCallback = addListener.mock.calls[0][1];
+    resizeCallback({ scrollHeight: 120 });
+    await new Promise(resolve => setTimeout(resolve, 150));
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    expect(wrapper.vm.contentHeight).toBe('120px');
   });
 
   it('cleans up on beforeDestroy', async () => {
