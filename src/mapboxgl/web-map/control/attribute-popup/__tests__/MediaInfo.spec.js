@@ -1,33 +1,6 @@
 import { mount, config } from '@vue/test-utils';
 import MediaInfo from '../MediaInfo.vue';
 
-jest.mock('swiper', () => {
-  return function() {
-    return {
-      init: jest.fn(),
-      destroy: jest.fn(),
-      on: jest.fn(),
-      update: jest.fn(),
-      slideToLoop: jest.fn(),
-      slideTo: jest.fn(),
-      keyboard: { enable: jest.fn(), disable: jest.fn() },
-      mousewheel: { enable: jest.fn(), disable: jest.fn() }
-    };
-  };
-});
-
-jest.mock('swiper/modules', () => ({
-  Navigation: {},
-  Pagination: {},
-  Mousewheel: {},
-  Autoplay: {},
-  Keyboard: {},
-  Scrollbar: {},
-  EffectCoverflow: {},
-  EffectCube: {},
-  EffectFlip: {}
-}));
-
 const PlayerStub = {
   name: 'SmPlayer',
   template: '<div class="player-stub">{{ type }}-{{ value }}</div>',
