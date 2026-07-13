@@ -3,26 +3,33 @@
 @use '@supermapgis/common/theme-chalk/tooltip';
 
 @include b(user-info) {
-  display: flex;
   min-width: 24px;
   position: relative;
+  /* stylelint-disable-next-line */
   color: $text-color;
+  /* stylelint-disable-next-line */
   font-size: 14px;
   gap: 6px;
   padding-left: 4px;
   display: flex;
   align-items: center;
+
   &:hover {
+    /* stylelint-disable-next-line */
     color: $primary-color-hover;
   }
+
   .user-icon-holder {
     cursor: pointer;
     background: $primary-color-hover;
     border-radius: 4px;
+
     > i {
+      /* stylelint-disable-next-line */
       color: $icon-color-secondary;
     }
   }
+
   > span {
     cursor: pointer;
     overflow: hidden;
@@ -32,17 +39,22 @@
     white-space: nowrap;
     text-overflow: ellipsis;
   }
+
   .user-logined {
     display: inline-block;
     vertical-align: top;
     width: 24px;
+      /* stylelint-disable-next-line */
     line-height: 24px;
     height: 24px;
     text-align: center;
     cursor: pointer;
     background: transparent;
+
     i {
+      /* stylelint-disable-next-line */
       font-size: 16px;
+      /* stylelint-disable-next-line */
       color: $primary-color;
     }
   }
