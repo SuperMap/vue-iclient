@@ -30,6 +30,8 @@ import { SmScale } from '@supermapgis/mapboxgl/components/scale'
 import { SmSceneLayerList } from '@supermapgis/mapboxgl/components/scene-layer-list'
 import { SmSceneFlyTo } from '@supermapgis/mapboxgl/components/scene-fly-to'
 import { SmSceneFullscreen } from '@supermapgis/mapboxgl/components/scene-fullscreen'
+import { SmSceneViewModeSwitcher } from '@supermapgis/mapboxgl/components/scene-view-mode-switcher'
+import { SmSceneZoom } from '@supermapgis/mapboxgl/components/scene-zoom'
 import { SmWebScene } from '@supermapgis/mapboxgl/components/web-scene'
 import { SmTextList } from '@supermapgis/mapboxgl/components/text-list'
 import { SmChart } from '@supermapgis/mapboxgl/components/chart'
@@ -67,6 +69,8 @@ export default [
   SmSceneLayerList,
   SmSceneFlyTo,
   SmSceneFullscreen,
+  SmSceneViewModeSwitcher,
+  SmSceneZoom,
   SmWebScene,
   SmTextList,
   SmImage,
