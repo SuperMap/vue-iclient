@@ -1,1 +1,0 @@
-export * from '../src/common/mapping/WebMapV2Base';
