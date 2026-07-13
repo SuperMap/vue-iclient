@@ -9,14 +9,14 @@
 
 @mixin spacing-margin($padding: 16px, $direction: right, $important: false) {
   @if $direction == right {
-    html[dir='ltr'] & {
+    html:not([dir='rtl']) & {
       margin-right: with-important($padding, $important);
     }
     html[dir='rtl'] & {
       margin-left: with-important($padding, $important);
     }
   } @else if $direction == left {
-    html[dir='ltr'] & {
+    html:not([dir='rtl']) & {
       margin-left: with-important($padding, $important);
     }
     html[dir='rtl'] & {
@@ -33,7 +33,7 @@
     $bottom: nth($margin, 3);
     $left: nth($margin, 4);
 
-    html[dir='ltr'] & {
+    html:not([dir='rtl']) & {
       margin: with-important($top $right $bottom $left, $important);
     }
     html[dir='rtl'] & {
@@ -47,14 +47,14 @@
 // -------------------- Padding --------------------
 @mixin spacing-padding($padding: 16px, $direction: right, $important: false) {
   @if $direction == right {
-    html[dir='ltr'] & {
+    html:not([dir='rtl']) & {
       padding-right: with-important($padding, $important);
     }
     html[dir='rtl'] & {
       padding-left: with-important($padding, $important);
     }
   } @else if $direction == left {
-    html[dir='ltr'] & {
+    html:not([dir='rtl']) & {
       padding-left: with-important($padding, $important);
     }
     html[dir='rtl'] & {
@@ -71,7 +71,7 @@
     $bottom: nth($padding, 3);
     $left: nth($padding, 4);
 
-    html[dir='ltr'] & {
+    html:not([dir='rtl']) & {
       padding: with-important($top $right $bottom $left, $important);
     }
     html[dir='rtl'] & {
@@ -83,7 +83,7 @@
 }
 
 @mixin rtl-direction-property($ltr-property, $rtl-property, $value, $important: false) {
-  html[dir='ltr'] & {
+  html:not([dir='rtl']) & {
     #{$ltr-property}: with-important($value, $important);
   }
 
@@ -97,7 +97,7 @@
 
   @if $direction == right {
 
-    html[dir='ltr'] & {
+    html:not([dir='rtl']) & {
       @if $width == none {
         border-right: with-important(none, $important);
       } @else {
@@ -115,7 +115,7 @@
 
   } @else if $direction == left {
 
-    html[dir='ltr'] & {
+    html:not([dir='rtl']) & {
       @if $width == none {
         border-left: with-important(none, $important);
       } @else {
@@ -160,7 +160,7 @@
 // -------------------- Position --------------------
 @mixin position-row($direction, $value, $isContrary: false, $important: false) {
   @if $direction == right {
-    html[dir='ltr'] & {
+    html:not([dir='rtl']) & {
       right: with-important($value, $important);
       @if $isContrary == true {
         right: with-important($value, $important);
@@ -175,7 +175,7 @@
       }
     }
   } @else if $direction == left {
-    html[dir='ltr'] & {
+    html:not([dir='rtl']) & {
       left: with-important($value, $important);
       @if $isContrary == true {
         left: with-important($value, $important);
@@ -195,14 +195,14 @@
 // -------------------- Float --------------------
 @mixin float-row($direction: left, $important: false) {
   @if $direction == left {
-    html[dir='ltr'] & {
+    html:not([dir='rtl']) & {
       float: with-important(left, $important);
     }
     html[dir='rtl'] & {
       float: with-important(right, $important);
     }
   } @else if $direction == right {
-    html[dir='ltr'] & {
+    html:not([dir='rtl']) & {
       float: with-important(right, $important);
     }
     html[dir='rtl'] & {
@@ -214,14 +214,14 @@
 // -------------------- Text Align --------------------
 @mixin text-align-transform($direction: right, $important: false) {
   @if $direction == right {
-    html[dir='ltr'] & {
+    html:not([dir='rtl']) & {
       text-align: with-important(right, $important);
     }
     html[dir='rtl'] & {
       text-align: with-important(left, $important);
     }
   } @else if $direction == left {
-    html[dir='ltr'] & {
+    html:not([dir='rtl']) & {
       text-align: with-important(left, $important);
     }
     html[dir='rtl'] & {
@@ -234,7 +234,7 @@
 
 // -------------------- Transform --------------------
 @mixin transform-translate($x, $y, $important: false) {
-  html[dir='ltr'] & {
+  html:not([dir='rtl']) & {
     transform: with-important(translate($x, $y), $important);
   }
   html[dir='rtl'] & {
@@ -243,7 +243,7 @@
 }
 
 @mixin transform-translateX($x, $important: false) {
-  html[dir='ltr'] & {
+  html:not([dir='rtl']) & {
     transform: with-important(translateX($x), $important);
   }
   html[dir='rtl'] & {
@@ -260,7 +260,7 @@
     $bottom-right: nth($radius, 3);
     $bottom-left: nth($radius, 4);
 
-    html[dir='ltr'] & {
+    html:not([dir='rtl']) & {
       border-radius: with-important($top-left $top-right $bottom-right $bottom-left, $important);
     }
     html[dir='rtl'] & {
@@ -282,180 +282,3 @@
     @include rtl-direction-property(border-bottom-left-radius, border-bottom-right-radius, $value, $important);
   }
 }
-
-// html[dir='rtl'] {
-//   // tab
-//   .sm-component-tabs-content {
-//     flex-direction: column !important;
-//   }
-//   .sm-component-tabs-ink-bar {
-//     display: none !important;
-//   }
-//   .sm-component-tabs-nav {
-//     .sm-component-tabs-tab {
-//       margin-right: 0 !important;
-//     }
-//   }
-
-//   // confirm modal
-//   .sm-component-modal-confirm {
-//     .sm-component-modal-confirm-body {
-//       text-align: right;
-//     }
-
-//     .sm-component-modal-confirm-body > .anticon {
-//       float: right;
-//       margin-right: 0;
-//       margin-left: 16px;
-//     }
-
-//     .sm-component-modal-confirm-body > .anticon + .sm-component-modal-confirm-title + .sm-component-modal-confirm-content {
-//       margin-left: 0;
-//       margin-right: 38px;
-//     }
-
-//     .sm-component-modal-confirm-btns {
-//       float: left;
-//       text-align: left;
-//     }
-
-//     .sm-component-modal-confirm-btns button + button {
-//       margin-left: 0;
-//       margin-right: 8px;
-//     }
-//   }
-
-//     // 折叠
-//     .sm-mapdashboard-icon-arrow-right {
-//       display: inline-block;
-//       transform: rotate(180deg);
-//     }
-
-//     .sm-mapdashboard-icon-arrow-down {
-//         & + span {
-//         display: inline-block;
-//       }
-//     }
-
-//     // button
-//     .sm-component-btn-group .sm-component-btn:last-child {
-//       border-left-color: $data-selector-table-body-hover-bg !important;
-//     }
-
-//   // select、menu
-//   .sm-component-select-selection__rendered {
-//     direction: rtl;
-//     text-align: right;
-//   }
-
-//   .sm-component-select-selection--single .sm-component-select-selection__rendered {
-//     margin-left: 24px;
-//     margin-right: 11px;
-//   }
-
-//   .sm-component-select-no-arrow .sm-component-select-selection__rendered {
-//     margin-left: 11px;
-//   }
-
-//   .sm-component-select-selection-selected-value {
-//     float: right;
-//     text-align: right;
-//   }
-
-//   .sm-component-select-selection__placeholder,
-//   .sm-component-select-search__field__placeholder {
-//     left: 9px;
-//     right: 0;
-//     text-align: right;
-//   }
-
-//   .sm-component-select-arrow,
-//   .sm-component-select-selection__clear {
-//     left: 11px;
-//     right: auto;
-//   }
-
-//   .sm-component-select-selection--multiple .sm-component-select-selection__rendered {
-//     margin-left: 0;
-//     margin-right: 5px;
-//   }
-
-//   .sm-component-select-selection--multiple .sm-component-select-selection__placeholder {
-//     margin-left: 0;
-//     margin-right: 6px;
-//   }
-
-//   .sm-component-select-selection--multiple .sm-component-select-search--inline {
-//     float: right;
-//   }
-
-//   .sm-component-select-selection--multiple .sm-component-select-selection__choice {
-//     float: right;
-//     margin-left: 4px;
-//     margin-right: 0;
-//     padding: 0 10px 0 20px;
-//   }
-
-//   .sm-component-select-selection--multiple .sm-component-select-selection__choice__remove {
-//     left: 4px;
-//     right: auto;
-//   }
-
-//   .sm-component-select-allow-clear .sm-component-select-selection--multiple .sm-component-select-selection__rendered,
-//   .sm-component-select-show-arrow .sm-component-select-selection--multiple .sm-component-select-selection__rendered,
-//   .sm-component-select-combobox.sm-component-select-allow-clear .sm-component-select-selection:hover
-//   .sm-component-select-selection__rendered,
-//   .sm-component-select-combobox.sm-component-select-show-arrow .sm-component-select-selection:hover
-//   .sm-component-select-selection__rendered {
-//     margin-left: 20px;
-//     margin-right: 5px;
-//   }
-
-//   .sm-component-select-dropdown,
-//   .sm-component-select-dropdown-menu,
-//   .sm-component-dropdown-menu,
-//   .sm-component-menu:not(.sm-component-menu-horizontal) {
-//     direction: rtl;
-//     text-align: right;
-//   }
-
-//   .sm-component-select-dropdown-menu-item,
-//   .sm-component-select-dropdown-menu-item-group-title,
-//   .sm-component-dropdown-menu-item,
-//   .sm-component-dropdown-menu-submenu-title,
-//   .sm-component-dropdown-menu-item-group-title,
-//   .sm-component-menu-item,
-//   .sm-component-menu-submenu-title,
-//   .sm-component-menu-item-group-title {
-//     text-align: right;
-//   }
-
-//   .sm-component-dropdown-menu-item > .anticon:first-child,
-//   .sm-component-dropdown-menu-submenu-title > .anticon:first-child,
-//   .sm-component-dropdown-menu-item > span > .anticon:first-child,
-//   .sm-component-dropdown-menu-submenu-title > span > .anticon:first-child {
-//     margin-left: 8px;
-//     margin-right: 0;
-//   }
-
-//   .sm-component-menu-item .anticon,
-//   .sm-component-menu-submenu-title .anticon {
-//     margin-left: 10px;
-//     margin-right: 0;
-//   }
-
-//   .sm-component-dropdown-menu-item .sm-component-dropdown-menu-submenu-arrow,
-//   .sm-component-dropdown-menu-submenu-title .sm-component-dropdown-menu-submenu-arrow {
-//     left: 8px;
-//     right: auto;
-//   }
-
-//   .sm-component-dropdown-menu-submenu-vertical > .sm-component-dropdown-menu {
-//     left: auto;
-//     right: 100%;
-//     margin-left: 0;
-//     margin-right: 4px;
-//     transform-origin: 100% 0;
-//   }
-
-// }
