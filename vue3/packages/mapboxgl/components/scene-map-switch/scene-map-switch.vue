@@ -1,5 +1,5 @@
 <template>
-  <sm-collapse-card
+  <SmCollapseCard
     v-show="isShow"
     icon-class="sm-components-icon-layer-list"
     :icon-position="position"
@@ -12,7 +12,7 @@
     class="sm-component-scene-map-switch"
     ref="mapSwitchRef"
   >
-    <sm-card
+    <SmCard
       class="sm-component-scene-map-switch__panel"
       :bordered="false"
       :style="textColorHeadingStyle"
@@ -29,14 +29,14 @@
         >
           <div class="sm-component-scene-map-switch__layer-preview">
             <img :src="item.image || DEFAULT_THUMBNAIL" :alt="item.label" />
-          </div>
-          <div class="sm-component-scene-map-switch__layer-name" :title="item.label">
-            {{ item.label }}
+            <div class="sm-component-scene-map-switch__layer-name" :title="item.label">
+              {{ item.label }}
+            </div>
           </div>
         </div>
       </div>
-    </sm-card>
-    <div class="sm-component-scene-map-switch__footer">
+    </SmCard>
+    <div v-if="annotation || terrain" class="sm-component-scene-map-switch__footer">
       <div v-if="annotation" class="sm-component-scene-map-switch__footer-item">
         <label>{{ t('sceneMapSwitch.annotation') }}</label>
         <Switch v-model:checked="isShowNameLabel" size="small" />
@@ -46,7 +46,7 @@
         <Switch v-model:checked="isShowTerrain" size="small" />
       </div>
     </div>
-  </sm-collapse-card>
+  </SmCollapseCard>
 </template>
 
 <script setup lang="ts">
@@ -67,7 +67,6 @@ defineOptions({
 
 const props = withDefaults(defineProps<SceneMapSwitchProps>(), sceneMapSwitchPropsDefault)
 
-const viewer = ref<any>(null)
 const currentIndex = ref<number | undefined>(props.defaultIndex ?? undefined)
 const isShowNameLabel = ref(false)
 const isShowTerrain = ref(false)
@@ -79,8 +78,6 @@ const { textColorHeadingStyle } = useTheme(props)
 
 const rootEl = useTemplateRef('mapSwitchRef')
 useSceneControl(() => rootEl.value?.$el)
-
-const mapSwitchRef = ref<any>(null)
 
 const DEFAULT_THUMBNAIL = new URL('./assets/defaultThumbnail.png', import.meta.url).href
 
@@ -139,7 +136,6 @@ const handleMapChange = (event: MapSwitchChangeEvent) => {
 useSceneGetter({
   loaded: (sceneViewer: any) => {
     destroyMapSwitchController()
-    viewer.value = sceneViewer
     mapSwitchController = new MapSwitch(sceneViewer, {
       baseMapLayers: baseMapLayersValue.value ?? [],
       terrain: isShowTerrain.value ? (props.terrain ?? null) : null,
@@ -152,7 +148,6 @@ useSceneGetter({
   },
   removed: () => {
     destroyMapSwitchController()
-    viewer.value = null
     currentIndex.value = props.defaultIndex
   }
 })

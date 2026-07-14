@@ -4,13 +4,30 @@
 @use '@supermapgis/common/theme-chalk/card';
 
 @include b(scene-map-switch) {
+  $layer-preview-size: 76px;
+  $layer-name-height: 20px;
+  $layer-name-bg: rgb(0 0 0 / 45%);
+
   z-index: 1;
-  width: 380px;
+  width: 370px;
   /* stylelint-disable-next-line */
   color: $text-color-heading;
 
+  .sm-component-card-body {
+    padding: 16px;
+  }
+
+  .sm-component-collapse-card__content {
+    height: 100%;
+  }
+
+  .sm-component-collapse-card__body {
+    height: calc(100% - 32px);
+  }
+
   @include e(panel) {
     padding: 0;
+    height: 100%;
   }
 
   @include e(content) {
@@ -20,16 +37,39 @@
     padding: 4px;
   }
 
+  @include e(layer-item) {
+    cursor: pointer;
+
+    &:hover {
+      .#{$N}__layer-preview {
+        border-color: $primary-color;
+      }
+    }
+
+    @include when(active) {
+      .#{$N}__layer-preview {
+        border-color: $primary-color;
+      }
+
+      .#{$N}__layer-name {
+        background: $primary-color;
+      }
+    }
+  }
+
   @include e(layer-preview) {
-    width: 64px;
-    height: 64px;
+    position: relative;
+    width: $layer-preview-size;
+    height: $layer-preview-size;
+    border: 1px solid $border-color-secondary;
+    border-radius: 4px;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
     background: $color-fill-tertiary;
-    border-radius: 4px;
-    margin-bottom: 4px;
     overflow: hidden;
+    transition: border-color 0.2s;
 
     img {
       width: 100%;
@@ -46,11 +86,25 @@
   }
 
   @include e(layer-name) {
-    width: 64px;
-    text-align: center;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    max-width: 100%;
+    height: $layer-name-height;
+    padding: 0 4px;
+    box-sizing: border-box;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    text-align: center;
+    /* stylelint-disable-next-line */
+    line-height: $layer-name-height;
+    background: $layer-name-bg;
+    /* stylelint-disable-next-line */
+    color: $tooltip-color;
+    transition: background 0.2s;
   }
 
   @include e(footer) {
@@ -72,30 +126,6 @@
       white-space: nowrap;
       flex-shrink: 0;
       cursor: pointer;
-    }
-  }
-
-  @include e(layer-item) {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 4px;
-    border-radius: 4px;
-    transition: all 0.2s;
-
-    @include e(layer-preview) {
-      &:hover {
-        border: 1px solid $primary-color;
-        cursor: pointer;
-      }
-    }
-
-    @include m(active) {
-      border: 1px solid $primary-color;
-
-      .#{$N}__layer-preview {
-        border: 2px solid $primary-color;
-      }
     }
   }
 }
