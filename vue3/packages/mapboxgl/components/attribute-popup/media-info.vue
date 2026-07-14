@@ -7,7 +7,6 @@
         :modules="[Navigation]"
         @swiper="swiperInit"
         @slideChange="onSlideChange"
-        style="width: 100%"
       >
         <template v-for="{ type, title, value, options } in infos">
           <swiper-slide>

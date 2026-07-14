@@ -5,7 +5,6 @@
       :src="value"
       :previewMode="options.previewMode"
       width="100%"
-      style="background: transparent"
       @error="() => handleImageLoad(false)"
       @load="() => handleImageLoad(true)"
     />

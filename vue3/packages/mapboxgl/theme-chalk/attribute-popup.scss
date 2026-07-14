@@ -109,6 +109,11 @@
         height: 100%;
       }
 
+      .sm-component-field-info-video {
+        width: 100%;
+        height: auto;
+      }
+
       .name {
         width: 80px;
 
@@ -149,6 +154,7 @@
       .sm-component-image {
         width: 100%;
         height: 100%;
+        background: transparent;
 
         img {
           height: auto;
@@ -181,6 +187,10 @@
       display: flex;
       flex-direction: column;
       flex: 1;
+
+      .swiper {
+        width: 100%;
+      }
 
       .swiper-wrapper {
         align-items: center;

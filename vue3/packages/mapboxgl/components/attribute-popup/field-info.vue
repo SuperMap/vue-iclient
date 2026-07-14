@@ -19,7 +19,6 @@
           :type="'VIDEO'"
           :value="value"
           :options="contentInfo"
-          style="width: 100%; height: auto"
           class="sm-component-field-info-video"
         />
         <player

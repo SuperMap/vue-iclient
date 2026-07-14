@@ -27,7 +27,7 @@ export function useLayerHighlightHooks(props, layerIds, sourceLayers) {
   })
 
   watch(
-    () => props.highlightStyle,
+    () => props.layerStyle,
     next => {
       viewModel?.setHighlightStyle(next)
     }
