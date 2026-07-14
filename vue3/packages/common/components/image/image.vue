@@ -15,7 +15,6 @@
         <!-- 用img标签确保没有给定宽高时，能使用src图片的宽高 -->
         <img
           :src="src"
-          style="visibility: hidden; max-width: 100%; max-height: 100%"
           @error="e => emit('error', e)"
           @load="e => emit('load', e)"
         />

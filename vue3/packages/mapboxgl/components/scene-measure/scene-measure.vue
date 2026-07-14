@@ -40,7 +40,7 @@
                 :class="line.isSelect ? 'selected-icon' : ''"
                 @click="changleIconItem(line)"
               >
-                <i class="iconfont iconSize" :class="line.iconName" style="margin-top: 0"></i>
+                <i class="iconfont iconSize" :class="line.iconName"></i>
               </span>
             </div>
           </div>
@@ -49,7 +49,6 @@
             <div v-show="state.measureMode == 'Space'" class="btn-row-item">
               <sm-checkbox
                 v-model:checked="state.pickPointEnabled"
-                style="margin-bottom: 0.1rem"
                 @change="openPickPoint"
               >
                 {{ t('sceneMeasure.pickPoint') }}
@@ -60,7 +59,6 @@
               <div class="btn-row-item">
                 <sm-checkbox
                   v-model:checked="state.isShowLine"
-                  style="margin-bottom: 0.1rem"
                   @change="update_showDVH"
                 >
                   {{ t('sceneMeasure.contour') }}

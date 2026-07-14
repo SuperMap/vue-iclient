@@ -74,14 +74,12 @@
           <sm-input
             :placeholder="`Search ${column.dataIndex}`"
             :value="selectedKeys[0]"
-            style="width: 188px; margin-bottom: 8px; display: block"
             @change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
             @pressEnter="() => handleSearch(selectedKeys, confirm, column.dataIndex)"
           />
           <sm-button
             type="primary"
             size="small"
-            style="width: 90px; margin-right: 8px"
             @click="() => handleSearch(selectedKeys, confirm, column.dataIndex)"
           >
             <template #icon><i class="sm-components-icon-search"></i></template>
@@ -89,7 +87,6 @@
           </sm-button>
           <sm-button
             size="small"
-            style="width: 90px"
             @click="() => handleSearchReset(clearFilters)"
           >
             {{ t('attributes.reset') }}

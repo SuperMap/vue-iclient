@@ -54,6 +54,10 @@
           cursor: pointer;
         }
 
+        .iconfont {
+          margin-top: 0;
+        }
+
         .selected-icon i {
           /* stylelint-disable-next-line */
           color: $primary-color;
@@ -62,6 +66,10 @@
 
       .measure-checkbox-group {
         margin-bottom: 8px;
+
+        .sm-component-checkbox-wrapper {
+          margin-bottom: 0.1rem;
+        }
       }
 
       .measure-btn-group {

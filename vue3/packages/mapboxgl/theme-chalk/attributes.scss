@@ -109,6 +109,20 @@
     /* stylelint-disable-next-line */
     font-size: 0;
     padding: 8px;
+
+    .#{$ant-prefix}-input {
+      width: 188px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .#{$ant-prefix}-btn {
+      width: 90px;
+
+      &-primary {
+        margin-right: 8px;
+      }
+    }
   }
 
   @include e(header) {
