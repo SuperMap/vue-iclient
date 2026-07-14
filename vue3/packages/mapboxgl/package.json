@@ -59,7 +59,7 @@
     "vue-echarts": "^8.0.0",
     "vue3-count-to": "^1.1.2",
     "vue-quilly": "^1.1.5",
-    "vue-video-player": "^6.0.0",
+    "vue-video-player": "6.0.0",
     "video.js": "~7.20.1",
     "videojs-flvjs-es6": "^1.0.1"
   },
