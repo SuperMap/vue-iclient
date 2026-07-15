@@ -37,8 +37,28 @@ export default {
   },
   sceneMapSwitch: {
     title: 'Map Switch',
+    original: 'Original Basemap',
     annotation: 'Place Name Annotation',
     terrain: 'Terrain Service'
+  },
+  sceneSkylineAnalysis: {
+    title: 'Skyline Analysis',
+    displayMode: 'Display Mode',
+    lineDisplay: 'Line',
+    faceDisplay: 'Face',
+    bodyDisplay: 'Body',
+    analysisRadius: 'Analysis Radius',
+    meter: 'm',
+    lineWidth: 'Line Width',
+    skylineColor: 'Skyline Color',
+    skylineBodyColor: 'Skyline Body Color',
+    highlightObstacles: 'Highlight Obstacles',
+    display2D: 'Display 2D Skyline',
+    globeNoAnalysis: 'Ignore Globe',
+    analysis: 'Analyze',
+    drawViewPoint: 'Draw View Point',
+    limitBody: 'Limit Body',
+    clear: 'Clear'
   },
   sm: {
     webmap: {

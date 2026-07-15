@@ -19,7 +19,7 @@
     >
       <div class="sm-component-scene-map-switch__content">
         <div
-          v-for="(item, index) in baseMapLayers"
+          v-for="(item, index) in displayBaseMapLayers"
           :key="index"
           :class="[
             'sm-component-scene-map-switch__layer-item',
@@ -51,7 +51,7 @@
 
 <script setup lang="ts">
 import type { MapSwitchChangeEvent } from 'vue-iclient-core/utils/scene/map-switch'
-import type { SceneMapSwitchProps } from './types'
+import type { BaseMapLayerConfig, SceneMapSwitchProps } from './types'
 import { computed, useTemplateRef, ref, onBeforeUnmount, watch } from 'vue'
 import { useLocale, useSceneGetter, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useSceneControl } from '@supermapgis/mapboxgl/hooks'
@@ -67,7 +67,8 @@ defineOptions({
 
 const props = withDefaults(defineProps<SceneMapSwitchProps>(), sceneMapSwitchPropsDefault)
 
-const currentIndex = ref<number | undefined>(props.defaultIndex ?? undefined)
+const hasOriginalBaseLayer = ref(false)
+const currentIndex = ref<number | undefined>(undefined)
 const isShowNameLabel = ref(false)
 const isShowTerrain = ref(false)
 let mapSwitchController: MapSwitch | null = null
@@ -82,6 +83,22 @@ useSceneControl(() => rootEl.value?.$el)
 const DEFAULT_THUMBNAIL = new URL('./assets/defaultThumbnail.png', import.meta.url).href
 
 const baseMapLayersValue = computed(() => props.baseMapLayers.map(item => item.layer))
+
+/** UI 展示列表：有原始底图时第 0 项为 Original + 原始底图 */
+const displayBaseMapLayers = computed<BaseMapLayerConfig[]>(() => {
+  const layers = props.baseMapLayers ?? []
+  if (!hasOriginalBaseLayer.value) {
+    return layers
+  }
+  return [
+    {
+      label: t('sceneMapSwitch.original'),
+      image: DEFAULT_THUMBNAIL,
+      layer: { type: 'Original' }
+    },
+    ...layers
+  ]
+})
 
 watch(
   () => baseMapLayersValue.value,
@@ -143,12 +160,18 @@ useSceneGetter({
       token: props.token,
       defaultIndex: props.defaultIndex
     })
+    hasOriginalBaseLayer.value = mapSwitchController.hasOriginalBaseLayer
     currentIndex.value = mapSwitchController.currentIndex
     mapSwitchController.on({ change: handleMapChange })
+
+    if (props.defaultIndex !== undefined && props.defaultIndex !== currentIndex.value) {
+      switchTo(props.defaultIndex)
+    }
   },
   removed: () => {
     destroyMapSwitchController()
-    currentIndex.value = props.defaultIndex
+    hasOriginalBaseLayer.value = false
+    currentIndex.value = undefined
   }
 })
 

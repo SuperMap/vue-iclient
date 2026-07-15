@@ -300,8 +300,28 @@ export default {
   },
   sceneMapSwitch: {
     title: '底图切换',
+    original: '原始底图',
     annotation: '地名标注',
     terrain: '地形服务'
+  },
+  sceneSkylineAnalysis: {
+    title: '天际线分析',
+    displayMode: '显示模式',
+    lineDisplay: '线显示',
+    faceDisplay: '面显示',
+    bodyDisplay: '体显示',
+    analysisRadius: '分析半径',
+    meter: '米',
+    lineWidth: '线宽度',
+    skylineColor: '天际线颜色',
+    skylineBodyColor: '天际体颜色',
+    highlightObstacles: '高亮障碍物',
+    display2D: '二维天际线展示',
+    globeNoAnalysis: '地表不参与分析',
+    analysis: '分析',
+    drawViewPoint: '绘制观察点',
+    limitBody: '限高体',
+    clear: '清除'
   },
   tdtResults: {
     on: '在',

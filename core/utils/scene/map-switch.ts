@@ -1,9 +1,9 @@
 import { Events } from 'vue-iclient-core/types/event/Events';
 
 /**
- * 底图图层类型（影像、天地图）
+ * 底图图层类型（原始底图、影像、天地图）
  */
-export type BaseMapLayerType = 'SuperMapImagery' | 'TiandituImagery';
+export type BaseMapLayerType = 'Original' | 'SuperMapImagery' | 'TiandituImagery';
 
 /**
  * 地形服务类型
@@ -14,6 +14,14 @@ export type TerrainType = 'TiandituTerrain' | 'SuperMapTerrain';
  * 三维地名标注类型
  */
 export type AnnotationType = 'TiandituAnnotation';
+
+/**
+ * 原始底图配置（场景初始底图）
+ */
+export interface OriginalLayerConfig {
+  /** 类型 */
+  type: 'Original';
+}
 
 /**
  * 天地图样式类型
@@ -143,7 +151,7 @@ export interface TerrainLayerConfig {
 /**
  * 底图层配置（仅包含 BaseMapLayerType）
  */
-export type BaseMapLayer = ImageLayerConfig | TiandituLayerConfig;
+export type BaseMapLayer = OriginalLayerConfig | ImageLayerConfig | TiandituLayerConfig;
 
 /**
  * 地形服务配置（仅包含 TerrainType）
@@ -221,17 +229,27 @@ export class MapSwitch extends Events {
     this.viewer = viewer;
     this.options = options;
     this.eventTypes = ['change'];
-    this._currentIndex = options.defaultIndex;
-    this._baseMapLayers = options.baseMapLayers ?? [];
+    this.originalBaseLayer = viewer.imageryLayers?.get(0) ?? null;
+    this.originalTerrainProvider = viewer.terrainProvider ?? null;
+    this._baseMapLayers = this._normalizeBaseMapLayers(options.baseMapLayers ?? []);
+    this._currentIndex =
+      options.defaultIndex !== undefined
+        ? options.defaultIndex
+        : this.hasOriginalBaseLayer
+          ? 0
+          : undefined;
     this._terrain = options.terrain ?? null;
     this._annotation = options.annotation ?? null;
-    this.originalBaseLayer = viewer.imageryLayers?.get(0);
-    this.originalTerrainProvider = viewer.terrainProvider ?? null;
   }
 
   /** 当前底图索引 */
   get currentIndex(): number | undefined {
     return this._currentIndex;
+  }
+
+  /** 是否存在场景原始底图 */
+  get hasOriginalBaseLayer(): boolean {
+    return !!this.originalBaseLayer;
   }
 
   /** 当前底图信息 */
@@ -258,7 +276,18 @@ export class MapSwitch extends Events {
 
   /** 更新底图列表 */
   setBaseMapLayers(maps: BaseMapLayer[]): void {
-    this._baseMapLayers = maps;
+    this._baseMapLayers = this._normalizeBaseMapLayers(maps);
+  }
+
+  /**
+   * 规范化底图列表：有场景原始底图时自动在首位插入 Original 类型
+   */
+  private _normalizeBaseMapLayers(maps: BaseMapLayer[]): BaseMapLayer[] {
+    const others = maps.filter(map => map.type !== 'Original');
+    if (this.originalBaseLayer) {
+      return [{ type: 'Original' }, ...others];
+    }
+    return others;
   }
 
   /** 设置地形服务，传入 null 则恢复原始地形 */
@@ -305,7 +334,7 @@ export class MapSwitch extends Events {
 
   /** 清理资源 */
   clear(): void {
-    this.restoreOriginalBaseLayer();
+    this._restoreOriginalImagery();
     this._currentIndex = undefined;
     this._removeTerrain();
     this._removeAnnotation();
@@ -335,12 +364,22 @@ export class MapSwitch extends Events {
 
   /** 还原初始底图 */
   restoreOriginalBaseLayer(): void {
+    const originalIndex = this._baseMapLayers.findIndex(map => map.type === 'Original');
+    if (originalIndex >= 0) {
+      this.switchTo(originalIndex);
+      return;
+    }
+    this._restoreOriginalImagery();
+  }
+
+  /** 还原场景原始影像图层 */
+  private _restoreOriginalImagery(): void {
     const viewer = this.viewer;
     if (!viewer?.imageryLayers || !this.originalBaseLayer) return;
 
     try {
       this._removeSwitchedBaseLayers();
-      if (!viewer.imageryLayers.contains(this.originalBaseLayer)) {
+      if (viewer.imageryLayers.indexOf(this.originalBaseLayer) === -1) {
         viewer.imageryLayers.add(this.originalBaseLayer, 0);
       }
     } catch (error) {
@@ -355,7 +394,7 @@ export class MapSwitch extends Events {
 
     try {
       this._imageryLayers.forEach(layer => {
-        if (viewer.imageryLayers.contains(layer)) {
+        if (viewer.imageryLayers.indexOf(layer) !== -1) {
           viewer.imageryLayers.remove(layer, true);
         }
       });
@@ -371,7 +410,7 @@ export class MapSwitch extends Events {
     if (!viewer?.imageryLayers || !this.originalBaseLayer) return;
 
     try {
-      if (viewer.imageryLayers.contains(this.originalBaseLayer)) {
+      if (viewer.imageryLayers.indexOf(this.originalBaseLayer) !== -1) {
         viewer.imageryLayers.remove(this.originalBaseLayer, false);
       }
     } catch (error) {
@@ -385,6 +424,11 @@ export class MapSwitch extends Events {
     if (!viewer) return;
 
     try {
+      if (mapConfig.type === 'Original') {
+        this._restoreOriginalImagery();
+        return;
+      }
+
       this._removeSwitchedBaseLayers();
       this._hideOriginalBaseLayer();
 
