@@ -223,6 +223,27 @@ async function copyStatic() {
   await copy(path.resolve(rootDir, 'static'), path.resolve(epOutput, 'static'))
   await remove(path.join(epOutput, 'static', 'package.json'))
 }
+
+/** 将 components 下 assets 目录中的静态资源同步到 es / lib，供 import.meta.url / 相对路径引用 */
+async function copyComponentAssets(root: string) {
+  const assetFiles = await glob(['**/assets/**/*'], {
+    cwd: root,
+    absolute: true,
+    onlyFiles: true,
+    ignore: ['**/demo/**', '**/node_modules/**']
+  })
+  await Promise.all(
+    assetFiles.map(async file => {
+      const relativePath = path.relative(root, file)
+      await Promise.all(
+        buildConfigEntries.map(([, config]) =>
+          copy(file, path.resolve(config.output.path, relativePath))
+        )
+      )
+    })
+  )
+}
+
 async function buildStyles() {
   await buildModulesStyles(pkgRoot)
   await buildModulesStyles(pkgCommonRoot)
@@ -239,6 +260,8 @@ export const buildModules: TaskFunction = parallel(
     withTaskName('buildPkgModules', () => buildModulesComponents(pkgRoot)),
     withTaskName('buildCommonModules', () => buildModulesComponents(pkgCommonRoot)),
     removeMoreModules,
+    withTaskName('copyPkgComponentAssets', () => copyComponentAssets(pkgRoot)),
+    withTaskName('copyCommonComponentAssets', () => copyComponentAssets(pkgCommonRoot)),
     copyStatic,
     buildStyles
   )
