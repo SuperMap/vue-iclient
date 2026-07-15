@@ -60,6 +60,8 @@ import { MapSwitch } from 'vue-iclient-core/utils/scene/map-switch'
 import SmCard from '@supermapgis/common/components/card/Card'
 import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'
 import { Switch } from 'ant-design-vue'
+// @ts-ignore
+import DEFAULT_THUMBNAIL from './assets/defaultThumbnail.png'
 
 defineOptions({
   name: 'SmSceneMapSwitch'
@@ -80,7 +82,7 @@ const { textColorHeadingStyle } = useTheme(props)
 const rootEl = useTemplateRef('mapSwitchRef')
 useSceneControl(() => rootEl.value?.$el)
 
-const DEFAULT_THUMBNAIL = new URL('./assets/defaultThumbnail.png', import.meta.url).href
+// const DEFAULT_THUMBNAIL = new URL('./assets/defaultThumbnail.png', import.meta.url).href
 
 const baseMapLayersValue = computed(() => props.baseMapLayers.map(item => item.layer))
 
