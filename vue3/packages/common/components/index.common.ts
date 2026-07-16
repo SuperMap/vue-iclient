@@ -7,6 +7,7 @@ export * from './attribute-panel'
 export * from './button/Button'
 export * from './card/Card'
 export * from './checkbox/Checkbox'
+export * from './color-picker'
 export * from './tooltip/Tooltip'
 
 // export * from './collapse-card/collpase-card'

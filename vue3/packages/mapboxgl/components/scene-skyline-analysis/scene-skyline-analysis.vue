@@ -131,7 +131,7 @@ import SmSelect, { SmSelectOption } from '@supermapgis/common/components/select/
 import SmButton from '@supermapgis/common/components/button/Button'
 import SmCheckbox from '@supermapgis/common/components/checkbox/Checkbox'
 import SmSlider from '@supermapgis/common/components/slider/Slider'
-import SmColorPicker from './color-picker.vue'
+import SmColorPicker from '@supermapgis/common/components/color-picker/color-picker.vue'
 
 defineOptions({
   name: 'SmSceneSkylineAnalysis'

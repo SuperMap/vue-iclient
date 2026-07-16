@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="sm-component-color-picker"
-    :class="{ 'is-disabled': disabled }"
-  >
+  <div class="sm-component-color-picker" :class="{ 'is-disabled': disabled }">
     <SmTooltip
       trigger="click"
       overlay-class-name="sm-component-color-picker__popover"
@@ -15,7 +12,7 @@
           :style="{ backgroundColor: colorValue }"
         />
         <div class="sm-component-color-picker__remove" @click="removeColor">
-          <CloseOutlined />
+          <i class="sm-components-icon-close" />
         </div>
       </div>
       <template #title>
@@ -28,7 +25,6 @@
 <script setup lang="ts">
 import type { Payload, Props as PickerProps } from '@ckpack/vue-color'
 import { Sketch } from '@ckpack/vue-color'
-import { CloseOutlined } from '@ant-design/icons-vue'
 import { computed, ref, watch } from 'vue'
 import SmTooltip from '@supermapgis/common/components/tooltip/Tooltip'
 
