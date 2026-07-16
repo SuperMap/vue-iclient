@@ -41,6 +41,22 @@ export default {
     annotation: 'Place Name Annotation',
     terrain: 'Terrain Service'
   },
+  sceneSplitScreen: {
+    title: 'Split Screen',
+    modeLabel: 'Split Mode:',
+    layerVisibilityLabel: 'Layer Viewport Visibility:',
+    loading: 'Loading...',
+    modeNone: 'No Split',
+    modeHorizontal: 'Horizontal Split',
+    modeVertical: 'Vertical Split',
+    modeQuad: 'Quad Viewport',
+    modeTriple: 'Triple Viewport',
+    modeVerticalTrisection: 'Horizontal Triple Viewport',
+    viewport1: 'Viewport 1',
+    viewport2: 'Viewport 2',
+    viewport3: 'Viewport 3',
+    viewport4: 'Viewport 4'
+  },
   sceneSkylineAnalysis: {
     title: 'Skyline Analysis',
     displayMode: 'Display Mode',

@@ -2,35 +2,24 @@
 @use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
 @use '@supermapgis/common/theme-chalk/collapse-card';
 @use '@supermapgis/common/theme-chalk/card';
-@use '@supermapgis/common/theme-chalk/color-picker';
 @use '@supermapgis/common/theme-chalk/select';
-@use '@supermapgis/common/theme-chalk/button';
-@use '@supermapgis/common/theme-chalk/input';
 
-@include b(scene-skyline-analysis) {
+@include b(scene-split-screen) {
   z-index: 1;
   width: 340px;
-  height: 550px;
+  height: 400px;
   /* stylelint-disable-next-line */
   color: $text-color-heading;
 
   .sm-component-card,
-  .sm-component-checkbox-wrapper,
   .sm-component-select,
   .sm-component-select-selector,
-  .sm-component-input,
-  .sm-component-btn {
+  .sm-component-checkbox-wrapper {
     color: inherit;
   }
 
-  .sm-component-btn-primary {
-    /* stylelint-disable-next-line */
-    color: $tooltip-color;
-  }
-
   .sm-component-select .sm-component-select-selector,
-  .sm-component-checkbox:not(.sm-component-checkbox-checked) .sm-component-checkbox-inner,
-  .sm-component-scene-skyline-analysis__panel {
+  .sm-component-scene-split-screen__panel {
     background-color: transparent;
   }
 
@@ -67,10 +56,9 @@
   @include e(item) {
     display: flex;
     flex-direction: column;
-    flex-shrink: 0;
     gap: 8px;
 
-    >label {
+    > label {
       /* stylelint-disable-next-line */
       font-weight: 500;
     }
@@ -80,44 +68,44 @@
     width: 100%;
   }
 
-  @include e(checkbox-row) {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 8px;
-    align-items: center;
-
-    .sm-component-checkbox-wrapper {
-      flex-shrink: 0;
-    }
-
-    .sm-component-input,
-    .sm-component-color-picker {
-      flex: 1;
-      min-width: 0;
-    }
-  }
-
-  @include e(color-picker) {
+  @include e(layer-list) {
     width: 100%;
   }
 
-  @include e(buttons) {
+  @include e(layer-item) {
+    padding: 8px;
+    margin-bottom: 8px;
+    border: 1px solid $border-color-secondary;
+    border-radius: 4px;
+    background: $color-fill-tertiary;
+  }
+
+  @include e(layer-name) {
+    display: block;
+    margin-bottom: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    /* stylelint-disable-next-line */
+    font-size: 13px;
+  }
+
+  @include e(viewport-checkboxes) {
     display: flex;
     flex-wrap: wrap;
-    flex-shrink: 0;
     gap: 8px;
-    justify-content: space-between;
 
-    .sm-component-btn {
-      flex: 0 0 calc(46% - 4px);
+    .sm-component-checkbox-wrapper {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
     }
   }
 
-  @include e(chart) {
-    flex-shrink: 0;
-    width: 100%;
-    height: 200px;
-    min-height: 200px;
-    border-radius: 4px;
+  @include e(loading) {
+    /* stylelint-disable-next-line */
+    font-size: 13px;
+    /* stylelint-disable-next-line */
+    color: $icon-color-secondary;
   }
 }

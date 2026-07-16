@@ -304,6 +304,22 @@ export default {
     annotation: '地名标注',
     terrain: '地形服务'
   },
+  sceneSplitScreen: {
+    title: '数据分屏',
+    modeLabel: '分屏模式：',
+    layerVisibilityLabel: '图层视口可见性：',
+    loading: '加载中...',
+    modeNone: '无分屏',
+    modeHorizontal: '水平分屏',
+    modeVertical: '垂直分屏',
+    modeQuad: '四视口',
+    modeTriple: '三视口',
+    modeVerticalTrisection: '水平三视口',
+    viewport1: '视口一',
+    viewport2: '视口二',
+    viewport3: '视口三',
+    viewport4: '视口四'
+  },
   sceneSkylineAnalysis: {
     title: '天际线分析',
     displayMode: '显示模式',
