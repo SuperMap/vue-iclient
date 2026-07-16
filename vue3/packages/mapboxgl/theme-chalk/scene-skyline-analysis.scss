@@ -1,0 +1,174 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+@use '@supermapgis/common/theme-chalk/collapse-card';
+@use '@supermapgis/common/theme-chalk/card';
+@use '@supermapgis/common/theme-chalk/select';
+@use '@supermapgis/common/theme-chalk/button';
+@use '@supermapgis/common/theme-chalk/input';
+
+@include b(scene-skyline-analysis) {
+  z-index: 1;
+  width: 340px;
+  /* stylelint-disable-next-line */
+  color: $text-color-heading;
+
+  .sm-component-card,
+  .sm-component-checkbox-wrapper,
+  .sm-component-select,
+  .sm-component-select-selector,
+  .sm-component-input,
+  .sm-component-btn {
+    color: inherit;
+  }
+
+  .sm-component-btn-primary {
+    /* stylelint-disable-next-line */
+    color: $tooltip-color;
+  }
+
+  .sm-component-select .sm-component-select-selector,
+  .sm-component-checkbox:not(.sm-component-checkbox-checked) .sm-component-checkbox-inner,
+  .sm-component-scene-skyline-analysis__panel {
+    background-color: transparent;
+  }
+
+  .sm-component-card-body {
+    padding: 16px;
+  }
+
+  .sm-component-collapse-card__body {
+    max-height: calc(100% - 48px) !important;
+    overflow-y: auto;
+  }
+
+  @include e(panel) {
+    padding: 0;
+  }
+
+  @include e(content) {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 4px;
+  }
+
+  @include e(item) {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    >label {
+      /* stylelint-disable-next-line */
+      font-weight: 500;
+    }
+  }
+
+  @include e(control) {
+    width: 100%;
+  }
+
+  @include e(checkbox-row) {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    align-items: center;
+
+    .sm-component-checkbox-wrapper {
+      flex-shrink: 0;
+    }
+
+    .sm-component-input,
+    .sm-component-color-picker {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  @include e(color-picker) {
+    width: 100%;
+  }
+
+  @include e(buttons) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: space-between;
+
+    .sm-component-btn {
+      flex: 0 0 calc(46% - 4px);
+    }
+  }
+
+  @include e(chart) {
+    width: 100%;
+    height: 200px;
+    border-radius: 4px;
+  }
+}
+
+@include b(color-picker) {
+  width: 100%;
+  height: 30px;
+  border: 1px solid $border-color-split;
+  border-radius: 6px;
+  box-sizing: border-box;
+
+  &.is-disabled {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
+  @include e(current) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 100%;
+    padding: 5px;
+  }
+
+  @include e(thumbnail) {
+    width: 100%;
+    height: 16px;
+    border: 1px solid $border-color-split;
+    border-radius: 3px;
+    cursor: pointer;
+
+    &+.sm-component-color-picker__remove {
+      display: none;
+    }
+  }
+
+  @include e(remove) {
+    cursor: pointer;
+
+    .anticon {
+      /* stylelint-disable-next-line */
+      font-size: 12px;
+    }
+  }
+
+  &:hover {
+    .sm-component-color-picker__thumbnail+.sm-component-color-picker__remove {
+      display: block;
+    }
+  }
+}
+
+.sm-component-color-picker__popover {
+  &.sm-component-tooltip {
+    /* stylelint-disable-next-line */
+    color: $text-color;
+
+    .sm-component-tooltip-arrow::before {
+      background: $gis-control-bg;
+    }
+  }
+
+  .sm-component-tooltip-inner {
+    padding: 0;
+    /* stylelint-disable-next-line */
+    color: $text-color-heading;
+    background: $gis-control-bg;
+  }
+}

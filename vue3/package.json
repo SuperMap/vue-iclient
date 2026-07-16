@@ -60,6 +60,7 @@
     "vue-echarts": "^8.0.0",
     "vue-quilly": "^1.1.5",
     "vue-video-player": "^6.0.0",
+    "@ckpack/vue-color": "^1.6.0",
     "vue3-count-to": "^1.1.2"
   },
   "devDependencies": {

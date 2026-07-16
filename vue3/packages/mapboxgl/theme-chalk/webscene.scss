@@ -61,14 +61,6 @@
     }
   }
 
-  .drawCur {
-      cursor: url("../static/assets/img/draw.cur"), auto;
-  }
-
-  .measureCur {
-    cursor: crosshair;
-  }
-
   .sm-scene-tooltip {
       position: absolute;
       max-width: 200px;
@@ -97,7 +89,8 @@
       transform: translateZ(0);
   }
 
-   .sm-scene-tooltip::before {
+  /* 默认箭头在左侧（提示在鼠标右侧） */
+  .sm-scene-tooltip::before {
       content: '';
       position: absolute;
       top: 50%;
@@ -109,4 +102,14 @@
       border-width: 5px 5px 5px 0;
       border-color: transparent rgb(17 21 28 / 94%) transparent transparent;
   }
+
+  /* 箭头在右侧（提示在鼠标左侧） */
+  .sm-scene-tooltip.is-left::before {
+      left: auto;
+      right: -5px;
+      border-width: 5px 0 5px 5px;
+      border-color: transparent transparent transparent rgb(17 21 28 / 94%);
+  }
 }
+
+/* 光标由 DrawHandler.setMouseCursor 运行时设置，避免 CSS url 打包路径失效 */

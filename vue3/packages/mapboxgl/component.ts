@@ -37,6 +37,7 @@ import { SmTextList } from '@supermapgis/mapboxgl/components/text-list'
 import { SmChart } from '@supermapgis/mapboxgl/components/chart'
 import { SmSceneMeasure } from '@supermapgis/mapboxgl/components/scene-measure'
 import { SmSceneMapSwitch } from '@supermapgis/mapboxgl/components/scene-map-switch'
+import { SmSceneSkylineAnalysis } from '@supermapgis/mapboxgl/components/scene-skyline-analysis'
 import { SmFeatureTree } from '@supermapgis/mapboxgl/components/feature-tree'
 import { SmFeatureCascader } from '@supermapgis/mapboxgl/components/feature-cascader'
 import { SmDirectoryTree } from '@supermapgis/mapboxgl/components/directory-tree'
@@ -73,6 +74,7 @@ export default [
   SmSceneViewModeSwitcher,
   SmSceneZoom,
   SmSceneMapSwitch,
+  SmSceneSkylineAnalysis,
   SmWebScene,
   SmTextList,
   SmImage,

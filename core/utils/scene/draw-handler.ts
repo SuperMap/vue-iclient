@@ -1,52 +1,81 @@
+/** 解析绘制光标资源地址（CSS url 在打包后易失效，改由运行时解析） */
+function getDrawCursorStyle(): string {
+  try {
+    // core/utils/scene -> 仓库根 static/assets/img/draw.cur
+    const url = new URL('../../../static/assets/img/draw.cur', import.meta.url).href
+    return `url("${url}"), auto`
+  } catch {
+    return 'crosshair'
+  }
+}
+
 /**
- * 鼠标提示类
+ * 鼠标提示类。
+ * DrawHandler 的 windowPosition 为画布坐标，需换算到挂载容器坐标系。
  */
 class MouseTip {
   body: HTMLElement;
+  canvas?: HTMLCanvasElement;
   _div!: HTMLElement;
   _title!: HTMLElement;
   message: string;
+  private _useFixed: boolean;
 
-  constructor(body: HTMLElement) {
+  constructor(body: HTMLElement, canvas?: HTMLCanvasElement) {
     this.body = body;
+    this.canvas = canvas;
     this.message = '';
+    this._useFixed = body === document.body;
     this.init();
   }
 
   init(): void {
     const div = document.createElement('DIV');
-    div.className = 'twipsy right';
-
-    const arrow = document.createElement('DIV');
-    arrow.className = 'twipsy-arrow';
-    div.appendChild(arrow);
-
-    const title = document.createElement('DIV');
-    title.className = 'twipsy-inner';
-    div.appendChild(title);
+    // is-left：提示在鼠标左侧，箭头朝右指向鼠标
+    div.className = 'sm-scene-tooltip is-left';
+    div.style.position = this._useFixed ? 'fixed' : 'absolute';
+    div.style.zIndex = '10000';
+    div.style.pointerEvents = 'none';
 
     this._div = div;
-    this._title = title;
-
-    // add to frame div and display coordinates
+    this._title = div;
     this.body.appendChild(div);
-    const that = this;
-    div.onmousemove = function (evt: MouseEvent) {
-      that.showAt({ x: evt.clientX, y: evt.clientY }, that.message);
-    };
   }
 
   setVisible(visible: boolean): void {
     this._div.style.display = visible ? 'block' : 'none';
+    this._div.style.opacity = visible ? '1' : '0';
+  }
+
+  /** 将画布坐标转换为 tip 挂载容器的定位坐标 */
+  private toContainerPosition(position: { x: number; y: number }): { x: number; y: number } {
+    if (!this.canvas) {
+      return { x: position.x, y: position.y };
+    }
+    const canvasRect = this.canvas.getBoundingClientRect();
+    if (this._useFixed) {
+      return {
+        x: position.x + canvasRect.left,
+        y: position.y + canvasRect.top
+      };
+    }
+    const bodyRect = this.body.getBoundingClientRect();
+    return {
+      x: position.x + canvasRect.left - bodyRect.left,
+      y: position.y + canvasRect.top - bodyRect.top
+    };
   }
 
   showAt(position: { x: number; y: number }, message: string): void {
     if (position && message) {
       this.setVisible(true);
       this._title.innerHTML = message;
-      this._div.style.left = position.x + 10 + 'px';
-      this._div.style.top = position.y - this._div.clientHeight / 2 + 'px';
       this.message = message;
+      const { x, y } = this.toContainerPosition(position);
+      const tipWidth = this._div.clientWidth || 0;
+      // 提示放在鼠标左侧
+      this._div.style.left = `${x - tipWidth - 10}px`;
+      this._div.style.top = `${y - this._div.clientHeight / 2}px`;
     }
   }
 
@@ -132,6 +161,9 @@ export class DrawHandler {
     polygonFinish?: string;
   };
   defaultTipContent: DefaultTipContent;
+  private _pointResolve: ((value: any) => void) | null = null;
+  private _polylineResolve: ((value: any) => void) | null = null;
+  private _polygonResolve: ((value: any) => void) | null = null;
 
   constructor(viewer: any, options?: DrawHandlerOptions) {
     this.viewer = viewer;
@@ -139,11 +171,12 @@ export class DrawHandler {
     this.handlePolyline = null;
     this.handlePolygon = null;
     this.isDrawing = false;
-    const body = options?.body ? options.body : document.body;
-    this.mouseTip = new MouseTip(body);
+    // 默认挂到场景容器，与 DrawHandler 的画布坐标一致，避免提示偏离鼠标
+    const body = options?.body ? options.body : viewer?.container || document.body;
+    this.mouseTip = new MouseTip(body, viewer?.scene?.canvas);
     this.handlerRightClick = new window.SuperMap3D.ScreenSpaceEventHandler(this.viewer.scene.canvas);
     this.defaultTipContent = {
-      pointMoving: '点击左键添加，点击右键结束',
+      pointMoving: '点击左键添加',
       polylineMoving: '点击左键添加线节点，点击右键结束绘制',
       polylineFinish: '点击左键继续添加节点，点击右键获取线节点数据',
       polygonMoving: '点击左键添加面节点，点击右键结束绘制',
@@ -178,7 +211,7 @@ export class DrawHandler {
           this.closePolyline();
         }
 
-        // 关闭面绘制
+        // 关闭面绘制（点数不足时取消并结束 Promise）
         if (this.handlePolygon && this.handlePolygon.positions.length <= 2) {
           this.closePolygon();
         }
@@ -193,6 +226,7 @@ export class DrawHandler {
     return new Promise((resolve, reject) => {
       try {
         this.closePoint(); // 先销毁之前的，再重新创建
+        this._pointResolve = resolve;
         const clampmode = 0; // 是否贴地贴模型：todo...
         this.handlerPoint = new SuperMap3D.DrawHandler(this.viewer, SuperMap3D.DrawMode.Point, clampmode);
         this.handlerPoint.activeEvt.addEventListener((isActive: boolean) => {
@@ -215,6 +249,7 @@ export class DrawHandler {
           this.handlerPoint.deactivate();
           this.mouseTip.setVisible(false);
           this.isDrawing = false;
+          this._pointResolve = null;
           // 对数据做简单处理在返回：直接返回对应坐标
           if (result && result.object && result.object.position) {
             const newArray = [].concat(result.object.position); // 重新创建一个坐标数组，避免引用清空
@@ -226,6 +261,7 @@ export class DrawHandler {
 
         this.handlerPoint.activate();
       } catch (error) {
+        this._pointResolve = null;
         reject(error);
       }
     });
@@ -238,6 +274,10 @@ export class DrawHandler {
       this.handlerPoint.deactivate();
       this.handlerPoint.clear();
     }
+    if (this._pointResolve) {
+      this._pointResolve(undefined);
+      this._pointResolve = null;
+    }
   }
 
   // 开启绘制线
@@ -248,6 +288,7 @@ export class DrawHandler {
     return new Promise((resolve, reject) => {
       try {
         this.closePolyline(); // 先销毁之前的，再重新创建
+        this._polylineResolve = resolve;
 
         const clampmode = 0; // 是否贴地贴模型：todo...
         this.handlePolyline = new SuperMap3D.DrawHandler(this.viewer, SuperMap3D.DrawMode.Line, clampmode);
@@ -271,6 +312,7 @@ export class DrawHandler {
           this.handlePolyline.deactivate();
           this.mouseTip.setVisible(false);
           this.isDrawing = false;
+          this._polylineResolve = null;
 
           // 直接返回坐标
           if (result && result.positions) {
@@ -286,6 +328,7 @@ export class DrawHandler {
 
         this.handlePolyline.activate();
       } catch (error) {
+        this._polylineResolve = null;
         reject(error);
       }
     });
@@ -298,6 +341,10 @@ export class DrawHandler {
       this.handlePolyline.deactivate();
       this.handlePolyline.clear();
     }
+    if (this._polylineResolve) {
+      this._polylineResolve(undefined);
+      this._polylineResolve = null;
+    }
   }
 
   // 开启绘制面
@@ -308,6 +355,7 @@ export class DrawHandler {
     return new Promise((resolve, reject) => {
       try {
         this.closePolygon(); // 先销毁之前的，再重新创建
+        this._polygonResolve = resolve;
 
         const clampmode = 0; // 是否贴地贴模型：todo...
         this.handlePolygon = new SuperMap3D.DrawHandler(this.viewer, SuperMap3D.DrawMode.Polygon, clampmode);
@@ -332,14 +380,12 @@ export class DrawHandler {
           this.handlePolygon.deactivate();
           this.mouseTip.setVisible(false);
           this.isDrawing = false;
+          this._polygonResolve = null;
 
-          // 直接返回坐标
-          if (result && result.positions) {
-            const newArray = [].concat(result.positions);
-            resolve(newArray);
-          } else if (result && result.object.positions) {
-            const newArray = [].concat(result.object.positions);
-            resolve(newArray);
+          // 优先使用 entity 上的 positions（与官方限高体示例一致）
+          const rawPositions = result?.object?.positions ?? result?.positions;
+          if (rawPositions && rawPositions.length) {
+            resolve(Array.from(rawPositions));
           } else {
             resolve(undefined);
           }
@@ -347,6 +393,7 @@ export class DrawHandler {
 
         this.handlePolygon.activate();
       } catch (error) {
+        this._polygonResolve = null;
         reject(error);
       }
     });
@@ -358,6 +405,10 @@ export class DrawHandler {
     if (this.handlePolygon) {
       this.handlePolygon.deactivate();
       this.handlePolygon.clear();
+    }
+    if (this._polygonResolve) {
+      this._polygonResolve(undefined);
+      this._polygonResolve = null;
     }
   }
 
@@ -394,20 +445,34 @@ export class DrawHandler {
   // 设置鼠标样式
   setMouseCursor(type: string): void {
     if (!this.viewer) return;
+    const container = this.viewer.container as HTMLElement | undefined;
+    const element = this.viewer._element as HTMLElement | undefined;
+    const canvas = this.viewer.scene?.canvas as HTMLElement | undefined;
+    const applyCursor = (cursor: string) => {
+      document.body.style.cursor = cursor;
+      if (container) container.style.cursor = cursor;
+      if (element) element.style.cursor = cursor;
+      if (canvas) canvas.style.cursor = cursor;
+    };
+
     if (type === 'normal') {
       this.viewer.enableCursorStyle = true;
-      document.body.classList.remove('measureCur');
-      document.body.classList.remove('drawCur');
+      document.body.classList.remove('measureCur', 'drawCur');
+      container?.classList.remove('measureCur', 'drawCur');
+      applyCursor('');
     } else if (type === 'drawCur') {
       this.viewer.enableCursorStyle = false;
-      this.viewer._element.style.cursor = '';
       document.body.classList.add('drawCur');
+      container?.classList.add('drawCur');
+      applyCursor(getDrawCursorStyle());
     } else if (type === 'measureCur') {
       this.viewer.enableCursorStyle = false;
-      this.viewer._element.style.cursor = '';
       document.body.classList.add('measureCur');
+      container?.classList.add('measureCur');
+      applyCursor('crosshair');
     } else {
       this.viewer.enableCursorStyle = true;
+      applyCursor('');
     }
   }
 

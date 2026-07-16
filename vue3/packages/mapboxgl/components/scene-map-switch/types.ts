@@ -30,7 +30,7 @@ export interface SceneMapSwitchProps extends CardProps, ControlProps, ThemeProps
   annotation?: Annotation | null
   /** 天地图全局密钥 */
   token?: string
-  /** 默认底图索引 */
+  /** 默认选中的展示索引（有原始底图时 0 为 Original / 原始底图，其后依次对应 baseMapLayers） */
   defaultIndex?: number
 }
 

@@ -60,6 +60,9 @@ export const webSceneProps = () => ({
   },
   sceneMapSwitchControl: {
     type: Object,
+  },
+  sceneSkylineAnalysisControl: {
+    type: Object,
   }
 })
 
@@ -79,6 +82,7 @@ export type WebSceneProps = {
   sceneViewModeSwitcherControl?: Object
   sceneZoomControl?: Object
   sceneMapSwitchControl?: Object
+  sceneSkylineAnalysisControl?: Object
 }
 
 export const webScenePropsDefault = getPropsDefaults<WebSceneProps>(webSceneProps())

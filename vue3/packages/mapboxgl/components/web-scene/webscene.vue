@@ -27,6 +27,7 @@ import SmSceneMeasure from '@supermapgis/mapboxgl/components/scene-measure/scene
 import SmSceneViewModeSwitcher from '@supermapgis/mapboxgl/components/scene-view-mode-switcher/scene-view-mode-switcher.vue'
 import SmSceneZoom from '@supermapgis/mapboxgl/components/scene-zoom/scene-zoom.vue'
 import SmSceneMapSwitch from '@supermapgis/mapboxgl/components/scene-map-switch/scene-map-switch.vue'
+import SmSceneSkylineAnalysis from '@supermapgis/mapboxgl/components/scene-skyline-analysis/scene-skyline-analysis.vue'
 
 defineOptions({
   name: 'SmWebScene'
@@ -42,7 +43,8 @@ const componentMap: Record<string, any> = {
   SmSceneMeasure,
   SmSceneViewModeSwitcher,
   SmSceneZoom,
-  SmSceneMapSwitch
+  SmSceneMapSwitch,
+  SmSceneSkylineAnalysis
 };
 const controlComponents: Record<string, any> = computed(() => {
   const controls = []
