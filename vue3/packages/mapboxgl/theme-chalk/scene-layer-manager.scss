@@ -1,0 +1,356 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+@use '@supermapgis/common/theme-chalk/collapse-card';
+@use '@supermapgis/common/theme-chalk/card';
+
+@include b(scene-layer-manager) {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  max-height: 100%;
+  min-width: 0;
+  min-height: 0;
+  background: transparent;
+  box-sizing: border-box;
+
+  // CollapseCard uses float positioning after leave; flex items need an explicit cross-axis alignment instead.
+  > .sm-component-collapse-card__icon.is-click-in.is-top-right,
+  > .sm-component-collapse-card__icon.is-click-in.is-bottom-right {
+    align-self: flex-end;
+  }
+
+  .sm-component-collapse-card__content,
+  .sm-component-collapse-card__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  @include e(card) {
+    display: flex;
+    flex: 1;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 0;
+    padding-top: 4px;
+    background: transparent;
+    box-shadow: none;
+
+    > .ant-card-body,
+    > .sm-component-card-body {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+      padding: 0;
+    }
+  }
+
+  @include e(content) {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  @include e(tabs) {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 0;
+    color: inherit !important;
+
+    .ant-tabs-nav,
+    .sm-component-tabs-nav,
+    .ant-tabs-content-holder,
+    .sm-component-tabs-content-holder,
+    .ant-tabs-content,
+    .sm-component-tabs-content,
+    .ant-tabs-tabpane,
+    .sm-component-tabs-tabpane {
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .ant-tabs-nav,
+    .sm-component-tabs-nav {
+      padding: 0 8px;
+      box-sizing: border-box;
+    }
+
+    .ant-tabs-content-holder,
+    .sm-component-tabs-content-holder,
+    .ant-tabs-content,
+    .sm-component-tabs-content,
+    .ant-tabs-tabpane-active,
+    .sm-component-tabs-tabpane-active {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      min-width: 0;
+    }
+  }
+
+  @include e(panel) {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  @include e(toolbar) {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    flex: none;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding: 0 8px 8px;
+    box-sizing: border-box;
+
+    .ant-btn,
+    .sm-component-btn {
+      flex: none;
+    }
+  }
+
+  @include e(search) {
+    flex: 1 1 120px;
+    min-width: 0;
+  }
+
+  &__tree,
+  &__list,
+  &__controls,
+  &__control-list {
+    flex: 1;
+    width: 100%;
+    max-width: 100%;
+    min-height: 0;
+    padding: 0 8px 8px;
+    box-sizing: border-box;
+    overflow: auto;
+  }
+
+  @include e(tree) {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    color: inherit !important;
+    background: transparent;
+    overflow-x: hidden;
+
+    .ant-tree-list,
+    .sm-component-tree-list,
+    .ant-tree-list-holder,
+    .sm-component-tree-list-holder,
+    .ant-tree-list-holder-inner,
+    .sm-component-tree-list-holder-inner {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .ant-tree-treenode,
+    .sm-component-tree-treenode {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      padding: 2px 0;
+      box-sizing: border-box;
+      color: inherit !important;
+
+      &:hover {
+        background: $gis-control-item-bg-selected;
+      }
+    }
+
+    .ant-tree-node-content-wrapper,
+    .sm-component-tree-node-content-wrapper {
+      display: flex;
+      flex: 1;
+      max-width: 100%;
+      min-width: 0;
+      color: inherit !important;
+      background: transparent;
+      overflow: hidden;
+
+      &:hover,
+      &.ant-tree-node-selected,
+      &.sm-component-tree-node-selected {
+        background: transparent;
+      }
+    }
+
+    .ant-tree-title,
+    .sm-component-tree-title {
+      display: flex;
+      flex: 1;
+      width: auto;
+      max-width: 100%;
+      min-width: 0;
+      color: inherit !important;
+      overflow: hidden;
+    }
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 8px;
+  }
+
+  &__tree-row,
+  &__list-row,
+  &__control-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    gap: 8px;
+  }
+
+  @include e(row) {
+    min-height: 32px;
+    padding: 4px 0;
+    border-bottom: 1px solid $border-color-split;
+  }
+
+  &__list-row,
+  &__control-item {
+    min-height: 32px;
+    padding: 4px 0;
+    border-bottom: 1px solid $border-color-split;
+  }
+
+  &__row-title,
+  &__tree-title,
+  &__control-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__tree-name {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    overflow: hidden;
+
+    .ant-checkbox-wrapper,
+    .sm-component-checkbox-wrapper {
+      flex: none;
+    }
+  }
+
+  &__loading-icon {
+    flex: none;
+  }
+
+  @include e(actions) {
+    display: flex;
+    align-items: center;
+    flex: none;
+    width: 52px;
+    min-width: 52px;
+    justify-self: end;
+    justify-content: flex-end;
+    white-space: nowrap;
+  }
+
+  @include e(control) {
+    padding: 8px 0;
+    border-bottom: 1px solid $border-color-split;
+  }
+
+  @include e(control-parameters) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    padding: 8px 0 0;
+  }
+
+  @include e(parameter) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    align-items: center;
+    gap: 8px;
+
+    > span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .ant-input-number,
+    .sm-component-input-number {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+
+  @include e(parameter-label) {
+    /* stylelint-disable-next-line */
+    color: $text-color;
+  }
+
+  &__empty,
+  &__status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 80px;
+    min-width: 0;
+    padding: 16px;
+    /* stylelint-disable-next-line */
+    color: $text-color-disabled;
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  @include e(disabled) {
+    /* stylelint-disable-next-line */
+    color: $text-color-disabled;
+    cursor: not-allowed;
+  }
+
+  &__tree-row--disabled,
+  &__list-row--disabled {
+    /* stylelint-disable-next-line */
+    color: $text-color-disabled;
+    cursor: not-allowed;
+  }
+
+  .ant-btn-link,
+  .sm-component-btn-link {
+    color: inherit;
+
+    &:hover,
+    &:focus {
+      /* stylelint-disable-next-line */
+      color: $primary-color-hover;
+    }
+  }
+}

@@ -134,6 +134,32 @@ export default {
     OSM: 'OSM底图',
     GRIDIMAGERY: '经纬底图'
   },
+  sceneLayerManager: {
+    title: '图层管理',
+    publicLayers: '公共图层',
+    favoriteLayers: '收藏图层',
+    layerControl: '图层控制',
+    searchPlaceholder: '搜索图层',
+    clear: '清空',
+    sceneNotReady: '场景尚未就绪',
+    emptyConfig: '暂无图层配置',
+    noSearchResult: '无匹配图层',
+    noFavorites: '暂无收藏图层',
+    noControllableLayers: '暂无可控图层',
+    locate: '定位',
+    addFavorite: '添加收藏',
+    removeFavorite: '取消收藏',
+    loadFailed: '图层加载失败',
+    operationFailed: '操作失败，请稍后重试',
+    alpha: '透明度',
+    contrast: '对比度',
+    brightness: '亮度',
+    saturation: '饱和度',
+    bottomAltitudeOffset: '底部高程偏移',
+    showParameters: '展开参数',
+    hideParameters: '收起参数',
+    loading: '加载中'
+  },
   slideshow: {
     title: '幻灯片'
   },

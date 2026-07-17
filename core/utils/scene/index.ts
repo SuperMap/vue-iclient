@@ -58,3 +58,16 @@ export {
   type SightlinePosition,
   type SightlineTargetPoint
 } from './sightline-analysis';
+export {
+  LayerManager,
+  type LayerType,
+  type LayerCheckData,
+  type LayerCheckOptions,
+  type LayerCameraConfig,
+  type LayerLifecyclePhase,
+  type LayerLifecycleRuntime,
+  type LayerLifecyclePayload,
+  type LayerDataFrontHandlers,
+  type LayerManagerOptions,
+  type LayerManagerContext
+} from './layer-manager';

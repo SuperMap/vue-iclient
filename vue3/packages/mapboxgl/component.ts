@@ -28,6 +28,7 @@ import { SmMiniMap } from '@supermapgis/mapboxgl/components/mini-map'
 import { SmPan } from '@supermapgis/mapboxgl/components/pan'
 import { SmScale } from '@supermapgis/mapboxgl/components/scale'
 import { SmSceneLayerList } from '@supermapgis/mapboxgl/components/scene-layer-list'
+import { SmSceneLayerManager } from '@supermapgis/mapboxgl/components/scene-layer-manager'
 import { SmSceneFlyTo } from '@supermapgis/mapboxgl/components/scene-fly-to'
 import { SmSceneFullscreen } from '@supermapgis/mapboxgl/components/scene-fullscreen'
 import { SmSceneViewModeSwitcher } from '@supermapgis/mapboxgl/components/scene-view-mode-switcher'
@@ -72,6 +73,7 @@ export default [
   SmPan,
   SmScale,
   SmSceneLayerList,
+  SmSceneLayerManager,
   SmSceneFlyTo,
   SmSceneFullscreen,
   SmSceneViewModeSwitcher,

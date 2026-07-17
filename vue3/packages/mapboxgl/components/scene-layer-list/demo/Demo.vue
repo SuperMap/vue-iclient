@@ -6,11 +6,11 @@ import { ref } from 'vue'
 import Button from '@supermapgis/common/components/button/Button'
 
 const defaultProps = {
-    // "sceneUrl": "http://localhost:8080/iportal/web/scenes/841074362",  //图层多的
-    "sceneUrl": "http://localhost:8080/iportal/web/scenes/491256644",
-    "widgetsPath": "http://localhost:8080/iportal/apps/earth/v2/SuperMap3D/Widgets/widgets.css",
-    "cesiumPath": "http://localhost:8080/iportal/apps/earth/v2/SuperMap3D/SuperMap3D.js",
-    "openConfigPath": "http://localhost:8080/iportal/apps/earth/v2/lib/OpenConfig.js",
+    // "sceneUrl": "/iportal/web/scenes/841074362",  //图层多的
+    "sceneUrl": "/iportal/web/scenes/491256644",
+    "widgetsPath": "/iportal/apps/earth/v2/SuperMap3D/Widgets/widgets.css",
+    "cesiumPath": "/iportal/apps/earth/v2/SuperMap3D/SuperMap3D.js",
+    "openConfigPath": "/iportal/apps/earth/v2/lib/OpenConfig.js",
     // "target": 'test1',
     "options": {
       "scanEffect": {
