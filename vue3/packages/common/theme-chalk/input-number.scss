@@ -1,0 +1,11 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+
+@include b(input-number) {
+  width: 100%;
+  box-shadow: none;
+
+  &:focus,
+  &-focused {
+    box-shadow: none;
+  }
+}

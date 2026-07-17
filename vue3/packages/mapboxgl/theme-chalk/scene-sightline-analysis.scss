@@ -1,0 +1,129 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+@use '@supermapgis/common/theme-chalk/card';
+@use '@supermapgis/common/theme-chalk/collapse-card';
+@use '@supermapgis/common/theme-chalk/color-picker';
+@use '@supermapgis/common/theme-chalk/input-number';
+
+@include b(scene-sightline-analysis) {
+  width: 340px;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+  container-type: inline-size;
+
+  .sm-component-collapse-card__content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .sm-component-card-body {
+    padding: 10px 12px;
+  }
+
+  .sm-component-card {
+    min-height: 100%;
+    box-sizing: border-box;
+  }
+
+  .sm-component-card,
+  .sm-component-btn,
+  .sm-component-input-number,
+  .sm-component-input-number-input {
+    font-size: inherit;
+  }
+
+  .sm-component-collapse-card__body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  @include e(modes) {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    margin-bottom: 8px;
+
+    .sm-component-btn {
+      min-width: 0;
+      padding: 0 4px;
+    }
+  }
+
+  @include e(item) {
+    display: grid;
+    grid-template-columns: clamp(112px, 34%, 132px) minmax(0, 1fr);
+    gap: 8px;
+    align-items: center;
+    min-height: 28px;
+    margin-bottom: 6px;
+
+    label {
+      display: block;
+      min-width: 0;
+      margin-bottom: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  @include e(buttons) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+
+    .sm-component-btn {
+      flex: 1 1 auto;
+      min-width: 72px;
+    }
+  }
+
+  .sm-component-slider,
+  .sm-component-input-number,
+  .sm-component-color-picker {
+    width: 100%;
+  }
+
+  .sm-component-btn,
+  .sm-component-input-number {
+    height: 28px;
+    min-height: 28px;
+  }
+
+  .sm-component-input-number-input {
+    height: 26px;
+  }
+
+  .sm-component-color-picker {
+    height: 28px;
+  }
+
+  .sm-component-slider {
+    width: auto;
+    margin: 4px 6px;
+  }
+
+  @container (max-width: 300px) {
+    @include e(modes) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    @include e(item) {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 4px;
+    }
+
+    @include e(buttons) {
+      flex-direction: column;
+
+      .sm-component-btn {
+        width: 100%;
+      }
+    }
+  }
+}

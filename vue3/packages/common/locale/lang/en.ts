@@ -2,12 +2,15 @@ export default {
   name: 'en',
   warning: {
     unassociatedMapCannotCheck: 'You need to configure the associated map before checking.',
-    directoryTreeBrowseOnlyWithoutMap: 'No associated map. You can browse now, but cannot check resources.',
+    directoryTreeBrowseOnlyWithoutMap:
+      'No associated map. You can browse now, but cannot check resources.',
     directoryTreeUnsupportedResourceType: 'This resource type cannot be checked.',
     directoryTreeUnsupportedServiceType: 'This service type cannot be checked.',
     directoryTreeServiceUnavailable: 'This service is unavailable and cannot be checked.',
-    directoryTreeMissingProjection: 'This resource has no projection information and cannot be checked.',
-    directoryTreeCrsMismatch: 'This resource projection does not match the current map and cannot be checked.',
+    directoryTreeMissingProjection:
+      'This resource has no projection information and cannot be checked.',
+    directoryTreeCrsMismatch:
+      'This resource projection does not match the current map and cannot be checked.',
     directoryTreeCsvExcelMissingCoordinateFields:
       'This CSV/Excel data has no coordinate fields and cannot be checked.',
     directoryTreeCsvExcelMissingProjection:
@@ -27,7 +30,8 @@ export default {
     directoryTreeBatchUncheckingProgress: 'Removing {completed}/{total}',
     directoryTreeOperationActionCheck: 'Add',
     directoryTreeOperationActionUncheck: 'Remove',
-    directoryTreeOperationSuccessSummary: '{action} completed. {successCount} resource(s) succeeded.',
+    directoryTreeOperationSuccessSummary:
+      '{action} completed. {successCount} resource(s) succeeded.',
     directoryTreeOperationPartialSummary:
       '{action} completed. {successCount} resource(s) succeeded, {failureCount} failed.'
   },
@@ -74,6 +78,39 @@ export default {
     analysis: 'Analyze',
     drawViewPoint: 'Draw View Point',
     limitBody: 'Limit Body',
+    clear: 'Clear'
+  },
+  sceneOpennessAnalysis: {
+    title: 'Openness Analysis',
+    analysisRadius: 'Analysis Radius',
+    startAngle: 'Start Angle',
+    endAngle: 'End Angle',
+    visibleAreaColor: 'Visible Area Color',
+    hiddenAreaColor: 'Hidden Area Color',
+    displayMode: 'Display Mode',
+    visiblePart: 'Visible',
+    hiddenPart: 'Hidden',
+    showAll: 'Show All',
+    isClosed: 'Closed Area',
+    analysis: 'Analyze',
+    clear: 'Clear'
+  },
+  sceneSightlineAnalysis: {
+    title: 'Sightline Analysis',
+    viewShed: 'View Shed',
+    sightline: 'Sightline',
+    sightNetwork: 'Sight Network',
+    direction: 'Direction',
+    pitch: 'Pitch',
+    distance: 'Distance',
+    offsetHeight: 'Offset Height',
+    horizontalFov: 'Horizontal FOV',
+    verticalFov: 'Vertical FOV',
+    lineWidth: 'Line Width',
+    visibleAreaColor: 'Visible Area Color',
+    hiddenAreaColor: 'Hidden Area Color',
+    selectViewPoint: 'Select View Point',
+    selectTargetPoint: 'Select Target Point',
     clear: 'Clear'
   },
   sm: {

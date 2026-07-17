@@ -19,16 +19,25 @@
       <div class="sm-component-scene-skyline-analysis__content">
         <div class="sm-component-scene-skyline-analysis__item">
           <label>{{ t('sceneSkylineAnalysis.displayMode') }}</label>
-          <SmSelect v-model:value="state.skylineMode" class="sm-component-scene-skyline-analysis__control">
-            <SmSelectOption value="LINE">{{ t('sceneSkylineAnalysis.lineDisplay') }}</SmSelectOption>
-            <SmSelectOption value="FACE">{{ t('sceneSkylineAnalysis.faceDisplay') }}</SmSelectOption>
-            <SmSelectOption value="BODY">{{ t('sceneSkylineAnalysis.bodyDisplay') }}</SmSelectOption>
+          <SmSelect
+            v-model:value="state.skylineMode"
+            class="sm-component-scene-skyline-analysis__control"
+          >
+            <SmSelectOption value="LINE">
+              {{ t('sceneSkylineAnalysis.lineDisplay') }}
+            </SmSelectOption>
+            <SmSelectOption value="FACE">
+              {{ t('sceneSkylineAnalysis.faceDisplay') }}
+            </SmSelectOption>
+            <SmSelectOption value="BODY">
+              {{ t('sceneSkylineAnalysis.bodyDisplay') }}
+            </SmSelectOption>
           </SmSelect>
         </div>
 
         <div class="sm-component-scene-skyline-analysis__item">
           <label>{{ t('sceneSkylineAnalysis.analysisRadius') }}</label>
-          <InputNumber
+          <SmInputNumber
             v-model:value="state.skylineRadius"
             :min="1"
             :max="100000"
@@ -120,7 +129,6 @@ import type { SceneSkylineAnalysisProps } from './types'
 import { reactive, ref, watch, onBeforeUnmount, useTemplateRef } from 'vue'
 import UniqueId from 'lodash.uniqueid'
 import * as echarts from 'echarts'
-import { InputNumber } from 'ant-design-vue'
 import { useLocale, useSceneGetter, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useSceneControl } from '@supermapgis/mapboxgl/hooks'
 import { sceneSkylineAnalysisPropsDefault } from './types'
@@ -131,13 +139,17 @@ import SmSelect, { SmSelectOption } from '@supermapgis/common/components/select/
 import SmButton from '@supermapgis/common/components/button/Button'
 import SmCheckbox from '@supermapgis/common/components/checkbox/Checkbox'
 import SmSlider from '@supermapgis/common/components/slider/Slider'
+import SmInputNumber from '@supermapgis/common/components/input-number/InputNumber'
 import SmColorPicker from '@supermapgis/common/components/color-picker/color-picker.vue'
 
 defineOptions({
   name: 'SmSceneSkylineAnalysis'
 })
 
-const props = withDefaults(defineProps<SceneSkylineAnalysisProps>(), sceneSkylineAnalysisPropsDefault)
+const props = withDefaults(
+  defineProps<SceneSkylineAnalysisProps>(),
+  sceneSkylineAnalysisPropsDefault
+)
 
 const { t } = useLocale()
 const { textColorHeadingStyle } = useTheme(props)

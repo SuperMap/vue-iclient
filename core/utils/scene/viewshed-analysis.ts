@@ -103,9 +103,12 @@ export interface ViewShedInstance {
   /** 观察点对应的辅助实体。 */
   pointEntity?: {
     show: boolean;
+    position?: any;
   };
   /** 根据目标点更新分析方向和距离。 */
   setDistDirByPoint: (targetPosition: ViewShedPosition) => void;
+  /** 更新观察点位置。 */
+  setPosition?: (position: ViewShedPosition) => void;
   /** 构建或刷新当前分析对象。 */
   build?: () => void;
   /** 销毁当前分析对象。 */
@@ -556,6 +559,8 @@ class ViewShedTool {
     this.pointHandler?.clear?.();
     if (!keepResult) {
       this.viewShed3DLayer?.removeAll?.();
+      this.viewShed3D = undefined;
+      this.viewPosition = undefined;
     }
     if (this.handler && !this.handler.isDestroyed?.()) {
       this.handler.destroy();
@@ -658,6 +663,7 @@ export class ViewShedAnalysis {
   private viewShedTool: ViewShedTool | undefined;
   private viewShedLayer: ViewShed3DLayer | undefined;
   private currentViewShed3D: ViewShedInstance | undefined;
+  private readonly baseHeightMap = new WeakMap<ViewShedInstance, number>();
 
   constructor(viewer: any, options: ViewShedAnalysisOptions = {}) {
     this.viewer = viewer;
@@ -673,12 +679,19 @@ export class ViewShedAnalysis {
   }
 
   updateOptions(options: ViewShedAnalysisOptions = {}) {
+    const previousOffsetHeight = this.options.offsetHeight;
     this.options = {
       ...this.options,
       ...options,
       drawHandlerOptions: options.drawHandlerOptions ?? this.options.drawHandlerOptions
     };
     this.applyCurrentViewShedOptions();
+    if (
+      options.offsetHeight !== undefined &&
+      options.offsetHeight !== previousOffsetHeight
+    ) {
+      this.applyOffsetHeight(options.offsetHeight, previousOffsetHeight);
+    }
     this.syncToolViewShedOptions();
   }
 
@@ -726,13 +739,38 @@ export class ViewShedAnalysis {
   }
 
   setOffsetHeight(offsetHeight: number) {
+    const previousOffsetHeight = this.options.offsetHeight;
     this.options.offsetHeight = offsetHeight;
-    if (!this.currentViewShed3D?.viewPosition) {
+    this.syncToolViewShedOptions();
+    this.applyOffsetHeight(offsetHeight, previousOffsetHeight);
+  }
+
+  private applyOffsetHeight(offsetHeight: number, previousOffsetHeight: number) {
+    // 点选观察点后到右键完成前，实例仍归 ViewShedTool 管理，也必须能够响应高度调整。
+    const viewShed3D = this.currentViewShed3D ?? this.viewShedTool?.viewShed3D;
+    if (!viewShed3D?.viewPosition) {
       return;
     }
-    const viewPosition = this.currentViewShed3D.viewPosition;
-    viewPosition[2] = offsetHeight;
-    this.currentViewShed3D.viewPosition = viewPosition;
+    // viewPosition 使用绝对高程；附加高度必须基于首次拾取的基础高程计算，避免连续修改产生累计漂移。
+    const baseHeight =
+      this.baseHeightMap.get(viewShed3D) ??
+      viewShed3D.viewPosition[2] - previousOffsetHeight;
+    this.baseHeightMap.set(viewShed3D, baseHeight);
+
+    const nextPosition: ViewShedPosition = [
+      viewShed3D.viewPosition[0],
+      viewShed3D.viewPosition[1],
+      baseHeight + offsetHeight
+    ];
+    if (viewShed3D.setPosition) {
+      viewShed3D.setPosition(nextPosition);
+    } else {
+      viewShed3D.viewPosition = nextPosition;
+      viewShed3D.build?.();
+    }
+    if (viewShed3D.pointEntity) {
+      viewShed3D.pointEntity.position = getSuperMap3DCartesian3(nextPosition);
+    }
   }
 
   setVisibleAreaColor(visibleAreaColor: string) {
@@ -822,6 +860,10 @@ export class ViewShedAnalysis {
         generateId: () => this.generateId(),
         onAdd: (viewShed3D: ViewShedInstance) => {
           this.currentViewShed3D = viewShed3D;
+          this.baseHeightMap.set(
+            viewShed3D,
+            viewShed3D.viewPosition[2] - this.options.offsetHeight
+          );
           this.options.direction = viewShed3D.direction;
           this.options.pitch = viewShed3D.pitch;
           this.options.distance = viewShed3D.distance;

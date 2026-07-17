@@ -39,15 +39,16 @@ export default {
     directoryTreeMissingProjection: '当前资源缺少坐标系信息，无法勾选。',
     directoryTreeCrsMismatch: '当前资源坐标系与关联地图不匹配，无法勾选。',
     directoryTreeCsvExcelMissingCoordinateFields: '当前 CSV/Excel 数据缺少坐标字段，无法勾选。',
-    directoryTreeCsvExcelMissingProjection: '当前 CSV/Excel 坐标数据无法判断为 EPSG:4326，无法勾选。',
+    directoryTreeCsvExcelMissingProjection:
+      '当前 CSV/Excel 坐标数据无法判断为 EPSG:4326，无法勾选。',
     directoryTreeCsvExcelUnsupportedProjection: '当前 CSV/Excel 坐标系不是 EPSG:4326，无法勾选。',
     directoryTreeUnsupportedTileMatrixSet: '当前 WMTS 图层没有匹配当前地图的切片矩阵集，无法勾选。',
     directoryTreeLoadFailed: '当前资源加载失败，请稍后重试。',
-    videojs:
-      '请引入video.js插件: https://github.com/videojs/video.js',
-    flvPlayer: '请引入flv相关插件: https://github.com/bilibili/flv.js, https://github.com/mister-ben/videojs-flvjs',
-    treeDargTipLevel: "请在同级目录下拖拽",
-    treeDargTipImage: "仅支持影像图层调整顺序"
+    videojs: '请引入video.js插件: https://github.com/videojs/video.js',
+    flvPlayer:
+      '请引入flv相关插件: https://github.com/bilibili/flv.js, https://github.com/mister-ben/videojs-flvjs',
+    treeDargTipLevel: '请在同级目录下拖拽',
+    treeDargTipImage: '仅支持影像图层调整顺序'
   },
   success: {
     copySucccess: '复制成功'
@@ -62,7 +63,8 @@ export default {
     directoryTreeOperationActionCheck: '添加',
     directoryTreeOperationActionUncheck: '移除',
     directoryTreeOperationSuccessSummary: '{action}完成，成功 {successCount} 个资源。',
-    directoryTreeOperationPartialSummary: '{action}完成，成功 {successCount} 个资源，失败 {failureCount} 个。',
+    directoryTreeOperationPartialSummary:
+      '{action}完成，成功 {successCount} 个资源，失败 {failureCount} 个。',
     pressEscToExit: '按下 ESC 键或点击关闭按钮退出',
     pressEscOrClickToExit: '按下 ESC 键或点击任意位置退出'
   },
@@ -86,7 +88,7 @@ export default {
     Mercator: 'Web墨卡托'
   },
   error: {
-    loadError: '加载失败',
+    loadError: '加载失败'
   },
   commontypes: {
     restData: 'SuperMap Rest 数据服务',
@@ -339,6 +341,39 @@ export default {
     limitBody: '限高体',
     clear: '清除'
   },
+  sceneOpennessAnalysis: {
+    title: '开敞度分析',
+    analysisRadius: '分析半径',
+    startAngle: '起始角度',
+    endAngle: '结束角度',
+    visibleAreaColor: '可见区域颜色',
+    hiddenAreaColor: '不可见区域颜色',
+    displayMode: '显示模式',
+    visiblePart: '可见部分',
+    hiddenPart: '不可见部分',
+    showAll: '全部显示',
+    isClosed: '闭合分析区域',
+    analysis: '分析',
+    clear: '清除'
+  },
+  sceneSightlineAnalysis: {
+    title: '通视分析',
+    viewShed: '可视域',
+    sightline: '通视线',
+    sightNetwork: '通视网络',
+    direction: '方向',
+    pitch: '俯仰角',
+    distance: '距离',
+    offsetHeight: '附加高度',
+    horizontalFov: '水平视场角',
+    verticalFov: '垂直视场角',
+    lineWidth: '线宽',
+    visibleAreaColor: '可见区域颜色',
+    hiddenAreaColor: '不可见区域颜色',
+    selectViewPoint: '选择观察点',
+    selectTargetPoint: '选择目标点',
+    clear: '清除'
+  },
   tdtResults: {
     on: '在',
     station: '站',
@@ -468,9 +503,35 @@ export default {
   cascader: {
     placeholder: '请选择'
   },
-  months: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+  months: [
+    '一月',
+    '二月',
+    '三月',
+    '四月',
+    '五月',
+    '六月',
+    '七月',
+    '八月',
+    '九月',
+    '十月',
+    '十一月',
+    '十二月'
+  ],
   weekdays: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
-  monthsShort: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+  monthsShort: [
+    '1月',
+    '2月',
+    '3月',
+    '4月',
+    '5月',
+    '6月',
+    '7月',
+    '8月',
+    '9月',
+    '10月',
+    '11月',
+    '12月'
+  ],
   weekdaysShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
   weekdaysMin: ['日', '一', '二', '三', '四', '五', '六']
 }
