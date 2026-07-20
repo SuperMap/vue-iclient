@@ -40,12 +40,3 @@ const barStyle = computed(() => {
 })
 </script>
 
-<style scoped>
-.sm-component-scene-sunlight-analysis__gradient-bar {
-  display: inline-block;
-  flex-shrink: 0;
-  overflow: hidden;
-  vertical-align: middle;
-  box-sizing: border-box;
-}
-</style>

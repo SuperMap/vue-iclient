@@ -105,6 +105,13 @@
     gap: 8px;
   }
 
+  @include e(gradient-bar) {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: middle;
+    box-sizing: border-box;
+  }
+
   @include e(color-table-label) {
     /* stylelint-disable-next-line */
     font-size: 12px;
