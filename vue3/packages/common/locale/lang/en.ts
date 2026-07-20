@@ -61,6 +61,25 @@ export default {
     viewport3: 'Viewport 3',
     viewport4: 'Viewport 4'
   },
+  sceneSunlightAnalysis: {
+    title: 'Sunlight Analysis',
+    date: 'Date',
+    startTime: 'Start Time',
+    endTime: 'End Time',
+    displayMode: 'Display Mode',
+    sunshine: 'Sunshine',
+    shadow: 'Shadow',
+    sunshineColor: 'Sunshine Color',
+    shadowColor: 'Shadow Color',
+    rainbow: 'Rainbow Gradient',
+    blueWhiteRed: 'Blue White Red',
+    thermal: 'Thermal Gradient',
+    maxDistance: 'Max Distance',
+    meter: 'm',
+    selectColorTable: 'Select Color Table',
+    analysis: 'Analyze',
+    clear: 'Clear'
+  },
   sceneSkylineAnalysis: {
     title: 'Skyline Analysis',
     displayMode: 'Display Mode',

@@ -44,7 +44,7 @@
                 class="sm-component-scene-split-screen__layer-item"
               >
                 <span class="sm-component-scene-split-screen__layer-name">{{ layer.name }}</span>
-                <CheckboxGroup
+                <SmCheckboxGroup
                   v-model:value="layer.visibleInViewports"
                   class="sm-component-scene-split-screen__viewport-checkboxes"
                   :options="viewportOptions"
@@ -67,7 +67,6 @@
 <script setup lang="ts">
 import type { SceneSplitScreenProps } from './types'
 import { computed, reactive, ref, onBeforeUnmount, useTemplateRef } from 'vue'
-import { Checkbox } from 'ant-design-vue'
 import { useLocale, useSceneGetter, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useSceneControl } from '@supermapgis/mapboxgl/hooks'
 import { sceneSplitScreenPropsDefault } from './types'
@@ -75,12 +74,11 @@ import { SplitScreen } from 'vue-iclient-core/utils/scene/split-screen'
 import SmCard from '@supermapgis/common/components/card/Card'
 import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'
 import SmSelect, { SmSelectOption } from '@supermapgis/common/components/select/Select'
+import { SmCheckboxGroup } from '@supermapgis/common/components/checkbox'
 
 defineOptions({
   name: 'SmSceneSplitScreen'
 })
-
-const CheckboxGroup = Checkbox.Group
 
 interface LayerInfo {
   name: string

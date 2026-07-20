@@ -75,10 +75,9 @@
         </div>
 
         <div class="sm-component-scene-skyline-analysis__item">
+          <label>{{ t('sceneSkylineAnalysis.highlightObstacles') }}</label>
           <div class="sm-component-scene-skyline-analysis__checkbox-row">
-            <SmCheckbox v-model:checked="state.highlightBarrier">
-              {{ t('sceneSkylineAnalysis.highlightObstacles') }}
-            </SmCheckbox>
+            <SmCheckbox v-model:checked="state.highlightBarrier" />
             <SmColorPicker
               v-model="state.barrierColor"
               :disabled="!state.highlightBarrier"
@@ -335,11 +334,16 @@ watch(
   newValue => {
     if (!skylineAnalysis || !window.SuperMap3D) return
     skylineAnalysis.highlightBarrier = newValue
-    if (newValue) {
-      const barrierColor = window.SuperMap3D.Color.fromCssColorString(state.barrierColor)
-      skylineAnalysis.setBarrierColor(barrierColor)
-    } else {
-      skylineAnalysis.clearBarrierColor()
+    if (!skylineAnalysis.skyline) return
+    try {
+      if (newValue) {
+        const barrierColor = window.SuperMap3D.Color.fromCssColorString(state.barrierColor)
+        skylineAnalysis.setBarrierColor(barrierColor)
+      } else {
+        skylineAnalysis.clearBarrierColor()
+      }
+    } catch (error) {
+      console.warn('Failed to update barrier highlight:', error)
     }
   }
 )

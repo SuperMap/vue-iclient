@@ -42,6 +42,7 @@ import { SmSceneSkylineAnalysis } from '@supermapgis/mapboxgl/components/scene-s
 import { SmSceneSplitScreen } from '@supermapgis/mapboxgl/components/scene-split-screen'
 import { SmSceneOpennessAnalysis } from '@supermapgis/mapboxgl/components/scene-openness-analysis'
 import { SmSceneSightlineAnalysis } from '@supermapgis/mapboxgl/components/scene-sightline-analysis'
+import { SmSceneSunlightAnalysis } from '@supermapgis/mapboxgl/components/scene-sunlight-analysis'
 import { SmFeatureTree } from '@supermapgis/mapboxgl/components/feature-tree'
 import { SmFeatureCascader } from '@supermapgis/mapboxgl/components/feature-cascader'
 import { SmDirectoryTree } from '@supermapgis/mapboxgl/components/directory-tree'
@@ -83,6 +84,7 @@ export default [
   SmSceneSplitScreen,
   SmSceneOpennessAnalysis,
   SmSceneSightlineAnalysis,
+  SmSceneSunlightAnalysis,
   SmWebScene,
   SmTextList,
   SmImage,

@@ -39,11 +39,11 @@
     <div v-if="annotation || terrain" class="sm-component-scene-map-switch__footer">
       <div v-if="annotation" class="sm-component-scene-map-switch__footer-item">
         <label>{{ t('sceneMapSwitch.annotation') }}</label>
-        <Switch v-model:checked="isShowNameLabel" size="small" />
+        <SmSwitch v-model:checked="isShowNameLabel" size="small" />
       </div>
       <div v-if="terrain" class="sm-component-scene-map-switch__footer-item">
         <label>{{ t('sceneMapSwitch.terrain') }}</label>
-        <Switch v-model:checked="isShowTerrain" size="small" />
+        <SmSwitch v-model:checked="isShowTerrain" size="small" />
       </div>
     </div>
   </SmCollapseCard>
@@ -59,7 +59,7 @@ import { sceneMapSwitchPropsDefault } from './types'
 import { MapSwitch } from 'vue-iclient-core/utils/scene/map-switch'
 import SmCard from '@supermapgis/common/components/card/Card'
 import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'
-import { Switch } from 'ant-design-vue'
+import SmSwitch from '@supermapgis/common/components/switch/Switch'
 
 defineOptions({
   name: 'SmSceneMapSwitch'

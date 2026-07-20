@@ -348,6 +348,25 @@ export default {
     viewport3: '视口三',
     viewport4: '视口四'
   },
+  sceneSunlightAnalysis: {
+    title: '日照分析',
+    date: '日期',
+    startTime: '开始时间',
+    endTime: '结束时间',
+    displayMode: '显示模式',
+    sunshine: '日照',
+    shadow: '阴影',
+    sunshineColor: '日照颜色',
+    shadowColor: '阴影颜色',
+    rainbow: '渐变彩虹',
+    blueWhiteRed: '渐变蓝白红',
+    thermal: '渐变热力',
+    maxDistance: '最远距离',
+    meter: '米',
+    selectColorTable: '选择色带',
+    analysis: '分析',
+    clear: '清除'
+  },
   sceneSkylineAnalysis: {
     title: '天际线分析',
     displayMode: '显示模式',

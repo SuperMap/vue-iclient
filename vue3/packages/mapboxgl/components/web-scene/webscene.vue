@@ -29,6 +29,7 @@ import SmSceneZoom from '@supermapgis/mapboxgl/components/scene-zoom/scene-zoom.
 import SmSceneMapSwitch from '@supermapgis/mapboxgl/components/scene-map-switch/scene-map-switch.vue'
 import SmSceneSkylineAnalysis from '@supermapgis/mapboxgl/components/scene-skyline-analysis/scene-skyline-analysis.vue'
 import SmSceneSplitScreen from '@supermapgis/mapboxgl/components/scene-split-screen/scene-split-screen.vue'
+import SmSceneSunlightAnalysis from '@supermapgis/mapboxgl/components/scene-sunlight-analysis/scene-sunlight-analysis.vue'
 
 defineOptions({
   name: 'SmWebScene'
@@ -46,7 +47,8 @@ const componentMap: Record<string, any> = {
   SmSceneZoom,
   SmSceneMapSwitch,
   SmSceneSkylineAnalysis,
-  SmSceneSplitScreen
+  SmSceneSplitScreen,
+  SmSceneSunlightAnalysis
 };
 const controlComponents: Record<string, any> = computed(() => {
   const controls = []
