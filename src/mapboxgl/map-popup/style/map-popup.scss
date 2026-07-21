@@ -10,11 +10,9 @@
   border-radius: 4px;
   .switchDataText {
     display: inline-flex;
+    align-items: center;
     padding: 8px 0px;
     @include spacing-margin(10px, right, false);
-    span {
-      vertical-align: 3px;
-    }
     .icon {
       font-size: 16px;
     }
