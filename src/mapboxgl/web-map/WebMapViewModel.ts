@@ -356,7 +356,7 @@ export default class WebMapViewModel extends Events {
   }
 
   zoomToBounds(id: string) {
-    const item = findLayerCatalog(this._handler.getLayerCatalog(), id);
+    const item = findLayerCatalog(this.getLayerList(), id);
     if (!item) {
       return;
     }
@@ -428,7 +428,7 @@ export default class WebMapViewModel extends Events {
   }
 
   changeItemOpacity(id, opacity) {
-    const item = findLayerCatalog(this._handler.getLayerCatalog(), id);
+    const item = findLayerCatalog(this.getLayerList(), id);
     if (!item) {
       return;
     }
@@ -466,7 +466,7 @@ export default class WebMapViewModel extends Events {
   }
 
   getLayerOpacityById(id) {
-    const item = findLayerCatalog(this._handler.getLayerCatalog(), id);
+    const item = findLayerCatalog(this.getLayerList(), id);
     if (!item) {
       return;
     }
