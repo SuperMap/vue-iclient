@@ -21,7 +21,7 @@ export interface TextInfosTypes {
 /**
  * 公用函数集
  */
-let ExpressionConverter = {
+const ExpressionConverter = {
   /**
    * 将含占位符的string，转换为string或者是expression文本信息
    */

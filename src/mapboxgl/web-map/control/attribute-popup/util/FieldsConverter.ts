@@ -3,7 +3,7 @@ import { Expression } from 'mapbox-gl';
 export interface FieldsCaptionsType {
   [key: string]: string
 }
-let FieldsConverter = {
+const FieldsConverter = {
   getFieldCaption(fieldName: string, fieldsCaptions: FieldsCaptionsType): string {
     return fieldsCaptions?.[fieldName] ?? fieldName;
   },
