@@ -1,14 +1,3 @@
-/** 解析绘制光标资源地址（CSS url 在打包后易失效，改由运行时解析） */
-function getDrawCursorStyle(): string {
-  try {
-    // core/utils/scene -> 仓库根 static/assets/img/draw.cur
-    const url = new URL('../../../static/assets/img/draw.cur', import.meta.url).href
-    return `url("${url}"), auto`
-  } catch {
-    return 'crosshair'
-  }
-}
-
 /**
  * 鼠标提示类。
  * DrawHandler 的 windowPosition 为画布坐标，需换算到挂载容器坐标系。
@@ -457,18 +446,12 @@ export class DrawHandler {
 
     if (type === 'normal') {
       this.viewer.enableCursorStyle = true;
-      document.body.classList.remove('measureCur', 'drawCur');
-      container?.classList.remove('measureCur', 'drawCur');
       applyCursor('');
     } else if (type === 'drawCur') {
       this.viewer.enableCursorStyle = false;
-      document.body.classList.add('drawCur');
-      container?.classList.add('drawCur');
-      applyCursor(getDrawCursorStyle());
+      applyCursor('crosshair');
     } else if (type === 'measureCur') {
       this.viewer.enableCursorStyle = false;
-      document.body.classList.add('measureCur');
-      container?.classList.add('measureCur');
       applyCursor('crosshair');
     } else {
       this.viewer.enableCursorStyle = true;
