@@ -21,6 +21,7 @@ import { isEqual } from 'lodash-es';
 import sceneEvent from 'vue-iclient-core/types/scene-event';
 import { watch, computed, onMounted, onBeforeUnmount } from 'vue';
 import SmSceneLayerList from '@supermapgis/mapboxgl/components/scene-layer-list/scene-layer-list.vue'
+import SmSceneLayerManager from '@supermapgis/mapboxgl/components/scene-layer-manager/scene-layer-manager.vue'
 import SmSceneFlyTo from '@supermapgis/mapboxgl/components/scene-fly-to/scene-fly-to.vue'
 import SmSceneFullscreen from '@supermapgis/mapboxgl/components/scene-fullscreen/scene-fullscreen.vue'
 import SmSceneMeasure from '@supermapgis/mapboxgl/components/scene-measure/scene-measure.vue'
@@ -30,6 +31,7 @@ import SmSceneMapSwitch from '@supermapgis/mapboxgl/components/scene-map-switch/
 import SmSceneSkylineAnalysis from '@supermapgis/mapboxgl/components/scene-skyline-analysis/scene-skyline-analysis.vue'
 import SmSceneSplitScreen from '@supermapgis/mapboxgl/components/scene-split-screen/scene-split-screen.vue'
 import SmSceneSunlightAnalysis from '@supermapgis/mapboxgl/components/scene-sunlight-analysis/scene-sunlight-analysis.vue'
+import SmSceneRollerShutter from '@supermapgis/mapboxgl/components/scene-roller-shutter/scene-roller-shutter.vue'
 
 defineOptions({
   name: 'SmWebScene'
@@ -40,6 +42,7 @@ const emit = defineEmits<WebSceneEvents>()
 
 const componentMap: Record<string, any> = {
   SmSceneLayerList,
+  SmSceneLayerManager,
   SmSceneFlyTo,
   SmSceneFullscreen,
   SmSceneMeasure,
@@ -48,7 +51,8 @@ const componentMap: Record<string, any> = {
   SmSceneMapSwitch,
   SmSceneSkylineAnalysis,
   SmSceneSplitScreen,
-  SmSceneSunlightAnalysis
+  SmSceneSunlightAnalysis,
+  SmSceneRollerShutter
 };
 const controlComponents: Record<string, any> = computed(() => {
   const controls = []

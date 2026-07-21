@@ -40,6 +40,7 @@ import { SmSceneMeasure } from '@supermapgis/mapboxgl/components/scene-measure'
 import { SmSceneMapSwitch } from '@supermapgis/mapboxgl/components/scene-map-switch'
 import { SmSceneSkylineAnalysis } from '@supermapgis/mapboxgl/components/scene-skyline-analysis'
 import { SmSceneSplitScreen } from '@supermapgis/mapboxgl/components/scene-split-screen'
+import { SmSceneRollerShutter } from '@supermapgis/mapboxgl/components/scene-roller-shutter'
 import { SmSceneOpennessAnalysis } from '@supermapgis/mapboxgl/components/scene-openness-analysis'
 import { SmSceneSightlineAnalysis } from '@supermapgis/mapboxgl/components/scene-sightline-analysis'
 import { SmSceneSunlightAnalysis } from '@supermapgis/mapboxgl/components/scene-sunlight-analysis'
@@ -82,6 +83,7 @@ export default [
   SmSceneMapSwitch,
   SmSceneSkylineAnalysis,
   SmSceneSplitScreen,
+  SmSceneRollerShutter,
   SmSceneOpennessAnalysis,
   SmSceneSightlineAnalysis,
   SmSceneSunlightAnalysis,

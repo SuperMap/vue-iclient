@@ -1,5 +1,5 @@
 import type { ControlPosition } from 'vue-iclient-controllers-mapboxgl/src/utils/MapControl'
-import { watch, getCurrentInstance, nextTick, unref } from 'vue'
+import { watch, getCurrentInstance, nextTick, onBeforeUnmount, unref } from 'vue'
 
 interface SceneControlProps {
   position: ControlPosition
@@ -26,26 +26,53 @@ export function useSceneControl(el: SceneControlEl) {
   const parentInstance = componentInstance.parent
   // const parentIsWebScene = parentInstance.type.name === 'SmWebScene'
   const parentIsWebScene = parentInstance.type.name === 'SmWebScene' || parentInstance.parent.type.name === 'SmWebScene'
+  let isUnmounted = false
+  let controlEl: HTMLElement | null = null
+
   watch(
     [() => props.position, () => resolveControlEl(el)],
-    ([newVal, nextEl]) => {
+    ([newVal, nextEl], _, onCleanup) => {
+      let isInvalid = false
+      onCleanup(() => {
+        isInvalid = true
+      })
+
       nextTick(() => {
-        if (parentIsWebScene && nextEl) {
-          const newContainer = document.querySelector(`#${props.sceneTarget} .scene-control-${newVal}`);
-          newContainer?.appendChild(nextEl);
-          nextEl.classList.add('scene-ctrl');
-          if (newVal === 'top-right') {
-            // 将罗盘放到control子组件后面
-            const navigation = document.querySelector(`#${props.sceneTarget} .supermap3d-viewer-navigationContainer`);
-            if (navigation) {
-              navigation.classList.add('scene-ctrl');
-              newContainer.appendChild(navigation);
-            }
+        if (isUnmounted || isInvalid || !parentIsWebScene || !nextEl) {
+          return
+        }
+
+        const newContainer = document.querySelector(`#${props.sceneTarget} .scene-control-${newVal}`)
+        if (!newContainer) {
+          return
+        }
+
+        if (controlEl && controlEl !== nextEl) {
+          controlEl.remove()
+        }
+        newContainer.appendChild(nextEl)
+        nextEl.classList.add('scene-ctrl')
+        controlEl = nextEl
+
+        if (newVal === 'top-right') {
+          // 将罗盘放到control子组件后面
+          const navigation = document.querySelector(`#${props.sceneTarget} .supermap3d-viewer-navigationContainer`)
+          if (navigation) {
+            navigation.classList.add('scene-ctrl')
+            newContainer.appendChild(navigation)
           }
         }
       })
-    }, { immediate: true}
+    },
+    { immediate: true }
   )
+
+  // A control can be moved outside a fragment root, so remove it before Vue unmounts the fragment.
+  onBeforeUnmount(() => {
+    isUnmounted = true
+    controlEl?.remove()
+    controlEl = null
+  })
 
   return {
     parentIsWebScene

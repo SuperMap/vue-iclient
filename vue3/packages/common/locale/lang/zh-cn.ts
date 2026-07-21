@@ -367,6 +367,26 @@ export default {
     analysis: '分析',
     clear: '清除'
   },
+  sceneRollerShutter: {
+    title: '卷帘',
+    notReady: '场景还未加载完成',
+    modeLabel: '卷帘模式：',
+    displayLabel: '显示范围：',
+    displayAll: '全部显示',
+    displayNone: '全部隐藏',
+    modeNone: '不使用卷帘',
+    modeHorizontal: '左右卷帘',
+    modeVertical: '上下卷帘',
+    noLayers: '当前场景未发现可控制图层',
+    s3mLayers: 'S3M图层',
+    imageryLayers: '影像图层',
+    left: '左',
+    right: '右',
+    top: '上',
+    bottom: '下',
+    layer: '图层',
+    imageryLayer: '影像图层'
+  },
   sceneSkylineAnalysis: {
     title: '天际线分析',
     displayMode: '显示模式',

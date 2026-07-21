@@ -43,6 +43,9 @@ export const webSceneProps = () => ({
   sceneLayerListControl: {
     type: Object, 
   },
+  sceneLayerManagerControl: {
+    type: Object,
+  },
   sceneFlyToControl: {
     type: Object,
   },
@@ -69,6 +72,9 @@ export const webSceneProps = () => ({
   },
   sceneSunlightAnalysisControl: {
     type: Object,
+  },
+  sceneRollerShutterControl: {
+    type: Object,
   }
 })
 
@@ -82,6 +88,7 @@ export type WebSceneProps = {
   target?: string
   flyAnimation?: boolean
   sceneLayerListControl?: Object
+  sceneLayerManagerControl?: object
   sceneFlyToControl?: Object
   sceneFullscreenControl?: Object
   sceneMeasureControl?: Object
@@ -91,6 +98,7 @@ export type WebSceneProps = {
   sceneSkylineAnalysisControl?: Object
   sceneSplitScreenControl?: Object
   sceneSunlightAnalysisControl?: Object
+  sceneRollerShutterControl?: Object
 }
 
 export const webScenePropsDefault = getPropsDefaults<WebSceneProps>(webSceneProps())

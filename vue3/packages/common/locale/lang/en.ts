@@ -45,6 +45,9 @@ export default {
     annotation: 'Place Name Annotation',
     terrain: 'Terrain Service'
   },
+  flyTo: {
+    title: 'Fly To'
+  },
   sceneSplitScreen: {
     title: 'Split Screen',
     modeLabel: 'Split Mode:',
@@ -79,6 +82,26 @@ export default {
     selectColorTable: 'Select Color Table',
     analysis: 'Analyze',
     clear: 'Clear'
+  },
+  sceneRollerShutter: {
+    title: 'Roller Shutter',
+    notReady: 'Scene is not ready yet',
+    modeLabel: 'Roller Shutter Mode:',
+    displayLabel: 'Display:',
+    displayAll: 'Show All',
+    displayNone: 'Hide All',
+    modeNone: 'Disable',
+    modeHorizontal: 'Left / Right',
+    modeVertical: 'Top / Bottom',
+    noLayers: 'No controllable layers were found in the current scene',
+    s3mLayers: 'S3M Layers',
+    imageryLayers: 'Imagery Layers',
+    left: 'Left',
+    right: 'Right',
+    top: 'Top',
+    bottom: 'Bottom',
+    layer: 'Layer',
+    imageryLayer: 'Imagery Layer'
   },
   sceneSkylineAnalysis: {
     title: 'Skyline Analysis',

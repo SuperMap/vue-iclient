@@ -4,13 +4,13 @@ import type { CardProps, ControlProps } from '@supermapgis/mapboxgl/utils'
 import { getPropsDefaults, sceneGetterProps, themeProps } from '@supermapgis/common/utils/index.common'
 import { cardProps, controlProps } from '@supermapgis/mapboxgl/utils'
 
-interface Operations {
+export interface SceneOperations {
   fitBounds: boolean,
   draggable: boolean
 }
 export const sceneLayerListProps = () => ({
   operations: {
-    type: Object as PropType<Operations> ,
+    type: Object as PropType<SceneOperations> ,
     default() {
       return {
         fitBounds: true,
@@ -22,7 +22,7 @@ export const sceneLayerListProps = () => ({
 
 // export type SceneLayerListProps = Partial<ExtractPropTypes<ReturnType<typeof sceneLayerListProps>>>
 export interface SceneLayerListProps extends CardProps, ControlProps, ThemeProps, SceneGetterProps {
-  operations?: Operations
+  operations?: SceneOperations
 }
 
 export const sceneLayerListPropsDefault = getPropsDefaults<SceneLayerListProps>( 

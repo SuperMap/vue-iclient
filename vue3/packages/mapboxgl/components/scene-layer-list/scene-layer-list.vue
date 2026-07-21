@@ -84,6 +84,7 @@ import SmCollapseCard from '@supermapgis/common/components/collapse-card/collaps
 import SmTree from '@supermapgis/common/components/tree/Tree'
 import { sceneLayerListPropsDefault } from './types'
 import { message } from 'ant-design-vue'
+import { getImageryLayerName } from '@supermapgis/mapboxgl/utils'
 
 defineOptions({
   name: 'SmSceneLayerList'
@@ -126,92 +127,7 @@ onBeforeUnmount(() => {
 // Data
 const showIconsItem = ref('');
 const treeData = ref([]);
-const onlineBaseLayerList = [
-  {
-    url: './images/baseMap/baseImage.jpg', // 影像服务链接
-    name: 'LocalImage' // 国际化的名称
-  },
-  {
-    url: '//dev.virtualearth.net/',
-    name: 'BingMap'
-  },
-  {
-    name: 'GRIDIMAGERY',
-    thumbnail: './images/baseMap/grad.png'
-  },
-  {
-    url: 'https://tile-{s}.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-    name: 'OSM'
-  }
-];
 let currentTerrainProvider = null;
-
-const getTiandituName = (imageUrl) => {
-  const layerTypeKey = imageUrl.split('/')[3];
-  const labelArrs = ['cva_w', 'cva_c', 'cta_w', 'cta_c', 'cia_w', 'cia_c']
-  if (labelArrs.includes(layerTypeKey)) {
-    return t('sceneLayerList.TIANDITU') + '_label';
-  }
-  return t('sceneLayerList.TIANDITU');
-}
-
-// Methods
-const getImageryLayerName = (imageryLayer) => {
-  let imageUrl = imageryLayer._imageryProvider.url || imageryLayer._imageryProvider._url;
-  if (!imageUrl) return t('sceneLayerList.lnglatMap');
-
-  if (imageUrl.indexOf('earth-skin2.jpg') !== -1) {
-    return t('sceneLayerList.defaultImage');
-  }
-
-  // 天地图底图
-  if (imageUrl.includes('tianditu.gov.cn')) {
-    return getTiandituName(imageUrl);
-  }
-
-  // 项目底图
-  let targetItem = onlineBaseLayerList.find((item) => imageUrl.includes(item.url));
-  if (targetItem) {
-    return t('sceneLayerList.' + targetItem.name);
-  }
-
-  if (imageUrl && imageUrl.indexOf('realspace/datas/') !== -1) {
-    let otherImageLayerName = imageUrl.split('realspace/datas/')[1].replace('/', '');
-    return otherImageLayerName;
-  }
-  // 网络底图
-  if (imageryLayer._imageryProvider.tablename) {
-    let tableName = imageryLayer._imageryProvider.tablename;
-    if (tableName.indexOf('http') === -1) {
-      if (tableName.indexOf('/rest/maps/') !== -1) {
-        let name = tableName.split('/rest/maps/')[1];
-        if (name.indexOf('%') !== -1) {
-          let str = decodeURIComponent(name);
-          if (str.indexOf('@')) {
-            let newName = str.split('@')[0];
-            return newName;
-          }
-        } else {
-          return name;
-        }
-      }
-      if (tableName.indexOf('%') !== -1) {
-        let newName = tableName.split('%')[0];
-        return newName;
-      }
-      // 支持地图服务
-      if (tableName.indexOf('/maps/') !== -1) {
-        let newName = tableName.split('/maps/')[1].replace('/', '');
-        return newName;
-      }
-      return tableName;
-    } else {
-      return 'Unnamed';
-    }
-  } else {
-    return 'Unnamed';
-  }
-};
 
 const getTerrainLayerName = () => {
   if (viewer.terrainProvider._baseUrl) {
@@ -445,7 +361,7 @@ function getTreeData() {
   });
   // 影像图层:
   layers.imageryLayer.forEach((layer, index) => {
-    let imageryLayerName = getImageryLayerName(layer);
+    let imageryLayerName = getImageryLayerName(layer, t);
     if (imageryLayerName === 'Unnamed') return;
     let title = imageryLayerName;
     treeData.value[1].children.unshift({
