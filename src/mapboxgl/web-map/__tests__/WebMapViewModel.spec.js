@@ -1018,6 +1018,50 @@ describe('WebMapViewModel.spec', () => {
     jest.advanceTimersByTime(0);
   });
 
+  it('layer operations use the proxied layer list', async done => {
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+    const callback = function (data) {
+      const layerCatalog = [{
+        id: 'simple-tiles',
+        title: 'simple-tiles',
+        type: 'raster',
+        renderSource: { id: 'iserver-tiles', type: 'raster' },
+        renderLayers: ['simple-tiles']
+      }];
+      const getLayerList = jest.fn(() => layerCatalog);
+      const handlerCatalogSpy = jest.spyOn(viewModel._handler, 'getLayerCatalog').mockReturnValue([{
+        ...layerCatalog[0],
+        id: 'iserver-tiles'
+      }]);
+      const proxy = new Proxy(viewModel, {
+        get(target, propKey) {
+          return propKey === 'getLayerList' ? getLayerList : target[propKey];
+        }
+      });
+      const fitBoundsSpy = jest.spyOn(data.map, 'fitBounds');
+      const setPaintPropertySpy = jest.spyOn(data.map, 'setPaintProperty');
+      jest.spyOn(data.map, 'getSource').mockReturnValue({
+        bounds: new mapboxgl.LngLatBounds([115.423411, 39.442758], [117.514583, 41.0608])
+      });
+      jest.spyOn(data.map, 'getLayer').mockReturnValue({ type: 'raster' });
+      jest.spyOn(data.map, 'getPaintProperty').mockReturnValue(0.8);
+
+      proxy.zoomToBounds('simple-tiles');
+      proxy.changeItemOpacity('simple-tiles', 0.5);
+      const opacity = proxy.getLayerOpacityById('simple-tiles');
+
+      expect(getLayerList).toHaveBeenCalledTimes(3);
+      expect(handlerCatalogSpy).not.toHaveBeenCalled();
+      expect(fitBoundsSpy).toHaveBeenCalledTimes(1);
+      expect(setPaintPropertySpy).toHaveBeenCalledWith('simple-tiles', 'raster-opacity', 0.5);
+      expect(opacity).toBe(0.8);
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
+  });
+
   it('zoomToBounds migrationLayer', async done => {
     const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
     const callback = function (data) {
