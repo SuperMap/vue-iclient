@@ -51,7 +51,7 @@ export function formatValue2String(v?: boolean | string | number): string {
 /**
  * 公用函数集
  */
-let PopupUtil = {
+const PopupUtil = {
 
   /**
      * 将webmap中的elements转换成弹窗页面中所需要的数据结构
