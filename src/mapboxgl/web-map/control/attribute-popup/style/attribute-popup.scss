@@ -39,12 +39,9 @@
 
     .switchDataText {
       display: inline-flex;
+      align-items: center;
       padding: 8px 0;
       margin-right: 10px;
-
-      span {
-        vertical-align: 3px;
-      }
 
       .icon {
         font-size: 16px;
