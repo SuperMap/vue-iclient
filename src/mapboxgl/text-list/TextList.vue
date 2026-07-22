@@ -375,7 +375,7 @@ class SmTextList extends Mixins(Theme, Timer) {
       // @ts-ignore
       if (this.$refs.animate) {
         let scrollHeight = 0;
-        let dataIndex = this.animateContent.findIndex((item, index) => {
+        let dataIndex = this.animateContent.findIndex((item) => {
           // @ts-ignore
           return item.idx === newVal[0].dataIndex;
         });

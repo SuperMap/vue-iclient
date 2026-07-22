@@ -72,7 +72,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
       projectionnotmatch: (e) => {
         this.fire('projectionnotmatch', { nodeKey, e });
         this.handleNextMap();
-      },
+      }
     });
     // this.webMapViewModel.addWebMap(layerFilter);
     this.cacheMaps[nodeKey] = this.webMapViewModel;
