@@ -180,6 +180,7 @@ export const validateType = (type, value, silent = false) => {
   return valid;
 };
 
+// eslint-disable-next-line import/no-mutable-exports
 let warn = () => {};
 
 if (process.env.NODE_ENV !== 'production') {

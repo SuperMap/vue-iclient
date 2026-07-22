@@ -17,6 +17,7 @@ const dateTimeFormats = {
   en: enLocale.dateTimeFormat,
   zh: zhLocale.dateTimeFormat
 };
+// eslint-disable-next-line import/no-mutable-exports
 let i18n = {};
 let rooti18n;
 const en = merge(antdEnUS, enLocale);

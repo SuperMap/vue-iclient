@@ -20,8 +20,10 @@ export default class SmGraphMap extends Mixins(VmUpdater, Theme) {
   @Prop({ default: true }) autoresize: boolean;
   @Prop() options: GraphConfig;
 
+  /* eslint-disable */
   @Emit()
   loaded(knowledgeGraph: EmitParams['knowledgeGraph']) {}
+  /* eslint-enable */
 
   @Watch('autoresize')
   onResizeChanged(value: boolean) {

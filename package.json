@@ -206,6 +206,7 @@
     "pngjs": "^3.4.0",
     "portfinder": "^1.0.20",
     "postcss": "^8.2.8",
+    "pre-commit": "^1.2.2",
     "progress-bar-webpack-plugin": "^2.1.0",
     "rimraf": "^2.6.3",
     "rucksack-css": "^1.0.2",
@@ -260,6 +261,9 @@
     "SuperMap",
     "Mapbox GL",
     "Vue"
+  ],
+  "pre-commit": [
+    "lint"
   ],
   "jestSonar": {
     "reportPath": "test/unit/report",

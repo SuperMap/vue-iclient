@@ -4,7 +4,7 @@
 
 import { Util } from 'vue-iclient/src/common/_types/event/Util';
 
-export let Event = {
+export const Event = {
   /**
    * @description  A hash table cache of the event observers. Keyed by element._eventCacheID
    * @type {boolean}

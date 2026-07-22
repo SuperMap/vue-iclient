@@ -31,6 +31,7 @@ interface treeSelectDataOption {
   children?: treeSelectDataOption[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface layerOption {
   id: string;
   type: string;
