@@ -1,6 +1,5 @@
 import { FeatureService } from '@supermapgis/iclient-common/iServer/FeatureService'
 import { GetFeaturesBySQLParameters } from '@supermapgis/iclient-common/iServer/GetFeaturesBySQLParameters'
-import type { Feature, FeatureCollection } from 'geojson'
 import { flyToCamera, getSuperMap3DCartesian3, type FlyToOptions, type ScenePosition } from './fly-to-camera'
 
 export const layerTypes = ['terrain', 's3m', 'map', 'data', '3dtiles'] as const
@@ -53,7 +52,7 @@ export interface LayerDataRequest {
 }
 
 export interface LayerDataResult {
-  featureCollection: FeatureCollection
+  featureCollection: GeoJSON.FeatureCollection
   totalCount?: number
   meta?: Record<string, any>
 }
@@ -127,19 +126,19 @@ const MAX_FEATURES_COUNT = 30000
 const FRONT_CLUSTER = 1
 const BACK_CLUSTER = 2
 
-function getFeatureCollection(features: Feature[]) {
+function getFeatureCollection(features: GeoJSON.Feature[]) {
   return {
     type: 'FeatureCollection',
     features
-  } as FeatureCollection
+  } as GeoJSON.FeatureCollection
 }
 
-function getFeatureGeometryType(featureCollection: FeatureCollection) {
+function getFeatureGeometryType(featureCollection: GeoJSON.FeatureCollection) {
   const firstFeature = featureCollection?.features?.find(item => item?.geometry?.type)
   return firstFeature?.geometry?.type || ''
 }
 
-function getFeatureCoordinates(feature: Feature) {
+function getFeatureCoordinates(feature: GeoJSON.Feature) {
   return (feature?.geometry as any)?.coordinates
 }
 
@@ -762,7 +761,7 @@ class EntitiesLayer {
     return this.entities.add(entity)
   }
 
-  addGeoJSON(data: FeatureCollection, options: Record<string, any> = {}) {
+  addGeoJSON(data: GeoJSON.FeatureCollection, options: Record<string, any> = {}) {
     const SuperMap3D = getSuperMap3D()
     options = Object.assign(
       {
@@ -1248,7 +1247,7 @@ class ClusterForeManager {
   }
 
   async _addFeatures(
-    featureCollection: FeatureCollection,
+    featureCollection: GeoJSON.FeatureCollection,
     item: LayerCheckData,
     layer: EntitiesLayer
   ) {
@@ -1261,7 +1260,7 @@ class ClusterForeManager {
   }
 
   _renderPoints(
-    featureCollection: FeatureCollection,
+    featureCollection: GeoJSON.FeatureCollection,
     item: LayerCheckData,
     layer: EntitiesLayer
   ) {
@@ -1340,7 +1339,7 @@ class ClusterForeManager {
   }
 
   async _renderLineOrPolygon(
-    featureCollection: FeatureCollection,
+    featureCollection: GeoJSON.FeatureCollection,
     item: LayerCheckData,
     layer: EntitiesLayer
   ) {
@@ -1436,7 +1435,7 @@ class ClusterForeManager {
     })
   }
 
-  _getPointPosition(feature: Feature, item: LayerCheckData) {
+  _getPointPosition(feature: GeoJSON.Feature, item: LayerCheckData) {
     const config = item.config || {}
     const coordinates = getFeatureCoordinates(feature)
     if (!coordinates) {
@@ -2046,7 +2045,7 @@ class LayerManager {
     }
   }
 
-  async _queryRestDataBySql(data: LayerCheckData): Promise<FeatureCollection> {
+  async _queryRestDataBySql(data: LayerCheckData): Promise<GeoJSON.FeatureCollection> {
     const config = data.config || {}
     const idFiled = data.config?.idField || 'smid'
     const fields = [
@@ -2087,7 +2086,7 @@ class LayerManager {
     return new FeatureService(url, config.requestOptions || {})
   }
 
-  _normalizeFeatureServiceResult(result: any): FeatureCollection {
+  _normalizeFeatureServiceResult(result: any): GeoJSON.FeatureCollection {
     const features = result?.result?.features?.features || result?.result?.features || result?.features?.features || []
     const featureCollection = getFeatureCollection(features)
     ;(featureCollection as any).totalCount =
