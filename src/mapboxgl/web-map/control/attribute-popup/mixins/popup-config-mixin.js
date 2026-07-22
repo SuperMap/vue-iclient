@@ -4,8 +4,8 @@
 export default {
   computed: {
     popupStyle() {
-      // backgroundColor TODO
-      const { ...params } =
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { autoResize, maxWidth, maxHeight, width, height, keyWordWrap, valueWordWrap, ...params } =
         this.popupConfigValue || {};
       return params;
     },
