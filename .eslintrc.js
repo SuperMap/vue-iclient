@@ -121,7 +121,8 @@ module.exports = {
     // Prevent importing the submodules of other modules
     'import/no-internal-modules': 0,
     // Forbid unassigned imports
-    'import/no-unassigned-import': 0
+    'import/no-unassigned-import': 0,
+    'import/no-mutable-exports': 2
   },
   overrides: [
     {
