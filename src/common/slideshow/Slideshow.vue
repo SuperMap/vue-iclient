@@ -1,9 +1,10 @@
 <script lang="ts">
-import type { CreateElement } from 'vue';
+import type { CreateElement, VNode } from 'vue';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import Swiper from 'swiper';
+// @ts-ignore
 import { SwiperOptions } from 'swiper/types';
-import { 
+import {
   Navigation,
   Pagination,
   Mousewheel,
@@ -13,14 +14,15 @@ import {
   EffectCoverflow,
   EffectCube,
   EffectFlip
- } from 'swiper/modules';
+} from 'swiper/modules';
 import BaseCard from 'vue-iclient/src/common/_mixin/Card';
 import { getSlotOptions, filterEmpty } from 'ant-design-vue/es/_util/props-util';
 import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
 import isequal from 'lodash.isequal';
 import debounce from 'lodash.debounce';
 import { addListener, removeListener } from 'resize-detector';
-import 'swiper/swiper-bundle.min.css';
+// @ts-ignore
+import 'swiper/swiper-bundle.css';
 
 @Component({
   name: 'SmSlideshow',
@@ -146,11 +148,10 @@ class Slideshow extends Mixins(Theme, BaseCard) {
 
   initSwiper() {
     if (this.swiper) {
-      this.swiper.destroy(false, false); 
+      this.swiper.destroy(false, false);
       this.swiper = null;
     }
     this.$nextTick(() => {
-
       // 获取容器元素
       const container = this.$el.querySelector('.swiper');
       if (container) {
@@ -173,12 +174,12 @@ class Slideshow extends Mixins(Theme, BaseCard) {
           }
         });
       }
-    })
+    });
   }
 
   slideInit(swiper: any) {
     this.swiper = swiper;
-    this.goTo(this.swiperOptions.initialSlide, 0);
+    this.goTo(this.swiperOptions.initialSlide || 0, 0);
     this.$emit('init', swiper);
   }
 
@@ -299,6 +300,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     if (children && children.length) {
       children.forEach(element => {
         if (getSlotOptions(element).__SM_SLIDESHOW_ITEM) {
+          // @ts-ignore
           slides.push(element);
         } else {
           console.error("Only accepts Slideshow.Item as Slideshow's children");
@@ -308,7 +310,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     //  准备包装层 .swiper-wrapper
     const wrapper = h('div', { class: 'swiper-wrapper' }, slides);
 
-    let controls = [];
+    let controls: VNode[] = [];
     this.pagination && controls.push(this.handlerNamedSlot('pagination', h));
     this.scrollbar && controls.push(this.handlerNamedSlot('scrollbar', h));
     if (this.navigation) {

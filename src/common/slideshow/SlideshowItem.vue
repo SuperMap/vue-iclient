@@ -2,7 +2,7 @@
   <div class="swiper-slide sm-component-slideshowitem"><slot></slot></div>
 </template>
 <script>
-import 'swiper/swiper-bundle.min.css';
+import 'swiper/swiper-bundle.css';
 
 export default {
   name: 'SmSlideshowItem',

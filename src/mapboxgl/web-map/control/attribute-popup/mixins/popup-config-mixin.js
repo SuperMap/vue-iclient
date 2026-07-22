@@ -5,7 +5,7 @@ export default {
   computed: {
     popupStyle() {
       // backgroundColor TODO
-      const { autoResize, maxWidth, maxHeight, width, height, keyWordWrap, valueWordWrap, ...params } =
+      const { ...params } =
         this.popupConfigValue || {};
       return params;
     },

@@ -2,7 +2,7 @@
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html. */
 
-export let FunctionExt = {
+export const FunctionExt = {
   bind: function (func, object) {
     // create a reference to all arguments past the second one
     let args = Array.prototype.slice.apply(arguments, [2]);

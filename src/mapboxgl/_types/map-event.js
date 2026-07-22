@@ -31,7 +31,7 @@ export default new Vue({
       return;
     }
     const webMapCombinations = this.webMapCache.get(webmapTarget);
-    const [_, mainWebmap] = webMapCombinations.find(item => item[0] === webmapTarget);
+    const [mainWebmap] = webMapCombinations.find(item => item[0] === webmapTarget);
     const _this = this;
     const proxyWebMap = new Proxy(mainWebmap, {
       get: function (target, propKey) {
