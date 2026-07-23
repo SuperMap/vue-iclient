@@ -10,7 +10,7 @@
     "test": "node test/unit/iclientExternalSpec.js && npm run unit",
     "lint": "eslint --ext .js,.ts,.vue src",
     "lint:fix": "eslint --fix --ext .js,.ts,.vue src",
-    "build": "node --max_old_space_size=2048 build/build.js && node --max_old_space_size=2048 build/build.js -p",
+    "build": "node --max_old_space_size=4096 build/build.js && node --max_old_space_size=4096 build/build.js -p",
     "e2e": "node test/e2e/runner.js --test ",
     "docs:dev": "vuepress dev docs",
     "docs:build": "vuepress build docs",
