@@ -2,7 +2,7 @@ import { mount, config } from '@vue/test-utils';
 import TextInfo from '../TextInfo.vue';
 import ConvertUtil from '../util/ExpressionConverter';
 import Delta from 'quill-delta';
-import { Quill } from 'vue2-editor';
+import { Quill } from 'vue2-editor/dist/vue2-editor.core.js';
 
 const mockSetContents = jest.fn();
 const mockFontAttributor = { whitelist: [] };
@@ -20,7 +20,7 @@ const VueEditorStub = {
   }
 };
 
-jest.mock('vue2-editor', () => ({
+jest.mock('vue2-editor/dist/vue2-editor.core.js', () => ({
   VueEditor: { name: 'VueEditor' },
   Quill: {
     import: jest.fn(),
