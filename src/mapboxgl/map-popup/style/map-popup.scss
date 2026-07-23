@@ -12,7 +12,7 @@
     display: inline-flex;
     align-items: center;
     padding: 8px 0px;
-    @include spacing-margin(10px, right, false);
+    margin-right: 10px;
     .icon {
       font-size: 16px;
     }
