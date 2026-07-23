@@ -7,9 +7,11 @@
 </template>
 
 <script>
-import { VueEditor, Quill } from 'vue2-editor';
+import { VueEditor, Quill } from 'vue2-editor/dist/vue2-editor.core.js';
 import ConvertUtil from './util/ExpressionConverter';
 import Delta from 'quill-delta';
+import 'quill/dist/quill.snow.css';
+import 'vue2-editor/dist/vue2-editor.css';
 
 export default {
   name: 'SmTextInfo',
