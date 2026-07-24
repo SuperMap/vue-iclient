@@ -7,8 +7,7 @@ import { SmText } from '@supermapgis/common/components/text'
 import { SmImage } from '@supermapgis/common/components/image'
 import { SmBorder } from '@supermapgis/common/components/border'
 import { SmIframe } from '@supermapgis/common/components/iframe'
-import { SmVideoPlayer } from '@supermapgis/common/components/video-player'
-import { SmUserInfo } from '@supermapgis/common/components/user-info'
+import { SmVideoPlayer }from '@supermapgis/common/components/video-player'
 
 import { SmAttributePopup } from '@supermapgis/mapboxgl/components/attribute-popup'
 import { SmAttributes } from '@supermapgis/mapboxgl/components/attributes'
@@ -97,6 +96,5 @@ export default [
   SmSceneMeasure,
   SmFeatureTree,
   SmFeatureCascader,
-  SmDirectoryTree,
-  SmUserInfo
+  SmDirectoryTree
 ] as Plugin[]
