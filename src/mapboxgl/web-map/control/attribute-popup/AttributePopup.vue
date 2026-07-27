@@ -47,7 +47,6 @@ import PopupContent from './PopupContent.vue';
 import SelectLayer from './SelectLayer.vue';
 import popupMixin from './mixins/popup-mixin';
 import popupConfigMixin from './mixins/popup-config-mixin';
-import resizeMixin from './mixins/resize-mixin';
 import AttributePopupViewModel from './AttributePopupViewModel';
 import { setPopupArrowStyle } from 'vue-iclient/src/common/_utils/util';
 import isEqual from 'lodash.isequal';
@@ -56,7 +55,7 @@ import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
 
 export default {
   name: 'SmAttributePopup',
-  mixins: [MapGetter, Theme, popupMixin, popupConfigMixin, resizeMixin],
+  mixins: [MapGetter, Theme, popupMixin, popupConfigMixin],
   components: { PopupContent, SelectLayer },
   props: {
     showPopup: {
@@ -107,7 +106,6 @@ export default {
       showSelectLayer: true,
       allPupDatasDisabled: [],
       identifyFieldsOptions: [],
-      contentHeight: '',
       viewModel: null
     };
   },
@@ -288,31 +286,16 @@ export default {
     },
     popupBgStyleValue(val) {
       setPopupArrowStyle(val.backgroundColor);
-    },
-    currentLayerId() {
-      this.contentHeight = '';
     }
   },
   created() {
     this.init();
     this.initPopupViewModel();
   },
-  mounted() {
-    const resizeCallback = el => {
-      const nextHeight = el.scrollHeight ? `${el.scrollHeight}px` : '';
-      if (nextHeight !== this.contentHeight) {
-        this.contentHeight = nextHeight;
-      }
-    };
-    this.$nextTick(() => {
-      this.addResizeListener(this.$refs.popupContentRef?.$el, resizeCallback);
-    });
-  },
   beforeDestroy() {
     this.clearPopupData();
     mapEvent.$off('load-webmap-view-model', this.lodedCb);
     this.removed();
-    this.removeResizeListener(this.$refs.popupContentRef?.$el);
   },
   loaded() {
     this.lodedCb();

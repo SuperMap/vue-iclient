@@ -2,7 +2,6 @@ import { mount, config } from '@vue/test-utils';
 import SmAttributePopup from '../AttributePopup.vue';
 import AttributePopup from '../index';
 import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
-import { addListener, removeListener } from 'resize-detector';
 
 const eventHandlers = {};
 
@@ -33,11 +32,6 @@ jest.mock('../AttributePopupViewModel', () => {
 
 jest.mock('vue-iclient/src/common/_utils/util', () => ({
   setPopupArrowStyle: jest.fn()
-}));
-
-jest.mock('resize-detector', () => ({
-  addListener: jest.fn(),
-  removeListener: jest.fn()
 }));
 
 describe('AttributePopup.vue', () => {
@@ -543,14 +537,6 @@ describe('AttributePopup.vue', () => {
       expect(wrapper.vm.currentCoordinate).toEqual([2, 2]);
       expect(wrapper.vm.currentIndex).toBe(1);
     });
-
-    it('clears contentHeight when currentLayerId changes', async () => {
-      wrapper = mountPopup();
-      wrapper.vm.contentHeight = '100px';
-      wrapper.vm.currentLayerId = 'layer1';
-      await wrapper.vm.$nextTick();
-      expect(wrapper.vm.contentHeight).toBe('');
-    });
   });
 
   describe('registerEvents', () => {
@@ -600,29 +586,6 @@ describe('AttributePopup.vue', () => {
     });
   });
 
-  it('registers debounced resize listener on mounted', async () => {
-    wrapper = mountPopup();
-    await wrapper.vm.$nextTick();
-    expect(addListener).toHaveBeenCalled();
-    const resizeCallback = addListener.mock.calls[0][1];
-    expect(typeof resizeCallback.cancel).toBe('function');
-    resizeCallback({ scrollHeight: 120 });
-    await new Promise(resolve => setTimeout(resolve, 150));
-    await new Promise(resolve => requestAnimationFrame(resolve));
-    expect(wrapper.vm.contentHeight).toBe('120px');
-  });
-
-  it('does not update contentHeight when scrollHeight is unchanged', async () => {
-    wrapper = mountPopup();
-    await wrapper.vm.$nextTick();
-    wrapper.vm.contentHeight = '120px';
-    const resizeCallback = addListener.mock.calls[0][1];
-    resizeCallback({ scrollHeight: 120 });
-    await new Promise(resolve => setTimeout(resolve, 150));
-    await new Promise(resolve => requestAnimationFrame(resolve));
-    expect(wrapper.vm.contentHeight).toBe('120px');
-  });
-
   it('cleans up on beforeDestroy', async () => {
     wrapper = mountPopup();
     wrapper.vm.removed = jest.fn();
@@ -631,7 +594,6 @@ describe('AttributePopup.vue', () => {
     await wrapper.vm.$nextTick();
     wrapper.destroy();
     expect(offSpy).toHaveBeenCalledWith('load-webmap-view-model', wrapper.vm.lodedCb);
-    expect(removeListener).toHaveBeenCalled();
     offSpy.mockRestore();
   });
 
