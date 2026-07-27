@@ -21,7 +21,9 @@ export default {
       if (!autoResize) {
         return { height };
       }
-      return { maxHeight, height: height || this.contentHeight };
+      // autoResize 只限制最大高度，高度由内容自然撑开；
+      // 不要用 scrollHeight 回写 height，否则会与子元素 height:100% 形成抬高循环
+      return height ? { maxHeight, height } : { maxHeight };
     },
     ellipsisStyle() {
       return {
