@@ -10,6 +10,7 @@ export * from './checkbox'
 export * from './date-picker/DatePicker'
 export * from './radio/Radio'
 export * from './color-picker'
+export * from './tooltip/Tooltip'
 
 // export * from './collapse-card/collpase-card'
 export * from './dropdown/Dropdown'
