@@ -21,6 +21,8 @@
   .sm-component-input,
   .sm-component-btn {
     color: inherit;
+    /* stylelint-disable-next-line */
+    font-size: 12px;
   }
 
   .sm-component-btn-primary {
@@ -69,11 +71,6 @@
     flex-direction: column;
     flex-shrink: 0;
     gap: 8px;
-
-    >label {
-      /* stylelint-disable-next-line */
-      font-weight: 500;
-    }
   }
 
   @include e(control) {

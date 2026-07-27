@@ -13,6 +13,11 @@
   /* stylelint-disable-next-line */
   color: $text-color-heading;
 
+  .sm-component-card {
+    /* stylelint-disable-next-line */
+    font-size: 12px;
+  }
+
   .sm-component-card-body {
     padding: 16px;
   }

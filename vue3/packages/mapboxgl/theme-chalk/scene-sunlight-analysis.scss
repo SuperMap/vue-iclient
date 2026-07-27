@@ -13,7 +13,8 @@
   height: 520px;
   /* stylelint-disable-next-line */
   color: $text-color-heading;
-
+  /* stylelint-disable-next-line */
+  font-size: 12px;
   .sm-component-card,
   .sm-component-select,
   .sm-component-select-selector,
@@ -22,6 +23,8 @@
   .sm-component-radio-wrapper,
   .sm-component-picker {
     color: inherit;
+    /* stylelint-disable-next-line */
+    font-size: 12px;
   }
 
   .sm-component-btn-primary {
@@ -69,11 +72,6 @@
     flex-direction: column;
     flex-shrink: 0;
     gap: 8px;
-
-    > label {
-      /* stylelint-disable-next-line */
-      font-weight: 500;
-    }
   }
 
   @include e(control) {
@@ -111,12 +109,7 @@
     vertical-align: middle;
     box-sizing: border-box;
   }
-
-  @include e(color-table-label) {
-    /* stylelint-disable-next-line */
-    font-size: 12px;
-  }
-
+  
   @include e(slider-row) {
     display: flex;
     align-items: center;
@@ -132,8 +125,6 @@
     flex-shrink: 0;
     min-width: 60px;
     text-align: right;
-    /* stylelint-disable-next-line */
-    font-size: 12px;
   }
 
   @include e(buttons) {

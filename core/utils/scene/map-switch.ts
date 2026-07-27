@@ -523,7 +523,7 @@ export class MapSwitch extends Events {
     }
 
     const imageryProvider = new window.SuperMap3D.SuperMapImageryProvider(imageryProviderOptions);
-    const layer = viewer.imageryLayers.addImageryProvider(imageryProvider);
+    const layer = viewer.imageryLayers.addImageryProvider(imageryProvider, 0);
     this._imageryLayers.push(layer);
   }
 
@@ -541,7 +541,7 @@ export class MapSwitch extends Events {
       mapStyle: baseMapStyle,
       ...(token ? { token } : {})
     });
-    const baseLayer = viewer.imageryLayers.addImageryProvider(baseImageryProvider);
+    const baseLayer = viewer.imageryLayers.addImageryProvider(baseImageryProvider, 0);
     this._imageryLayers.push(baseLayer);
 
     // 添加天地图注记层（矢量/影像样式对应不同的注记）
@@ -560,7 +560,7 @@ export class MapSwitch extends Events {
         mapStyle: labelMapStyle,
         ...(token ? { token } : {})
       });
-      const labelLayer = viewer.imageryLayers.addImageryProvider(labelImageryProvider);
+      const labelLayer = viewer.imageryLayers.addImageryProvider(labelImageryProvider, 1);
       this._imageryLayers.push(labelLayer);
     }
   }

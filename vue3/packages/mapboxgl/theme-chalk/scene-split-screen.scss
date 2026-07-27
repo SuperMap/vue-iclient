@@ -10,12 +10,15 @@
   height: 400px;
   /* stylelint-disable-next-line */
   color: $text-color-heading;
-
+  /* stylelint-disable-next-line */
+  font-size: 12px;
   .sm-component-card,
   .sm-component-select,
   .sm-component-select-selector,
   .sm-component-checkbox-wrapper {
     color: inherit;
+    /* stylelint-disable-next-line */
+    font-size: 12px;
   }
 
   .sm-component-select .sm-component-select-selector,
@@ -57,11 +60,6 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-
-    > label {
-      /* stylelint-disable-next-line */
-      font-weight: 500;
-    }
   }
 
   @include e(control) {
@@ -86,8 +84,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    /* stylelint-disable-next-line */
-    font-size: 13px;
   }
 
   @include e(viewport-checkboxes) {
@@ -103,8 +99,6 @@
   }
 
   @include e(loading) {
-    /* stylelint-disable-next-line */
-    font-size: 13px;
     /* stylelint-disable-next-line */
     color: $icon-color-secondary;
   }
