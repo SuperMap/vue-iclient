@@ -29,6 +29,8 @@ $text-color-tertiary: var(--color-text-tertiary);// @black 45% / @white 45%
 $text-color-quaternary: var(--color-text-quaternary); // @black 25% / @white 25%
 $text-color-disabled: $text-color-quaternary;
 $tooltip-color: var(--tooltip-color);// @black 0.85#fff / @white #fff
+// 图标
+$icon-color-secondary: var(--icon-color-secondary);// @black 45% / @white 65%
 
 // 背景
 $color-fill-tertiary: var(--color-fill-tertiary); // @black 4% / @white 8%
