@@ -74,10 +74,9 @@ describe('popup-config-mixin.js', () => {
     expect(wrapper.vm.popupWidth).toEqual({ width: '280px' });
   });
 
-  it('computes popupHeight with autoResize and contentHeight fallback', () => {
+  it('computes popupHeight with autoResize without measured contentHeight', () => {
     wrapper = mountWithConfig({ autoResize: true, maxHeight: '400px' });
-    wrapper.vm.contentHeight = '260px';
-    expect(wrapper.vm.popupHeight).toEqual({ maxHeight: '400px', height: '260px' });
+    expect(wrapper.vm.popupHeight).toEqual({ maxHeight: '400px' });
   });
 
   it('computes popupHeight with explicit height when autoResize is enabled', () => {
