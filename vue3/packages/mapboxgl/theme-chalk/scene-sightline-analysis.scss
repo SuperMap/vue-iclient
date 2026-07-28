@@ -12,30 +12,30 @@
   box-sizing: border-box;
   container-type: inline-size;
 
-  .sm-component-collapse-card__content {
+  .#{$sm-prefix}-collapse-card__content {
     display: flex;
     flex-direction: column;
     height: 100%;
     min-height: 0;
   }
 
-  .sm-component-card-body {
+  .#{$sm-prefix}-card-body {
     padding: 10px 12px;
   }
 
-  .sm-component-card {
+  .#{$sm-prefix}-card {
     min-height: 100%;
     box-sizing: border-box;
   }
 
-  .sm-component-card,
-  .sm-component-btn,
-  .sm-component-input-number,
-  .sm-component-input-number-input {
+  .#{$sm-prefix}-card,
+  .#{$sm-prefix}-btn,
+  .#{$sm-prefix}-input-number,
+  .#{$sm-prefix}-input-number-input {
     font-size: inherit;
   }
 
-  .sm-component-collapse-card__body {
+  .#{$sm-prefix}-collapse-card__body {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
@@ -47,7 +47,7 @@
     gap: 4px;
     margin-bottom: 8px;
 
-    .sm-component-btn {
+    .#{$sm-prefix}-btn {
       min-width: 0;
       padding: 0 4px;
     }
@@ -55,11 +55,9 @@
 
   @include e(item) {
     display: grid;
-    grid-template-columns: clamp(112px, 34%, 132px) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     gap: 8px;
-    align-items: center;
-    min-height: 28px;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 
     label {
       display: block;
@@ -77,33 +75,33 @@
     gap: 6px;
     margin-top: 8px;
 
-    .sm-component-btn {
+    .#{$sm-prefix}-btn {
       flex: 1 1 auto;
       min-width: 72px;
     }
   }
 
-  .sm-component-slider,
-  .sm-component-input-number,
-  .sm-component-color-picker {
+  .#{$sm-prefix}-slider,
+  .#{$sm-prefix}-input-number,
+  .#{$sm-prefix}-color-picker {
     width: 100%;
   }
 
-  .sm-component-btn,
-  .sm-component-input-number {
+  .#{$sm-prefix}-btn,
+  .#{$sm-prefix}-input-number {
     height: 28px;
     min-height: 28px;
   }
 
-  .sm-component-input-number-input {
+  .#{$sm-prefix}-input-number-input {
     height: 26px;
   }
 
-  .sm-component-color-picker {
+  .#{$sm-prefix}-color-picker {
     height: 28px;
   }
 
-  .sm-component-slider {
+  .#{$sm-prefix}-slider {
     width: auto;
     margin: 4px 6px;
   }
@@ -113,15 +111,10 @@
       grid-template-columns: minmax(0, 1fr);
     }
 
-    @include e(item) {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 4px;
-    }
-
     @include e(buttons) {
       flex-direction: column;
 
-      .sm-component-btn {
+      .#{$sm-prefix}-btn {
         width: 100%;
       }
     }

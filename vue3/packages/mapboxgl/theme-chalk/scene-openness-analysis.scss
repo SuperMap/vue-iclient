@@ -12,35 +12,41 @@
   box-sizing: border-box;
   container-type: inline-size;
 
-  .sm-component-collapse-card__content {
+  .#{$sm-prefix}-collapse-card__content {
     display: flex;
     flex-direction: column;
     height: 100%;
     min-height: 0;
   }
 
-  .sm-component-card-body {
+  .#{$sm-prefix}-card-body {
     padding: 10px 12px;
   }
 
-  .sm-component-card {
+  .#{$sm-prefix}-card {
     min-height: 100%;
     box-sizing: border-box;
   }
 
-  .sm-component-card,
-  .sm-component-btn,
-  .sm-component-checkbox-wrapper,
-  .sm-component-input-number,
-  .sm-component-input-number-input,
-  .sm-component-select,
-  .sm-component-select-selector,
-  .sm-component-select-selection-item,
-  .sm-component-select-selection-placeholder {
+  .#{$sm-prefix}-card,
+  .#{$sm-prefix}-btn,
+  .#{$sm-prefix}-checkbox-wrapper,
+  .#{$sm-prefix}-input-number,
+  .#{$sm-prefix}-input-number-input,
+  .#{$sm-prefix}-select,
+  .#{$sm-prefix}-select-selector,
+  .#{$sm-prefix}-select-selection-item,
+  .#{$sm-prefix}-select-selection-placeholder,
+  .#{$sm-prefix}-select-dropdown,
+  .#{$sm-prefix}-select-item {
     font-size: inherit;
   }
 
-  .sm-component-collapse-card__body {
+  .#{$sm-prefix}-checkbox-wrapper {
+    color: inherit;
+  }
+
+  .#{$sm-prefix}-collapse-card__body {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
@@ -53,18 +59,16 @@
     align-items: center;
     margin-bottom: 6px;
 
-    .sm-component-input-number {
+    .#{$sm-prefix}-input-number {
       min-width: 0;
     }
   }
 
   @include e(item) {
     display: grid;
-    grid-template-columns: clamp(112px, 34%, 132px) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     gap: 8px;
-    align-items: center;
-    min-height: 28px;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 
     label {
       display: block;
@@ -81,48 +85,48 @@
     gap: 8px;
     margin-top: 8px;
 
-    .sm-component-btn {
+    .#{$sm-prefix}-btn {
       flex: 1;
     }
   }
 
-  .sm-component-select,
-  .sm-component-slider,
-  .sm-component-input-number,
-  .sm-component-color-picker {
+  .#{$sm-prefix}-select,
+  .#{$sm-prefix}-slider,
+  .#{$sm-prefix}-input-number,
+  .#{$sm-prefix}-color-picker {
     width: 100%;
   }
 
-  .sm-component-btn,
-  .sm-component-input-number,
-  .sm-component-select-selector {
+  .#{$sm-prefix}-btn,
+  .#{$sm-prefix}-input-number {
     height: 28px;
     min-height: 28px;
   }
 
-  .sm-component-input-number-input {
+  .#{$sm-prefix}-input-number-input {
     height: 26px;
   }
 
-  .sm-component-select-single {
+  .#{$sm-prefix}-select-single {
     height: 28px;
 
-    .sm-component-select-selector {
+    .#{$sm-prefix}-select-selector {
       display: flex;
       align-items: center;
+      height: 28px;
 
-      .sm-component-select-selection-item,
-      .sm-component-select-selection-placeholder {
+      .#{$sm-prefix}-select-selection-item,
+      .#{$sm-prefix}-select-selection-placeholder {
         align-self: center;
       }
     }
   }
 
-  .sm-component-color-picker {
+  .#{$sm-prefix}-color-picker {
     height: 28px;
   }
 
-  .sm-component-slider {
+  .#{$sm-prefix}-slider {
     width: auto;
     margin: 4px 6px;
   }
@@ -130,11 +134,6 @@
   @container (max-width: 300px) {
     @include e(grid) {
       grid-template-columns: 12px minmax(0, 1fr);
-    }
-
-    @include e(item) {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 4px;
     }
 
     @include e(buttons) {

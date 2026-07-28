@@ -56,7 +56,7 @@
         <label :title="t('sceneOpennessAnalysis.displayMode')">
           {{ t('sceneOpennessAnalysis.displayMode') }}
         </label>
-        <SmSelect v-model:value="state.displayMode">
+        <SmSelect v-model:value="state.displayMode" :get-popup-container="trigger => trigger.parentNode">
           <SmSelectOption :value="0">{{ t('sceneOpennessAnalysis.visiblePart') }}</SmSelectOption>
           <SmSelectOption :value="1">{{ t('sceneOpennessAnalysis.hiddenPart') }}</SmSelectOption>
           <SmSelectOption :value="2">{{ t('sceneOpennessAnalysis.showAll') }}</SmSelectOption>
