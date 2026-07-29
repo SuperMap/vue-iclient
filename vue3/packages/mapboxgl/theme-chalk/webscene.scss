@@ -10,6 +10,7 @@
   .scene-control-bottom-right,
   .scene-control-bottom-left {
     position: absolute;
+    z-index: 3;
   }
 
   .scene-ctrl{
