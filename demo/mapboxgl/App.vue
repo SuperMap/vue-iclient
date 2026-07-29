@@ -189,7 +189,7 @@
         <sm-avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
       </div>
 
-      <div class="empties">
+      <!-- <div class="empties">
         <sm-empty />
       </div>
 
@@ -236,6 +236,12 @@
       ></sm-time-slider>
       <sm-time-line v-bind="timeLine" style="position:absolute; top:300px;left:200px;z-index：100000"></sm-time-line>
       <sm-time-range v-bind="timeRange" style="position:absolute; top:500px;left:200px;z-index：100000"></sm-time-range>
+      <div class="cascader">
+        <sm-cascader :options="cascaderOptions"></sm-cascader>
+      </div> -->
+      <div class="feature-cascader">
+        <sm-feature-cascader :config="featureCascaderConfig" ></sm-feature-cascader>
+      </div>
     </template>
 
     <div class="changeTheme">
@@ -277,7 +283,73 @@ export default Vue.extend({
         { label: '空地图', value: '17311606'},
         { label: '相同source多layer', value: '1703080254'},
       ],
-      mapIdSelected: '617580084'
+      mapIdSelected: '617580084',
+      cascaderOptions: [
+        {
+          value: 'zhejiang',
+          label: 'Zhejiang',
+          children: [
+            {
+              value: 'hangzhou',
+              label: 'Hangzhou',
+              children: [
+                {
+                  value: 'xihu',
+                  label: 'West Lake'
+                }
+              ]
+            }
+          ]
+        },
+        {
+          value: 'jiangsu',
+          label: 'Jiangsu',
+          children: [
+            {
+              value: 'nanjing',
+              label: 'Nanjing',
+              children: [
+                {
+                  value: 'zhonghuamen',
+                  label: 'Zhong Hua Men'
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      featureCascaderConfig: {
+          // 数据服务地址
+          dataset: {
+            url: "http://172.16.14.77:8090/iserver/services/data-quxian/rest/data",
+            dataName: ["quxian:quxian"],
+            type: 'iServer',
+          },
+          // 标识字段
+          idField: "parent_cod",
+          // 显示名称字段
+          titleField: "parent_nam",
+          children: {
+            dataset: {
+              url: "http://172.16.14.77:8090/iserver/services/data-quxian/rest/data",
+              dataName: ["quxian:quxian"],
+              type: 'iServer',
+            },
+            parentField: "parent_cod",
+            idField: "admin_code",
+            titleField: "division_n",
+              children: {
+                dataset: {
+                  url: "http://172.16.14.77:8090/iserver/services/data-township/rest/data",
+                  dataName: ["zhejiang_township:zhejiang_township"],
+                  type: 'iServer',
+                },
+                parentField: "parent_cod",
+                idField: "code",
+                titleField: "name"
+              }
+          }
+      }
     }
   }
 });

@@ -10,9 +10,15 @@ import GML32 from 'ol/format/GML32';
 import GeoJSON from 'ol/format/GeoJSON';
 import UniqueId from 'lodash.uniqueid';
 import { XMLParser } from 'fast-xml-parser';
-import { transformCoodinates, transformCoordinate } from 'vue-iclient/src/common/_utils/epsg-define';
+import { transformCoodinates } from 'vue-iclient/src/common/_utils/epsg-define';
 
-interface HighlightStyle {
+interface SetMapParams {
+  map: mapboxglTypes.Map;
+  webmap: any;
+  mapTarget: string;
+}
+
+export interface HighlightStyle {
   circle: InstanceType<typeof CircleStyle>;
   line: InstanceType<typeof LineStyle>;
   fill: InstanceType<typeof FillStyle>;
@@ -21,20 +27,21 @@ interface HighlightStyle {
   stokeLine?: InstanceType<typeof LineStyle>;
 }
 
-interface FieldsDisplayInfo {
+export interface FieldsDisplayInfo {
   field: string;
   title: string;
   slotName?: string;
 }
 
-interface LayerEventCursorMap {
+export interface LayerEventCursorMap {
   mousemove: string;
   mouseleave: string;
 }
 
-interface HighlightLayerOptions {
+export interface HighlightLayerOptions {
   name: string;
   layerIds?: string[];
+  sourceLayers?: string[][];
   style: HighlightStyle;
   featureFieldsMap?: Record<string, string[]>;
   displayFieldsMap?: Record<string, FieldsDisplayInfo[]>;
@@ -58,7 +65,7 @@ type LayerClickedFeature = mapboxglTypes.MapboxGeoJSONFeature & {
   };
 };
 
-interface PopupFieldsInfo {
+export interface PopupFieldsInfo {
   title: string;
   value: string;
   slotName?: string;
@@ -69,13 +76,13 @@ interface PopupFeatureInfo {
   info: PopupFieldsInfo[];
 }
 
-enum DataSelectorMode {
+export enum DataSelectorMode {
   SINGLE = 'SINGLE', // 单选
   MULTIPLE = 'MULTIPLE', // 多选
   ALL = 'ALL' // 全选
 }
 
-interface MapSelectionChangedEmit {
+export interface MapSelectionChangedEmit {
   features: LayerClickedFeature[];
   popupInfos: PopupFeatureInfo['info'][];
   lnglats: PopupFeatureInfo['coordinates'][];
@@ -95,7 +102,7 @@ interface UpdateHighlightOptions {
   features: LayerClickedFeature[];
 }
 
-interface CreateRelatedDatasParams {
+export interface CreateRelatedDatasParams {
   features: LayerClickedFeature[];
   targetId: string;
   isMultiple?: boolean;
@@ -183,17 +190,19 @@ const HIGHLIGHT_DEFAULT_STYLE: HighlightStyle = {
 const rasterSourceIdPrefix = 'sm_hightlight_source_';
 
 export default class HighlightLayer extends mapboxgl.Evented {
-  private dataSelectorMode: DataSelectorMode = DataSelectorMode.SINGLE;
-  private activeTargetId: string | null = null;
+  dataSelectorMode: DataSelectorMode = DataSelectorMode.SINGLE;
+  activeTargetId: string | null = null;
   private resultFeatures: LayerClickedFeature[] = [];
   highlightOptions: HighlightLayerOptions;
   map: mapboxglTypes.Map;
   webmap: InstanceType<typeof WebMapViewModel>;
   fire: (type: string, params?: any) => void;
+  on: (type: string, callback: (params?: any) => void) => void;
+  handleMapClick: any;
 
   constructor(options: HighlightLayerOptions) {
     super();
-    this.handleMapClick = this.handleMapClick.bind(this);
+    this.handleMapClick = this.handleMapClickFn.bind(this);
     this.handleMapMouseEnter = this.handleMapMouseEnter.bind(this);
     this.handleMapMouseLeave = this.handleMapMouseLeave.bind(this);
     this.handleLayerKeydown = this.handleLayerKeydown.bind(this);
@@ -203,6 +212,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
       ...options,
       style: this.transHighlightStyle(options.style),
       layerIds: (options.layerIds ?? []).slice(),
+      sourceLayers: options.sourceLayers,
       featureFieldsMap: options.featureFieldsMap,
       displayFieldsMap: options.displayFieldsMap,
       clickTolerance: options.clickTolerance ?? 5,
@@ -210,23 +220,24 @@ export default class HighlightLayer extends mapboxgl.Evented {
     };
   }
 
-  setMap({ map, webmap }: mapInfoType) {
+  setMap({ map, webmap }: SetMapParams) {
     this.map = map;
     this.webmap = webmap;
     this.registerMapClick();
-    this.setTargetLayers(this.highlightOptions.layerIds);
+    this.setTargetLayers(this.highlightOptions.layerIds, this.highlightOptions.sourceLayers);
   }
 
   setHighlightStyle(style: HighlightStyle) {
     this.highlightOptions.style = this.transHighlightStyle(style);
   }
 
-  setTargetLayers(layerIds: string[]) {
+  setTargetLayers(layerIds: string[], sourceLayers?: string[][]) {
     this.unregisterLayerMouseEvents();
     this.registerLayerMouseEvents(layerIds);
     this.unregisterLayerMultiClick();
     this.registerLayerMultiClick();
     this.highlightOptions.layerIds = layerIds;
+    this.highlightOptions.sourceLayers = sourceLayers;
   }
 
   setFeatureFieldsMap(fieldsMap: Record<string, string[]>) {
@@ -310,7 +321,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
         styleType = highlightLayerStyle[type] ? type : 'fill';
         break;
     }
-    const paintKeys = Object.keys(paint);
+    const paintKeys = Object.keys(paint || {});
     const { paint: paintStyle } = highlightLayerStyle[styleType];
     for (const key in paintStyle) {
       const matchKey = paintKeys.find(item => item.replace(`${type}-`, '') === key.replace(`${styleType}-`, ''));
@@ -573,6 +584,9 @@ export default class HighlightLayer extends mapboxgl.Evented {
   }
 
   private transHighlightStyle(highlightStyle: HighlightStyle) {
+    if (!highlightStyle) {
+      return {};
+    }
     const nextHighlightStyle = JSON.parse(JSON.stringify(highlightStyle));
     // 兼容 strokeLine 错误写法 stokeLine
     if ('stokeLine' in highlightStyle && !('strokeLine' in highlightStyle)) {
@@ -582,7 +596,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
     return nextHighlightStyle;
   }
 
-  private getHighlightLayerIds(layerIds: string[]) {
+  getHighlightLayerIds(layerIds: string[]) {
     return layerIds.reduce((idList, layerId) => {
       const highlightLayerId = this.createHightlightLayerId(layerId);
       const highlightStrokeLayerId = this.createHighlightStrokeLayerId(layerId);
@@ -609,7 +623,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
     return `${highlightLayerId}-StrokeLine`;
   }
 
-  private async handleMapClick(e: mapboxglTypes.MapLayerMouseEvent) {
+  async handleMapClickFn(e: mapboxglTypes.MapLayerMouseEvent) {
     const features = await this.queryLayerFeatures(e as mapboxglTypes.MapLayerMouseEvent);
     if (this.dataSelectorMode !== DataSelectorMode.MULTIPLE) {
       this.dataSelectorMode = DataSelectorMode.SINGLE;
@@ -618,19 +632,36 @@ export default class HighlightLayer extends mapboxgl.Evented {
     this.handleMapSelections(features);
   }
 
-  private handleMapSelections(features: LayerClickedFeature[]) {
+  getMoreHighlightLayerIds(layerId: string) {
+    if(!layerId) return [];
+    if(!this.highlightOptions.sourceLayers) {
+      return [layerId];
+    }
+    const sourceLayers = this.highlightOptions.sourceLayers?.find(item => item.includes(layerId));
+    return sourceLayers;
+  }
+
+  handleMapSelections(features: LayerClickedFeature[]) {
     this.removeHighlightLayers();
     let popupDatas: PopupFeatureInfo[] = [];
     let topLayerIndex = 0;
-    const layers = this.map.getStyle().layers;
+    // 获取所有图层 L7+ 普通图层
+    const layers = this.webmap?.getAppreciableLayers();
     features.forEach((f) => {
       const idx = layers.findIndex(l => l.id === f.layer.id);
       idx > topLayerIndex && (topLayerIndex = idx);
     });
     const topLayerId = layers?.[topLayerIndex]?.id;
     const matchTargetFeature = features.find(f => f.layer?.id === topLayerId) ?? features[0];
-    let activeTargetLayer = matchTargetFeature?.layer;
-    if (activeTargetLayer) {
+    const layerId = matchTargetFeature?.layer.id;
+    const highlightLayerIds = this.getMoreHighlightLayerIds(layerId);
+    // 获取mapboxgl上图的原生layer
+    const mapLayers = this.map?.getStyle().layers;
+    let activeTargetLayers = layers.filter(layer => highlightLayerIds.includes(layer.id))?.map(item => {
+      const findLayer = mapLayers?.find(layer => layer.id === item.id);
+      return findLayer ?? this.map.getLayer(item.id);
+    });
+    if (activeTargetLayers && matchTargetFeature) {
       switch (this.dataSelectorMode) {
         case DataSelectorMode.ALL:
           this.resultFeatures = features;
@@ -651,21 +682,23 @@ export default class HighlightLayer extends mapboxgl.Evented {
           this.resultFeatures = [matchTargetFeature];
           break;
       }
-      const params: CreateRelatedDatasParams = {
-        features: this.resultFeatures,
-        targetId: activeTargetLayer.id,
-        isMultiple: this.dataSelectorMode !== DataSelectorMode.SINGLE
-      };
-      const filterExps = this.createFilterExps(params);
-      popupDatas = this.createPopupDatas(params);
-      this.addHighlightLayers(activeTargetLayer as mapboxEnhanceLayer, filterExps, this.resultFeatures);
+      activeTargetLayers.forEach(layer => {
+        const params: CreateRelatedDatasParams = {
+          features: this.resultFeatures,
+          targetId: layer.id,
+          isMultiple: this.dataSelectorMode !== DataSelectorMode.SINGLE
+        };
+        const filterExps = this.createFilterExps(params);
+        popupDatas = this.createPopupDatas(params);
+        this.addHighlightLayers(layer as mapboxEnhanceLayer, filterExps, this.resultFeatures);
+      });
     }
     const emitData: MapSelectionChangedEmit = {
       features,
       popupInfos: popupDatas.map(item => item.info),
       lnglats: popupDatas.map(item => item.coordinates),
       highlightLayerIds: this.getHighlightLayerIds(this.highlightOptions.layerIds),
-      targetId: activeTargetLayer?.id,
+      targetId: layerId,
       dataSelectorMode: this.dataSelectorMode
     };
     if (this.highlightOptions.layerIds.length > 0) {
@@ -782,8 +815,8 @@ export default class HighlightLayer extends mapboxgl.Evented {
         const prjInfo = await this.getDatasetProjection([datasetName], url);
         if (prjInfo === null) continue;
         const proj = prjInfo[datasetName];
-        const transLngLat1 = transformCoordinate('EPSG:4326', proj, lnglat1);
-        const transLngLat2 = transformCoordinate('EPSG:4326', proj, lnglat2);
+        const transLngLat1 = transformCoodinates({ coordinates: lnglat1, sourceProjection: proj, destProjection: 'EPSG:4326' });
+        const transLngLat2 = transformCoodinates({ coordinates: lnglat2, sourceProjection: proj, destProjection: 'EPSG:4326' });
         const wfsBbox = [
           Math.min(transLngLat1[0], transLngLat2[0]),
           Math.min(transLngLat1[1], transLngLat2[1]),
@@ -815,7 +848,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
     return features;
   }
 
-  private async queryLayerFeatures(e: mapboxglTypes.MapLayerMouseEvent) {
+  async queryLayerFeatures(e: mapboxglTypes.MapLayerMouseEvent, layers?: string[]) {
     const map = e.target;
     const bbox = [
       [e.point.x - this.highlightOptions.clickTolerance, e.point.y - this.highlightOptions.clickTolerance],
@@ -828,7 +861,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
       ? [this.activeTargetId]
       : this.highlightOptions.layerIds.filter(item => !!this.map.getLayer(item));
     const features = map.queryRenderedFeatures(bbox, {
-      layers: layerIds.filter(id => !wfsLayerIds.includes(id))
+      layers: layers || layerIds.filter(id => !wfsLayerIds.includes(id))
     }) as unknown as LayerClickedFeature[];
     if (wfsLayers?.length) {
       const wfsFeatures = await this.queryWFSFeatures(wfsLayers, e);
@@ -837,8 +870,8 @@ export default class HighlightLayer extends mapboxgl.Evented {
     return features;
   }
 
-  private createFilterExps(params: CreateRelatedDatasParams) {
-    const { features, targetId, isMultiple } = params;
+  createFilterExps(params: CreateRelatedDatasParams) {
+    const { features, targetId } = params;
     return features.reduce(
       (filterExps: any[], feature) => {
         const filterExp = this.createFilterExp({ feature, targetId });

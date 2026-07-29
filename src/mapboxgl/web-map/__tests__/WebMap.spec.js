@@ -95,6 +95,30 @@ describe('WebMap.vue', () => {
     expect(wrapper.vm.panControl.show).toBe(false);
     expect(wrapper.vm.scaleControl.show).toBe(false);
     expect(wrapper.vm.zoomControl.show).toBe(false);
+    expect(wrapper.vm.preferServer).toBe(false);
+    done();
+  });
+
+  it('initial_serverUrl preferServer true', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_point,
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+        layerData_CSV
+    };
+    mockFetch(fetchResource);
+    const spy = jest.spyOn(mapboxgl, 'Map');
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '123',
+        preferServer: true
+      }
+    });
+    await mapWrapperLoaded(wrapper);
+    expect(spy).toBeCalled();
+    expect(wrapper.vm.preferServer).toBe(true);
     done();
   });
 
@@ -916,5 +940,28 @@ describe('WebMap.vue', () => {
       undefined
     );
     done();
+  });
+
+  it('registerEvents addlayerssucceeded -> calls mapEvent.$options.setMap with (target, map, mapData)', async () => {
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        mapId: '249495311',
+        serverUrl: 'https://fakeiportal.supermap.io/iportal'
+      }
+    });
+
+    // ensure viewModel is created and events registered
+    await wrapper.vm.$nextTick();
+
+    const setMapSpy = jest.spyOn(mapEvent.$options, 'setMap');
+
+    const fakeMap = { resize: jest.fn() };
+    const fakeMapData = { mapOptions: { center: [1, 2], zoom: 3 } };
+
+    wrapper.vm.viewModel.triggerEvent('addlayerssucceeded', { map: fakeMap, mapData: fakeMapData });
+
+    expect(setMapSpy).toHaveBeenCalledTimes(1);
+    expect(setMapSpy).toHaveBeenCalledWith(wrapper.vm.target, fakeMap, fakeMapData);
   });
 });

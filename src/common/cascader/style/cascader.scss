@@ -1,0 +1,30 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+
+@include b(cascader) {
+    $prefix: &;
+    &-menus {
+        background-color: $select-dropdown-bg;
+    }
+    @include e(menu, '-') {
+        $prefix-menu: &;
+
+        &-item {
+            color: $text-color-active;
+
+            &:hover:not(&-disabled) {
+                background-color: $select-item-hover-bg;
+            }
+
+            &-active:hover:not(&-disabled),
+            &-active:not(&-disabled) {
+                font-weight: normal;
+                background-color: $select-item-selected-bg;
+                color: $select-item-selected-color;
+            }
+            &-expand &-expand-icon {
+                color: $text-color-secondary;
+            }
+        }
+    }
+}

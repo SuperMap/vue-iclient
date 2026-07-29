@@ -163,8 +163,8 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
   }
 
   filtercb(type) {
-    const EXCLUDE_TYPEs = ['raster', 'heatmap', 'chart'];
-    if (EXCLUDE_TYPEs.includes(type)) {
+    const EXCLUDE_TYPES = ['raster', 'heatmap', 'chart'];
+    if (EXCLUDE_TYPES.includes(type)) {
       return {
         show: false
       };

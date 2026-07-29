@@ -74,6 +74,35 @@ interface identifyParam {
   clickAreaAround?: number;
 }
 
+interface attributePopupParam {
+  show?: boolean;
+  clickTolerance?: number;
+  multiSelect?: boolean;
+  useMapPopup?: boolean;
+  popupConfig?: {
+    width?: string;
+    height?: string;
+    autoResize?: boolean;
+    maxWidth?: string;
+    maxHeight?: string;
+    backgroundImage?: string;
+    keyWordWrap?: 'ellipsis' | 'wrap';
+    valueWordWrap?: 'ellipsis' | 'wrap';
+  };
+  popupInfos?: Array<{
+    title?: string;
+    layerId?: string | string[];
+    fieldCaptions?: Object;
+    identifyField?: string;
+    elements?: Array<Object>;
+  }>;
+  layerStyle?: Object;
+  highlightStyle?: Object;
+  featureFieldsMap?: Object;
+  displayFieldsMap?: Object;
+  layerIds?: string[];
+}
+
 interface layerManageParam {
   show?: boolean;
   layers?: Array<Object>;
@@ -90,6 +119,7 @@ interface controlProps {
   queryControl?: queryParam;
   searchControl?: searchParam;
   identifyControl?: identifyParam;
+  attributePopupControl?: attributePopupParam;
   layerManagerControl?: layerManageParam;
 }
 
@@ -142,6 +172,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   @Prop({ default: false }) loading: boolean;
   @Prop() background: string;
   @Prop() iportalServiceProxyUrlPrefix: string;
+  @Prop({ default: false }) preferServer: boolean;
   @Prop() mapOptions: any;
   @Prop({ default: true }) autoresize: boolean;
   @Prop({ default: false }) keepBounds: boolean;
@@ -248,6 +279,15 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
       };
     }
   })
+  attributePopupControl: attributePopupParam;
+
+  @Prop({
+    default: () => {
+      return {
+        show: false
+      };
+    }
+  })
   layerManagerControl: layerManageParam;
 
   @Prop() tileTransformRequest: (url: string) => Object;
@@ -334,6 +374,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
       isSuperMapOnline,
       proxy,
       mapOptions,
+      preferServer,
       iportalServiceProxyUrlPrefix,
       tileTransformRequest
     } = this.$props;
@@ -353,7 +394,8 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
         isSuperMapOnline,
         proxy,
         iportalServiceProxyUrlPrefix,
-        tileTransformRequest
+        tileTransformRequest,
+        preferServer
       },
       mapOptions
     );
@@ -380,7 +422,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
     this.viewModel.on({
       addlayerssucceeded: e => {
         this.spinning = false;
-        mapEvent.$options.setMap(this.target, e.map);
+        mapEvent.$options.setMap(this.target, e.map, e.mapData);
         this.viewModel && mapEvent.$options.setWebMap(this.target, this.viewModel);
         mapEvent.$emit('load-map', e.map, this.target);
         e.map.resize();

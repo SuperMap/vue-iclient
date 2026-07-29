@@ -6,14 +6,19 @@ export default new Vue({
   customLayerCatalogCache: {},
   mapCache: {},
   webMapCache: new Map(),
+  mapDataCache: {},
   getMap: function (mapTarget) {
     return this.mapCache[mapTarget];
   },
   getAllMaps: function () {
     return this.mapCache;
   },
-  setMap: function (mapTarget, map) {
+  getMapData: function (mapTarget) {
+    return this.mapDataCache[mapTarget];
+  },
+  setMap: function (mapTarget, map, mapData) {
     this.mapCache[mapTarget] = map;
+    this.mapDataCache[mapTarget] = mapData;
   },
   deleteMap: function (mapTarget) {
     if (this.mapCache[mapTarget]) {
@@ -26,6 +31,7 @@ export default new Vue({
       return;
     }
     const webMapCombinations = this.webMapCache.get(webmapTarget);
+    // eslint-disable-next-line
     const [_, mainWebmap] = webMapCombinations.find(item => item[0] === webmapTarget);
     const _this = this;
     const proxyWebMap = new Proxy(mainWebmap, {

@@ -9,13 +9,14 @@ const path = require('path');
 const chalk = require('chalk');
 const webpack = require('webpack');
 const config = require('../config');
+const getOriginArgs = require('./get-origin-args');
 let webpackConfig = require('./webpack.mapboxgl.conf');
 
-let argv = JSON.parse(process.env['npm_config_argv']);
-let origin = argv.original;
+let origin = getOriginArgs();
 
-if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {
-  let type = origin[2].replace("-", "");
+const engineArg = origin.find(arg => ['-mapboxgl', '-leaflet'].includes(arg));
+if (engineArg) {
+  let type = engineArg.replace('-', '');
   webpackConfig = require(`./webpack.${type}.conf`);
 }
 

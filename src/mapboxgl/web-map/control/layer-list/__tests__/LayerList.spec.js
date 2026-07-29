@@ -15,6 +15,10 @@ describe('LayerList.vue', () => {
   let wrapper;
   let mapWrapper;
 
+  const attributesDataAvailable = (item) =>{
+    return item.renderSource.type === 'geojson' || item.renderSource.type === 'vector' && ['STRUCTURE_DATA', 'REST_DATA', 'REST_MAP'].includes(item.dataSource.type);
+  }
+
   beforeEach(() => {
     wrapper = null;
     mapWrapper = null;
@@ -350,7 +354,8 @@ describe('LayerList.vue', () => {
       un: jest.fn(),
       on: jest.fn(options => {
         mockOnOptions = options;
-      })
+      }),
+      attributesDataAvailable
     };
     wrapper.vm.viewModel.setMap({
       webmap
@@ -500,7 +505,8 @@ describe('LayerList.vue', () => {
             child.visible = visible;
           });
         }
-      }
+      },
+      attributesDataAvailable
     };
     const callback = async function () {
       await wrapper.vm.$nextTick();
@@ -528,6 +534,177 @@ describe('LayerList.vue', () => {
     expect(wrapper.find('.header-text  .sm-components-icon-attribute-table').classes('highlight-icon')).toBeTruthy();
     expect(wrapper.find('.header-text  .sm-components-icon-tucengyangshi01').classes('highlight-icon')).toBeTruthy();
     firstIconVisibleNode.trigger('click');
+    mockOnOptions.layerupdatechanged();
+  });
+
+  it('geojson vector attributes', async done => {
+    wrapper = mount(SmLayerList, {
+      propsData: {
+        attributes: {
+          position: 'top-right',
+          style: {
+            width: '500px'
+          },
+          enabled: true
+        },
+        operations: {
+          fitBounds: true,
+          draggable: false,
+          opacity: true
+        }
+      }
+    });
+    const layerCatalogs = [
+      {
+        children: [
+          {
+            dataSource: {
+              serverId: '',
+              type: ''
+            },
+            id: 'xingkaihu_B@China',
+            title: 'Xingkaihu_B_txt@China_L10-L10',
+            type: 'line',
+            visible: true,
+            renderSource: {
+              id: 'ms_China_4610_1715416497380_3',
+              type: 'geojson'
+            },
+            renderLayers: ['xingkaihu_B@China'],
+            themeSetting: {},
+            layerOrder: 'auto'
+          },
+          {
+            dataSource: {
+              serverId: '',
+              type: ''
+            },
+            id: 'xingkaihu_C@China',
+            title: 'Xingkaihu_C_txt@China_L10-L10',
+            type: 'symbol',
+            visible: true,
+            renderSource: {
+              id: 'ms_China_4610_1715416497380_2',
+              type: 'vector',
+              sourceLayer: 'Xingkaihu_C_txt@China'
+            },
+            renderLayers: ['xingkaihu_C@China'],
+            themeSetting: {},
+            CLASS_INSTANCE: {},
+            layerOrder: 'auto'
+          }
+        ],
+        id: 'ms_group_1715581133212_2',
+        title: '未命名分组',
+        type: 'group',
+        visible: true,
+        layerOrder: 'auto'
+      },
+      {
+        dataSource: {
+          serverId: '',
+          type: ''
+        },
+        id: 'ms-background',
+        title: 'ms-background',
+        type: 'background',
+        visible: true,
+        renderSource: {},
+        renderLayers: ['ms-background'],
+        themeSetting: {},
+        layerOrder: 'auto'
+      },
+      {
+        dataSource: {
+          type: 'REST_MAP'
+        },
+        id: 'xingkaihu_C@China',
+        title: 'Xingkaihu_C_txt1@China_L10-L10',
+        type: 'symbol',
+        visible: true,
+        renderSource: {
+          id: 'ms_China_4610_1715416497380_21',
+          type: 'vector',
+          sourceLayer: 'Xingkaihu_C_txt1@China'
+        },
+        renderLayers: ['xingkaihu_C@China1'],
+        themeSetting: {},
+        CLASS_INSTANCE: {},
+        layerOrder: 'auto'
+      },
+      {
+        dataSource: {
+          type: 'REST_DATA'
+        },
+        id: 'xingkaihu_C@China',
+        title: 'Xingkaihu_C_txt2@China_L10-L10',
+        type: 'symbol',
+        visible: true,
+        renderSource: {
+          id: 'ms_China_4610_1715416497380_2',
+          type: 'vector',
+          sourceLayer: 'Xingkaihu_C_txt2@China'
+        },
+        renderLayers: ['xingkaihu_C2@China'],
+        themeSetting: {},
+        CLASS_INSTANCE: {},
+        layerOrder: 'auto'
+      },
+      {
+        dataSource: {
+          type: 'STRUCTURE_DATA'
+        },
+        id: 'xingkaihu_C@China',
+        title: 'Xingkaihu_C_txt3@China_L10-L10',
+        type: 'symbol',
+        visible: true,
+        renderSource: {
+          id: 'ms_China_4610_1715416497380_3',
+          type: 'vector',
+          sourceLayer: 'Xingkaihu_C_txt3@China'
+        },
+        renderLayers: ['xingkaihu_C3@China'],
+        themeSetting: {},
+        CLASS_INSTANCE: {},
+        layerOrder: 'auto'
+      }
+    ];
+    let mockOnOptions;
+    const webmap = {
+      getLayerList: () => {
+        return layerCatalogs;
+      },
+      un: jest.fn(),
+      on: jest.fn(options => {
+        mockOnOptions = options;
+      }),
+      changeItemVisible: (layer, visible) => {
+        const matchLayer = findLayerCatalog(layerCatalogs, layer.id) 
+        matchLayer.visible = visible;
+        if (matchLayer.type === 'group' && !visible) {
+          matchLayer.children.forEach(child => {
+            child.visible = visible;
+          });
+        }
+      },
+      attributesDataAvailable
+    };
+    const callback = async function () {
+      await wrapper.vm.$nextTick();
+      done();
+    };
+    wrapper.vm.viewModel.on('layersUpdated', callback);
+    wrapper.vm.viewModel.setMap({
+      webmap
+    });
+    wrapper.vm.$options.loaded.call(wrapper.vm);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.sourceList).toEqual(wrapper.vm.transformLayerList(layerCatalogs));
+    let iconNodes = wrapper.findAll('.sm-components-icon-right');
+    expect(iconNodes.length).toBe(1);
+    iconNodes.at(0).trigger('click');
+    const attributeIconNodes = wrapper.findAll('.header-text  .sm-components-icon-attribute-table');
+    expect(attributeIconNodes.length).toBe(4);
     mockOnOptions.layerupdatechanged();
   });
 

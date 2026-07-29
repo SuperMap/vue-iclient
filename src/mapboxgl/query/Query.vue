@@ -157,9 +157,7 @@ import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
 import Card from 'vue-iclient/src/common/_mixin/Card';
 import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
-import LineStyle from 'vue-iclient/src/mapboxgl/_types/LineStyle';
-import FillStyle from 'vue-iclient/src/mapboxgl/_types/FillStyle';
-import CircleStyle from 'vue-iclient/src/mapboxgl/_types/CircleStyle';
+import { getDefaultLayerStyle } from 'vue-iclient/src/mapboxgl/_types/index.js';
 import QueryViewModel from './QueryViewModel.js';
 import SmInput from 'vue-iclient/src/common/input/Input.vue';
 import SmSelect from 'vue-iclient/src/common/select/Select.vue';
@@ -205,61 +203,13 @@ export default {
     layerStyle: {
       type: Object,
       default() {
-        return {
-          line: new LineStyle({
-            'line-width': 3,
-            'line-color': '#409eff',
-            'line-opacity': 1
-          }),
-          circle: new CircleStyle({
-            'circle-color': '#409eff',
-            'circle-opacity': 0.6,
-            'circle-radius': 8,
-            'circle-stroke-width': 2,
-            'circle-stroke-color': '#409eff',
-            'circle-stroke-opacity': 1
-          }),
-          fill: new FillStyle({
-            'fill-color': '#409eff',
-            'fill-opacity': 0.6,
-            'fill-outline-color': '#409eff'
-          }),
-          stokeLine: new LineStyle({
-            'line-width': 3,
-            'line-color': '#409eff',
-            'line-opacity': 1
-          })
-        };
+        return getDefaultLayerStyle();
       }
     },
     highlightStyle: {
       type: Object,
       default() {
-        return {
-          line: new LineStyle({
-            'line-width': 3,
-            'line-color': '#01ffff',
-            'line-opacity': 1
-          }),
-          circle: new CircleStyle({
-            'circle-color': '#01ffff',
-            'circle-opacity': 0.6,
-            'circle-radius': 8,
-            'circle-stroke-width': 2,
-            'circle-stroke-color': '#01ffff',
-            'circle-stroke-opacity': 1
-          }),
-          fill: new FillStyle({
-            'fill-color': '#01ffff',
-            'fill-opacity': 0.6,
-            'fill-outline-color': '#01ffff'
-          }),
-          strokeLine: new LineStyle({
-            'line-width': 3,
-            'line-color': '#01ffff',
-            'line-opacity': 1
-          })
-        };
+        return getDefaultLayerStyle('#01ffff');
       }
     },
     iportalData: {
@@ -321,7 +271,10 @@ export default {
   computed: {
     resultDisplayTitle() {
       return function(properties) {
-        return `SmID：${getValueCaseInsensitive(properties, 'smid')}`;
+        let { field, fieldCaption } = this.activeQueryJob.identifyField || {};
+        field = field || 'smid';
+        fieldCaption = fieldCaption || 'SmID';
+        return `${fieldCaption}：${getValueCaseInsensitive(properties, field)}`;
       };
     },
     featureFieldsMap() {

@@ -125,6 +125,25 @@ module.exports = {
   },
   overrides: [
     {
+      files: ['*.vue'],
+      parser: 'vue-eslint-parser',
+      parserOptions: {
+        parser: '@typescript-eslint/parser',
+        ecmaVersion: 2020,
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+          legacyDecorators: true
+        },
+        extraFileExtensions: ['.vue']
+      },
+      rules: {
+        'lines-between-class-members': 0,
+        '@typescript-eslint/ban-types': 0,
+        '@typescript-eslint/no-inferrable-types': 0
+      }
+    },
+    {
       files: ['*.ts', '*.tsx'],
       plugins: ['@typescript-eslint'],
       parser: '@typescript-eslint/parser',

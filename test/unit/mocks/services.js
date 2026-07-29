@@ -1887,6 +1887,26 @@ const REST_DATA_FIELDS_RESULT = [
     maxLength: 60,
     isZeroLengthAllowed: true,
     isSystemField: false
+  },
+  {
+    isRequired: false,
+    defaultValue: '',
+    name: 'lowercase',
+    caption: 'lowercase',
+    type: 'WTEXT',
+    maxLength: 60,
+    isZeroLengthAllowed: true,
+    isSystemField: false
+  },
+  {
+    isRequired: false,
+    defaultValue: '',
+    name: 'smgeometry',
+    caption: 'smgeometry',
+    type: 'LONGBINARY',
+    maxLength: -1,
+    isZeroLengthAllowed: false,
+    isSystemField: true
   }
 ]
 
@@ -2427,6 +2447,124 @@ const restMap_Maps_Res = [
   }
 ];
 
+const fakeQuxianDataServiceResult = {
+    datasetInfos: [{
+      fieldInfos:[
+        {name: "parent_cod", caption: "parent_cod", type: "WTEXT"}, 
+        {name: "parent_nam", caption: "parent_nam", type: "WTEXT"},
+        {name: "admin_code", caption: "admin_code", type: "WTEXT"},
+        {name: "division_n", caption: "division_n", type: "WTEXT"}]
+    }],
+    features: [{
+      "stringID": null,
+      "fieldNames": [
+          "DIVISION_N",
+          "ADMIN_CODE",
+          "PARENT_COD",
+          "PARENT_NAM",
+      ],
+      "geometry": null,
+      "fieldValues": [
+          "路桥区",
+          "331004",
+          "3310",
+          "台州市"
+      ],
+      "ID": 1
+  }, {
+    "stringID": null,
+    "fieldNames": [
+        "DIVISION_N",
+        "ADMIN_CODE",
+        "PARENT_COD",
+        "PARENT_NAM"
+    ],
+    "geometry": null,
+    "fieldValues": [
+        "西湖区",
+        "330106",
+        "3301",
+        "杭州市"
+    ],
+    "ID": 2
+  }, {
+        "stringID": null,
+        "fieldNames": [
+            "DIVISION_N",
+            "ADMIN_CODE",
+            "PARENT_COD",
+            "PARENT_NAM"
+        ],
+        "geometry": null,
+        "fieldValues": [
+            "路桥区",
+            "331004",
+            "3310",
+            "台州市"
+        ],
+        "ID": 1
+    },{
+        "stringID": null,
+        "fieldNames": [
+            "DIVISION_N",
+            "ADMIN_CODE",
+            "PARENT_COD",
+            "PARENT_NAM",
+        ],
+        "geometry": null,
+        "fieldValues": [
+            "钱塘区",
+            "330114",
+            "3301",
+            "杭州市"
+        ],
+        "ID": 4
+    }]
+};
+
+const fakeQuxianDataServiceFields = [
+  {
+    isRequired: true,
+    defaultValue: '',
+    name: 'division_n',
+    caption: 'division_n',
+    type: 'WTEXT',
+    maxLength: 4,
+    isZeroLengthAllowed: true,
+    isSystemField: true
+  },
+  {
+    isRequired: true,
+    defaultValue: '',
+    name: 'admin_code',
+    caption: 'admin_code',
+    type: 'WTEXT',
+    maxLength: 4,
+    isZeroLengthAllowed: true,
+    isSystemField: true
+  },
+  {
+    isRequired: true,
+    defaultValue: '',
+    name: 'parent_cod',
+    caption: 'parent_cod',
+    type: 'WTEXT',
+    maxLength: 4,
+    isZeroLengthAllowed: true,
+    isSystemField: true
+  },
+  {
+    isRequired: true,
+    defaultValue: '',
+    name: 'parent_nam',
+    caption: 'parent_nam',
+    type: 'WTEXT',
+    maxLength: 4,
+    isZeroLengthAllowed: true,
+    isSystemField: true
+  }
+];
+
 module.exports = {
   fakeDataServiceResult,
   fakeMapServiceResult,
@@ -2478,7 +2616,9 @@ module.exports = {
   wmsCapabilitiesText,
   webmap_MAPBOXSTYLE_Tile,
   restMap_Layers_Res,
-  restMap_Maps_Res
+  restMap_Maps_Res,
+  fakeQuxianDataServiceResult,
+  fakeQuxianDataServiceFields
 };
 
 

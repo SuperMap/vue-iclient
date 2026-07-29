@@ -458,17 +458,16 @@ class FeatureTableViewModel extends mapboxgl.Evented {
             this.totalCount = await new iServerRestService(this.dataset.url).getDataFeaturesCount(config);
             // @ts-ignore
             let fieldInfos = await new iServerRestService(this.dataset.url).getFeaturesDatasetInfo(config);
-            let fields = []; let fieldCaptions = []; let fieldTypes = [];
+            let fieldCaptions = []; let fieldTypes = [];
             if(fieldInfos) {
               fieldInfos.forEach(fieldInfo => {
                 if(fieldInfo.name) {
-                  fields.push(fieldInfo.name.toUpperCase());
-                  fieldCaptions.push(fieldInfo.caption.toUpperCase());
+                  fieldCaptions.push(fieldInfo.caption);
                   fieldTypes.push(fieldInfo.type);
                 }
               });
             }
-            datas = statisticsFeatures(features, fields, fieldCaptions, fieldTypes);
+            datas = statisticsFeatures(features, undefined, fieldCaptions, fieldTypes);
             this.prevDatasetUrl = this.dataset.url;
           }
         }
@@ -477,7 +476,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
         this.totalCount = features.length;
       }
       const content = this.toTableContent(features);
-      const columns = this.toTableColumns(features?.[0].properties || {});
+      const columns = this.toTableColumns(features?.[0]?.properties || {});
 
       this.fire('dataChanged', { content, totalCount: this.totalCount, columns });
     }
@@ -494,7 +493,8 @@ class FeatureTableViewModel extends mapboxgl.Evented {
       }
       if (this.canLazyLoad()) {
         if (this.searchText && this.searchedColumn) {
-          dataset.attributeFilter = `${this.searchedColumn} like '%${this.searchText}%'`;
+          // iServer 数据的attributeFilter
+          dataset.attributeFilter = await this._getAttributeFilter(dataset, [this.searchedColumn]);
         }
         // @ts-ignore
         if (this.sorter && this.sorter.field && this.sorter.order) {
@@ -510,6 +510,25 @@ class FeatureTableViewModel extends mapboxgl.Evented {
 
       return await getFeatures(dataset);
     }
+  }
+
+  async _getAttributeFilter(dataset, fields, keyWord = this.searchText) {
+    // @ts-ignore
+    const { url, geoJSON, dataName, withCredentials } = dataset;
+    const isRestData = url && url.includes('/rest/data') && !geoJSON;
+    const restService = new iServerRestService(url);
+    if (isRestData) {
+      const arr = dataName[0].split(':');
+      const dataSourceName = arr[0];
+      const datasetName = arr[1];
+      const config = {
+        datasetName,
+        dataSourceName,
+        dataUrl: url
+      };
+      return await restService._getRestDataAttributeFilter(config, fields, keyWord, withCredentials);
+    }
+    return restService._getAttributeFilterByKeywords(fields, keyWord, false);
   }
 
   toTableContent(features) {
@@ -593,7 +612,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
               title: record[propertyName]
             }
           };
-        }
+        };
       }
       // @ts-ignore
       if(!columnConfig.customHeaderCell) {
@@ -604,7 +623,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
               title: propertyName
             }
           };
-        }
+        };
       }
       columns.push(columnConfig);
     });

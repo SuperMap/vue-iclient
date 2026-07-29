@@ -18,6 +18,7 @@
 @import '../common/input-number/style/input-number.scss';
 @import '../common/switch/style/switch.scss';
 @import '../common/select/style/select.scss';
+@import '../common/cascader/style/cascader.scss';
 @import '../common/checkbox/style/checkbox.scss';
 @import '../common/avatar/style/avatar.scss';
 @import '../common/empty/style/empty.scss';
@@ -59,6 +60,7 @@
 @import './web-map/control/legend/style/legend.scss';
 @import './web-map/control/draw/style/draw.scss';
 @import './web-map/control/identify/style/identify.scss';
+@import './web-map/control/attribute-popup/style/attribute-popup.scss';
 @import './web-map/control/layer-manager/style/layer-manager.scss';
 @import './web-map/control/mini-map/style/mini-map.scss';
 @import './web-map/control/coordinate-conversion/style/coordinate-conversion.scss';
@@ -83,6 +85,7 @@
 @import './query/style/query.scss';
 @import './open-file/style/open-file.scss';
 @import './text-list/style/text-list.scss';
+@import './feature-cascader/style/feature-cascader.scss';
 @import './attributes/style/attributes.scss';
 @import './base-layer-switcher/style/base-layer-switcher.scss';
 /* layer */

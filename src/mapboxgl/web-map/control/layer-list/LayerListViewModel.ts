@@ -1,6 +1,7 @@
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import WebMapViewModel from 'vue-iclient/src/mapboxgl/web-map/WebMapViewModel';
 import { findLayerCatalog } from '../../GroupUtil';
+import debounce from 'lodash.debounce';
 
 /**
  * @class LayerListViewModel
@@ -26,7 +27,8 @@ class LayerListViewModel extends mapboxgl.Evented {
   setMap(mapInfo) {
     const { webmap } = mapInfo;
     this.webmap = webmap;
-    this.updateFn = this._updateLayers.bind(this);
+    // 图层变化，图层列表闪的太快
+    this.updateFn = debounce(this._updateLayers.bind(this), 300);
     this.webmap.on({
       layerupdatechanged: this.updateFn
     });
@@ -40,6 +42,10 @@ class LayerListViewModel extends mapboxgl.Evented {
   async getLayerDatas(item) {
     const features = await this.webmap.getLayerDatas(item);
     return this.setDataset(features);
+  }
+
+  attributesDataAvailable(item) {
+    return this.webmap.attributesDataAvailable(item);
   }
 
   // 将features转换成属性表dataset所需的GeoJSONParameter形式

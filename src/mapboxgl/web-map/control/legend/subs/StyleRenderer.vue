@@ -173,10 +173,13 @@ export default {
         }
         case 'fill':
         case 'rectangle': {
-          const { color, backgroundColor = color, outlineColor = backgroundColor } = this.styleRendererData;
+          const { color, backgroundColor = color, outlineColor = backgroundColor, outlineWidth = 0.5, outlineStyle = 'none' } = this.styleRendererData;
           ctx.fillStyle = backgroundColor;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.strokeStyle = outlineColor;
+          if (outlineStyle === 'solid') {
+            ctx.strokeStyle = outlineColor;
+            ctx.lineWidth = outlineWidth;
+          }
           ctx.strokeRect(0, 0, canvas.width, canvas.height);
           break;
         }

@@ -12,12 +12,14 @@ const through2 = require('through2');
 const fileSave = require('file-save');
 const fs = require('fs');
 const path = require('path');
+const getOriginArgs = require('./get-origin-args');
 
-let argv = JSON.parse(process.env['npm_config_argv']);
-let origin = argv.original;
+let origin = getOriginArgs();
+
 let type = 'mapboxgl';
-if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {
-  type = origin[2].replace('-', '');
+const engineArg = origin.find(arg => ['-mapboxgl', '-leaflet'].includes(arg));
+if (engineArg) {
+  type = engineArg.replace('-', '');
 }
 
 const NO_STYLE_COMPONENTS = {

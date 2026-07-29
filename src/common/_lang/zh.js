@@ -48,11 +48,14 @@ export default {
     meters: '米',
     yards: '码',
     feet: '英尺',
+    nauticalmiles: '海里',
     squarekilometers: '平方千米',
     squaremiles: '平方英里',
     squaremeters: '平方米',
     squareyards: '平方码',
     squarefeet: '平方英尺',
+    squareacres: '英亩',
+    squarehectares: '公顷',
     XY: '经纬度',
     BASEMAP: '底图',
     UTM: 'UTM',
@@ -158,6 +161,7 @@ export default {
     opacity: '不透明度',
     width: '宽度',
     outlineColor: '轮廓色',
+    outlineWidth: '轮廓宽度',
     haloColor: '晕轮颜色',
     label: '标签',
     parentheses: '（{tips}）',
@@ -203,6 +207,12 @@ export default {
     seviceNotSupport: '此服务不支持查询！',
     keyQueryPlaceholder: '请输入关查询键字',
     sqlQueryPlaceholder: '请输入SQL表达式'
+  },
+  cascader: {
+    placeholder: '请选择'
+  },
+  attributePopup: {
+    selectLayer: '选择图层'
   },
   identify: {
     layerNotExit: "地图上不存在该图层: '{layer}'",

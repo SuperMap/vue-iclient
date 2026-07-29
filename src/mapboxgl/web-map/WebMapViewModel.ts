@@ -8,12 +8,13 @@ import 'vue-iclient/static/libs/geostats/geostats';
 import 'vue-iclient/static/libs/json-sql/jsonsql';
 import echarts from 'echarts';
 import EchartsLayer from 'vue-iclient/static/libs/echarts-layer/EchartsLayer';
-import iPortalDataService from 'vue-iclient/src/common/_utils/iPortalDataService';
 import proj4 from 'proj4';
 import { getLayerCatalogIds, getGroupChildrenLayers, findLayerCatalog } from 'vue-iclient/src/mapboxgl/web-map/GroupUtil';
 import bbox from '@turf/bbox';
 import { points } from '@turf/helpers';
-
+import getFeatures from 'vue-iclient/src/common/_utils/get-features';
+// @ts-ignore
+import { Util } from 'vue-iclient/static/libs/iclient-common/iclient-common';
 // @ts-ignore
 window.echarts = echarts;
 // @ts-ignore
@@ -54,6 +55,7 @@ const OPACITY_MAP = {
  * @param {boolean} [options.excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。当设置 `id` 时有效。
  * @param {boolean} [options.ignoreBaseProjection =false] - 是否忽略底图坐标系和叠加图层坐标系不一致。
  * @param {String} [options.iportalServiceProxyUrlPrefix] - iportal的代理服务地址前缀。
+ * @param {boolean} [options.preferServer=false] - 当图层数据来源为SuperMap iServer RestData服务, 使用服务器直接返回geojson。
  */
 interface webMapOptions {
   target?: string;
@@ -71,6 +73,7 @@ interface webMapOptions {
   zoom?: number;
   proxy?: boolean | string;
   iportalServiceProxyUrlPrefix?: string;
+  preferServer?: boolean;
   checkSameLayer?: boolean;
   map?: mapboxglTypes.Map;
   layerFilter?: () => boolean;
@@ -109,13 +112,14 @@ interface BaseLayerItem {
 
 interface MapHandler {
   clean: () => void;
-  cleanLayers: () => void;
+  cleanLayers: (layers?: Array<Record<string, any>>, isClean?: boolean) => void;
   getLayerCatalog: () => any[];
   getLegends: () => any[];
+  getLegendInfos: () => any[];
   getLayers: () => any[];
   rectifyLayersOrder: (appreciableLayers: any[], topLayerBeforeId?: string) => void;
   getWebMapType: () => any;
-  setLayersVisible: (layers: Array<Record<string, any>>, visibility: 'visible' | 'none') => void;
+  setLayersVisible: (layers: Array<Record<string, any>>, visibility: 'visible' | 'none', isSetVisible: boolean) => void;
   toggleLayerVisible: (layer: Record<string, any>, visible: boolean) => void;
   echartsLayerResize: () => void;
   updateOverlayLayer: (layerInfo: Record<string, any>, features: any, mergeByField?: string, featureProjection?: string) => void;
@@ -207,7 +211,8 @@ export default class WebMapViewModel extends Events {
       withCredentials: options.withCredentials || false,
       credentialKey: (options.accessKey && 'key') || (options.accessToken && 'token'),
       credentialValue: options.accessKey || options.accessToken,
-      proj4
+      proj4,
+      preferServer: options.preferServer || false
     };
     this.serverUrl = this.options.server;
     this.mapOptions = mapOptions;
@@ -294,6 +299,10 @@ export default class WebMapViewModel extends Events {
     return this._handler.getLayers();
   }
 
+  getLegendInfos() {
+    return this._handler.getLegendInfos();
+  }
+
   getLegendInfo() {
     return this._handler.getLegends();
   }
@@ -310,37 +319,58 @@ export default class WebMapViewModel extends Events {
     return this._handler.getWebMapType();
   }
 
-  protected cleanLayers() {
-    this._handler.cleanLayers();
+  protected cleanLayers(layers?: Array<Record<string, any>>, isClean = true) {
+    this._handler.cleanLayers(layers, isClean);
   }
 
-  getLayerDatas(item) {
+  attributesDataAvailable(item) {
+    return item.renderSource.type === 'geojson' || item.renderSource.type === 'vector' && ['STRUCTURE_DATA', 'REST_DATA', 'REST_MAP'].includes(item.dataSource.type);
+  }
+
+  async getLayerDatas(item) {
+    if (!this.attributesDataAvailable(item)) {
+      return [];
+    }
     const isGeojson = item.renderSource.type === 'geojson';
     if (isGeojson) {
       // @ts-ignore
-      return Promise.resolve(this.map.getSource(item.renderSource.id).getData().features);
-    } else {
-      const dataId = item.dataSource.serverId;
-      // TODO iserver服务也可获取要素
-      if (!dataId) return [];
-      let promise = new Promise((resolve, reject) => {
-        const dataService = new iPortalDataService(
-          `${this.serverUrl}web/datas/${dataId}`,
-          this.options.withCredentials,
-          { dataType: 'STRUCTUREDDATA' }
-        );
-        dataService.on({
-          getdatafailed: e => {
-            reject(e);
-          },
-          getdatasucceeded: e => {
-            resolve(e.features);
-          }
-        });
-        dataService.getData({});
-      });
-      return promise;
+      return this.map.getSource(item.renderSource.id).getData().features;
     }
+    const commonParams = {
+      withCredentials: this.options.withCredentials,
+      maxFeatures: 1000000
+    };
+    let datasetInfo: Record<string, any> = {};
+    switch (item.dataSource.type) {
+      case 'STRUCTURE_DATA': {
+        const dataId = item.dataSource.serverId;
+        datasetInfo = {
+          type: 'iPortal',
+          id: dataId,
+          dataType: 'STRUCTUREDDATA',
+          url: Util.urlPathAppend(this.serverUrl, `web/datas/${dataId}`),
+          filterConditions: item.filter
+        };
+        break;
+      }
+      case 'REST_DATA':
+      case 'REST_MAP': {
+        datasetInfo = {
+          type: 'iServer',
+          url: item.dataSource.url,
+          filterConditions: item.filter
+        };
+        if (item.dataSource.type === 'REST_DATA') {
+          datasetInfo.dataName = [item.dataSource.dataSourceName];
+        } else {
+          datasetInfo.layerName = item.dataSource.layerName;
+          datasetInfo.url = Util.urlPathAppend(item.dataSource.url, item.dataSource.mapName);
+        }
+        break;
+      }
+    }
+    const res = await getFeatures(Object.assign(commonParams, datasetInfo));
+    return res.features;
   }
 
   changeItemVisible(layer: Record<string, any>, visible: boolean) {
@@ -348,7 +378,7 @@ export default class WebMapViewModel extends Events {
   }
 
   zoomToBounds(id: string) {
-    const item = findLayerCatalog(this._handler.getLayerCatalog(), id);
+    const item = findLayerCatalog(this.getLayerList(), id);
     if (!item) {
       return;
     }
@@ -420,7 +450,7 @@ export default class WebMapViewModel extends Events {
   }
 
   changeItemOpacity(id, opacity) {
-    const item = findLayerCatalog(this._handler.getLayerCatalog(), id);
+    const item = findLayerCatalog(this.getLayerList(), id);
     if (!item) {
       return;
     }
@@ -458,7 +488,7 @@ export default class WebMapViewModel extends Events {
   }
 
   getLayerOpacityById(id) {
-    const item = findLayerCatalog(this._handler.getLayerCatalog(), id);
+    const item = findLayerCatalog(this.getLayerList(), id);
     if (!item) {
       return;
     }
@@ -497,10 +527,10 @@ export default class WebMapViewModel extends Events {
     return opacity === undefined ? 1 : opacity;
   }
 
-  setLayersVisible(isShow: boolean, ignoreIds: string[] = []) {
+  setLayersVisible(isShow: boolean, ignoreIds: string[] = [], isSetVisible = true) {
     const visibility = isShow ? 'visible' : 'none';
     const layers = this._cacheCleanLayers.filter(item => !ignoreIds.some(sub => sub === item.id));
-    this._handler.setLayersVisible(layers, visibility);
+    this._handler.setLayersVisible(layers, visibility, isSetVisible);
   }
 
   clean() {
@@ -547,11 +577,20 @@ export default class WebMapViewModel extends Events {
   }
 
   private _mapCreateSucceededHandlerHandler(params: AddlayerssucceededParams) {
-    const { mapparams, layers } = params;
+    const { mapparams, layers, map } = params;
     this.mapParams = mapparams;
     this._cacheCleanLayers = layers;
     this._cacheLayerCatalogIds = getLayerCatalogIds(this.getLayerList());
-    this.triggerEvent('addlayerssucceeded', params);
+    const mapOptions: Partial<mapboxglTypes.MapboxOptions> = {
+      center: map
+        .getCenter()
+        .toArray()
+        .map(item => +item.toFixed(4)) as [number, number],
+      zoom: +map.getZoom().toFixed(2),
+      bearing: +map.getBearing().toFixed(2),
+      pitch: +map.getPitch().toFixed(2)
+    };
+    this.triggerEvent('addlayerssucceeded', Object.assign({}, params, { mapData: { mapOptions } }));
   }
 
   private _layerUpdateChangedHandler(params: LayerUpdateChangedParams) {

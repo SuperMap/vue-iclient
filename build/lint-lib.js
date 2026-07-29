@@ -1,9 +1,10 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
-let argv = JSON.parse(process.env['npm_config_argv']);
-let origin = argv.original;
-const type = origin[2].substring(1);
+const getOriginArgs = require('./get-origin-args');
+const origin = getOriginArgs();
+const engineArg = origin.find(arg => ['-mapboxgl', '-leaflet'].includes(arg));
+const type = engineArg ? engineArg.substring(1) : 'mapboxgl';
 
 const filePath = `../lib/${type}`;
 const compFiles = fs.readdirSync(path.resolve(__dirname, filePath));

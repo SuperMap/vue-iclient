@@ -577,6 +577,27 @@ describe('query', () => {
     expect(wrapper.find('.sm-component-layer-highlight').exists()).toBeFalsy();
     done();
   });
+  it('identifyField', async (done) => {
+    wrapper = mount(SmQuery, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        restData: [
+          new RestDataParameter({
+            url: 'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data',
+            attributeFilter: 'SmID>0',
+            maxFeatures: 30,
+            identifyField: { field: 'NAME', fieldCaption: '国家名称' },
+            dataName: ['World:Countries']
+          })
+        ]
+      }
+    });
+     wrapper.vm.$on('query-succeeded', async () => {
+      expect(wrapper.vm.resultDisplayTitle({ NAME: '中国' })).toBe('国家名称：中国');
+    });
+    done();
+  });
 });
 
 

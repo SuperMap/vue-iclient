@@ -1,6 +1,11 @@
 import iServerRestService from 'vue-iclient/src/common/_utils/iServerRestService';
 import iPortalDataService from 'vue-iclient/src/common/_utils/iPortalDataService';
 import RestService from 'vue-iclient/src/common/_utils/RestService';
+import { mapboxFilterToQueryFilter } from 'vue-iclient/static/libs/iclient-common/iclient-common';
+
+function getAttributeFilter(filterConditions, dataType) {
+  return mapboxFilterToQueryFilter(filterConditions, dataType === 'STRUCTUREDDATA' ? 'STRUCTURE_DATA' : '');
+}
 
 export default function getFeatures(dataset) {
   let superMapService;
@@ -34,6 +39,10 @@ export default function getFeatures(dataset) {
         bounds,
         keyWord
       };
+      if (dataset.filterConditions) {
+        const dataFilterCondition = getAttributeFilter(dataset.filterConditions, dataset.dataType);
+        queryInfo.attributeFilter = [dataFilterCondition, queryInfo.attributeFilter].filter(Boolean).join(' AND ');
+      }
       if (type === 'iServer') {
         let datasetInfo;
         const options = {

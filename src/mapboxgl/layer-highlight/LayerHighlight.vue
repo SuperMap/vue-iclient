@@ -191,11 +191,8 @@ export default {
       );
     },
     valueRender(text, record) {
-      let targetField;
-      Object.keys(this.displayFieldsMap).forEach((layerID) => {
-        targetField = this.displayFieldsMap[layerID]?.find((item) => {
-          return item.title === record.title || item.field === record.title;
-        });
+      const targetField = this.displayFieldsMap[this.activeTargetName]?.find((item) => {
+        return item.title === record.title || item.field === record.title;
       });
       const slotName = targetField?.slotName;
       const valueCustomRender =

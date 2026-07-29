@@ -14,44 +14,47 @@
             @mouseenter="() => changeIconsStatus(item.id)"
             @mouseleave="() => changeIconsStatus('')"
           >
-            <span class="add-ellipsis" :style="headingTextColorStyle">{{ item.title }}</span>
-            <div
-              :class="['icon-buttons', showIconsItem === item.id ? 'icon-buttons-visible' : 'icon-buttons-hidden']"
-            >
-              <div v-if="operations.fitBounds" class="sm-component-layer-list__zoom">
-                <i
-                  :class="['sm-components-icon-suofangzhituceng', item.visible && 'highlight-icon']"
-                  :style="!item.visible && { cursor: 'not-allowed' }"
-                  :title="$t('layerList.zoomToLayer')"
-                  @click.stop="item.visible && zoomToBounds(item)"
-                />
-              </div>
-              <div v-if="(item && item.type) !== 'group' && attributesEnabled(item)" class="sm-component-layer-list__attributes">
-                <i
-                  :class="[attributesIconClass, item.visible && 'highlight-icon']"
-                  :style="!item.visible && { cursor: 'not-allowed' }"
-                  :title="$t('layerList.attributes')"
-                  @click.stop="item.visible && toggleAttributesVisibility($event, item)"
-                />
-              </div>
-              <div v-if="operations.opacity && (item && item.type) !== 'group'" class="sm-component-layer-list__style">
-                <i
-                  :class="[
-                    'sm-components-icon-tucengyangshi01',
-                    'sm-components-icon-not-active',
-                    showOpacityItem === item.id && 'sm-components-icon-active',
-                    item.visible && 'highlight-icon'
-                  ]"
-                  :style="!item.visible && { cursor: 'not-allowed' }"
-                  :title="$t('layerList.layerStyle')"
-                  @click.stop="item.visible && changeItemOpacity(item)"
-                />
-              </div>
-              <div>
-                <i
-                  :class="item.visible ? ['sm-components-icon-visible', 'highlight-icon'] : 'sm-components-icon-hidden'"
-                  @click.stop="toggleItemVisibility(item)"
-                />
+            <span class="layer-title-sizer" aria-hidden="true">{{ item.title }}</span>
+            <div class="layer-title-content">
+              <span class="add-ellipsis" :style="headingTextColorStyle">{{ item.title }}</span>
+              <div
+                :class="['icon-buttons', showIconsItem === item.id ? 'icon-buttons-visible' : 'icon-buttons-hidden']"
+              >
+                <div v-if="operations.fitBounds" class="sm-component-layer-list__zoom">
+                  <i
+                    :class="['sm-components-icon-suofangzhituceng', item.visible && 'highlight-icon']"
+                    :style="!item.visible && { cursor: 'not-allowed' }"
+                    :title="$t('layerList.zoomToLayer')"
+                    @click.stop="item.visible && zoomToBounds(item)"
+                  />
+                </div>
+                <div v-if="(item && item.type) !== 'group' && attributesEnabled(item)" class="sm-component-layer-list__attributes">
+                  <i
+                    :class="[attributesIconClass, item.visible && 'highlight-icon']"
+                    :style="!item.visible && { cursor: 'not-allowed' }"
+                    :title="$t('layerList.attributes')"
+                    @click.stop="item.visible && toggleAttributesVisibility($event, item)"
+                  />
+                </div>
+                <div v-if="operations.opacity && (item && item.type) !== 'group'" class="sm-component-layer-list__style">
+                  <i
+                    :class="[
+                      'sm-components-icon-tucengyangshi01',
+                      'sm-components-icon-not-active',
+                      showOpacityItem === item.id && 'sm-components-icon-active',
+                      item.visible && 'highlight-icon'
+                    ]"
+                    :style="!item.visible && { cursor: 'not-allowed' }"
+                    :title="$t('layerList.layerStyle')"
+                    @click.stop="item.visible && changeItemOpacity(item)"
+                  />
+                </div>
+                <div>
+                  <i
+                    :class="item.visible ? ['sm-components-icon-visible', 'highlight-icon'] : 'sm-components-icon-hidden'"
+                    @click.stop="toggleItemVisibility(item)"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -116,7 +119,8 @@ export default {
         return {};
       }
     },
-    dropHandler: Function
+    dropHandler: Function,
+    attributesDataAvailable: Function
   },
   computed: {
     formatOpacity() {
@@ -127,15 +131,13 @@ export default {
     },
     attributesEnabled() {
       return item => {
-        const isGeojson = item.renderSource && item.renderSource.type === 'geojson';
-        const isStructureData = item.dataSource && item.dataSource.type === 'STRUCTURE_DATA';
-        return this.attributes.enabled && (isGeojson || isStructureData) && (item && item.type) !== 'group';
+        return this.attributes.enabled && this.attributesDataAvailable(item) && item.type !== 'group';
       };
     }
   },
   watch: {
     layerCatalog: {
-      handler: function (newVal, oldVal) {
+      handler: function () {
         this.treeData = this.getTreeData(this.layerCatalog);
       },
       deep: true,

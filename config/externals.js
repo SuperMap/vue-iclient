@@ -1,11 +1,12 @@
 const nodeExternals = require('webpack-node-externals');
 const uppercamelcase = require('uppercamelcase');
+const getOriginArgs = require('../build/get-origin-args');
 
-let argv = JSON.parse(process.env['npm_config_argv']);
-let origin = argv.original;
+let origin = getOriginArgs();
 let type = 'mapboxgl';
-if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {
-  type = origin[2].replace('-', '');
+const engineArg = origin.find(arg => ['-mapboxgl', '-leaflet'].includes(arg));
+if (engineArg) {
+  type = engineArg.replace('-', '');
 }
 
 const commonFiles = require(`../src/${type}/entrys.json`);

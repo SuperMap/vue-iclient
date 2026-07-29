@@ -139,6 +139,7 @@ export default class iServerRestService extends Events {
     this.eventTypes = ['getdatasucceeded', 'getdatafailed', 'featureisempty'];
     this._defaultMaxFeatures = 1000;
     this._queryResultHandler = this._queryResultHandler.bind(this);
+    this.fieldInfos = [];
   }
 
   getData(datasetInfo, queryInfo) {
@@ -210,15 +211,18 @@ export default class iServerRestService extends Events {
     queryInfo.name = datasetName + '@' + dataSourceName;
     queryInfo.datasetNames = [dataSourceName + ':' + datasetName];
     this.projectionUrl = Util.urlPathAppend(dataUrl, `datasources/${dataSourceName}/datasets/${datasetName}`);
-    if (queryInfo.keyWord) {
-      let fieldsUrl = Util.urlAppend(Util.urlPathAppend(dataUrl, `datasources/${dataSourceName}/datasets/${datasetName}/fields`), 'returnAll=true');
-      this._getRestDataFields(fieldsUrl, queryInfo, fields => {
-        const attributeFilter = this._getAttributeFilterByKeywords(fields, queryInfo.keyWord);
+    let fieldsUrl = Util.urlAppend(Util.urlPathAppend(dataUrl, `datasources/${dataSourceName}/datasets/${datasetName}/fields`), 'returnAll=true');
+    this._getRestDataFields(fieldsUrl, queryInfo, async (fields, result) => {
+      this.fieldInfos = result;
+      if (queryInfo.keyWord) {
+        const attributeFilter = await this._getRestDataAttributeFilter(
+          datasetInfo, fields, queryInfo.keyWord, queryInfo.withCredentials
+        );
         this._queryDataFeatures(dataUrl, { ...queryInfo, attributeFilter });
-      });
-    } else {
-      this._queryDataFeatures(dataUrl, queryInfo);
-    }
+      } else {
+        this._queryDataFeatures(dataUrl, queryInfo);
+      }
+    });
   }
 
   /**
@@ -297,7 +301,8 @@ export default class iServerRestService extends Events {
   _queryDataFeatures(url, queryInfo) {
     const featureService = new FeatureService(url, {
       proxy: this.options.proxy,
-      withCredentials: queryInfo.withCredentials
+      withCredentials: queryInfo.withCredentials,
+      preferServer: this.options.preferServer
     });
     const expectCountOptions = this._calcFeaturesExpectCountOptions(queryInfo);
     const pickedCommonParams = {
@@ -416,27 +421,37 @@ export default class iServerRestService extends Events {
       // 数据来自restdata---results.result.features
       this.features = results.result.features;
       features = this.features.features || this.features;
-      if (results.result.totalCount === 0) {
+      if (features.length === 0 || features.data === '') {
         this.triggerEvent('featureisempty', {
-          results
+          features: [],
+          fields: [],
+          originalFields: [],
+          fieldCaptions: [],
+          fieldValues: [],
+          fieldTypes: []
         });
         return;
       }
-      let fields, fieldCaptions, fieldTypes;
-      if (results.result.datasetInfos) {
-        fields = [];
+      let fieldCaptions, fieldTypes, originalFields;
+      if (this.fieldInfos.length) {
+        // todo 考虑properties不全情况?
+        const properties = Object.assign({}, features[0].properties, features[features.length - 1].properties);
+        const filterFieldInfos = this.fieldInfos.filter(fieldInfo =>
+          Object.keys(properties).some(key => key.toLowerCase() === fieldInfo.name.toLowerCase())
+        );
         fieldCaptions = [];
+        originalFields = [];
         fieldTypes = [];
-        const fieldInfos = results.result.datasetInfos[0].fieldInfos;
-        fieldInfos.forEach(fieldInfo => {
+        filterFieldInfos.forEach(fieldInfo => {
           if (fieldInfo.name) {
-            fields.push(fieldInfo.name.toUpperCase());
-            fieldCaptions.push(fieldInfo.caption.toUpperCase());
+            fieldCaptions.push(fieldInfo.caption);
             fieldTypes.push(fieldInfo.type);
+            originalFields.push(fieldInfo.name);
           }
         });
       }
-      data = statisticsFeatures(features, fields, fieldCaptions, fieldTypes);
+      // 因为fieldInfos和features中的字段大小写可能不一致, 所以只传入fieldCaptions，不传入fields，fields从features中去获取
+      data = statisticsFeatures(features, undefined, fieldCaptions, fieldTypes, originalFields);
       data.totalCount = results.result.totalCount;
     } else {
       this.triggerEvent('getdatafailed', {
@@ -477,10 +492,11 @@ export default class iServerRestService extends Events {
 
   _getRestMapFields(url, layerName, callBack, withCredentials = false) {
     let param = new QueryBySQLParameters({
+      expectCount: 1,
       queryParams: [
         new FilterParameter({
           name: layerName,
-          attributeFilter: 'SMID=0'
+          attributeFilter: ''
         })
       ]
     });
@@ -505,12 +521,41 @@ export default class iServerRestService extends Events {
     queryBySQLSerice.processAsync(param);
   }
 
-  _getAttributeFilterByKeywords(fields, keyWord) {
+  // 获取引擎类型, 例如SHAPEFILE
+  _getRestDataEngineType(url, withCredentials) {
+    return FetchRequest.get(url + '.json', null, {
+      proxy: this.options.proxy,
+      withCredentials
+    })
+      .then(response => {
+        return response.json();
+      })
+      .then(results => {
+        const { datasourceInfo } = results;
+        return datasourceInfo?.engineType;
+      })
+      .catch(error => {
+        console.log(error);
+        this.fetchFailed(error);
+      });
+  }
+
+  async _getRestDataAttributeFilter(datasetInfo, fields, keyWord, withCredentials) {
+    let { dataSourceName, dataUrl } = datasetInfo;
+    const datasetUrl = Util.urlPathAppend(dataUrl, `datasources/${dataSourceName}`);
+    const engineType = await this._getRestDataEngineType(datasetUrl, withCredentials);
+    const isLower = engineType !== 'SHAPEFILE' && engineType !== 'VECTORFILE';
+    return this._getAttributeFilterByKeywords(fields, keyWord, isLower);
+  }
+
+  _getAttributeFilterByKeywords(fields, keyWord, isLower = false) {
     let attributeFilter = '';
     fields &&
       fields.forEach((field, index) => {
-        attributeFilter +=
-          index !== fields.length - 1 ? `${field} LIKE '%${keyWord}%' ` + 'OR ' : `${field} LIKE '%${keyWord}%'`;
+        const lowerStr = `LOWER(${field}) LIKE LOWER('%${keyWord}%')`;
+        const normalStr = `${field} LIKE '%${keyWord}%'`;
+        const filterStr = isLower ? lowerStr : normalStr;
+        attributeFilter += index !== fields.length - 1 ? filterStr + ' OR ' : filterStr;
       }, this);
     return attributeFilter;
   }

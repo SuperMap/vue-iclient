@@ -21,6 +21,7 @@
           :dropHandler="onDropHanlder"
           :background="background"
           :textColor="textColor"
+          :attributesDataAvailable="attributesDataAvailable"
           @getLayerOpacityById="getLayerOpacityById"
           @changeOpacity="changeOpacity"
           @zoomToBounds="zoomToBounds"
@@ -297,6 +298,10 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
     }
     const dataset = await this.viewModel.getLayerDatas(item);
     this.attributesProps = { dataset: Object.freeze(dataset), title: item.title, ...props };
+  }
+
+  attributesDataAvailable(item) {
+    return this.viewModel.attributesDataAvailable(item);
   }
 
   layerUpdate() {

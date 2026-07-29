@@ -25,8 +25,9 @@ function callHook(vm, hook, ...params) {
 @Component
 export default class MapGetter extends Vue {
   map: mapboxglTypes.Map;
-  webmap: any;
+  mapData: { mapOptions: mapboxglTypes.MapboxOptions };
   viewModel: any;
+  webmap: any;
   $t: any;
   firstDefaultTarget: string;
 
@@ -103,11 +104,11 @@ export default class MapGetter extends Vue {
       this.firstDefaultTarget = targetName;
     }
     this.map = mapEvent.$options.getMap(targetName);
-    // @ts-ignore
+    const mapData = mapEvent.$options.getMapData(targetName);
     this.webmap = mapEvent.$options.getWebMap(targetName);
     this.viewModel &&
       typeof this.viewModel.setMap === 'function' &&
-      this.viewModel.setMap({ map: this.map, webmap: this.webmap, mapTarget: targetName });
+      this.viewModel.setMap({ map: this.map, webmap: this.webmap, mapTarget: targetName, mapData });
     callHook(this, 'loaded', this.map, targetName);
     // 控制与map组件同级的组件的显示加载
     this.$nextTick(() => {

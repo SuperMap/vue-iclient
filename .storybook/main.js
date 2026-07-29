@@ -3,7 +3,8 @@ function resolve(dir) {
   return path.join(__dirname, '..', dir);
 }
 const os = require('os');
-const threads = os.cpus().length - 1;
+const cpuCount = os.cpus().length;
+const threads = Number(process.env.STORYBOOK_TERSER_PARALLEL) || Math.max(1, Math.min(cpuCount - 1, 2));
 const TerserPlugin = require('terser-webpack-plugin');
 // const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 // const smp = new SpeedMeasurePlugin();
@@ -35,6 +36,8 @@ module.exports = {
     config.resolve.alias['@supermapgis/vue-iclient-mapboxgl/static'] = resolve('./static');
     config.resolve.alias['@supermapgis/vue-iclient-mapboxgl/lib'] = resolve('./lib/mapboxgl');
     config.resolve.alias['@supermapgis/vue-iclient-mapboxgl'] = resolve('./lib/mapboxgl');
+    config.resolve.alias['swiper/modules'] = resolve('./node_modules/swiper/modules/index.mjs');
+
     config.optimization = {
       splitChunks: {
         cacheGroups: {
@@ -59,11 +62,13 @@ module.exports = {
       },
       minimizer: [
         new TerserPlugin({
-          parallel: threads // 开启多进程
+          parallel: threads, // 开启多进程（已限制上限）
+          cache: true // 开启文件系统缓存，二次构建跳过未变更 chunk
         })
       ]
     };
-    config.resolve.extensions = ['.js', '.ts', '.json'];
+    config.devtool = false; // 关闭 source map，减少内存占用和构建时间
+    config.resolve.extensions = ['.mjs', '.js', '.ts', '.json'];
     config.externals = [
       function (context, request, callback) {
         if (request === '@supermapgis/vue-iclient-mapboxgl') {
@@ -72,6 +77,23 @@ module.exports = {
         callback();
       }
     ];
+    config.module.rules.push({
+      test: /\.mjs$/,
+      include: [
+        resolve('./node_modules/swiper'),
+        resolve('./node_modules/dom7'),
+        resolve('./node_modules/ssr-window')
+      ],
+      type: 'javascript/auto',
+      use: {
+        loader: 'babel-loader',
+        options: {
+          cacheDirectory: true,
+          cacheCompression: false,
+          presets: [['@babel/preset-env', { modules: false }]]
+        }
+      }
+    });
     config.module.rules.push({
       test: /useLib\.js$/,
       loader: 'babel-loader',
