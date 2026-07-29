@@ -157,29 +157,20 @@ export default {
   },
   sceneLayerManager: {
     title: 'Layer Manager',
-    publicLayers: 'Public Layers',
-    favoriteLayers: 'Favorite Layers',
     layerControl: 'Layer Control',
     searchPlaceholder: 'Search layers',
     clear: 'Clear',
     sceneNotReady: 'Scene is not ready',
     emptyConfig: 'No layer configuration',
     noSearchResult: 'No matching layers',
-    noFavorites: 'No favorite layers',
-    noControllableLayers: 'No controllable layers',
     locate: 'Locate',
-    addFavorite: 'Add to favorites',
-    removeFavorite: 'Remove from favorites',
     loadFailed: 'Failed to load layer',
     operationFailed: 'Operation failed. Try again later.',
     alpha: 'Opacity',
     contrast: 'Contrast',
     brightness: 'Brightness',
     saturation: 'Saturation',
-    bottomAltitudeOffset: 'Bottom altitude offset',
-    showParameters: 'Show parameters',
-    hideParameters: 'Hide parameters',
-    loading: 'Loading'
+    bottomAltitudeOffset: 'Bottom altitude offset'
   },
   sm: {
     webmap: {

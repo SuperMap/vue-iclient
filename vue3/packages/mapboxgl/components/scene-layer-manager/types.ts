@@ -44,6 +44,8 @@ export type SceneLayerConfigNode = SceneLayerGroupNode | SceneLayerLeafNode
 export interface SceneLayerManagerProps
   extends CardProps, ControlProps, ThemeProps, SceneGetterProps {
   layerConfig?: SceneLayerConfigNode[]
+  showLocate?: boolean
+  showLayerControl?: boolean
 }
 
 /** Runtime-only state. The component must never write these fields into layerConfig. */
@@ -69,6 +71,14 @@ export const sceneLayerManagerProps = () => ({
   layerConfig: {
     type: Array as PropType<SceneLayerConfigNode[]>,
     default: () => []
+  },
+  showLocate: {
+    type: Boolean,
+    default: true
+  },
+  showLayerControl: {
+    type: Boolean,
+    default: true
   }
 })
 

@@ -21,349 +21,184 @@
           {{ t('sceneLayerManager.sceneNotReady') }}
         </div>
 
-        <SmTabs
-          v-else
-          v-model:active-key="activeTab"
-          size="small"
-          class="sm-component-scene-layer-manager__tabs"
-        >
-          <SmTabPane key="public" :tab="t('sceneLayerManager.publicLayers')">
-            <div class="sm-component-scene-layer-manager__toolbar">
-              <SmInput
-                v-model:value="activeSearch"
-                class="sm-component-scene-layer-manager__search"
-                allow-clear
-                :placeholder="t('sceneLayerManager.searchPlaceholder')"
-              />
-              <SmButton
-                type="link"
-                size="small"
-                :disabled="!hasCheckedPublicLayers"
-                @click="clearPublicLayers"
-              >
-                {{ t('sceneLayerManager.clear') }}
-              </SmButton>
-            </div>
-
-            <div v-if="publicTree.length === 0" class="sm-component-scene-layer-manager__empty">
-              {{ t('sceneLayerManager.emptyConfig') }}
-            </div>
-            <div
-              v-else-if="filteredPublicTree.length === 0"
-              class="sm-component-scene-layer-manager__empty"
+        <div v-else class="sm-component-scene-layer-manager__panel">
+          <div class="sm-component-scene-layer-manager__toolbar">
+            <SmInput
+              v-model:value="publicSearch"
+              class="sm-component-scene-layer-manager__search"
+              allow-clear
+              :placeholder="t('sceneLayerManager.searchPlaceholder')"
+            />
+            <SmButton
+              type="link"
+              size="small"
+              :disabled="!hasCheckedPublicLayers"
+              @click="clearPublicLayers"
             >
-              {{ t('sceneLayerManager.noSearchResult') }}
-            </div>
-            <SmTree
-              v-else
-              block-node
-              :selectable="false"
-              class="sm-component-scene-layer-manager__tree"
-              :tree-data="filteredPublicTree"
-              :expanded-keys="effectiveExpandedKeys"
-              :auto-expand-parent="Boolean(publicSearch)"
-              @expand="handlePublicExpand"
-            >
-              <template #title="{ dataRef }">
-                <div
-                  class="sm-component-scene-layer-manager__tree-row"
-                  :class="{
-                    'sm-component-scene-layer-manager__tree-row--disabled':
-                      isRuntimeLeaf(dataRef) && dataRef.disabled
-                  }"
-                >
-                  <div class="sm-component-scene-layer-manager__tree-name">
-                    <SmCheckbox
-                      v-if="isRuntimeLeaf(dataRef)"
-                      :checked="dataRef.checked"
-                      :disabled="dataRef.disabled || dataRef.loading"
-                      @click.stop
-                      @change="event => handleCheckboxChange(dataRef, event)"
-                    />
-                    <span
-                      class="sm-component-scene-layer-manager__tree-title"
-                      :title="dataRef.name"
-                    >
-                      {{ dataRef.name }}
-                    </span>
-                    <SmSpin
-                      v-if="isRuntimeLeaf(dataRef) && dataRef.loading"
-                      size="small"
-                      class="sm-component-scene-layer-manager__loading-icon"
-                    />
-                  </div>
-                  <div
-                    v-if="isRuntimeLeaf(dataRef)"
-                    class="sm-component-scene-layer-manager__actions"
-                  >
-                    <SmButton
-                      v-if="canLocate(dataRef)"
-                      type="text"
-                      size="small"
-                      :title="t('sceneLayerManager.locate')"
-                      :disabled="dataRef.loading"
-                      @click.stop="locateLayer(dataRef)"
-                    >
-                      <i class="sm-components-icon-suofangzhituceng" aria-hidden="true" />
-                    </SmButton>
-                    <SmButton
-                      type="text"
-                      size="small"
-                      :title="
-                        isFavorite(dataRef.id)
-                          ? t('sceneLayerManager.removeFavorite')
-                          : t('sceneLayerManager.addFavorite')
-                      "
-                      :disabled="dataRef.loading"
-                      @click.stop="toggleFavorite(dataRef)"
-                    >
-                      <i
-                        :class="
-                          isFavorite(dataRef.id)
-                            ? 'sm-components-icon-complete'
-                            : 'sm-components-icon-layer-picker'
-                        "
-                        aria-hidden="true"
-                      />
-                    </SmButton>
-                  </div>
-                </div>
-              </template>
-            </SmTree>
-          </SmTabPane>
+              {{ t('sceneLayerManager.clear') }}
+            </SmButton>
+          </div>
 
-          <SmTabPane key="favorite" :tab="t('sceneLayerManager.favoriteLayers')">
-            <div class="sm-component-scene-layer-manager__toolbar">
-              <SmInput
-                v-model:value="activeSearch"
-                class="sm-component-scene-layer-manager__search"
-                allow-clear
-                :placeholder="t('sceneLayerManager.searchPlaceholder')"
-              />
-              <SmButton
-                type="link"
-                size="small"
-                :disabled="!hasCheckedFavoriteLayers"
-                @click="clearFavoriteLayers"
-              >
-                {{ t('sceneLayerManager.clear') }}
-              </SmButton>
-            </div>
-
-            <div
-              v-if="filteredFavoriteLayers.length === 0"
-              class="sm-component-scene-layer-manager__empty"
-            >
-              {{
-                favoriteLayers.length === 0
-                  ? t('sceneLayerManager.noFavorites')
-                  : t('sceneLayerManager.noSearchResult')
-              }}
-            </div>
-            <div v-else class="sm-component-scene-layer-manager__list">
+          <div v-if="publicTree.length === 0" class="sm-component-scene-layer-manager__empty">
+            {{ t('sceneLayerManager.emptyConfig') }}
+          </div>
+          <div
+            v-else-if="filteredPublicTree.length === 0"
+            class="sm-component-scene-layer-manager__empty"
+          >
+            {{ t('sceneLayerManager.noSearchResult') }}
+          </div>
+          <SmTree
+            v-else
+            block-node
+            :selectable="false"
+            class="sm-component-scene-layer-manager__tree"
+            :tree-data="filteredPublicTree"
+            :expanded-keys="effectiveExpandedKeys"
+            :auto-expand-parent="Boolean(normalizedPublicSearch)"
+            @expand="handlePublicExpand"
+          >
+            <template #title="{ dataRef }">
               <div
-                v-for="node in filteredFavoriteLayers"
-                :key="node.key"
-                class="sm-component-scene-layer-manager__list-row"
-                :class="{ 'sm-component-scene-layer-manager__list-row--disabled': node.disabled }"
+                class="sm-component-scene-layer-manager__tree-row"
+                :class="{
+                  'sm-component-scene-layer-manager__tree-row--disabled':
+                    isRuntimeLeaf(dataRef) && dataRef.disabled
+                }"
               >
                 <div class="sm-component-scene-layer-manager__tree-name">
                   <SmCheckbox
-                    :checked="node.checked"
-                    :disabled="node.disabled || node.loading"
-                    @change="event => handleCheckboxChange(node, event)"
+                    v-if="isRuntimeLeaf(dataRef)"
+                    :checked="dataRef.checked"
+                    :disabled="dataRef.disabled || dataRef.loading"
+                    @click.stop
+                    @change="event => handleCheckboxChange(dataRef, event)"
                   />
-                  <span class="sm-component-scene-layer-manager__tree-title" :title="node.name">
-                    {{ node.name }}
+                  <span class="sm-component-scene-layer-manager__tree-title" :title="dataRef.name">
+                    {{ dataRef.name }}
                   </span>
                   <SmSpin
-                    v-if="node.loading"
+                    v-if="isRuntimeLeaf(dataRef) && dataRef.loading"
                     size="small"
                     class="sm-component-scene-layer-manager__loading-icon"
                   />
                 </div>
-                <div class="sm-component-scene-layer-manager__actions">
+                <div
+                  v-if="
+                    isRuntimeLeaf(dataRef) &&
+                    (showLocate || (showLayerControl && isControllableLayer(dataRef)))
+                  "
+                  class="sm-component-scene-layer-manager__actions"
+                >
                   <SmButton
-                    v-if="canLocate(node)"
+                    v-if="showLocate"
                     type="text"
                     size="small"
                     :title="t('sceneLayerManager.locate')"
-                    :disabled="node.loading"
-                    @click="locateLayer(node)"
+                    :disabled="!dataRef.checked || dataRef.loading"
+                    @click.stop="locateLayer(dataRef)"
                   >
                     <i class="sm-components-icon-suofangzhituceng" aria-hidden="true" />
                   </SmButton>
                   <SmButton
+                    v-if="showLayerControl && isControllableLayer(dataRef)"
                     type="text"
                     size="small"
-                    :title="t('sceneLayerManager.removeFavorite')"
-                    :disabled="node.loading"
-                    @click="toggleFavorite(node)"
+                    :title="t('sceneLayerManager.layerControl')"
+                    :disabled="!dataRef.checked || dataRef.loading"
+                    @click.stop="toggleLayerParameters(dataRef)"
                   >
-                    <i class="sm-components-icon-complete" aria-hidden="true" />
+                    <i
+                      :class="[
+                        'sm-components-icon-tucengyangshi01',
+                        dataRef.showConfig && 'sm-components-icon-active'
+                      ]"
+                      aria-hidden="true"
+                    />
                   </SmButton>
-                </div>
-              </div>
-            </div>
-          </SmTabPane>
-
-          <SmTabPane key="control" :tab="t('sceneLayerManager.layerControl')">
-            <div class="sm-component-scene-layer-manager__toolbar">
-              <SmInput
-                v-model:value="activeSearch"
-                class="sm-component-scene-layer-manager__search"
-                allow-clear
-                :placeholder="t('sceneLayerManager.searchPlaceholder')"
-              />
-              <SmButton
-                type="link"
-                size="small"
-                :disabled="!hasControllableLayers"
-                @click="clearControllableLayers"
-              >
-                {{ t('sceneLayerManager.clear') }}
-              </SmButton>
-            </div>
-
-            <div
-              v-if="filteredControllableLayers.length === 0"
-              class="sm-component-scene-layer-manager__empty"
-            >
-              {{
-                controllableLayers.length === 0
-                  ? t('sceneLayerManager.noControllableLayers')
-                  : t('sceneLayerManager.noSearchResult')
-              }}
-            </div>
-            <div v-else class="sm-component-scene-layer-manager__control-list">
-              <div
-                v-for="node in filteredControllableLayers"
-                :key="node.key"
-                class="sm-component-scene-layer-manager__control-item"
-              >
-                <div class="sm-component-scene-layer-manager__control-header">
-                  <div class="sm-component-scene-layer-manager__tree-name">
-                    <SmCheckbox
-                      :checked="node.checked"
-                      :disabled="node.loading"
-                      @change="event => handleCheckboxChange(node, event)"
-                    />
-                    <span class="sm-component-scene-layer-manager__tree-title" :title="node.name">
-                      {{ node.name }}
-                    </span>
-                    <SmSpin
-                      v-if="node.loading"
-                      size="small"
-                      class="sm-component-scene-layer-manager__loading-icon"
-                    />
-                  </div>
-                  <div class="sm-component-scene-layer-manager__actions">
-                    <SmButton
-                      type="text"
-                      size="small"
-                      :title="t('sceneLayerManager.locate')"
-                      :disabled="node.loading"
-                      @click="locateLayer(node)"
-                    >
-                      <i class="sm-components-icon-suofangzhituceng" aria-hidden="true" />
-                    </SmButton>
-                    <SmButton
-                      type="text"
-                      size="small"
-                      :title="
-                        node.showConfig
-                          ? t('sceneLayerManager.hideParameters')
-                          : t('sceneLayerManager.showParameters')
-                      "
-                      :disabled="node.loading"
-                      @click="node.showConfig = !node.showConfig"
-                    >
-                      <i
-                        :class="
-                          node.showConfig
-                            ? 'sm-components-icon-solid-triangle-up'
-                            : 'sm-components-icon-solid-triangle-down'
-                        "
-                        aria-hidden="true"
-                      />
-                    </SmButton>
-                  </div>
                 </div>
 
                 <div
-                  v-if="node.showConfig"
+                  v-if="
+                    isRuntimeLeaf(dataRef) &&
+                    showLayerControl &&
+                    dataRef.checked &&
+                    isControllableLayer(dataRef) &&
+                    dataRef.showConfig
+                  "
                   class="sm-component-scene-layer-manager__control-parameters"
+                  @click.stop
                 >
                   <label class="sm-component-scene-layer-manager__parameter">
                     <span>{{ t('sceneLayerManager.alpha') }}</span>
                     <SmSlider
-                      :value="getControlNumber(node, 'alpha', 1)"
+                      :value="getControlNumber(dataRef, 'alpha', 1)"
                       :min="0"
                       :max="1"
                       :step="0.01"
-                      :disabled="node.loading"
-                      @change="value => updateSliderValue(node, 'alpha', value)"
+                      :disabled="dataRef.loading"
+                      @change="value => updateSliderValue(dataRef, 'alpha', value)"
                     />
                   </label>
                   <label class="sm-component-scene-layer-manager__parameter">
                     <span>{{ t('sceneLayerManager.contrast') }}</span>
                     <SmSlider
-                      :value="getControlNumber(node, 'contrast', 1)"
+                      :value="getControlNumber(dataRef, 'contrast', 1)"
                       :min="0"
                       :max="2"
                       :step="0.01"
-                      :disabled="node.loading"
-                      @change="value => updateSliderValue(node, 'contrast', value)"
+                      :disabled="dataRef.loading"
+                      @change="value => updateSliderValue(dataRef, 'contrast', value)"
                     />
                   </label>
                   <label class="sm-component-scene-layer-manager__parameter">
                     <span>{{ t('sceneLayerManager.brightness') }}</span>
                     <SmSlider
-                      :value="getControlNumber(node, 'brightness', 1)"
+                      :value="getControlNumber(dataRef, 'brightness', 1)"
                       :min="0"
                       :max="15"
                       :step="0.1"
-                      :disabled="node.loading"
-                      @change="value => updateSliderValue(node, 'brightness', value)"
+                      :disabled="dataRef.loading"
+                      @change="value => updateSliderValue(dataRef, 'brightness', value)"
                     />
                   </label>
                   <label class="sm-component-scene-layer-manager__parameter">
                     <span>{{ t('sceneLayerManager.saturation') }}</span>
                     <SmSlider
-                      :value="getControlNumber(node, 'saturation', 1)"
+                      :value="getControlNumber(dataRef, 'saturation', 1)"
                       :min="0"
                       :max="2"
                       :step="0.01"
-                      :disabled="node.loading"
-                      @change="value => updateSliderValue(node, 'saturation', value)"
+                      :disabled="dataRef.loading"
+                      @change="value => updateSliderValue(dataRef, 'saturation', value)"
                     />
                   </label>
                   <label
-                    v-if="node.type === 's3m'"
+                    v-if="dataRef.type === 's3m'"
                     class="sm-component-scene-layer-manager__parameter sm-component-scene-layer-manager__parameter--full"
                   >
                     <span>{{ t('sceneLayerManager.bottomAltitudeOffset') }}</span>
                     <SmInputNumber
-                      :value="getControlNumber(node, 'bottomAltitudeOffset', 0)"
+                      :value="getControlNumber(dataRef, 'bottomAltitudeOffset', 0)"
                       :min="-1000"
                       :max="100000"
                       :step="1"
-                      :disabled="node.loading"
-                      @change="value => updateNumberValue(node, 'bottomAltitudeOffset', value)"
+                      :disabled="dataRef.loading"
+                      @change="value => updateNumberValue(dataRef, 'bottomAltitudeOffset', value)"
                     />
                   </label>
                 </div>
               </div>
-            </div>
-          </SmTabPane>
-        </SmTabs>
+            </template>
+          </SmTree>
+        </div>
       </div>
     </SmCard>
   </SmCollapseCard>
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, reactive, ref, useTemplateRef, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, useTemplateRef, watch } from 'vue'
 import SmButton from '@supermapgis/common/components/button/Button'
 import SmCard from '@supermapgis/common/components/card/Card'
 import SmCheckbox from '@supermapgis/common/components/checkbox/Checkbox'
@@ -373,7 +208,6 @@ import SmInputNumber from '@supermapgis/common/components/input-number/InputNumb
 import SmMessage from '@supermapgis/common/components/message/Message'
 import SmSlider from '@supermapgis/common/components/slider/Slider'
 import SmSpin from '@supermapgis/common/components/spin/Spin'
-import SmTabs, { SmTabPane } from '@supermapgis/common/components/tabs/Tabs'
 import SmTree from '@supermapgis/common/components/tree/Tree'
 import { useLocale, useSceneGetter, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useSceneControl } from '@supermapgis/mapboxgl/hooks'
@@ -386,7 +220,6 @@ defineOptions({
   name: 'SmSceneLayerManager'
 })
 
-type TabKey = 'public' | 'favorite' | 'control'
 type RuntimeConfig = Record<string, unknown>
 
 interface RuntimeGroupNode {
@@ -428,17 +261,10 @@ const props = withDefaults(
 const { t } = useLocale()
 const { textColorHeadingStyle } = useTheme(props)
 
-const activeTab = ref<TabKey>('public')
-const searchKeywords = reactive<Record<TabKey, string>>({
-  public: '',
-  favorite: '',
-  control: ''
-})
+const publicSearch = ref('')
 const publicTree = ref<RuntimeSceneLayerNode[]>([])
-const favoriteLayerIds = ref<Set<string>>(new Set())
 const publicExpandedKeys = ref<string[]>([])
 const sceneReady = ref(false)
-const runtimeLeaves = ref<Map<string, RuntimeLeafNode>>(new Map())
 
 let activeViewer: unknown = null
 let layerManager: LayerManager | null = null
@@ -448,47 +274,20 @@ let lifecycleToken = 0
 const sceneLayerManagerRef = useTemplateRef('sceneLayerManagerRef')
 useSceneControl(() => sceneLayerManagerRef.value?.$el)
 
-const activeSearch = computed({
-  get: () => searchKeywords[activeTab.value],
-  set: value => {
-    searchKeywords[activeTab.value] = value || ''
-  }
-})
-
-const publicSearch = computed(() => searchKeywords.public.trim())
-const filteredPublicTree = computed(() => filterTreeNodes(publicTree.value, publicSearch.value))
+const normalizedPublicSearch = computed(() => publicSearch.value.trim())
+const filteredPublicTree = computed(() =>
+  filterTreeNodes(publicTree.value, normalizedPublicSearch.value)
+)
 const effectiveExpandedKeys = computed(() => {
-  if (!publicSearch.value) {
+  if (!normalizedPublicSearch.value) {
     return publicExpandedKeys.value
   }
   return collectGroupKeys(filteredPublicTree.value)
 })
 
-const favoriteLayers = computed(() => {
-  return (Array.from(favoriteLayerIds.value.values()) as string[])
-    .map(id => runtimeLeaves.value.get(id))
-    .filter((node): node is RuntimeLeafNode => Boolean(node))
-})
-
-const filteredFavoriteLayers = computed(() =>
-  filterLeafNodes(favoriteLayers.value, searchKeywords.favorite)
-)
-
-const controllableLayers = computed(() => {
-  return collectLeafNodes(publicTree.value).filter(
-    node => node.checked && (node.type === 'map' || node.type === 's3m')
-  )
-})
-
-const filteredControllableLayers = computed(() =>
-  filterLeafNodes(controllableLayers.value, searchKeywords.control)
-)
-
 const hasCheckedPublicLayers = computed(() =>
   collectLeafNodes(publicTree.value).some(node => node.checked)
 )
-const hasCheckedFavoriteLayers = computed(() => favoriteLayers.value.some(node => node.checked))
-const hasControllableLayers = computed(() => controllableLayers.value.length > 0)
 
 useSceneGetter({
   loaded: viewer => {
@@ -691,19 +490,11 @@ function normalizeRuntimeNode(
 
 function rebuildRuntimeTree() {
   publicTree.value = normalizeRuntimeTree(props.layerConfig as SceneLayerConfigNode[])
-  runtimeLeaves.value = new Map(
-    collectLeafNodes(publicTree.value)
-      .filter(node => !node.id.startsWith('invalid-'))
-      .map(node => [node.id, node])
-  )
-  favoriteLayerIds.value = new Set()
   publicExpandedKeys.value = []
 }
 
 function clearRuntimeTree() {
   publicTree.value = []
-  runtimeLeaves.value = new Map()
-  favoriteLayerIds.value = new Set()
   publicExpandedKeys.value = []
 }
 
@@ -756,14 +547,6 @@ function filterTreeNodes(nodes: RuntimeSceneLayerNode[], keyword: string): Runti
   }, [])
 }
 
-function filterLeafNodes(nodes: RuntimeLeafNode[], keyword: string) {
-  const normalizedKeyword = keyword.trim().toLocaleLowerCase()
-  if (!normalizedKeyword) {
-    return nodes
-  }
-  return nodes.filter(node => node.name.toLocaleLowerCase().includes(normalizedKeyword))
-}
-
 function isRuntimeLeaf(node: unknown): node is RuntimeLeafNode {
   return isRecord(node) && node.isLeaf === true
 }
@@ -790,25 +573,15 @@ function createManagerData(node: RuntimeLeafNode) {
   } as Parameters<LayerManager['check']>[0]
 }
 
-function isFavorite(id: string) {
-  return favoriteLayerIds.value.has(id)
+function isControllableLayer(node: RuntimeLeafNode) {
+  return node.type === 'map' || node.type === 's3m'
 }
 
-function toggleFavorite(node: RuntimeLeafNode) {
-  if (!runtimeLeaves.value.has(node.id)) {
+function toggleLayerParameters(node: RuntimeLeafNode) {
+  if (!node.checked || node.loading || !isControllableLayer(node)) {
     return
   }
-  const nextFavoriteIds = new Set(favoriteLayerIds.value)
-  if (nextFavoriteIds.has(node.id)) {
-    nextFavoriteIds.delete(node.id)
-  } else {
-    nextFavoriteIds.add(node.id)
-  }
-  favoriteLayerIds.value = nextFavoriteIds
-}
-
-function canLocate(node: RuntimeLeafNode) {
-  return node.checked && !node.loading
+  node.showConfig = !node.showConfig
 }
 
 async function queueManagerRemoval(managerToRemove: LayerManager | null) {
@@ -888,6 +661,9 @@ async function toggleLayer(
     await managerOverride.check(createManagerData(node), checked)
     if (expectedToken === lifecycleToken && managerOverride === layerManager) {
       node.checked = checked
+      if (!checked) {
+        node.showConfig = false
+      }
     }
   } catch (error) {
     if (expectedToken === lifecycleToken && managerOverride === layerManager) {
@@ -935,14 +711,6 @@ async function clearLayers(nodes: RuntimeLeafNode[]) {
 
 function clearPublicLayers() {
   void clearLayers(collectLeafNodes(publicTree.value).filter(node => node.checked))
-}
-
-function clearFavoriteLayers() {
-  void clearLayers(favoriteLayers.value.filter(node => node.checked))
-}
-
-function clearControllableLayers() {
-  void clearLayers(controllableLayers.value)
 }
 
 function getControlNumber(node: RuntimeLeafNode, key: string, fallback: number) {

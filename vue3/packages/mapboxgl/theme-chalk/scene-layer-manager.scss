@@ -63,51 +63,13 @@
     overflow: hidden;
   }
 
-  @include e(tabs) {
+  @include e(panel) {
     display: flex;
     flex: 1;
     flex-direction: column;
     width: 100%;
     max-width: 100%;
     min-width: 0;
-    min-height: 0;
-    color: inherit !important;
-
-    .ant-tabs-nav,
-    .sm-component-tabs-nav,
-    .ant-tabs-content-holder,
-    .sm-component-tabs-content-holder,
-    .ant-tabs-content,
-    .sm-component-tabs-content,
-    .ant-tabs-tabpane,
-    .sm-component-tabs-tabpane {
-      min-width: 0;
-      min-height: 0;
-    }
-
-    .ant-tabs-nav,
-    .sm-component-tabs-nav {
-      padding: 0 8px;
-      box-sizing: border-box;
-    }
-
-    .ant-tabs-content-holder,
-    .sm-component-tabs-content-holder,
-    .ant-tabs-content,
-    .sm-component-tabs-content,
-    .ant-tabs-tabpane-active,
-    .sm-component-tabs-tabpane-active {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      min-width: 0;
-    }
-  }
-
-  @include e(panel) {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
     min-height: 0;
   }
 
@@ -135,9 +97,7 @@
   }
 
   &__tree,
-  &__list,
-  &__controls,
-  &__control-list {
+  &__controls {
     flex: 1;
     width: 100%;
     max-width: 100%;
@@ -216,9 +176,7 @@
     gap: 8px;
   }
 
-  &__tree-row,
-  &__list-row,
-  &__control-header {
+  &__tree-row {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
@@ -229,13 +187,6 @@
   }
 
   @include e(row) {
-    min-height: 32px;
-    padding: 4px 0;
-    border-bottom: 1px solid $border-color-split;
-  }
-
-  &__list-row,
-  &__control-item {
     min-height: 32px;
     padding: 4px 0;
     border-bottom: 1px solid $border-color-split;
@@ -276,6 +227,22 @@
     justify-self: end;
     justify-content: flex-end;
     white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    .ant-btn:not(:disabled) .sm-components-icon-active,
+    .sm-component-btn:not(:disabled) .sm-components-icon-active {
+      /* stylelint-disable-next-line */
+      color: $primary-color-hover;
+    }
+  }
+
+  &__tree-row:hover &__actions,
+  &__tree-row:focus-within &__actions {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
   }
 
   @include e(control) {
@@ -285,9 +252,13 @@
 
   @include e(control-parameters) {
     display: grid;
+    grid-column: 1 / -1;
     grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    min-width: 0;
     gap: 8px;
-    padding: 8px 0 0;
+    padding: 8px 8px 0 0;
+    box-sizing: border-box;
   }
 
   @include e(parameter) {
@@ -336,8 +307,7 @@
     cursor: not-allowed;
   }
 
-  &__tree-row--disabled,
-  &__list-row--disabled {
+  &__tree-row--disabled {
     /* stylelint-disable-next-line */
     color: $text-color-disabled;
     cursor: not-allowed;
