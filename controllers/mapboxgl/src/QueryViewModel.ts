@@ -5,6 +5,7 @@ import bbox from '@turf/bbox';
 import envelope from '@turf/envelope';
 import transformScale from '@turf/transform-scale';
 import getFeatures from 'vue-iclient-core/utils/get-features';
+import { getDefaultLayerStyle } from './types';
 
 export interface QueryOptions {
   maxFeatures?: number | string;
@@ -162,25 +163,11 @@ export default class QueryViewModel extends mapboxgl.Evented {
   }
 
   _addOverlayToMap(type: string, source: GeoJSONSourceRaw, layerID: string) {
+    const defaultStyle = getDefaultLayerStyle();
     let mbglStyle = {
-      circle: {
-        'circle-color': '#409eff',
-        'circle-opacity': 0.6,
-        'circle-radius': 8,
-        'circle-stroke-width': 2,
-        'circle-stroke-color': '#409eff',
-        'circle-stroke-opacity': 1
-      },
-      line: {
-        'line-width': 3,
-        'line-color': '#409eff',
-        'line-opacity': 1
-      },
-      fill: {
-        'fill-color': '#409eff',
-        'fill-opacity': 0.6,
-        'fill-outline-color': '#409eff'
-      }
+      circle: defaultStyle.circle.paint,
+      line: defaultStyle.line.paint,
+      fill: defaultStyle.fill.paint
     };
     let mbglTypeMap = {
       Point: 'circle',
@@ -203,12 +190,8 @@ export default class QueryViewModel extends mapboxgl.Evented {
     }
     if (type === 'fill') {
       this.strokeLayerID = layerID + '-StrokeLine';
-      let stokeLineStyle = this.layerStyle.stokeLine || { paint: {} };
-      let lineStyle = (stokeLineStyle && stokeLineStyle.paint) || {
-        'line-width': 3,
-        'line-color': '#409eff',
-        'line-opacity': 1
-      };
+      let stokeLineStyle = this.layerStyle.strokeLine || this.layerStyle.stokeLine || { paint: {} };
+      let lineStyle = (stokeLineStyle && stokeLineStyle.paint) || defaultStyle.strokeLine.paint;
       this.map.addLayer({
         id: this.strokeLayerID,
         type: 'line',

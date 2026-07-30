@@ -8,6 +8,7 @@ import getFeatures from 'vue-iclient-core/utils/get-features';
 import iServerRestService from 'vue-iclient-core/utils/iServerRestService';
 import { statisticsFeatures } from 'vue-iclient-core/utils/statistics';
 import type mapboxglTypes from 'mapbox-gl'
+import { getDefaultLayerStyle } from './types';
 
 /**
  * @class AttributesViewModel
@@ -58,22 +59,11 @@ const defaultPaintTypes = {
   fill: ['line-width']
 };
 
+const defaultHighlightStyle = getDefaultLayerStyle(HIGHLIGHT_COLOR);
 const mbglStyle = {
-  circle: {
-    'circle-color': HIGHLIGHT_COLOR,
-    'circle-opacity': 0.6,
-    'circle-stroke-color': HIGHLIGHT_COLOR,
-    'circle-stroke-opacity': 1
-  },
-  line: {
-    'line-color': HIGHLIGHT_COLOR,
-    'line-opacity': 1
-  },
-  fill: {
-    'fill-color': HIGHLIGHT_COLOR,
-    'fill-opacity': 0.6,
-    'fill-outline-color': HIGHLIGHT_COLOR
-  },
+  circle: defaultHighlightStyle.circle.paint,
+  line: defaultHighlightStyle.line.paint,
+  fill: defaultHighlightStyle.fill.paint,
   symbol: {
     layout: {
       'icon-size': 5
@@ -395,11 +385,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
         this.map.setFilter(this.strokeLayerID, filter);
       } else {
         let stokeLineStyle = layerStyle.strokeLine || layerStyle.stokeLine || {};
-        let lineStyle = (stokeLineStyle && stokeLineStyle.paint) || {
-          'line-width': 3,
-          'line-color': HIGHLIGHT_COLOR,
-          'line-opacity': 1
-        };
+        let lineStyle = (stokeLineStyle && stokeLineStyle.paint) || defaultHighlightStyle.strokeLine.paint;
         let highlightLayer = {
           id: this.strokeLayerID,
           type: 'line',

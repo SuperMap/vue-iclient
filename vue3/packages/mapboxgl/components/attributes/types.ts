@@ -2,9 +2,10 @@ import type { PropType } from 'vue'
 import type { TableProps } from 'ant-design-vue'
 import type { MapGetterProps, MapGetterEvents, ShortEmits, ThemeProps } from '@supermapgis/common/utils/index.common'
 import { getPropsDefaults, mapGetterProps, themeProps } from '@supermapgis/common/utils/index.common'
-import CircleStyle from 'vue-iclient-controllers-mapboxgl/src/types/CircleStyle'
-import FillStyle from 'vue-iclient-controllers-mapboxgl/src/types/FillStyle'
-import LineStyle from 'vue-iclient-controllers-mapboxgl/src/types/LineStyle'
+import { getDefaultLayerStyle } from 'vue-iclient-controllers-mapboxgl/src/types'
+import type CircleStyle from 'vue-iclient-controllers-mapboxgl/src/types/CircleStyle'
+import type FillStyle from 'vue-iclient-controllers-mapboxgl/src/types/FillStyle'
+import type LineStyle from 'vue-iclient-controllers-mapboxgl/src/types/LineStyle'
 
 export interface PaginationParams {
   defaultCurrent?: number
@@ -120,31 +121,7 @@ export const attributesProps = () => ({
   },
   layerStyle: {
     type: Object,
-    default: () => ({
-      line: new LineStyle({
-        'line-width': 3,
-        'line-color': '#409eff',
-        'line-opacity': 1
-      }),
-      circle: new CircleStyle({
-        'circle-color': '#409eff',
-        'circle-opacity': 0.6,
-        'circle-radius': 8,
-        'circle-stroke-width': 2,
-        'circle-stroke-color': '#409eff',
-        'circle-stroke-opacity': 1
-      }),
-      fill: new FillStyle({
-        'fill-color': '#409eff',
-        'fill-opacity': 0.6,
-        'fill-outline-color': '#409eff'
-      }),
-      stokeLine: new LineStyle({
-        'line-width': 3,
-        'line-color': '#409eff',
-        'line-opacity': 1
-      })
-    })
+    default: () => getDefaultLayerStyle()
   },
   statistics: {
     type: Object as () => StatisticsParams,
@@ -169,7 +146,8 @@ export interface AttributesProps extends ThemeProps, MapGetterProps {
     line: LineStyle
     circle: CircleStyle
     fill: FillStyle
-    stokeLine: LineStyle
+    strokeLine?: LineStyle
+    stokeLine?: LineStyle
   }
   statistics?: StatisticsParams
   mapTarget?: string

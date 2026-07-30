@@ -113,9 +113,7 @@ import SmButton from 'vue-iclient/src/common/button/Button.vue';
 import SmInput from 'vue-iclient/src/common/input/Input.vue';
 import SmIcon from 'vue-iclient/src/common/icon/Icon.vue';
 import SmCheckbox from 'vue-iclient/src/common/checkbox/Checkbox.vue';
-import CircleStyle from 'vue-iclient-controllers-mapboxgl/src/types/CircleStyle';
-import FillStyle from 'vue-iclient-controllers-mapboxgl/src/types/FillStyle';
-import LineStyle from 'vue-iclient-controllers-mapboxgl/src/types/LineStyle';
+import { getDefaultLayerStyle } from 'vue-iclient-controllers-mapboxgl/src/types';
 import AttributesViewModel from 'vue-iclient-controllers-mapboxgl/src/AttributesViewModel';
 import clonedeep from 'lodash.clonedeep';
 import isequal from 'lodash.isequal';
@@ -266,31 +264,7 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
 
   @Prop({
     default: () => {
-      return {
-        line: new LineStyle({
-          'line-width': 3,
-          'line-color': '#409eff',
-          'line-opacity': 1
-        }),
-        circle: new CircleStyle({
-          'circle-color': '#409eff',
-          'circle-opacity': 0.6,
-          'circle-radius': 8,
-          'circle-stroke-width': 2,
-          'circle-stroke-color': '#409eff',
-          'circle-stroke-opacity': 1
-        }),
-        fill: new FillStyle({
-          'fill-color': '#409eff',
-          'fill-opacity': 0.6,
-          'fill-outline-color': '#409eff'
-        }),
-        stokeLine: new LineStyle({
-          'line-width': 3,
-          'line-color': '#409eff',
-          'line-opacity': 1
-        })
-      };
+      return getDefaultLayerStyle();
     }
   })
   layerStyle: Object;

@@ -20,9 +20,7 @@
 <script>
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
-import CircleStyle from 'vue-iclient-controllers-mapboxgl/src/types/CircleStyle';
-import FillStyle from 'vue-iclient-controllers-mapboxgl/src/types/FillStyle';
-import LineStyle from 'vue-iclient-controllers-mapboxgl/src/types/LineStyle';
+import { getDefaultLayerStyle } from 'vue-iclient-controllers-mapboxgl/src/types';
 import SmLayerHighlight from 'vue-iclient/src/mapboxgl/layer-highlight/LayerHighlight';
 
 export default {
@@ -60,31 +58,7 @@ export default {
     layerStyle: {
       type: Object,
       default() {
-        return {
-          line: new LineStyle({
-            'line-width': 3,
-            'line-color': '#409eff',
-            'line-opacity': 1
-          }),
-          circle: new CircleStyle({
-            'circle-color': '#409eff',
-            'circle-opacity': 0.6,
-            'circle-radius': 8,
-            'circle-stroke-width': 2,
-            'circle-stroke-color': '#409eff',
-            'circle-stroke-opacity': 1
-          }),
-          fill: new FillStyle({
-            'fill-color': '#409eff',
-            'fill-opacity': 0.6,
-            'fill-outline-color': '#409eff'
-          }),
-          strokeLine: new LineStyle({
-            'line-width': 3,
-            'line-color': '#409eff',
-            'line-opacity': 1
-          })
-        };
+        return getDefaultLayerStyle();
       }
     },
     autoResize: {
