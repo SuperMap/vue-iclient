@@ -1,6 +1,7 @@
-import type { PropType, CSSProperties } from 'vue'
+import type { PropType } from 'vue'
 import type { MapGetterProps, ThemeProps } from '@supermapgis/common/utils/index.common'
 import type { HighlightStyle } from 'vue-iclient-controllers-mapboxgl/src/LayerHighlightViewModel'
+import type { PopupConfig, PopupInfo } from '@supermapgis/mapboxgl/components/popup-content/types'
 import {
   getPropsDefaults,
   mapGetterProps,
@@ -9,66 +10,17 @@ import {
 import LineStyle from 'vue-iclient-controllers-mapboxgl/src/types/LineStyle'
 import FillStyle from 'vue-iclient-controllers-mapboxgl/src/types/FillStyle'
 import CircleStyle from 'vue-iclient-controllers-mapboxgl/src/types/CircleStyle'
-import { TextInfosTypes } from './util/ExpressionConverter'
-import { ExperssionTypes } from './util/CalcExpression'
 
-export interface videoOptions {
-  objectFit?: 'contain' | 'fill' | 'unset'
-  autoplay?: boolean
-  loop?: boolean
-  muted?: boolean
-  controls?: boolean
-}
-export interface imageOptions {
-  previewMode?: 'full' | 'popup' | 'none'
-}
-interface hrefContentInfo {
-  target?: '_parent' | '_self' | '_blank' | '_top',
-  text?: string
-}
-export type ContentInfo = videoOptions | imageOptions | hrefContentInfo
-export interface Attribute {
-  type: 'FIELD'
-  fieldName: string
-  fieldCaption?: string
-  contentType: 'text' | 'href' | 'image' | 'video'
-  contentInfo?: ContentInfo
-}
-
-export type TextInfo = {
-  type: 'TEXT'
-  infos: TextInfosTypes
-}
-
-export interface MediaInfo {
-  type: 'IMAGE' | 'VIDEO'
-  title?: string
-  value: string | ExperssionTypes
-  titleStyle?: CSSProperties
-  options?: imageOptions | videoOptions
-}
-
-interface DividerInfo {
-  type: 'DIVIDER'
-}
-
-export interface PopupInfo {
-  title?: string
-  layerId?: string | string[]
-  fieldCaptions?: Record<string, string>
-  identifyField?: string
-  elements: (Attribute | TextInfo | MediaInfo | DividerInfo)[]
-}
-export interface PopupConfig {
-  backgroundImage?: string
-  autoResize?: boolean
-  maxWidth?: string
-  maxHeight?: string
-  width?: string
-  height?: string
-  keyWordWrap?: 'ellipsis' | 'wrap'
-  valueWordWrap?: 'ellipsis' | 'wrap'
-}
+export type {
+  videoOptions,
+  imageOptions,
+  ContentInfo,
+  Attribute,
+  TextInfo,
+  MediaInfo,
+  PopupInfo,
+  PopupConfig
+} from '@supermapgis/mapboxgl/components/popup-content/types'
 
 export interface DefaultPopupProps {
   clickTolerance?: Number

@@ -7,7 +7,8 @@ export function usePopupConfigHooks(
   contentHeight?: Ref<string>
 ) {
   const popupStyle = computed(() => {
-    const { autoResize, maxWidth, maxHeight, width, height, keyWordWrap, valueWordWrap, ...params } = popupConfig.value
+    const { autoResize, maxWidth, maxHeight, width, height, keyWordWrap, valueWordWrap, ...params } =
+      popupConfig.value
     const style: CSSProperties = { ...params }
     return style
   })
@@ -15,17 +16,15 @@ export function usePopupConfigHooks(
     const { autoResize, maxWidth, width } = popupConfig.value
     if (!autoResize) {
       return { width }
-    } else {
-      return { maxWidth, width }
     }
+    return { maxWidth, width }
   })
   const popupHeight = computed(() => {
     const { autoResize, maxHeight, height } = popupConfig.value
     if (!autoResize) {
       return { height }
-    } else {
-      return { maxHeight, height: height || contentHeight?.value }
     }
+    return { maxHeight, height: height || contentHeight?.value }
   })
   const ellipsisStyle = {
     overflow: 'hidden',

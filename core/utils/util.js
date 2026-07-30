@@ -268,7 +268,23 @@ export function numberEqual(num1, num2, precision = 10E-6) {
 
 export const statisticFunctions = { min, max: statisticsMax, mean, sum, mode, median, variance, standardDeviation, count: fieldValues => fieldValues.length };
 
+const secureScriptPromises = new Map();
+const linkPromises = new Map();
+
 export function loadSecureScript(url) {
+  if (!url) {
+    return Promise.reject(new Error('loadSecureScript: url is required'));
+  }
+  if (secureScriptPromises.has(url)) {
+    return secureScriptPromises.get(url);
+  }
+  // Already injected by other entry (avoid re-executing const/let declarations like OpenConfig)
+  const existed = Array.from(document.getElementsByTagName('script')).some(script => script.src && script.src.includes(url));
+  if (existed) {
+    const promise = Promise.resolve(true);
+    secureScriptPromises.set(url, promise);
+    return promise;
+  }
   const $script = document.createElement('script')
   $script.src = url
   // script.integrity = lib.sri
@@ -289,27 +305,48 @@ export function loadSecureScript(url) {
   }
 
   document.head.appendChild($script)
-  return new Promise((resolve, reject) => {
+  const promise = new Promise((resolve, reject) => {
     $script.onload = () => {
       resolve(true);
     }
     $script.onerror = e => {
       console.log(e)
-      reject()
+      secureScriptPromises.delete(url);
+      reject(e);
     }
   })
+  secureScriptPromises.set(url, promise);
+  return promise;
 }
 
 export function loadLink(src) {
+  if (!src) {
+    return Promise.reject(new Error('loadLink: src is required'));
+  }
+  if (linkPromises.has(src)) {
+    return linkPromises.get(src);
+  }
+  const existed = Array.from(document.getElementsByTagName('link')).some(link => link.href && link.href.includes(src));
+  if (existed) {
+    const promise = Promise.resolve(true);
+    linkPromises.set(src, promise);
+    return promise;
+  }
   const $link = document.createElement('link');
   $link.rel = 'stylesheet';
   $link.href = src;
   document.head.appendChild($link);
-  return new Promise((resolve, reject) => {
+  const promise = new Promise((resolve, reject) => {
     $link.onload = () => {
       resolve(true);
     };
+    $link.onerror = e => {
+      linkPromises.delete(src);
+      reject(e);
+    };
   });
+  linkPromises.set(src, promise);
+  return promise;
 }
 
 export function getDecimalsFormatterVal(val, decimals) {

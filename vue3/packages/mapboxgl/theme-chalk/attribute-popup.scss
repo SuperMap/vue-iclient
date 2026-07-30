@@ -38,16 +38,20 @@
 
     .switchDataText {
       display: inline-flex;
+      align-items: center;
       padding: 8px 0;
       margin-right: 10px;
 
       span {
-        vertical-align: 3px;
+        /* stylelint-disable-next-line */
+        line-height: 1;
       }
 
       .icon {
         /* stylelint-disable-next-line */
         font-size: 16px;
+        /* stylelint-disable-next-line */
+        line-height: 1;
       }
 
       .left-icon {

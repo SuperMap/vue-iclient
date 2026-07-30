@@ -26,6 +26,17 @@ interface cesiumOptions {
   tiandituOptions?: Object;
 }
 
+export type SceneAppreciableLayerCategory = 'imagLayers' | 'mvtLayers' | 's3mLayers' | 'tinLayer';
+
+export interface SceneAppreciableLayer {
+  category: SceneAppreciableLayerCategory;
+  customName?: string;
+  maximumLevel?: number;
+  show: boolean;
+  type?: string;
+  url?: string;
+}
+
 export default class WebSceneViewModel extends mapboxgl.Evented {
   scene: any;
   sceneUrl: string;
@@ -83,24 +94,31 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
   }
 
   init() {
-    return new Promise((resolve) => {
-      if (!window.SuperMap3D) {
-        loadLink(this.widgetsPath);
-        loadSecureScript(this.cesiumPath).then(() => {
-          loadSecureScript(this.openConfigPath).then(() => {
-            this.initViewer();
-            resolve(true);
-          });
-        });
-
-
-      } else {
-        setTimeout(() => {
+    return new Promise((resolve, reject) => {
+      this._ensureSceneLibs()
+        .then(() => {
           this.initViewer();
           resolve(true);
-        }, 0);
-      }
+        })
+        .catch(reject);
     });
+  }
+
+  _ensureSceneLibs() {
+    const tasks: Promise<unknown>[] = [];
+    if (!window.SuperMap3D) {
+      tasks.push(loadLink(this.widgetsPath));
+      tasks.push(
+        loadSecureScript(this.cesiumPath).then(() => {
+          if (!window.OpenConfig) {
+            return loadSecureScript(this.openConfigPath);
+          }
+        })
+      );
+    } else if (!window.OpenConfig) {
+      tasks.push(loadSecureScript(this.openConfigPath));
+    }
+    return Promise.all(tasks);
   }
 
   initViewer() {
@@ -245,7 +263,7 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
     return { x: longitude, y: latitude, z: height };
   }
 
-  getToken(url) {
+  getToken(url): Promise<{ tiandituKey: string; bingMapkey: string }> {
     return new Promise((resolve, reject) => {
       let configTokenUrl = url + '/apps/config.rjson';
       fetch(configTokenUrl)
@@ -288,8 +306,8 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
             const promise = openConfig.openScene(data);
 
             window.SuperMap3D.when(promise, () => {
-              sceneEvent.setScene(this.target, { viewer, content: data });
-              sceneEvent.triggerLoadEvent(this.target);
+              sceneEvent.setScene(this.target, { viewer, content: data, webscene: this });
+              sceneEvent.triggerLoadEvent(this.target, this);
             })
 
             if (
@@ -342,7 +360,7 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
         mapStyle: labelMap[type]
       }));
     }
-    sceneEvent.triggerLoadEvent(this.target);
+    sceneEvent.triggerLoadEvent(this.target, this);
   }
 
   getOrientation() {
@@ -354,6 +372,242 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
     pitch = window.SuperMap3D.Math.toDegrees(pitch);
     heading = window.SuperMap3D.Math.toDegrees(heading);
     return { heading, roll, pitch };
+  }
+
+  /**
+   * 获取场景中可感知图层列表（影像 / MVT / S3M / 地形），解析逻辑参考 scene-layer-list。
+   */
+  getAppreciableLayers(): SceneAppreciableLayer[] {
+    if (!this.viewer) {
+      return [];
+    }
+    const layers: SceneAppreciableLayer[] = [];
+    layers.push(...this._getS3mAppreciableLayers());
+    layers.push(...this._getImageryAppreciableLayers());
+    layers.push(...this._getMvtAppreciableLayers());
+    const tinLayer = this._getTinAppreciableLayer();
+    if (tinLayer) {
+      layers.push(tinLayer);
+    }
+    return layers;
+  }
+
+  _getS3mAppreciableLayers(): SceneAppreciableLayer[] {
+    const layerQueue = this.viewer?.scene?.layers?._layerQueue || this.viewer?.scene?.layers?.layerQueue || [];
+    return layerQueue.map((layer: any) => ({
+      category: 's3mLayers' as const,
+      customName: layer?.name,
+      show: layer?.visible !== false,
+      type: this._getObjectType(layer) || 'S3M',
+      url: this._getLayerUrl(layer)
+    }));
+  }
+
+  _getImageryAppreciableLayers(): SceneAppreciableLayer[] {
+    const imageryLayers = this.viewer?.imageryLayers?._layers || [];
+    const result: SceneAppreciableLayer[] = [];
+    imageryLayers.forEach((layer: any) => {
+      const provider = layer?.imageryProvider ?? layer?._imageryProvider;
+      const customName = this._getImageryCustomName(provider);
+      if (!customName || customName === 'Unnamed') {
+        return;
+      }
+      const url = this._getImageryUrl(provider);
+      const maximumLevel = provider?.maximumLevel ?? provider?._maximumLevel;
+      result.push({
+        category: 'imagLayers',
+        customName,
+        show: layer?.show !== false,
+        type: this._getObjectType(provider) || 'ImageryProvider',
+        url,
+        ...(maximumLevel != null ? { maximumLevel } : {})
+      });
+    });
+    return result;
+  }
+
+  _getMvtAppreciableLayers(): SceneAppreciableLayer[] {
+    const layerQueue = this.viewer?.scene?._vectorTileMaps?._layerQueue || [];
+    return layerQueue.map((layer: any) => ({
+      category: 'mvtLayers' as const,
+      customName: layer?.name,
+      show: layer?.show !== false,
+      type: this._getObjectType(layer) || 'MVT',
+      url: this._getLayerUrl(layer)
+    }));
+  }
+
+  _getTinAppreciableLayer(): SceneAppreciableLayer | null {
+    const terrainProvider = this.viewer?.terrainProvider;
+    if (!terrainProvider) {
+      return null;
+    }
+    const SuperMap3D = window.SuperMap3D;
+    if (SuperMap3D?.EllipsoidTerrainProvider && terrainProvider instanceof SuperMap3D.EllipsoidTerrainProvider) {
+      return null;
+    }
+    const url = this._getTerrainUrl(terrainProvider);
+    const customName = this._getTerrainCustomName(terrainProvider, url);
+    if (!customName || customName === 'invisible') {
+      return null;
+    }
+    return {
+      category: 'tinLayer',
+      customName,
+      show: true,
+      type: this._getObjectType(terrainProvider) || 'TerrainProvider',
+      url
+    };
+  }
+
+  _getImageryUrl(provider: any) {
+    if (!provider) {
+      return undefined;
+    }
+    const url = provider.url ?? provider._url ?? provider.tablename;
+    return typeof url === 'string' ? url : undefined;
+  }
+
+  _getImageryCustomName(provider: any) {
+    if (!provider) {
+      return undefined;
+    }
+    const imageUrl = this._getImageryUrl(provider);
+    if (!imageUrl) {
+      return undefined;
+    }
+    if (imageUrl.includes('earth-skin2.jpg')) {
+      return 'defaultImage';
+    }
+    if (imageUrl.includes('tianditu.gov.cn')) {
+      return 'TIANDITU';
+    }
+    if (imageUrl.includes('./images/baseMap/baseImage.jpg')) {
+      return 'LocalImage';
+    }
+    if (imageUrl.includes('dev.virtualearth.net')) {
+      return 'BingMap';
+    }
+    if (imageUrl.includes('GRIDIMAGERY')) {
+      return 'GRIDIMAGERY';
+    }
+    if (imageUrl.includes('openstreetmap.fr')) {
+      return 'OSM';
+    }
+    if (imageUrl.includes('realspace/datas/')) {
+      return this._normalizeLayerName(imageUrl.split('realspace/datas/')[1]);
+    }
+    return this._getTableName(provider.tablename) || this._getNameFromUrl(imageUrl) || 'Unnamed';
+  }
+
+  _normalizeLayerName(name?: string) {
+    if (!name || typeof name !== 'string') {
+      return undefined;
+    }
+    return name.replace(/\/+$/, '') || undefined;
+  }
+
+  _getTableName(tableName?: string) {
+    if (!tableName || typeof tableName !== 'string' || tableName.includes('http')) {
+      return undefined;
+    }
+    if (tableName.includes('/rest/maps/')) {
+      const name = tableName.split('/rest/maps/')[1];
+      try {
+        const decodedName = name.includes('%') ? decodeURIComponent(name) : name;
+        return this._normalizeLayerName(decodedName.split('@')[0]);
+      } catch {
+        return this._normalizeLayerName(name.split('@')[0]);
+      }
+    }
+    if (tableName.includes('%')) {
+      return this._normalizeLayerName(tableName.split('%')[0]);
+    }
+    if (tableName.includes('/maps/')) {
+      return this._normalizeLayerName(tableName.split('/maps/')[1]);
+    }
+    return this._normalizeLayerName(tableName);
+  }
+
+  _getNameFromUrl(url: string) {
+    if (!url) {
+      return undefined;
+    }
+    if (url.includes('/rest/maps/')) {
+      const name = url.split('/rest/maps/')[1];
+      try {
+        const decodedName = name ? (name.includes('%') ? decodeURIComponent(name) : name) : undefined;
+        return this._normalizeLayerName(decodedName?.split('@')[0]);
+      } catch {
+        return this._normalizeLayerName(name?.split('@')[0]);
+      }
+    }
+    if (url.includes('/realspace/datas/')) {
+      return this._normalizeLayerName(url.split('/realspace/datas/')[1]);
+    }
+    return undefined;
+  }
+
+  _getLayerUrl(layer: any) {
+    if (!layer) {
+      return undefined;
+    }
+    const url = layer.url ?? layer._url ?? layer.baseUri ?? layer._baseUri ?? layer._baseUrl;
+    return typeof url === 'string' ? url : undefined;
+  }
+
+  _getTerrainUrl(terrainProvider: any) {
+    if (!terrainProvider) {
+      return undefined;
+    }
+    if (typeof terrainProvider._baseUrl === 'string') {
+      return terrainProvider._baseUrl;
+    }
+    if (Array.isArray(terrainProvider._urls) && typeof terrainProvider._urls[0] === 'string') {
+      return terrainProvider._urls[0];
+    }
+    return this._getLayerUrl(terrainProvider);
+  }
+
+  _getTerrainCustomName(terrainProvider: any, url?: string) {
+    const baseUrl = url || this._getTerrainUrl(terrainProvider);
+    if (terrainProvider?._baseUrl || (baseUrl && !terrainProvider?._urls)) {
+      if (!baseUrl) {
+        return 'invisible';
+      }
+      if (baseUrl.indexOf('3D-stk_terrain') !== -1) {
+        return 'STKTerrain';
+      }
+      if (baseUrl.includes('info/data/path')) {
+        return baseUrl.split('/services/')[1]?.split('/rest/')[0];
+      }
+      if (baseUrl.includes('/realspace/datas/')) {
+        return baseUrl.split('/realspace/datas/')[1]?.replace(/\/$/, '');
+      }
+      if (baseUrl.indexOf('supermapol.com') !== -1) {
+        return baseUrl.split('realspace/services/')[1]?.split('/rest/realspace')[0];
+      }
+      if (baseUrl.indexOf('iserver/services') !== -1) {
+        return baseUrl.split('iserver/services/')[1]?.split('/rest/realspace')[0];
+      }
+      return 'invisible';
+    }
+    if (terrainProvider?._urls) {
+      const url0 = terrainProvider._urls[0] || baseUrl || '';
+      if (url0.indexOf('supermapol.com') !== -1) {
+        return 'SuperMapTerrain';
+      }
+      return 'TiandituTerrain';
+    }
+    return 'invisible';
+  }
+
+  _getObjectType(obj: any) {
+    if (!obj) {
+      return undefined;
+    }
+    const name = obj.constructor?.name;
+    return typeof name === 'string' && name && name !== 'Object' ? name : undefined;
   }
 
   _getSceneParam() {

@@ -1,12 +1,12 @@
 import { watch, onMounted, onBeforeUnmount, getCurrentInstance } from 'vue';
 import sceneEvent from 'vue-iclient-core/types/scene-event';
-
+import WebSceneViewModel from 'vue-iclient-controllers-mapboxgl/src/WebSceneViewModel';
 interface SceneGetterProps {
   sceneTarget: string;
 }
 
 export interface SceneGetterOptions {
-  loaded?: (viewer: any) => void
+  loaded?: (viewer: any, webscene?: InstanceType<typeof WebSceneViewModel>) => void
   removed?: (viewer: any) => void
 }
 
@@ -14,18 +14,22 @@ export function useSceneGetter({ loaded, removed }: SceneGetterOptions) {
   const componentInstance = getCurrentInstance()
   const props = componentInstance.props as unknown as SceneGetterProps
   
-  const getSceneViewer  = (target: string) => {
-    const data = sceneEvent.getScene(target);
-    if (!data) {
-      return;
-    }
-    const { viewer: sceneViewer } = data;
-    return sceneViewer;
+  const getSceneData = (target: string) => {
+    return sceneEvent.getScene(target);
   }
-  const loadedHandler = (e: { sceneTarget: string }) => {
-    const { sceneTarget: target } = e;
+
+  const getSceneViewer = (target: string) => {
+    return getSceneData(target)?.viewer;
+  }
+
+  const getWebScene = (target: string) => {
+    return getSceneData(target)?.webscene as InstanceType<typeof WebSceneViewModel> | undefined;
+  }
+
+  const loadedHandler = (e: { sceneTarget: string, webscene?: InstanceType<typeof WebSceneViewModel> }) => {
+    const { sceneTarget: target, webscene } = e;
     if (target === props.sceneTarget) {
-      loaded(getSceneViewer(target))
+      loaded?.(getSceneViewer(target), webscene || getWebScene(target))
     }
   };
 
@@ -33,11 +37,11 @@ export function useSceneGetter({ loaded, removed }: SceneGetterOptions) {
     if (newVal && newVal !== oldVal) {
       const prevViewer = getSceneViewer(oldVal);
       if (prevViewer) {
-        removed(prevViewer);
+        removed?.(prevViewer);
       }
       const nextViewer = getSceneViewer(newVal);
       if (nextViewer) {
-        loaded(nextViewer);
+        loaded?.(nextViewer, getWebScene(newVal));
       }
     }
   });
@@ -45,7 +49,7 @@ export function useSceneGetter({ loaded, removed }: SceneGetterOptions) {
   onMounted(() => {
     const currentViewer = getSceneViewer(props.sceneTarget);
     if (currentViewer) {
-      loaded(currentViewer);
+      loaded?.(currentViewer, getWebScene(props.sceneTarget));
     }
     sceneEvent.on({
       'load-scene': loadedHandler

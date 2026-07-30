@@ -25,8 +25,8 @@ export class SceneEvent extends Events {
     this.sceneCache[sceneTarget] = scene;
   }
 
-  triggerLoadEvent(sceneTarget: string) {
-    this.triggerEvent('load-scene', { sceneTarget });
+  triggerLoadEvent(sceneTarget: string, webscene?: any) {
+    this.triggerEvent('load-scene', { sceneTarget, webscene });
   }
 
   triggerUpdateEvent(sceneTarget: string) {

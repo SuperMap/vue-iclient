@@ -179,7 +179,7 @@
 
 <script setup lang="ts">
 import type { Map } from 'mapbox-gl'
-import type { PopupInfo } from '@supermapgis/mapboxgl/components/attribute-popup/types'
+import type { PopupInfo } from '@supermapgis/mapboxgl/components/popup-content/types'
 import type {
   QueryProps,
   QueryEvents,

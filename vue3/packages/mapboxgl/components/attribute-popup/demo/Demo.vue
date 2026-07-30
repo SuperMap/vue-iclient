@@ -189,7 +189,7 @@ const changeMap = () => {
     <Button
       type="primary"
       @click="changeMap"
-      style="position: absolute; bottom: 100px; left: 300px"
+      style="position: absolute; bottom: 100px; left: 300px; z-index: 1000;"
     >
       切换地
     </Button>

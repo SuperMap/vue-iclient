@@ -1,7 +1,7 @@
 import type { PropType } from 'vue'
 import type { MapGetterProps, MapGetterEvents, ShortEmits, ThemeProps } from '@supermapgis/common/utils/index.common'
 import type { CardProps, ControlProps } from '@supermapgis/mapboxgl/utils'
-import type { PopupConfig, PopupInfo } from '@supermapgis/mapboxgl/components/attribute-popup/types'
+import type { PopupConfig, PopupInfo } from '@supermapgis/mapboxgl/components/popup-content/types'
 import type {
   HighlightStyle,
   MapSelectionChangedEmit,

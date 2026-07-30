@@ -81,12 +81,12 @@
 
 <script setup lang="ts">
 import type { MapPopupProps, MapPopupEvents } from './types'
-import type { PopupConfig } from '@supermapgis/mapboxgl/components/attribute-popup/types'
+import type { PopupConfig } from '@supermapgis/mapboxgl/components/popup-content/types'
 import type { AttributeRecord } from '@supermapgis/common/components/attribute-panel/types'
 import { ref, computed, watch, useTemplateRef, nextTick } from 'vue'
 import SmAttributePanel from '@supermapgis/common/components/attribute-panel/attribute-panel.vue'
-import PopupContent from '@supermapgis/mapboxgl/components/attribute-popup/popup-content.vue'
-import { usePopupConfigHooks } from '@supermapgis/mapboxgl/components/attribute-popup/hooks/use-popup-config'
+import PopupContent from '@supermapgis/mapboxgl/components/popup-content/popup-content.vue'
+import { usePopupConfigHooks } from '@supermapgis/mapboxgl/components/popup-content/hooks/use-popup-config'
 import { useTheme, useMapGetter } from '@supermapgis/common/hooks/index.common'
 import MapPopupViewModel from 'vue-iclient-controllers-mapboxgl/src/MapPopupViewModel'
 import { setPopupArrowStyle } from 'vue-iclient-core/utils/util'
