@@ -1,4 +1,4 @@
-import type { Component, PropType, CSSProperties } from 'vue'
+import type { PropType, CSSProperties } from 'vue'
 import type { TextInfosTypes } from './util/ExpressionConverter'
 import type { ExperssionTypes } from './util/CalcExpression'
 import { getPropsDefaults } from '@supermapgis/common/utils/index.common'
@@ -44,7 +44,7 @@ interface DividerInfo {
   type: 'DIVIDER'
 }
 
-/** 平台注入给自定义弹窗组件的上下文 */
+/** BaseAttributePopup 传入的点击与宿主环境 */
 export interface PopupContentContext {
   /** 当前要素属性 */
   feature: Record<string, any>
@@ -69,35 +69,16 @@ export interface PopupContentContext {
   }
 }
 
-/** 自定义动态组件 infos */
-export interface CustomElementInfos {
-  /** 用户传入的自定义组件（直接动态渲染） */
-  component: Component | string
-  /** 用户自定义参数，原样透传给动态组件 */
-  props?: Record<string, any>
-  /**
-   * @deprecated 请使用平台注入的 feature；保留兼容
-   */
-  data?: any
-  /**
-   * @deprecated 请使用平台注入的 event；保留兼容
-   */
-  e?: any
+export interface ExtensionInfo {
+  type: string
+  [key: string]: any
 }
-
-export interface CustomInfo {
-  type: 'CUSTOM'
-  infos: CustomElementInfos
-}
-
 export interface PopupInfo {
   title?: string
   layerId?: string | string[]
   fieldCaptions?: Record<string, string>
   identifyField?: string
-  /** 用户自定义参数（可与 CUSTOM.infos.props 合并透传） */
-  props?: Record<string, any>
-  elements?: (Attribute | TextInfo | MediaInfo | DividerInfo | CustomInfo)[]
+  elements?: (Attribute | TextInfo | MediaInfo | DividerInfo | ExtensionInfo)[]
 }
 
 export interface PopupConfig {
@@ -121,7 +102,7 @@ export interface PopupContentProps {
   popupConfig?: PopupConfig
   /** @deprecated 请使用 event */
   e?: any
-  /** 点击事件信息，注入 CUSTOM 组件 */
+  /** 点击事件信息，供运行时 Renderer 使用 */
   event?: PopupContentContext['event']
   /** 运行环境信息 */
   context?: PopupContentContext['context']

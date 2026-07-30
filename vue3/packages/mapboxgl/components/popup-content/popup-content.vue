@@ -1,43 +1,35 @@
 <template>
   <div class="sm-identify-popup-content">
     <div :style="maxHeight">
-      <template v-for="(item, index) in content" :key="index">
-        <FieldInfo
-          v-if="item.type === 'FIELD'"
-          :infos="item.infos"
-          :attributeStyle="attributeStyle"
-        />
-        <TextInfo v-else-if="item.type === 'TEXT'" :infos="item.infos" />
-        <MediaInfo v-else-if="item.type === 'MEDIA'" :infos="item.infos" />
-        <Divider v-else-if="item.type === 'DIVIDER'" dashed />
-        <component
-          v-else-if="item.type === 'CUSTOM' && item.infos?.component"
-          :is="item.infos.component"
-          v-bind="resolveCustomProps(item.infos)"
-        />
-      </template>
-      <div v-if="content.length === 0">暂无数据</div>
+      <component
+        v-for="(item, index) in renderedContent"
+        :key="index"
+        :is="item.renderer.component"
+        v-bind="item.props"
+      />
+      <div v-if="renderedContent.length === 0">暂无数据</div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { CustomElementInfos, PopupContentProps } from './types'
-import { computed } from 'vue'
-import { Divider } from 'ant-design-vue'
-import { cloneDeep } from 'lodash-es'
-import FieldInfo from './field-info.vue'
-import TextInfo from './text-info.vue'
-import MediaInfo from './media-info.vue'
-import PopupUtil from './util/PopupUtil'
+import type { PopupContentProps } from './types'
+import type { PopupContentRenderer, PopupContentRuntimeRegistry } from './runtime-registry'
+import { computed, inject } from 'vue'
 import { usePopupConfigHooks } from './hooks/use-popup-config'
 import { popupContentPropsDefault } from './types'
+import { popupContentRuntimeRegistryKey, resolvePopupContent } from './runtime-registry'
+import { createBuiltInPopupContentRenderers } from './built-in-renderers'
 
 defineOptions({
   name: 'SmPopupContent'
 })
 
 const props = withDefaults(defineProps<PopupContentProps>(), popupContentPropsDefault)
+const runtimeRegistry = inject<PopupContentRuntimeRegistry | undefined>(
+  popupContentRuntimeRegistryKey,
+  undefined
+)
 
 const popupConfig = computed(() => props.popupConfig || {})
 
@@ -59,48 +51,47 @@ const features = computed(() => {
   return Object.keys(attributes.value).length ? [attributes.value] : []
 })
 
-const content = computed(() => {
-  const { elements } = props.popupInfo || {}
-  if (!elements?.length) return []
-  const newItems = PopupUtil.getLayoutElements(cloneDeep(elements))
-  return PopupUtil.getResultElement(newItems, attributes.value)
-})
-
 const { attributeStyle } = usePopupConfigHooks(popupConfig)
 
 const maxHeight = computed(() => {
   return popupConfig.value.height || popupConfig.value.maxHeight
 })
 
-const layerInfo = computed(() => {
-  const info = props.popupInfo || {}
-  const layerId = Array.isArray(info.layerId) ? info.layerId[0] : info.layerId
-  return {
-    id: layerId || '',
-    title: info.title
-  }
+/** 内置类型与扩展类型共用同一个解析、渲染注册入口。 */
+const builtInRenderers = createBuiltInPopupContentRenderers(attributeStyle)
+const availableRenderers = computed(() => {
+  const host = props.context?.mode || 'map'
+  return [...builtInRenderers, ...(runtimeRegistry?.renderers.value || [])]
+    .filter(renderer => !renderer.hosts || !host || renderer.hosts.includes(host))
 })
 
-/**
- * 透传用户 props + 注入平台上下文；兼容旧 data / e
- */
-const resolveCustomProps = (infos?: CustomElementInfos) => {
-  const userProps = {
-    ...(props.popupInfo?.props || {}),
-    ...(infos?.props || {})
-  }
-  const data = infos?.data !== undefined ? infos.data : attributes.value
-  const event = infos?.e !== undefined ? infos.e : props.event ?? props.e
+const content = computed(() => {
+  const elements = props.popupInfo?.elements || []
+  return resolvePopupContent(elements as Record<string, any>[], availableRenderers.value, {
+    attributes: attributes.value,
+    popupInfo: props.popupInfo || {}
+  })
+})
 
-  return {
-    ...userProps,
-    data,
-    features: features.value,
-    index: props.index || 0,
-    layer: layerInfo.value,
-    event,
-    context: props.context,
-    e: event
-  }
-}
+const resolveRenderer = (item: Record<string, any>): PopupContentRenderer | undefined =>
+  availableRenderers.value.find(renderer => renderer.type === item.type)
+const createRendererContext = (item: Record<string, any>) => ({
+  element: item.infos || item,
+  attributes: attributes.value,
+  features: features.value,
+  index: props.index || 0,
+  popupInfo: props.popupInfo || {},
+  event: props.event ?? props.e,
+  host: props.context?.mode || 'map',
+  target: props.context?.target
+})
+const renderedContent = computed(() => content.value.flatMap(item => {
+  const renderer = resolveRenderer(item)
+  if (!renderer) return []
+  const rendererContext = createRendererContext(item)
+  return [{
+    renderer,
+    props: renderer.resolveProps?.(rendererContext) || rendererContext
+  }]
+}))
 </script>

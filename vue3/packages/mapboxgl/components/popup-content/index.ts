@@ -6,5 +6,6 @@ export const SmPopupContent: SFCWithInstall<typeof PopupContent> = withInstall(P
 export default SmPopupContent
 
 export * from './types'
+export * from './runtime-registry'
 export { usePopupConfigHooks } from './hooks/use-popup-config'
 export type { PopupContentInstance } from './instance'
