@@ -101,7 +101,16 @@ module.exports = {
           resolve('node_modules/videojs-flvjs-es6/src'),
           resolve('node_modules/geographic-coordinate-converter'),
           resolve('node_modules/swiper'),
-          resolve('node_modules/dom7')
+          resolve('node_modules/dom7'),
+          // fast-xml-parser 5.10+ 及其运行时依赖发布的是未转译源码（含 ?? / ?.），
+          // webpack 4 内置的 acorn 6 无法解析，必须交给 babel 处理
+          resolve('node_modules/fast-xml-parser'),
+          resolve('node_modules/fast-xml-builder'),
+          resolve('node_modules/path-expression-matcher'),
+          resolve('node_modules/@nodable/entities'),
+          resolve('node_modules/is-unsafe'),
+          resolve('node_modules/strnum'),
+          resolve('node_modules/xml-naming')
         ]
       },
       {
