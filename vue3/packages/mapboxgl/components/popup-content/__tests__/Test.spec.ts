@@ -1,5 +1,7 @@
 import { defineComponent, ref, shallowRef } from 'vue'
 import { mount } from '@vue/test-utils'
+import EN from '@supermapgis/common/locale/lang/en'
+import { localeContextKey } from '@supermapgis/common/hooks/useLocale'
 import PopupContent from '../popup-content.vue'
 import PopupUtil from '../util/PopupUtil'
 import { createBuiltInPopupContentRenderers } from '../built-in-renderers'
@@ -8,6 +10,7 @@ import {
   resolvePopupContent,
   type PopupContentRuntimeRegistry
 } from '../runtime-registry'
+import { popupContentRuntimeRegistryKey as exportedRuntimeRegistryKey } from '../../index'
 
 const CustomChart = defineComponent({
   props: {
@@ -18,6 +21,22 @@ const CustomChart = defineComponent({
 })
 
 describe('PopupContent runtime renderer', () => {
+  it('exports the runtime registry key from the component package entry', () => {
+    expect(exportedRuntimeRegistryKey).toBe(popupContentRuntimeRegistryKey)
+  })
+
+  it('renders the empty state with the provided locale', () => {
+    const wrapper = mount(PopupContent, {
+      global: {
+        provide: {
+          [localeContextKey as symbol]: ref(EN)
+        }
+      }
+    })
+
+    expect(wrapper.text()).toContain('No data')
+  })
+
   it('keeps shared popup utilities independent from content types', () => {
     expect(Object.keys(PopupUtil)).toEqual(['getResult'])
     expect(PopupUtil.getResult(['get', 'name'], { name: 'Tower' })).toBe('Tower')
@@ -128,6 +147,41 @@ describe('PopupContent runtime renderer', () => {
     })
 
     expect(wrapper.find('.custom-chart').text()).toBe('bar:Tower')
+  })
+
+  it('supports the map custom type contract used by the demo', () => {
+    const registry: PopupContentRuntimeRegistry = {
+      renderers: shallowRef([{
+        type: 'CUSTOM_STATUS',
+        hosts: ['map'],
+        component: CustomChart,
+        resolveProps: context => ({
+          options: context.element.extension,
+          featureName: context.attributes[context.element.extension.field]
+        })
+      }])
+    }
+    const popupInfo = {
+      elements: [{
+        type: 'CUSTOM_STATUS',
+        extension: { chartType: 'status', field: 'category' }
+      }]
+    }
+    const wrapper = mount(PopupContent, {
+      props: {
+        data: [{ title: 'category', value: 'Park' }],
+        popupInfo,
+        context: { mode: 'map' }
+      },
+      global: {
+        provide: {
+          [popupContentRuntimeRegistryKey as symbol]: registry
+        }
+      }
+    })
+
+    expect(JSON.stringify(popupInfo)).not.toContain('component')
+    expect(wrapper.find('.custom-chart').text()).toBe('status:Park')
   })
 
   it('does not render a renderer outside its declared host', () => {

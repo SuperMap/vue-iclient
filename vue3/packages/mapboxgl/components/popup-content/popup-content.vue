@@ -7,7 +7,7 @@
         :is="item.renderer.component"
         v-bind="item.props"
       />
-      <div v-if="renderedContent.length === 0">暂无数据</div>
+      <div v-if="renderedContent.length === 0">{{ t('popup.noData') }}</div>
     </div>
   </div>
 </template>
@@ -17,6 +17,7 @@ import type { PopupContentProps } from './types'
 import type { PopupContentRenderer, PopupContentRuntimeRegistry } from './runtime-registry'
 import { computed, inject } from 'vue'
 import { usePopupConfigHooks } from './hooks/use-popup-config'
+import { useLocale } from '@supermapgis/common/hooks/index.common'
 import { popupContentPropsDefault } from './types'
 import { popupContentRuntimeRegistryKey, resolvePopupContent } from './runtime-registry'
 import { createBuiltInPopupContentRenderers } from './built-in-renderers'
@@ -26,6 +27,7 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<PopupContentProps>(), popupContentPropsDefault)
+const { t } = useLocale()
 const runtimeRegistry = inject<PopupContentRuntimeRegistry | undefined>(
   popupContentRuntimeRegistryKey,
   undefined

@@ -172,6 +172,10 @@ export default {
     saturation: 'Saturation',
     bottomAltitudeOffset: 'Bottom altitude offset'
   },
+  popup: {
+    selectLayer: 'Select layer',
+    noData: 'No data'
+  },
   sm: {
     webmap: {
       test: 'tesssssssssssssssdsd'

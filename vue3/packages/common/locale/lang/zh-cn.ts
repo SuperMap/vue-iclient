@@ -279,7 +279,8 @@ export default {
     noData: '无数据'
   },
   popup: {
-    selectLayer: '选择图层'
+    selectLayer: '选择图层',
+    noData: '暂无数据'
   },
   openFile: {
     fileSizeExceeded: '文件大小超限！文件大小不得超过 10M！',
