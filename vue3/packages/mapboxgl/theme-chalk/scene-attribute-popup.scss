@@ -8,11 +8,29 @@
   border-radius: 4px;
   max-width: 100%;
 
-  // When ViewModel sets maxHeight near edges, scroll body instead of covering the feature
+  // 默认：滚动只在 base 的 .sm-identify-popup-content > div
+  // 贴边限高时：根节点 flex + maxHeight，避免 .content 与内层同时 overflow:auto 出现双滚动条
   > .content {
+    display: flex;
+    flex-direction: column;
     flex: 1 1 auto;
     min-height: 0;
-    overflow: auto;
+    overflow: hidden;
+  }
+
+  &.popup-height-constrained {
+    .sm-identify-popup-content {
+      flex: 1 1 auto;
+      min-height: 0;
+      max-height: none !important;
+      height: auto !important;
+      overflow: auto;
+
+      > div {
+        overflow: visible;
+        max-height: none;
+      }
+    }
   }
 
   // Default: popup below feature, tip on left, pointing up

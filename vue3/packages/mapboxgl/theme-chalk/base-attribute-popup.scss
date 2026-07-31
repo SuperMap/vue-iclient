@@ -107,10 +107,13 @@
       > div {
         display: flex;
         align-items: center;
+        // flex 子项默认 min-width:auto，不设 0 则 text-overflow:ellipsis 无法生效
+        min-width: 0;
       }
 
       .sm-component-field-info-text {
         height: 100%;
+        max-width: 100%;
       }
 
       .sm-component-field-info-video {
@@ -119,12 +122,17 @@
       }
 
       .name {
+        flex: 0 0 80px;
         width: 80px;
-
+        max-width: 80px;
+        overflow: hidden;
       }
 
       .value {
+        flex: 1 1 auto;
         width: calc(100% - 96px);
+        max-width: calc(100% - 96px);
+        overflow: hidden;
       }
 
       .player {

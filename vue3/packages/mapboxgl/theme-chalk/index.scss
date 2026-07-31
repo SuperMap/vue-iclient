@@ -20,7 +20,8 @@
 @use './webmap';
 @use './webscene';
 @use './zoom';
-@use './attribute-popup';
+@use './base-attribute-popup';
+@use './scene-attribute-popup';
 @use './directory-tree';
 @use './scene-layer-manager';
 @use './scene-roller-shutter';

@@ -1519,7 +1519,7 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
     };
     if (this.lastPopupMaxHeight && this.lastPopupMaxHeight > 0) {
       style.maxHeight = `${this.lastPopupMaxHeight}px`;
-      // Keep overflow visible so popup-tip (outside box) is not clipped; .content scrolls
+      // Keep overflow visible so popup-tip is not clipped; body scrolls under .popup-height-constrained
       style.display = 'flex';
       style.flexDirection = 'column';
     }
@@ -1543,7 +1543,12 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
       layout: this.lastPopupLayout,
       placement: this.lastPopupPlacement,
       rootStyle: this.buildRootStyle(this.lastPopupLayout),
-      rootClass: this.placementToRootClass(this.lastPopupPlacement)
+      rootClass: [
+        this.placementToRootClass(this.lastPopupPlacement),
+        this.lastPopupMaxHeight && this.lastPopupMaxHeight > 0 ? 'popup-height-constrained' : ''
+      ]
+        .filter(Boolean)
+        .join(' ')
     });
   }
 

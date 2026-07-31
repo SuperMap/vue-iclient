@@ -1,4 +1,4 @@
-import type { Component, InjectionKey, ShallowRef } from 'vue'
+import type { Component, ShallowRef } from 'vue'
 import type { PopupInfo } from './types'
 
 export type PopupContentHost = 'map' | 'scene'
@@ -67,9 +67,4 @@ export interface PopupContentRuntimeRegistry {
   renderers: ShallowRef<PopupContentRenderer[]>
 }
 
-/**
- * 使用真实发布包名作为全局协议命名空间，保证宿主与组件库存在不同构建副本时仍能共享注入。
- */
-export const popupContentRuntimeRegistryKey = Symbol.for(
-  '@supermapgis/vue3-iclient-mapboxgl/popup-content-runtime-registry'
-) as InjectionKey<PopupContentRuntimeRegistry>
+export { popupContentRuntimeRegistryKey } from '@supermapgis/mapboxgl/utils'

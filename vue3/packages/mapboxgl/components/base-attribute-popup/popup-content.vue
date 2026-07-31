@@ -17,8 +17,9 @@ import type { PopupContentRenderer, PopupContentRuntimeRegistry } from './runtim
 import { computed, inject } from 'vue'
 import { usePopupConfigHooks } from './hooks/use-popup-config'
 import { useLocale } from '@supermapgis/common/hooks/index.common'
+import { popupContentRuntimeRegistryKey } from '@supermapgis/mapboxgl/utils'
 import { popupContentProps } from './popup-content-props'
-import { popupContentRuntimeRegistryKey, resolvePopupContent } from './runtime-registry'
+import { resolvePopupContent } from './runtime-registry'
 import { createBuiltInPopupContentRenderers } from './built-in-renderers'
 
 defineOptions({

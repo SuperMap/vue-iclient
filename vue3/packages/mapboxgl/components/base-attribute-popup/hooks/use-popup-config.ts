@@ -26,19 +26,26 @@ export function usePopupConfigHooks(
     }
     return { maxHeight, height: height || contentHeight?.value }
   })
-  const ellipsisStyle = {
+  const ellipsisStyle: CSSProperties = {
+    display: 'block',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
+    minWidth: 0,
+    maxWidth: '100%',
+    wordBreak: 'keep-all'
   }
   const attributeStyle = computed(() => {
     const { keyWordWrap, valueWordWrap } = popupConfig.value
-    const style = { keyStyle: {}, valueStyle: {} }
+    const style: { keyStyle: CSSProperties; valueStyle: CSSProperties } = {
+      keyStyle: {},
+      valueStyle: {}
+    }
     if (keyWordWrap === 'ellipsis') {
-      style.keyStyle = { ...ellipsisStyle, height: '22px' }
+      style.keyStyle = { ...ellipsisStyle, height: '22px', lineHeight: '22px' }
     }
     if (valueWordWrap === 'ellipsis') {
-      style.valueStyle = { ...ellipsisStyle }
+      style.valueStyle = { ...ellipsisStyle, width: '100%' }
     }
     return style
   })

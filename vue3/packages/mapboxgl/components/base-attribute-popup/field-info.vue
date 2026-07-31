@@ -55,8 +55,8 @@ defineProps({
     default: () => ({})
   },
   attributeStyle: {
-    type: Object as PropType<{ keyStyle: string; valueStyle: string }>,
-    default: () => ({ keyStyle: '', valueStyle: '' })
+    type: Object as PropType<{ keyStyle: Record<string, any>; valueStyle: Record<string, any> }>,
+    default: () => ({ keyStyle: {}, valueStyle: {} })
   }
 })
 </script>

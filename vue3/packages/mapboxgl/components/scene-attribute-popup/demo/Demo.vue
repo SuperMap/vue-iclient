@@ -215,7 +215,9 @@ const popupConfig = ref({
   autoResize: true,
   maxWidth: '320px',
   maxHeight: '400px',
-  valueWordWrap: 'wrap' as const
+  // 字段列 / 值列超长时显示省略号（可改为 'wrap' 换行）
+  keyWordWrap: 'ellipsis' as const,
+  valueWordWrap: 'ellipsis' as const
 })
 
 /** 与地图 attribute-popup 相同的 layerStyle 结构；场景按点/线/面取对应 paint */
@@ -317,7 +319,8 @@ async function onSceneCustomLoaded(e: { Cesium?: any; viewer?: any }) {
     <p class="demo-tip">
       中间场景叠加京津 BaseMap_R（rest/data → GeoJSON 上图）。点到 GeoJSON 实体时直接用
       scene.pick 的 properties 弹窗，不再请求数据服务；点到建筑 rest/map 仍走几何查询。layerId
-      需与 dataSource.name / rest/map customName 对齐。多选：Ctrl + 左键仅在同一图层内累加。
+      需与 dataSource.name / rest/map customName 对齐。popupConfig 已开 keyWordWrap /
+      valueWordWrap: 'ellipsis'（字段列、值列超长省略）。多选：Ctrl + 左键仅在同一图层内累加。
     </p>
     <div class="demo-scenes">
       <div class="demo-scene-panel">
