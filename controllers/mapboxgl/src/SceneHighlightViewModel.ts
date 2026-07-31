@@ -153,6 +153,11 @@ interface LonLatBounds {
   getNorth(): number;
 }
 
+interface SceneCameraViewSnapshot {
+  destination: any;
+  orientation: Record<string, any>;
+}
+
 function createLonLatBounds(lng: number, lat: number, delta: number): LonLatBounds {
   return {
     getWest: () => lng - delta,
@@ -700,6 +705,7 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
     if (!position) {
       return;
     }
+    const cameraView = this.captureCameraView();
     // Lock immediately so dual ScreenSpace callbacks cannot race into two async picks
     if (this.querying) {
       return;
@@ -729,6 +735,12 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
 
       // 1) Prefer entity pick properties (GeoJSON / rest data on scene) — no data service request
       const pickedFeatures = this.pickEntityFeatures(position);
+      if (pickedFeatures.length) {
+        // Viewer also handles Entity clicks and may start tracking/flying to the picked
+        // entity. The scene popup owns this selection, so keep the camera at the user's
+        // pre-click view instead of letting the default Entity navigation take over.
+        this.releaseDefaultEntityNavigation(cameraView);
+      }
       // 2) Fallback: rest/map + mvt overlays → GetFeaturesByGeometry
       const layersToQuery = pickedFeatures.length ? [] : this.resolveLayersToQuery();
       if (!pickedFeatures.length && !layersToQuery.length) {
@@ -806,6 +818,57 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
       if (seq === this.clickSeq) {
         this.querying = false;
       }
+    }
+  }
+
+  private cloneCartesian(value: any) {
+    if (!value) {
+      return value;
+    }
+    const Cartesian3 = window.SuperMap3D?.Cartesian3;
+    if (typeof Cartesian3?.clone === 'function') {
+      return Cartesian3.clone(value);
+    }
+    if (typeof value.clone === 'function') {
+      return value.clone();
+    }
+    return { x: value.x, y: value.y, z: value.z };
+  }
+
+  private captureCameraView(): SceneCameraViewSnapshot | null {
+    const camera = this.scene?.camera || this.viewer?.camera;
+    const destination = camera?.positionWC || camera?.position;
+    if (!camera || !destination) {
+      return null;
+    }
+    const direction = camera.directionWC || camera.direction;
+    const up = camera.upWC || camera.up;
+    const orientation =
+      direction && up
+        ? {
+            direction: this.cloneCartesian(direction),
+            up: this.cloneCartesian(up)
+          }
+        : {
+            heading: camera.heading,
+            pitch: camera.pitch,
+            roll: camera.roll
+          };
+    return {
+      destination: this.cloneCartesian(destination),
+      orientation
+    };
+  }
+
+  private releaseDefaultEntityNavigation(cameraView: SceneCameraViewSnapshot | null) {
+    const camera = this.scene?.camera || this.viewer?.camera;
+    if (this.viewer) {
+      this.viewer.trackedEntity = undefined;
+      this.viewer.selectedEntity = undefined;
+    }
+    camera?.cancelFlight?.();
+    if (cameraView && typeof camera?.setView === 'function') {
+      camera.setView(cameraView);
     }
   }
 
