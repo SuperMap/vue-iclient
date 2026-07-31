@@ -61,11 +61,10 @@ const maxHeight = computed(() => {
 
 /** 内置类型与扩展类型共用同一个解析、渲染注册入口。 */
 const builtInRenderers = createBuiltInPopupContentRenderers(attributeStyle)
-const availableRenderers = computed(() => {
-  const host = props.context?.mode || 'map'
-  return [...builtInRenderers, ...(runtimeRegistry?.renderers.value || [])]
-    .filter(renderer => !renderer.hosts || !host || renderer.hosts.includes(host))
-})
+const availableRenderers = computed(() => [
+  ...builtInRenderers,
+  ...(runtimeRegistry?.renderers.value || [])
+])
 
 const content = computed(() => {
   const elements = props.popupInfo?.elements || []
@@ -83,13 +82,13 @@ const createRendererContext = (item: Record<string, any>) => ({
   features: features.value,
   index: props.index || 0,
   popupInfo: props.popupInfo || {},
-  event: props.event ?? props.e,
-  host: props.context?.mode || 'map',
-  target: props.context?.target
+  event: props.event ?? props.e
 })
 const renderedContent = computed(() => content.value.flatMap(item => {
   const renderer = resolveRenderer(item)
-  if (!renderer) return []
+  if (!renderer) {
+    return []
+  }
   const rendererContext = createRendererContext(item)
   return [{
     renderer,

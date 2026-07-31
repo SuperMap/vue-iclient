@@ -1,8 +1,6 @@
 import type { Component, ShallowRef } from 'vue'
 import type { PopupInfo } from './types'
 
-export type PopupContentHost = 'map' | 'scene'
-
 export interface PopupContentRuntimeContext {
   element: Record<string, any>
   attributes: Record<string, any>
@@ -10,8 +8,6 @@ export interface PopupContentRuntimeContext {
   index: number
   popupInfo: PopupInfo
   event?: Record<string, any>
-  host: PopupContentHost
-  target?: string
 }
 
 export interface PopupContentParserContext {
@@ -27,7 +23,6 @@ export interface PopupContentParseResult {
 export interface PopupContentRenderer {
   type: string
   component: Component
-  hosts?: readonly PopupContentHost[]
   matches?: (element: Record<string, any>) => boolean
   parse?: (
     elements: Record<string, any>[],

@@ -69,7 +69,6 @@
         :popupInfo="popupInfo"
         :popupConfig="popupConfigValue"
         :event="popupEvent"
-        :context="popupContext"
         :style="popupHeight"
       />
     </div>
@@ -231,10 +230,6 @@ const popupEvent = computed(() => {
     lngLat,
     ...extra
   }
-})
-
-const popupContext = computed(() => {
-  return interaction.value.runtimeContext?.value || {}
 })
 
 const enablePopupDatas = computed(() => {

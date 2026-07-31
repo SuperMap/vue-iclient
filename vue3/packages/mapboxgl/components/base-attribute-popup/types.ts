@@ -61,9 +61,6 @@ export interface AttributePopupInteraction {
   rootClass?: Ref<string> | ComputedRef<string>
   /** 点击事件信息（注入 CUSTOM 的 event） */
   clickEvent?: Ref<Record<string, any> | undefined> | ComputedRef<Record<string, any> | undefined>
-  /** 运行环境（map/scene，注入 CUSTOM 的 context） */
-  runtimeContext?: Ref<Record<string, any> | undefined> | ComputedRef<Record<string, any> | undefined>
-
   setLayerIds?: (layerIds: string[], sourceLayers?: string[][]) => void
   queryFeaturesByLayerId: (layerId: string) => void
   setHighlightLayerFilter: (

@@ -13,7 +13,6 @@ import WebSceneViewModel from 'vue-iclient-controllers-mapboxgl/src/WebSceneView
 
 interface UseSceneHighlightOptions {
   props: {
-    sceneTarget?: string
     popupInfos?: ScenePopupInfo[]
     clickTolerance?: number
     layerStyle?: HighlightStyle
@@ -59,11 +58,6 @@ export function useLayerHighlightHooks(
     lngLat: clickedLngLat.value,
     position: screenPosition.value || undefined
   }))
-  const runtimeContext = computed(() => ({
-    mode: 'scene' as const,
-    target: props.sceneTarget
-  }))
-
   viewModel.on('selectionchanged', handleSelectionChanged)
   viewModel.on('mapselectionchanged', handleMapSelectionChanged)
   viewModel.on('popuppositionchanged', handlePopupPositionChanged)
@@ -264,7 +258,6 @@ export function useLayerHighlightHooks(
     rootStyle,
     rootClass,
     clickEvent,
-    runtimeContext,
     setLayerIds,
     queryFeaturesByLayerId,
     setHighlightLayerFilter,

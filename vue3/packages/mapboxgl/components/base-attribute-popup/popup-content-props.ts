@@ -85,12 +85,6 @@ export interface PopupContentContext {
     originalEvent?: any
     [key: string]: any
   }
-  /** 运行环境 */
-  context?: {
-    mode?: 'map' | 'scene'
-    target?: string
-    [key: string]: any
-  }
 }
 
 export interface PopupContentProps {
@@ -105,8 +99,6 @@ export interface PopupContentProps {
   e?: any
   /** 点击事件信息，供运行时 Renderer 使用 */
   event?: PopupContentContext['event']
-  /** 运行环境信息 */
-  context?: PopupContentContext['context']
 }
 
 /** Runtime props for popup-content.vue（独立文件，避免与 SFC 循环依赖） */
@@ -137,10 +129,6 @@ export const popupContentProps = () => ({
   },
   event: {
     type: Object as PropType<PopupContentContext['event']>,
-    default: undefined
-  },
-  context: {
-    type: Object as PropType<PopupContentContext['context']>,
     default: undefined
   }
 })

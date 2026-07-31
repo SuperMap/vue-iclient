@@ -41,11 +41,6 @@ export function useMapAttributePopupInteraction(
   const clickEvent = computed(() => ({
     lngLat: clickedLngLat.value
   }))
-  const runtimeContext = computed(() => ({
-    mode: 'map' as const,
-    target: props.mapTarget
-  }))
-
   const popupMount = reactive({
     coordinates: null as any
   })
@@ -205,7 +200,6 @@ export function useMapAttributePopupInteraction(
     allPopupDatas,
     rootStyle,
     clickEvent,
-    runtimeContext,
     setLayerIds,
     queryFeaturesByLayerId,
     setHighlightLayerFilter,
