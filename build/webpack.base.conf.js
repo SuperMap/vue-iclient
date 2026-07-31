@@ -6,10 +6,30 @@ const config = require('../config');
 const vueLoaderConfig = require('./vue-loader.conf');
 const getOriginArgs = require('./get-origin-args');
 
+
 function resolve(dir) {
   return path.join(__dirname, '..', dir);
 }
-
+export const nodeModulesParse = [
+  'node_modules/vue-echarts',
+  'node_modules/resize-detector',
+  'node_modules/colorcolor',
+  'node_modules/vue-videojs7',
+  'node_modules/flv.js/src',
+  'node_modules/videojs-flvjs-es6/src',
+  'node_modules/geographic-coordinate-converter',
+  'node_modules/swiper',
+  'node_modules/dom7',
+  // fast-xml-parser 5.10+ 及其运行时依赖发布的是未转译源码（含 ?? / ?.），
+  // webpack 4 内置的 acorn 6 无法解析，必须交给 babel 处理
+  'node_modules/fast-xml-parser',
+  'node_modules/fast-xml-builder',
+  'node_modules/path-expression-matcher',
+  'node_modules/@nodable/entities',
+  'node_modules/is-unsafe',
+  'node_modules/strnum',
+  'node_modules/xml-naming'
+];
 const createLintingRule = () => ({
   test: /\.(js|vue)$/,
   loader: 'eslint-loader',
@@ -92,25 +112,7 @@ module.exports = {
           resolve('src'),
           resolve('test'),
           resolve('static/libs/json-sql'),
-          // resolve('node_modules/webpack-dev-server/client'),
-          resolve('node_modules/vue-echarts'),
-          resolve('node_modules/resize-detector'),
-          resolve('node_modules/colorcolor'),
-          resolve('node_modules/vue-videojs7'),
-          resolve('node_modules/flv.js/src'),
-          resolve('node_modules/videojs-flvjs-es6/src'),
-          resolve('node_modules/geographic-coordinate-converter'),
-          resolve('node_modules/swiper'),
-          resolve('node_modules/dom7'),
-          // fast-xml-parser 5.10+ 及其运行时依赖发布的是未转译源码（含 ?? / ?.），
-          // webpack 4 内置的 acorn 6 无法解析，必须交给 babel 处理
-          resolve('node_modules/fast-xml-parser'),
-          resolve('node_modules/fast-xml-builder'),
-          resolve('node_modules/path-expression-matcher'),
-          resolve('node_modules/@nodable/entities'),
-          resolve('node_modules/is-unsafe'),
-          resolve('node_modules/strnum'),
-          resolve('node_modules/xml-naming')
+          ...nodeModulesParse.map(item => resolve(item))
         ]
       },
       {
