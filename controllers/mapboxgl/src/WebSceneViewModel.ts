@@ -413,7 +413,8 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
         return;
       }
       const url = this._getImageryUrl(provider);
-      const maximumLevel = provider?.maximumLevel ?? provider?._maximumLevel;
+      // 优先读私有字段：公开 getter（maximumLevel/url）在 provider 未 ready 时会抛 DeveloperError
+      const maximumLevel = this._getImageryMaximumLevel(provider);
       result.push({
         category: 'imagLayers',
         customName,
@@ -424,6 +425,23 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
       });
     });
     return result;
+  }
+
+  _getImageryMaximumLevel(provider: any): number | undefined {
+    if (!provider) {
+      return undefined;
+    }
+    if (provider._maximumLevel != null) {
+      return provider._maximumLevel;
+    }
+    if (provider.ready === false || provider._ready === false) {
+      return undefined;
+    }
+    try {
+      return provider.maximumLevel;
+    } catch {
+      return undefined;
+    }
   }
 
   _getMvtAppreciableLayers(): SceneAppreciableLayer[] {
@@ -464,8 +482,18 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
     if (!provider) {
       return undefined;
     }
-    const url = provider.url ?? provider._url ?? provider.tablename;
-    return typeof url === 'string' ? url : undefined;
+    // 优先私有字段，避免 provider 未 ready 时访问公开 url getter 抛错
+    if (typeof provider._url === 'string') {
+      return provider._url;
+    }
+    if (typeof provider.tablename === 'string') {
+      return provider.tablename;
+    }
+    try {
+      return typeof provider.url === 'string' ? provider.url : undefined;
+    } catch {
+      return undefined;
+    }
   }
 
   _getImageryCustomName(provider: any) {
