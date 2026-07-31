@@ -1161,11 +1161,8 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
       },
       fill: {
         color: toColor(fillPaint['fill-color'], fillPaint['fill-opacity'], 0.6),
-        outlineColor: toColor(
-          fillPaint['fill-outline-color'] ?? strokePaint['line-color'],
-          strokePaint['line-opacity'],
-          1
-        ),
+        // 面边线只用 strokeLine，不读 fill-outline-color
+        outlineColor: toColor(strokePaint['line-color'], strokePaint['line-opacity'], 1),
         outlineWidth: asNumber(strokePaint['line-width'], 3)
       }
     };
@@ -1316,7 +1313,7 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
         clampToGround: true,
         ...(classificationType != null ? { classificationType } : {})
       },
-      // Outline from strokeLine / fill-outline-color
+      // Outline from strokeLine (line-color / line-width)
       polyline: {
         positions: rings[0],
         width: paint.outlineWidth,

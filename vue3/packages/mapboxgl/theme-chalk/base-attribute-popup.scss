@@ -107,6 +107,7 @@
       > div {
         display: flex;
         align-items: center;
+
         // flex 子项默认 min-width:auto，不设 0 则 text-overflow:ellipsis 无法生效
         min-width: 0;
       }
