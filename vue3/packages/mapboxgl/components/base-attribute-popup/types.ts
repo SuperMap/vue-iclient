@@ -1,11 +1,28 @@
 import type { CSSProperties, ComputedRef, PropType, Ref } from 'vue'
 import type { ThemeProps } from '@supermapgis/common/utils/index.common'
-import type { PopupConfig, PopupInfo } from '@supermapgis/mapboxgl/components/popup-content/types'
 import { getPropsDefaults, themeProps } from '@supermapgis/common/utils/index.common'
+import type {
+  PopupInfo,
+  PopupConfig
+} from './popup-content-props'
 
-export type { PopupInfo, PopupConfig }
+export type {
+  videoOptions,
+  imageOptions,
+  ContentInfo,
+  Attribute,
+  TextInfo,
+  MediaInfo,
+  ExtensionInfo,
+  PopupInfo,
+  PopupConfig,
+  PopupContentContext,
+  PopupContentProps
+} from './popup-content-props'
 
-/** 弹窗字段行 */
+export { popupContentProps, popupContentPropsDefault } from './popup-content-props'
+
+/** ????? */
 export interface PopupFieldItem {
   title: string
   value: any

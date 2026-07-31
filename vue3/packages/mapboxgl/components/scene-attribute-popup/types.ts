@@ -4,7 +4,7 @@ import type {
   SceneGetterProps,
   ThemeProps
 } from '@supermapgis/common/utils/index.common'
-import type { PopupConfig, PopupInfo } from '@supermapgis/mapboxgl/components/popup-content/types'
+import type { PopupConfig, PopupInfo } from '@supermapgis/mapboxgl/components/base-attribute-popup/types'
 import type {
   SceneHighlightResult,
   SceneQueryDataSource,
@@ -26,49 +26,49 @@ export type {
   SceneHighlightResult,
   SceneOverlayLayerInfo
 } from 'vue-iclient-controllers-mapboxgl/src/SceneHighlightViewModel'
-export type { PopupInfo, PopupConfig } from '@supermapgis/mapboxgl/components/popup-content/types'
+export type { PopupInfo, PopupConfig } from '@supermapgis/mapboxgl/components/base-attribute-popup/types'
 export type { HighlightStyle } from 'vue-iclient-controllers-mapboxgl/src/LayerHighlightViewModel'
 export { getDefaultLayerStyle } from 'vue-iclient-controllers-mapboxgl/src/types'
 
-/** 场景属性弹窗配置：在通用 PopupInfo 上增加 dataSource */
+/** ???????????? PopupInfo ????dataSource */
 export interface ScenePopupInfo extends PopupInfo {
-  /** 该图层对应的 rest/data 查询数据源；有 dataSource 且图层 id 能匹配场景影像/MVT 时才查询 */
+  /** ?????? rest/data ????????dataSource ????id ????????MVT ???? */
   dataSource?: SceneQueryDataSource
 }
 
 /**
- * 场景点选查询属性弹窗 Props（展示侧对齐 attribute-popup）
+ * ???????????Props?????? attribute-popup??
  */
 export interface SceneAttributePopupProps extends ThemeProps, SceneGetterProps {
   /**
-   * 弹窗与查询配置。
-   * layerId 需与场景中 rest/map 影像 customName 或 MVT name 对应；
-   * 仅当命中图层且该项配置了 dataSource 时才会发 rest/data 查询。
+   * ?????????
+   * layerId ????? rest/map ?? customName ??MVT name ????
+   * ???????????? dataSource ???? rest/data ????
    */
   popupInfos?: ScenePopupInfo[]
-  /** 弹窗样式配置 */
+  /** ?????? */
   popupConfig?: PopupConfig
-  /** 是否允许多要素翻页展示 */
+  /** ????????????*/
   multiSelect?: boolean
-  /** 点选缓冲半径（米） */
+  /** ????????? */
   clickTolerance?: number
   /**
-   * 高亮样式，与地图 attribute-popup 的 layerStyle 一致。
-   * 场景内部按几何类型取 circle / line / fill / strokeLine。
+   * ???????? attribute-popup ??layerStyle ????
+   * ?????????? circle / line / fill / strokeLine??
    */
   layerStyle?: HighlightStyle
-  /** 是否启用点选查询 */
+  /** ?????????*/
   enabled?: boolean
-  /** 是否显示指向点击位置的尖角，默认开启 */
+  /** ???????????????????*/
   showPopupTip?: boolean
 }
 
-/** 将 popupInfos 转为查询配置（保留无 dataSource 项，由 ViewModel 按场景图层匹配后再决定是否请求） */
+/** ??popupInfos ?????????? dataSource ????ViewModel ???????????????? */
 export function toUniqueLayerId(info: ScenePopupInfo): string {
   const layerId = Array.isArray(info.layerId) ? info.layerId[0] : info.layerId
   const base = layerId || info.title || ''
   const ds = info.dataSource
-  // 同一 rest/map  overlay 可挂多个 dataset，用 dataSource 区分查询结果与弹窗匹配
+  // ?? rest/map  overlay ???? dataset?? dataSource ????????????
   if (base && ds?.dataSourceName && ds?.datasetName) {
     return `${base}@@${ds.dataSourceName}.${ds.datasetName}`
   }

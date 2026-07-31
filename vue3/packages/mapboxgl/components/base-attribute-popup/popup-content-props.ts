@@ -1,4 +1,4 @@
-import type { PropType, CSSProperties } from 'vue'
+import type { CSSProperties, PropType } from 'vue'
 import type { TextInfosTypes } from './util/ExpressionConverter'
 import type { ExperssionTypes } from './util/CalcExpression'
 import { getPropsDefaults } from '@supermapgis/common/utils/index.common'
@@ -44,6 +44,30 @@ interface DividerInfo {
   type: 'DIVIDER'
 }
 
+export interface ExtensionInfo {
+  type: string
+  [key: string]: any
+}
+
+export interface PopupInfo {
+  title?: string
+  layerId?: string | string[]
+  fieldCaptions?: Record<string, string>
+  identifyField?: string
+  elements?: (Attribute | TextInfo | MediaInfo | DividerInfo | ExtensionInfo)[]
+}
+
+export interface PopupConfig {
+  backgroundImage?: string
+  autoResize?: boolean
+  maxWidth?: string
+  maxHeight?: string
+  width?: string
+  height?: string
+  keyWordWrap?: 'ellipsis' | 'wrap'
+  valueWordWrap?: 'ellipsis' | 'wrap'
+}
+
 /** BaseAttributePopup 传入的点击与宿主环境 */
 export interface PopupContentContext {
   /** 当前要素属性 */
@@ -69,29 +93,6 @@ export interface PopupContentContext {
   }
 }
 
-export interface ExtensionInfo {
-  type: string
-  [key: string]: any
-}
-export interface PopupInfo {
-  title?: string
-  layerId?: string | string[]
-  fieldCaptions?: Record<string, string>
-  identifyField?: string
-  elements?: (Attribute | TextInfo | MediaInfo | DividerInfo | ExtensionInfo)[]
-}
-
-export interface PopupConfig {
-  backgroundImage?: string
-  autoResize?: boolean
-  maxWidth?: string
-  maxHeight?: string
-  width?: string
-  height?: string
-  keyWordWrap?: 'ellipsis' | 'wrap'
-  valueWordWrap?: 'ellipsis' | 'wrap'
-}
-
 export interface PopupContentProps {
   data?: Array<{ title: string; value: any; slotName?: any }>
   /** 当前图层全部要素对应的弹窗行数据（翻页） */
@@ -108,6 +109,7 @@ export interface PopupContentProps {
   context?: PopupContentContext['context']
 }
 
+/** Runtime props for popup-content.vue（独立文件，避免与 SFC 循环依赖） */
 export const popupContentProps = () => ({
   data: {
     type: Array as PropType<Array<{ title: string; value: any; slotName?: any }>>,
@@ -144,5 +146,3 @@ export const popupContentProps = () => ({
 })
 
 export const popupContentPropsDefault = getPropsDefaults<PopupContentProps>(popupContentProps())
-
-export default popupContentProps

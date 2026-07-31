@@ -61,7 +61,7 @@ const annotation = {
 }
 const tiandituToken = '97d2d09de3e54939dd20123859260bf9'
 const defaultProps = ({
-  sceneUrl: 'http://172.16.15.109:8082/iportal/web/scenes/877976620',
+  sceneUrl: 'http://172.16.15.109:8082/iportal/web/scenes/825657853',
   widgetsPath: 'http://172.16.15.109:8082/iportal/apps/earth/v2/SuperMap3D/Widgets/widgets.css',
   cesiumPath: 'http://172.16.15.109:8082/iportal/apps/earth/v2/SuperMap3D/SuperMap3D.js',
   openConfigPath: 'http://172.16.15.109:8082/iportal/apps/earth/v2/lib/OpenConfig.js',
@@ -101,10 +101,10 @@ const defaultProps = ({
     //     z: 3286279.2424502545
     //   }
     // }
-  },
-  tiandituOptions: {
-    token: 'bd404cfc4271223b0ba2b6057c8af9c2'
   }
+  // tiandituOptions: {
+  //   token: 'bd404cfc4271223b0ba2b6057c8af9c2'
+  // }
 })
 const instanceDidLoadFn = (e: any) => {}
 </script>

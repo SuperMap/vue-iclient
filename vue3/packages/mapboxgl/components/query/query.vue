@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <sm-collapse-card
     v-show="isShow"
     :icon-class="iconClass"
@@ -179,7 +179,7 @@
 
 <script setup lang="ts">
 import type { Map } from 'mapbox-gl'
-import type { PopupInfo } from '@supermapgis/mapboxgl/components/popup-content/types'
+import type { PopupInfo } from '@supermapgis/mapboxgl/components/base-attribute-popup/types'
 import type {
   QueryProps,
   QueryEvents,
@@ -325,7 +325,7 @@ const hasRichPopupInfo = computed(() => {
 })
 
 const displayFieldsMap = computed(() => {
-  // `popupInfo` 鍙兘瀛樺湪浣?elements 涓虹┖锛屾鏃朵粛搴旇蛋 key-value 寮圭獥閫昏緫
+  // `popupInfo` 可能存在�?elements 为空，此时仍应走 key-value 弹窗逻辑
   if (hasRichPopupInfo.value) {
     return null
   }

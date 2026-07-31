@@ -1,7 +1,7 @@
 import type { PropType } from 'vue'
 import type { MapGetterProps, ThemeProps } from '@supermapgis/common/utils/index.common'
 import type { HighlightStyle } from 'vue-iclient-controllers-mapboxgl/src/LayerHighlightViewModel'
-import type { PopupConfig, PopupInfo } from '@supermapgis/mapboxgl/components/popup-content/types'
+import type { PopupConfig, PopupInfo } from '@supermapgis/mapboxgl/components/base-attribute-popup/types'
 import {
   getPropsDefaults,
   mapGetterProps,
@@ -18,7 +18,7 @@ export type {
   MediaInfo,
   PopupInfo,
   PopupConfig
-} from '@supermapgis/mapboxgl/components/popup-content/types'
+} from '@supermapgis/mapboxgl/components/base-attribute-popup/types'
 
 export interface DefaultPopupProps {
   clickTolerance?: Number

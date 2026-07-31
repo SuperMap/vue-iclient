@@ -78,14 +78,13 @@
 </template>
 
 <script setup lang="ts">
-import type { BaseAttributePopupProps, PopupFieldItem } from './types'
-import type { PopupInfo } from '@supermapgis/mapboxgl/components/popup-content/types'
+import type { PopupInfo, PopupFieldItem, BaseAttributePopupProps } from './types'
 import { computed, nextTick, onMounted, ref, useTemplateRef, watch, watchEffect } from 'vue'
 import { Checkbox, Dropdown, Menu, MenuItem } from 'ant-design-vue'
 import { MenuUnfoldOutlined } from '@ant-design/icons-vue'
 import { useTheme } from '@supermapgis/common/hooks/index.common'
-import PopupContent from '@supermapgis/mapboxgl/components/popup-content/popup-content.vue'
-import { usePopupConfigHooks } from '@supermapgis/mapboxgl/components/popup-content/hooks/use-popup-config'
+import PopupContent from './popup-content.vue'
+import { usePopupConfigHooks } from './hooks/use-popup-config'
 import SelectLayer from './select-layer.vue'
 import { useResizeHooks } from './hooks/use-resize'
 import { baseAttributePopupPropsDefault } from './types'

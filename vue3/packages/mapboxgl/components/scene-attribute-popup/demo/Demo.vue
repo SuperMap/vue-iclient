@@ -321,19 +321,21 @@ async function onSceneCustomLoaded(e: { Cesium?: any; viewer?: any }) {
     </p>
     <div class="demo-scenes">
       <div class="demo-scene-panel">
-        <h4 class="demo-scene-title">默认点选（无 elements）</h4>
-        <WebScene v-bind="sceneBaseProps" target="scene-default">
-          <SceneAttributePopup
-            scene-target="scene-default"
-            :popup-infos="defaultPopupInfos"
-            :popup-config="popupConfig"
-            :multi-select="true"
-            :enabled="enabled"
-            :background="bgColor"
-            :click-tolerance="5"
-            :layer-style="buildingLayerStyle"
-          />
-        </WebScene>
+        <h4 class="demo-scene-title">默认点选（Control）</h4>
+        <WebScene
+          v-bind="sceneBaseProps"
+          target="scene-default"
+          :scene-attribute-popup-control="{
+            show: true,
+            popupInfos: defaultPopupInfos,
+            popupConfig,
+            multiSelect: true,
+            enabled,
+            background: bgColor,
+            clickTolerance: 5,
+            layerStyle: buildingLayerStyle
+          }"
+        />
       </div>
       <div class="demo-scene-panel">
         <h4 class="demo-scene-title">自定义 elements</h4>

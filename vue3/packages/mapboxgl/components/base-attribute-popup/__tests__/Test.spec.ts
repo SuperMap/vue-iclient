@@ -10,7 +10,7 @@ import {
   resolvePopupContent,
   type PopupContentRuntimeRegistry
 } from '../runtime-registry'
-import { popupContentRuntimeRegistryKey as exportedRuntimeRegistryKey } from '../../index'
+import { popupContentRuntimeRegistryKey as exportedRuntimeRegistryKey } from '../index'
 
 const CustomChart = defineComponent({
   props: {

@@ -13,12 +13,11 @@
 </template>
 
 <script setup lang="ts">
-import type { PopupContentProps } from './types'
 import type { PopupContentRenderer, PopupContentRuntimeRegistry } from './runtime-registry'
 import { computed, inject } from 'vue'
 import { usePopupConfigHooks } from './hooks/use-popup-config'
 import { useLocale } from '@supermapgis/common/hooks/index.common'
-import { popupContentPropsDefault } from './types'
+import { popupContentProps } from './popup-content-props'
 import { popupContentRuntimeRegistryKey, resolvePopupContent } from './runtime-registry'
 import { createBuiltInPopupContentRenderers } from './built-in-renderers'
 
@@ -26,7 +25,7 @@ defineOptions({
   name: 'SmPopupContent'
 })
 
-const props = withDefaults(defineProps<PopupContentProps>(), popupContentPropsDefault)
+const props = defineProps(popupContentProps())
 const { t } = useLocale()
 const runtimeRegistry = inject<PopupContentRuntimeRegistry | undefined>(
   popupContentRuntimeRegistryKey,
