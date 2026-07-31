@@ -3,6 +3,7 @@ export { default as FillStyle } from './src/types/FillStyle';
 export { default as LineStyle } from './src/types/LineStyle';
 export { default as SymbolStyle } from './src/types/SymbolStyle';
 export { default as DrawEvent } from './src/types/DrawEvent';
+export { getDefaultLayerStyle } from './src/types';
 
 export { default as MapEvents } from './src/utils/MapEvents';
 
@@ -26,3 +27,4 @@ export { default as ScaleViewModel } from './src/ScaleViewModel';
 export { default as ZoomViewModel } from './src/ZoomViewModel';
 export { default as WebMapViewModel } from './src/WebMapViewModel';
 export { default as WebSceneViewModel } from './src/WebSceneViewModel';
+export { default as SceneHighlightViewModel } from './src/SceneHighlightViewModel';

@@ -7,6 +7,7 @@ import { QueryByGeometryParameters } from '@supermapgis/iclient-common/iServer/Q
 import { FilterParameter } from '@supermapgis/iclient-common/iServer/FilterParameter';
 import { GetFeaturesBySQLParameters } from '@supermapgis/iclient-common/iServer/GetFeaturesBySQLParameters';
 import { GetFeaturesByBoundsParameters } from '@supermapgis/iclient-common/iServer/GetFeaturesByBoundsParameters';
+import { GetFeaturesByGeometryParameters } from '@supermapgis/iclient-common/iServer/GetFeaturesByGeometryParameters';
 import { Util } from '@supermapgis/iclient-common/commontypes/Util';
 import { GeometryPolygon, GeometryLinearRing, GeometryPoint } from '@supermapgis/iclient-common/commontypes';
 import { Events } from 'vue-iclient-core/types/event/Events';
@@ -265,6 +266,56 @@ export default class iServerRestService extends Events {
     return new FeatureService(dataUrl).getFeaturesDatasetInfo(sqlParam).then(function (serviceResult) {
       return serviceResult.result[0].fieldInfos;
     });
+  }
+
+  /**
+   * @function iServerRestService.prototype.getFeaturesByGeometry
+   * @description 数据服务空间查询（GetFeaturesByGeometry）。
+   * @param {Object} datasetInfo - 数据集参数。
+   * @param {string} datasetInfo.dataUrl - 数据服务地址（rest/data）。
+   * @param {string} datasetInfo.dataSourceName - 数据源名。
+   * @param {string} datasetInfo.datasetName - 数据集名。
+   * @param {Object} queryInfo - 查询参数。
+   * @param {Object} queryInfo.geometry - 查询几何对象。
+   * @param {string} [queryInfo.spatialQueryMode='INTERSECT'] - 空间查询模式。
+   * @param {string} [queryInfo.attributeFilter] - 属性过滤条件。
+   * @param {number} [queryInfo.maxFeatures] - 最多返回要素数。
+   * @param {boolean} [queryInfo.withCredentials] - 是否携带凭据。
+   * @returns {Promise} 返回 GeoJSON FeatureCollection（serviceResult.result.features）。
+   * @example
+   *   const service = new iServerRestService(dataUrl);
+   *   const geojson = await service.getFeaturesByGeometry(
+   *     { dataUrl, dataSourceName: 'World', datasetName: 'Countries' },
+   *     { geometry: queryGeometry, spatialQueryMode: 'INTERSECT' }
+   *   );
+   */
+  async getFeaturesByGeometry(datasetInfo, queryInfo = {}) {
+    const { datasetName, dataSourceName, dataUrl } = datasetInfo || {};
+    const url = dataUrl || this.url;
+    if (!url || !dataSourceName || !datasetName || !queryInfo.geometry) {
+      throw new Error('getFeaturesByGeometry 缺少 dataUrl / dataSourceName / datasetName / geometry');
+    }
+    const expectCountOptions = this._calcFeaturesExpectCountOptions(queryInfo);
+    const geometryParam = new GetFeaturesByGeometryParameters({
+      datasetNames: [`${dataSourceName}:${datasetName}`],
+      geometry: queryInfo.geometry,
+      spatialQueryMode: queryInfo.spatialQueryMode || 'INTERSECT',
+      attributeFilter: queryInfo.attributeFilter,
+      orderBy: queryInfo.orderBy,
+      maxFeatures: expectCountOptions.maxFeatures,
+      fromIndex: expectCountOptions.fromIndex,
+      toIndex: expectCountOptions.toIndex,
+      hasGeometry: this.options.hasGeometry,
+      returnFeaturesOnly: this.options.returnFeaturesOnly,
+      targetPrj: {
+        epsgCode: 4326
+      }
+    });
+    const serviceResult = await new FeatureService(url, {
+      proxy: this.options.proxy,
+      withCredentials: queryInfo.withCredentials
+    }).getFeaturesByGeometry(geometryParam);
+    return (serviceResult.result && serviceResult.result.features) || serviceResult.result;
   }
 
   _queryMapFeatures(url, queryInfo) {

@@ -7,9 +7,7 @@ import {
   mapGetterProps,
   themeProps
 } from '@supermapgis/common/utils/index.common'
-import LineStyle from 'vue-iclient-controllers-mapboxgl/src/types/LineStyle'
-import FillStyle from 'vue-iclient-controllers-mapboxgl/src/types/FillStyle'
-import CircleStyle from 'vue-iclient-controllers-mapboxgl/src/types/CircleStyle'
+import { getDefaultLayerStyle } from 'vue-iclient-controllers-mapboxgl/src/types'
 
 export type {
   videoOptions,
@@ -41,33 +39,7 @@ const popupProps = () => ({
   },
   layerStyle: {
     type: Object as PropType<HighlightStyle>,
-    default() {
-      return {
-        line: new LineStyle({
-          'line-width': 3,
-          'line-color': '#409eff',
-          'line-opacity': 1
-        }),
-        circle: new CircleStyle({
-          'circle-color': '#409eff',
-          'circle-opacity': 0.6,
-          'circle-radius': 8,
-          'circle-stroke-width': 2,
-          'circle-stroke-color': '#409eff',
-          'circle-stroke-opacity': 1
-        }),
-        fill: new FillStyle({
-          'fill-color': '#409eff',
-          'fill-opacity': 0.6,
-          'fill-outline-color': '#409eff'
-        }),
-        strokeLine: new LineStyle({
-          'line-width': 3,
-          'line-color': '#409eff',
-          'line-opacity': 1
-        })
-      }
-    }
+    default: () => getDefaultLayerStyle()
   },
   useMapPopup: {
     type: Boolean,

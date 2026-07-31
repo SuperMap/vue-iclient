@@ -37,6 +37,7 @@ import { SmTextList } from '@supermapgis/mapboxgl/components/text-list'
 import { SmChart } from '@supermapgis/mapboxgl/components/chart'
 import { SmSceneMeasure } from '@supermapgis/mapboxgl/components/scene-measure'
 import { SmSceneMapSwitch } from '@supermapgis/mapboxgl/components/scene-map-switch'
+import { SmSceneAttributePopup } from '@supermapgis/mapboxgl/components/scene-attribute-popup'
 import { SmSceneSkylineAnalysis } from '@supermapgis/mapboxgl/components/scene-skyline-analysis'
 import { SmSceneSplitScreen } from '@supermapgis/mapboxgl/components/scene-split-screen'
 import { SmSceneRollerShutter } from '@supermapgis/mapboxgl/components/scene-roller-shutter'
@@ -80,6 +81,7 @@ export default [
   SmSceneViewModeSwitcher,
   SmSceneZoom,
   SmSceneMapSwitch,
+  SmSceneAttributePopup,
   SmSceneSkylineAnalysis,
   SmSceneSplitScreen,
   SmSceneRollerShutter,

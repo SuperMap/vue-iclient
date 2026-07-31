@@ -136,7 +136,7 @@ const sourceLayers = computed(() => popupInfosValue.value?.map(item => item.laye
 watch(
   highlightLayerIds,
   ids => {
-    interaction.value.setLayerIds(ids, sourceLayers.value)
+    interaction.value.setLayerIds?.(ids, sourceLayers.value)
   },
   { immediate: true }
 )

@@ -47,7 +47,7 @@ export interface AttributePopupInteraction {
   /** 运行环境（map/scene，注入 CUSTOM 的 context） */
   runtimeContext?: Ref<Record<string, any> | undefined> | ComputedRef<Record<string, any> | undefined>
 
-  setLayerIds: (layerIds: string[], sourceLayers?: string[][]) => void
+  setLayerIds?: (layerIds: string[], sourceLayers?: string[][]) => void
   queryFeaturesByLayerId: (layerId: string) => void
   setHighlightLayerFilter: (
     layerId: string,

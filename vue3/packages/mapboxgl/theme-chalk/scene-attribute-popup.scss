@@ -1,0 +1,72 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+
+@include b(scene-attribute-popup) {
+  pointer-events: auto;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+  background: $color-bg-container;
+  border-radius: 4px;
+  max-width: 100%;
+
+  // When ViewModel sets maxHeight near edges, scroll body instead of covering the feature
+  > .content {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  // Default: popup below feature, tip on left, pointing up
+  .popup-tip {
+    position: absolute;
+    top: -20px;
+    left: 16px;
+    width: 0;
+    height: 0;
+    border: 10px solid transparent;
+    border-bottom-color: var(--color-bg-elevated, #{$color-bg-container});
+    z-index: 1;
+    pointer-events: none;
+    filter: drop-shadow(0 -1px 1px rgb(0 0 0 / 6%));
+  }
+
+  // Tip on right side of popup (corner placements)
+  &.popup-placement-right {
+    .popup-tip {
+      left: auto;
+      right: 16px;
+    }
+  }
+
+  // Popup above feature: tip at bottom, pointing down
+  &.popup-placement-top {
+    .popup-tip {
+      top: auto;
+      bottom: -20px;
+      border-bottom-color: transparent;
+      border-top-color: var(--color-bg-elevated, #{$color-bg-container});
+      filter: drop-shadow(0 1px 1px rgb(0 0 0 / 6%));
+    }
+  }
+
+  // Popup to the right of feature: tip on left middle, pointing left
+  &.popup-placement-side-right {
+    .popup-tip {
+      inset: 50% auto auto -20px;
+      transform: translateY(-50%);
+      border-color: transparent;
+      border-right-color: var(--color-bg-elevated, #{$color-bg-container});
+      filter: drop-shadow(-1px 0 1px rgb(0 0 0 / 6%));
+    }
+  }
+
+  // Popup to the left of feature: tip on right middle, pointing right
+  &.popup-placement-side-left {
+    .popup-tip {
+      inset: 50% -20px auto auto;
+      transform: translateY(-50%);
+      border-color: transparent;
+      border-left-color: var(--color-bg-elevated, #{$color-bg-container});
+      filter: drop-shadow(1px 0 1px rgb(0 0 0 / 6%));
+    }
+  }
+}
