@@ -26,11 +26,20 @@ interface cesiumOptions {
   tiandituOptions?: Object;
 }
 
-export type SceneAppreciableLayerCategory = 'imagLayers' | 'mvtLayers' | 's3mLayers' | 'tinLayer';
+export type SceneAppreciableLayerCategory =
+  | 'imagLayers'
+  | 'mvtLayers'
+  | 's3mLayers'
+  | 'dataLayers'
+  | 'tinLayer';
 
 export interface SceneAppreciableLayer {
   category: SceneAppreciableLayerCategory;
+  id?: string;
   customName?: string;
+  dataSourceName?: string;
+  datasetName?: string;
+  serviceType?: string;
   maximumLevel?: number;
   show: boolean;
   type?: string;
@@ -375,7 +384,7 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
   }
 
   /**
-   * 获取场景中可感知图层列表（影像 / MVT / S3M / 地形），解析逻辑参考 scene-layer-list。
+   * 获取场景中可感知图层列表（影像 / MVT / S3M / REST Data / 地形），解析逻辑参考 scene-layer-list。
    */
   getAppreciableLayers(): SceneAppreciableLayer[] {
     if (!this.viewer) {
@@ -385,6 +394,7 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
     layers.push(...this._getS3mAppreciableLayers());
     layers.push(...this._getImageryAppreciableLayers());
     layers.push(...this._getMvtAppreciableLayers());
+    layers.push(...this._getRestDataAppreciableLayers());
     const tinLayer = this._getTinAppreciableLayer();
     if (tinLayer) {
       layers.push(tinLayer);
@@ -453,6 +463,49 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
       type: this._getObjectType(layer) || 'MVT',
       url: this._getLayerUrl(layer)
     }));
+  }
+
+  _getRestDataAppreciableLayers(): SceneAppreciableLayer[] {
+    const collection = this.viewer?.dataSources;
+    if (!collection) {
+      return [];
+    }
+    const dataSources: any[] = [];
+    if (typeof collection.length === 'number' && typeof collection.get === 'function') {
+      for (let index = 0; index < collection.length; index++) {
+        dataSources.push(collection.get(index));
+      }
+    } else if (Array.isArray(collection._dataSources)) {
+      dataSources.push(...collection._dataSources);
+    }
+
+    return dataSources.reduce((layers: SceneAppreciableLayer[], dataSource: any) => {
+      const entities = dataSource?.entities?.values || [];
+      const entityLayerData = entities.find(
+        (entity: any) => entity?.___layerFeatureData
+      )?.___layerFeatureData;
+      const layerData = dataSource?.___layerData || entityLayerData?.data;
+      const config = layerData?.config;
+      if (layerData?.type !== 'data' || config?.type !== 'rest') {
+        return layers;
+      }
+      const id = String(layerData.id || entityLayerData?.layerId || '').trim();
+      const customName = String(layerData.name || dataSource?.name || id).trim();
+      if (!id && !customName) {
+        return layers;
+      }
+      layers.push({
+        category: 'dataLayers',
+        id: id || customName,
+        customName: customName || id,
+        show: dataSource?.show !== false && dataSource?.entities?.show !== false,
+        serviceType: 'REST_DATA',
+        url: typeof config.url === 'string' ? config.url : undefined,
+        dataSourceName: config.datasourceName,
+        datasetName: config.datasetName
+      });
+      return layers;
+    }, []);
   }
 
   _getTinAppreciableLayer(): SceneAppreciableLayer | null {

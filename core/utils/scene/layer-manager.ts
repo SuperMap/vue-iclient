@@ -1185,7 +1185,7 @@ class ClusterForeManager {
   getLayer(item: LayerCheckData) {
     const config = item.config || {}
     const icon = getIcon(config.icon || {})
-    this.layers[item.id as string] =
+    const layer =
       this.layers[item.id as string] ||
       new EntitiesLayer(this.viewer, {
         name: item.name,
@@ -1219,7 +1219,9 @@ class ClusterForeManager {
           }
         }
       })
-    return this.layers[item.id as string]
+    this.layers[item.id as string] = layer
+    layer.dataSource.___layerData = item
+    return layer
   }
 
   async addLayer(

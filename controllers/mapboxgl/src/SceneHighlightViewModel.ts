@@ -11,7 +11,7 @@ import { getDefaultLayerStyle } from './types';
  * - mvt: rest/data MVT overlay layer in scene
  * GeoJSON / LayerManager entity layers: prefer scene.pick properties, skip data service request.
  */
-export type SceneQueryLayerType = 'restMap' | 'mvt';
+export type SceneQueryLayerType = 'restMap' | 'mvt' | 'restData';
 
 /** rest/data query data source */
 export interface SceneQueryDataSource {
@@ -41,11 +41,14 @@ export interface SceneQueryLayer {
   dataSource?: SceneQueryDataSource;
 }
 
-/** Visible rest/map imagery or rest/data MVT overlay under current scene */
+/** Visible rest/map imagery, rest/data MVT overlay or REST Data entity layer under current scene */
 export interface SceneOverlayLayerInfo {
-  category: 'imagLayers' | 'mvtLayers';
+  category: 'imagLayers' | 'mvtLayers' | 'dataLayers';
   /** layer identity used to match popupInfos.layerId (customName / name) */
   id: string;
+  name?: string;
+  dataSourceName?: string;
+  datasetName?: string;
   url?: string;
   type?: string;
   show: boolean;
@@ -502,7 +505,7 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
       return null;
     }
     const owner = entity.entityCollection?.owner;
-    const layer = this.matchLayerByPickedOwner(owner);
+    const layer = this.matchLayerByPickedEntity(entity, owner);
     if (!layer) {
       return null;
     }
@@ -530,8 +533,10 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
     if (entity?.___data && typeof entity.___data === 'object') {
       return { ...entity.___data };
     }
-    if (entity?.___layerFeatureData?.properties && typeof entity.___layerFeatureData.properties === 'object') {
-      return { ...entity.___layerFeatureData.properties };
+    const layerFeatureProps =
+      entity?.___layerFeatureData?.props ?? entity?.___layerFeatureData?.properties;
+    if (layerFeatureProps && typeof layerFeatureProps === 'object') {
+      return { ...layerFeatureProps };
     }
     const props = entity?.properties;
     if (!props) {
@@ -555,10 +560,37 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
     return result;
   }
 
-  /** Match picked GeoJSON/dataSource owner name to popupInfos / layers config */
-  private matchLayerByPickedOwner(owner: any): SceneQueryLayer | null {
-    const name = String(owner?.name || '').trim();
-    if (!name) {
+  /** Match LayerManager metadata or a generic GeoJSON dataSource name to popupInfos. */
+  private matchLayerByPickedEntity(entity: any, owner: any): SceneQueryLayer | null {
+    const featureLayerData = entity?.___layerFeatureData;
+    const layerData = featureLayerData?.data;
+    const layerConfig = layerData?.config;
+    const ownerName = String(owner?.name || '').trim();
+    const metadataLayerId = String(featureLayerData?.layerId || layerData?.id || '').trim();
+    const appreciableLayer = (this.webscene?.getAppreciableLayers?.() || []).find(layer => {
+      if (layer.category !== 'dataLayers') {
+        return false;
+      }
+      return (
+        (!!metadataLayerId && this.isSameLayerIdentity(String(layer.id || ''), metadataLayerId)) ||
+        (!!ownerName && this.isSameLayerIdentity(String(layer.customName || ''), ownerName))
+      );
+    });
+    const pickedIdentities = [
+      metadataLayerId,
+      layerData?.name,
+      ownerName,
+      appreciableLayer?.id,
+      appreciableLayer?.customName,
+      layerConfig?.datasetName,
+      layerConfig?.datasourceName,
+      layerConfig?.datasetName && layerConfig?.datasourceName
+        ? `${layerConfig.datasetName}@${layerConfig.datasourceName}`
+        : ''
+    ]
+      .filter(Boolean)
+      .map(item => String(item).trim());
+    if (!pickedIdentities.length) {
       return null;
     }
     const layers = this.options.layers || [];
@@ -573,17 +605,28 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
       ]
         .filter(Boolean)
         .map(item => String(item).trim());
-      return candidates.some(
-        id =>
-          id === name ||
-          id.toLowerCase() === name.toLowerCase() ||
-          // unique layerId may be `World@@World.Rivers`
-          id.includes(`@@${name}`) ||
-          id.endsWith(`.${name}`) ||
-          id.endsWith(`:${name}`)
+      return candidates.some(candidate =>
+        pickedIdentities.some(identity => this.isSameLayerIdentity(candidate, identity))
       );
     });
     return hit || null;
+  }
+
+  private isSameLayerIdentity(first: string, second: string) {
+    const left = String(first || '').trim();
+    const right = String(second || '').trim();
+    if (!left || !right) {
+      return false;
+    }
+    const lowerLeft = left.toLowerCase();
+    const lowerRight = right.toLowerCase();
+    return (
+      lowerLeft === lowerRight ||
+      lowerLeft.startsWith(`${lowerRight}@@`) ||
+      lowerLeft.includes(`@@${lowerRight}`) ||
+      lowerLeft.endsWith(`.${lowerRight}`) ||
+      lowerLeft.endsWith(`:${lowerRight}`)
+    );
   }
 
   private entityToGeoJsonGeometry(entity: any): GeoJSON.Geometry | undefined {
@@ -846,14 +889,18 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
    * Collect visible queryable overlays from webscene.getAppreciableLayers:
    * - imagLayers: SuperMapImageryProvider / rest/maps
    * - mvtLayers: scene vector tile maps
+   * - dataLayers: LayerManager REST Data entity layers
    */
   getVisibleOverlayLayers(): SceneOverlayLayerInfo[] {
     const appreciableLayers = this.webscene?.getAppreciableLayers?.() || [];
     return appreciableLayers
       .filter(layer => this.isQueryableAppreciableLayer(layer))
       .map(layer => ({
-        category: layer.category as 'imagLayers' | 'mvtLayers',
-        id: String(layer.customName || ''),
+        category: layer.category as 'imagLayers' | 'mvtLayers' | 'dataLayers',
+        id: String(layer.id || layer.customName || ''),
+        name: layer.customName,
+        dataSourceName: layer.dataSourceName,
+        datasetName: layer.datasetName,
         url: layer.url,
         type: layer.type,
         show: layer.show !== false
@@ -864,6 +911,9 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
   private isQueryableAppreciableLayer(layer: SceneAppreciableLayer) {
     if (!layer || layer.show === false || !layer.customName) {
       return false;
+    }
+    if (layer.category === 'dataLayers') {
+      return true;
     }
     if (layer.category === 'mvtLayers') {
       return true;
@@ -901,25 +951,32 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
   private matchLayerConfig(config: SceneQueryLayer, overlay: SceneOverlayLayerInfo) {
     // Prefer matchId when multiple datasets share one overlay layerId
     const configId = String(config.matchId || config.id || '').trim();
-    const overlayId = String(overlay.id || '').trim();
-    if (!configId || !overlayId) {
+    const overlayIds = [overlay.id, overlay.name].filter(Boolean).map(item => String(item).trim());
+    if (!configId || !overlayIds.length) {
       return false;
     }
-    if (configId === overlayId) {
-      return true;
+    if (config.type === 'mvt' && overlay.category !== 'mvtLayers') {
+      return false;
     }
-    if (configId.toLowerCase() === overlayId.toLowerCase()) {
+    if (config.type === 'restMap' && overlay.category !== 'imagLayers') {
+      return false;
+    }
+    if (config.type === 'restData' && overlay.category !== 'dataLayers') {
+      return false;
+    }
+    if (overlayIds.some(overlayId => this.isSameLayerIdentity(configId, overlayId))) {
       return true;
     }
     // layerId may be map name while overlay id comes from url path segment
     if (overlay.url && overlay.url.includes(`/rest/maps/${configId}`)) {
       return true;
     }
-    if (config.type && overlay.category === 'mvtLayers' && config.type !== 'mvt') {
-      return false;
-    }
-    if (config.type === 'restMap' && overlay.category !== 'imagLayers') {
-      return false;
+    if (
+      overlay.category === 'dataLayers' &&
+      config.dataSource?.dataSourceName === overlay.dataSourceName &&
+      config.dataSource?.datasetName === overlay.datasetName
+    ) {
+      return true;
     }
     return false;
   }
