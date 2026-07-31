@@ -17,8 +17,9 @@
 import type { WebSceneProps, WebSceneEvents } from './types'
 import { webScenePropsDefault } from './types'
 import WebSceneViewModel from 'vue-iclient-controllers-mapboxgl/src/WebSceneViewModel';
-import { isEqual } from 'lodash-es';
+import { cloneDeep, isEqual } from 'lodash-es';
 import sceneEvent from 'vue-iclient-core/types/scene-event';
+import { LayerManager, type LayerCheckData } from 'vue-iclient-core/utils/scene';
 import { watch, computed, onMounted, onBeforeUnmount } from 'vue';
 import SmSceneLayerList from '@supermapgis/mapboxgl/components/scene-layer-list/scene-layer-list.vue'
 import SmSceneLayerManager from '@supermapgis/mapboxgl/components/scene-layer-manager/scene-layer-manager.vue'
@@ -75,6 +76,137 @@ const controlComponents: Record<string, any> = computed(() => {
 })
 
 let webSceneViewModel: WebSceneViewModel | null = null;
+let layerManager: LayerManager | null = null;
+let layerManagerVersion = 0;
+let layerOperationQueue = Promise.resolve();
+const loadedLayers = new Map<string, LayerCheckData>();
+
+const isCurrentLayerManager = (manager: LayerManager, managerVersion: number) => {
+  return manager === layerManager && managerVersion === layerManagerVersion;
+};
+
+const getConfiguredLayers = () => {
+  const layers = Array.isArray(props.layers) ? cloneDeep(props.layers) : [];
+  const uniqueLayers = new Map<string, LayerCheckData>();
+  layers.forEach(layer => {
+    const id = String(layer?.id || '').trim();
+    const config = layer?.config;
+    const isRestDataLayerValid =
+      layer?.type !== 'data' ||
+      (config?.type === 'rest' &&
+        !!String(config.url || '').trim() &&
+        !!String(config.datasourceName || '').trim() &&
+        !!String(config.datasetName || '').trim());
+    if (!id || uniqueLayers.has(id) || !isRestDataLayerValid) {
+      return;
+    }
+    uniqueLayers.set(id, {
+      ...layer,
+      id
+    });
+  });
+  return uniqueLayers;
+};
+
+const syncConfiguredLayers = async (manager: LayerManager, managerVersion: number) => {
+  if (!isCurrentLayerManager(manager, managerVersion)) {
+    return;
+  }
+  const configuredLayers = getConfiguredLayers();
+  for (const [id, loadedLayer] of loadedLayers) {
+    if (!configuredLayers.has(id)) {
+      try {
+        await manager.check(loadedLayer, false);
+        if (isCurrentLayerManager(manager, managerVersion)) {
+          loadedLayers.delete(id);
+        }
+      } catch (error) {
+        console.error(`[SmWebScene] Failed to remove scene layer "${id}".`, error);
+      }
+    }
+  }
+  for (const [id, configuredLayer] of configuredLayers) {
+    if (!isCurrentLayerManager(manager, managerVersion)) {
+      return;
+    }
+    const loadedLayer = loadedLayers.get(id);
+    if (!loadedLayer) {
+      try {
+        await manager.check(configuredLayer, true);
+        if (isCurrentLayerManager(manager, managerVersion)) {
+          loadedLayers.set(id, configuredLayer);
+        }
+      } catch (error) {
+        console.error(`[SmWebScene] Failed to add scene layer "${id}".`, error);
+      }
+      continue;
+    }
+    if (!isEqual(loadedLayer, configuredLayer)) {
+      try {
+        await manager.handleDataChange({
+          ...configuredLayer,
+          checked: true
+        });
+        if (isCurrentLayerManager(manager, managerVersion)) {
+          loadedLayers.set(id, configuredLayer);
+        }
+      } catch (error) {
+        console.error(`[SmWebScene] Failed to update scene layer "${id}".`, error);
+      }
+    }
+  }
+};
+
+const enqueueLayerSync = () => {
+  const manager = layerManager;
+  const managerVersion = layerManagerVersion;
+  if (!manager) {
+    return;
+  }
+  layerOperationQueue = layerOperationQueue
+    .then(() => syncConfiguredLayers(manager, managerVersion))
+    .catch(error => {
+      console.error('[SmWebScene] Failed to synchronize scene layers.', error);
+    });
+};
+
+const initializeLayerManager = (viewer: unknown) => {
+  const managerVersion = ++layerManagerVersion;
+  layerOperationQueue = layerOperationQueue
+    .then(async () => {
+      if (layerManager) {
+        await layerManager.removeAll();
+      }
+      if (managerVersion !== layerManagerVersion) {
+        return;
+      }
+      layerManager = new LayerManager(viewer);
+      loadedLayers.clear();
+      await syncConfiguredLayers(layerManager, managerVersion);
+    })
+    .catch(error => {
+      console.error('[SmWebScene] Failed to initialize scene layers.', error);
+    });
+};
+
+const disposeLayerManager = () => {
+  layerManagerVersion += 1;
+  const manager = layerManager;
+  layerManager = null;
+  loadedLayers.clear();
+  if (manager) {
+    layerOperationQueue = layerOperationQueue
+      .then(() => manager.removeAll())
+      .then(() => {
+        if (!layerManager) {
+          loadedLayers.clear();
+        }
+      })
+      .catch(error => {
+        console.error('[SmWebScene] Failed to remove scene layers.', error);
+      });
+  }
+};
 
 const changeViewerPositionFn = (e: any) => {
   emit('viewer-position-changed', e.position);
@@ -85,6 +217,9 @@ const changeScanPositionFn = (e: any) => {
 };
 
 const instanceDidLoadFn = (e: any) => {
+  if (e.instance?.viewer) {
+    initializeLayerManager(e.instance.viewer);
+  }
   emit('instance-did-load', e.instance);
 };
 
@@ -97,6 +232,14 @@ const registerEvents = () => {
 watch(() => props.sceneUrl, () => {
   webSceneViewModel?.setSceneUrl(props.sceneUrl);
 });
+
+watch(
+  () => props.layers,
+  () => {
+    enqueueLayerSync();
+  },
+  { deep: true }
+);
 
 watch(() => props.options.scanEffect, (scanEffect) => {
   webSceneViewModel?.setScanEffect(scanEffect);
@@ -130,6 +273,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  disposeLayerManager();
   webSceneViewModel.off('viewerpositionchanged', changeViewerPositionFn);
   webSceneViewModel.off('scanpositionchanged', changeScanPositionFn);
   webSceneViewModel.off('instancedidload', instanceDidLoadFn);

@@ -1,6 +1,7 @@
 import type { ShortEmits } from '@supermapgis/common/utils/index.common'
 import { getPropsDefaults } from '@supermapgis/common/utils/index.common'
 import type { PropType } from 'vue'
+import type { LayerCheckData } from 'vue-iclient-core/utils/scene'
 
 interface scanEffect {
   status?: boolean;
@@ -36,6 +37,10 @@ export const webSceneProps = () => ({
   target: {
     type: String,
     default: 'scene'
+  },
+  layers: {
+    type: Array as PropType<LayerCheckData[]>,
+    default: () => []
   },
   flyAnimation: {
     type: Boolean
@@ -89,6 +94,7 @@ export type WebSceneProps = {
   openConfigPath?: string
   options?: cesiumOptions
   target?: string
+  layers?: LayerCheckData[]
   flyAnimation?: boolean
   sceneLayerListControl?: Object
   sceneLayerManagerControl?: object
