@@ -406,6 +406,7 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
     const layerQueue = this.viewer?.scene?.layers?._layerQueue || this.viewer?.scene?.layers?.layerQueue || [];
     return layerQueue.map((layer: any) => ({
       category: 's3mLayers' as const,
+      id: layer?.name,
       customName: layer?.name,
       show: layer?.visible !== false,
       type: this._getObjectType(layer) || 'S3M',
@@ -427,6 +428,7 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
       const maximumLevel = this._getImageryMaximumLevel(provider);
       result.push({
         category: 'imagLayers',
+        id: customName,
         customName,
         show: layer?.show !== false,
         type: this._getObjectType(provider) || 'ImageryProvider',
@@ -458,6 +460,7 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
     const layerQueue = this.viewer?.scene?._vectorTileMaps?._layerQueue || [];
     return layerQueue.map((layer: any) => ({
       category: 'mvtLayers' as const,
+      id: layer?.name,
       customName: layer?.name,
       show: layer?.show !== false,
       type: this._getObjectType(layer) || 'MVT',
@@ -524,6 +527,7 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
     }
     return {
       category: 'tinLayer',
+      id: customName,
       customName,
       show: true,
       type: this._getObjectType(terrainProvider) || 'TerrainProvider',
