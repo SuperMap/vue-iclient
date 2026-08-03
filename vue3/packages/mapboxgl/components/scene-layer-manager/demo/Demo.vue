@@ -203,7 +203,6 @@ const layerConfig: SceneLayerConfigNode[] = [
           heatRadius: 30,
           cover: {
             minLevel: 18,
-            minCameraHeight: 100000,
             width: 30,
             enabled: true,
             height: 100
@@ -361,7 +360,6 @@ const layerConfig: SceneLayerConfigNode[] = [
           heatRadius: 30,
           cover: {
             minLevel: 16,
-            minCameraHeight: -1000,
             width: 100,
             enabled: true,
             height: 100
@@ -494,7 +492,6 @@ const layerConfig: SceneLayerConfigNode[] = [
           heatRadius: 30,
           cover: {
             minLevel: 16,
-            minCameraHeight: -1000,
             width: 100,
             enabled: true,
             height: 100

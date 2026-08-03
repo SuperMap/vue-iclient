@@ -125,6 +125,26 @@ function isObject(value: unknown): value is Record<string, any> {
 const MAX_FEATURES_COUNT = 30000
 const FRONT_CLUSTER = 1
 const BACK_CLUSTER = 2
+const COVER_LEVEL_HEIGHT: Record<number, number> = {
+  1: 7e7,
+  2: 35e6,
+  3: 119e5,
+  4: 61e5,
+  5: 26e5,
+  6: 128e4,
+  7: 64e4,
+  8: 38e4,
+  9: 250600,
+  10: 139780,
+  11: 67985,
+  12: 26e3,
+  13: 13200,
+  14: 6400,
+  15: 2600,
+  16: 1300,
+  17: 660,
+  18: 300
+}
 
 function getFeatureCollection(features: GeoJSON.Feature[]) {
   return {
@@ -229,6 +249,23 @@ function getVisibleAltitudeRange(config: Record<string, any> = {}): [number, num
     ? Math.max(min, config.maxVisibleAltitude)
     : Number.MAX_VALUE
   return [min, max]
+}
+
+function getEntityScreenRectangle(viewer: any, entity: any, config: Record<string, any>) {
+  const SuperMap3D = getSuperMap3D()
+  const cartesian = entity.position.getValue(viewer.clock.currentTime)
+  const screenPosition = SuperMap3D.SceneTransforms.wgs84ToWindowCoordinates(viewer.scene, cartesian)
+  if (!screenPosition) {
+    return null
+  }
+  const icon = getIcon(config.icon || {})
+  const cover = config.cover
+  return new SuperMap3D.Rectangle(
+    screenPosition.x,
+    screenPosition.y,
+    screenPosition.x + icon.width + cover.width,
+    screenPosition.y + icon.height + cover.height
+  )
 }
 
 function parseLayerCameraConfig(
@@ -694,7 +731,7 @@ class EntitiesLayer {
     const cover = Object.assign(
       {
         enabled: false,
-        minCameraHeight: -1000,
+        minLevel: 18,
         width: 30,
         height: 30,
         judgeCallback: null
@@ -1184,11 +1221,18 @@ class ClusterForeManager {
   manager: LayerManager
   viewer: any
   layers: Record<string, EntitiesLayer>
+  simplificationLayers: Map<string, LayerCheckData>
+  rectangleCollisionCheck: any
+  _cameraMoveEndEvent: (() => void) | null
 
   constructor(manager: LayerManager) {
+    const SuperMap3D = getSuperMap3D()
     this.manager = manager
     this.viewer = manager.viewer
     this.layers = {}
+    this.simplificationLayers = new Map()
+    this.rectangleCollisionCheck = new SuperMap3D.RectangleCollisionChecker()
+    this._cameraMoveEndEvent = null
   }
 
   getLayerById(id: string) {
@@ -1198,6 +1242,7 @@ class ClusterForeManager {
   getLayer(item: LayerCheckData) {
     const config = item.config || {}
     const icon = getIcon(config.icon || {})
+    this._syncSimplificationLayer(item)
     const layer =
       this.layers[item.id as string] ||
       new EntitiesLayer(this.viewer, {
@@ -1237,6 +1282,68 @@ class ClusterForeManager {
     return layer
   }
 
+  _syncSimplificationLayer(item: LayerCheckData) {
+    const id = String(item.id || '')
+    if (!id) {
+      return
+    }
+    if (item.config?.cover?.enabled === true) {
+      this.simplificationLayers.set(id, item)
+      this._addCameraMoveEndEvent()
+    } else {
+      this.simplificationLayers.delete(id)
+      this.layers[id]?.showAll()
+      if (!this.simplificationLayers.size) {
+        this._removeCameraMoveEndEvent()
+      }
+    }
+  }
+
+  _addCameraMoveEndEvent() {
+    if (this._cameraMoveEndEvent) {
+      return
+    }
+    this._cameraMoveEndEvent = this.simplification.bind(this)
+    this.viewer.camera.moveEnd.addEventListener(this._cameraMoveEndEvent)
+  }
+
+  _removeCameraMoveEndEvent() {
+    const callback = this._cameraMoveEndEvent
+    if (!callback) {
+      return
+    }
+    this.viewer.camera.moveEnd.removeEventListener(callback)
+    this._cameraMoveEndEvent = null
+  }
+
+  simplification() {
+    this.rectangleCollisionCheck._tree.clear()
+    const cameraHeight = getViewerCameraHeight(this.viewer)
+    this.simplificationLayers.forEach((item, id) => {
+      const layer = this.layers[id]
+      if (!layer) {
+        return
+      }
+      const config = item.config || {}
+      const minLevelHeight = COVER_LEVEL_HEIGHT[config.cover.minLevel]
+      const shouldSimplify = cameraHeight !== null && cameraHeight > minLevelHeight
+      const entities = layer.getValues?.() || []
+      entities.forEach((entity: any, index: number) => {
+        const rectangle = getEntityScreenRectangle(this.viewer, entity, config)
+        if (!rectangle || !shouldSimplify) {
+          entity.show = true
+          return
+        }
+        if (this.rectangleCollisionCheck.collides(rectangle)) {
+          entity.show = false
+        } else {
+          entity.show = true
+          this.rectangleCollisionCheck.insert(`${id}-${index}`, rectangle)
+        }
+      })
+    })
+  }
+
   async addLayer(
     item: LayerCheckData,
     queryFun: () => Promise<LayerDataResult>
@@ -1254,6 +1361,9 @@ class ClusterForeManager {
     layer.removeAll()
     if (featureCollection.features.length > 0) {
       await this._addFeatures(featureCollection, item, layer)
+    }
+    if (this.simplificationLayers.size) {
+      this.simplification()
     }
     return {
       layer,
@@ -1475,6 +1585,10 @@ class ClusterForeManager {
   }
 
   remove(id: string) {
+    this.simplificationLayers.delete(String(id))
+    if (!this.simplificationLayers.size) {
+      this._removeCameraMoveEndEvent()
+    }
     const layer = this.layers[id]
     if (layer) {
       layer.removeAll()
@@ -1483,6 +1597,8 @@ class ClusterForeManager {
   }
 
   removeAll() {
+    this.simplificationLayers.clear()
+    this._removeCameraMoveEndEvent()
     Object.keys(this.layers).forEach(key => {
       this.remove(key)
     })
