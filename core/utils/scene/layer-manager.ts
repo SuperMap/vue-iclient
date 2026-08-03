@@ -218,6 +218,19 @@ function getIcon(option: Record<string, any> = {}) {
   }
 }
 
+function getVisibleAltitudeRange(config: Record<string, any> = {}): [number, number] | undefined {
+  const hasMin = typeof config.minVisibleAltitude === 'number'
+  const hasMax = typeof config.maxVisibleAltitude === 'number'
+  if (!hasMin && !hasMax) {
+    return undefined
+  }
+  const min = Number.isFinite(config.minVisibleAltitude) ? Math.max(0, config.minVisibleAltitude) : 0
+  const max = Number.isFinite(config.maxVisibleAltitude)
+    ? Math.max(min, config.maxVisibleAltitude)
+    : Number.MAX_VALUE
+  return [min, max]
+}
+
 function parseLayerCameraConfig(
   locateParams: LayerCheckData['locateParams']
 ): LayerCameraConfig | null {
@@ -1268,11 +1281,11 @@ class ClusterForeManager {
   ) {
     const config = item.config || {}
     const icon = getIcon(config.icon || {})
+    const visibleAltitudeRange = getVisibleAltitudeRange(config)
     const labelConfig = Object.assign(
       {
         field: '',
-        fontSize: 14,
-        maxVisibleAltitude: Number.MAX_VALUE
+        fontSize: 14
       },
       config.label
     )
@@ -1292,7 +1305,8 @@ class ClusterForeManager {
           uri: config.model.url,
           minimumPixelSize,
           scale: config.model?.scale || 1,
-          distanceDisplayCondition: getSuperMap3DDistanceDisplayCondition([0, config.model.maxVisibleAltitude])
+          distanceDisplayCondition:
+            visibleAltitudeRange || [0, config.model.maxVisibleAltitude]
         });
       } else {
         entity = layer.addMarker(position, {
@@ -1312,6 +1326,7 @@ class ClusterForeManager {
           labelOffsetY: labelConfig.field ? labelConfig.labelOffsetY || 0 : 0,
           data: props,
           disableDepthTestDistance: config.disableDepthTest ? undefined : Number.POSITIVE_INFINITY,
+          distanceDisplayCondition: visibleAltitudeRange,
           heightReference: config.heightField
             ? getSuperMap3D().HeightReference.NONE
             : getSuperMap3D().HeightReference.RELATIVE_TO_GROUND
@@ -1319,12 +1334,6 @@ class ClusterForeManager {
       };
       (entity as any).___data = props
       setLayerFeatureData(entity, item, props as Record<string, any>)
-      if (labelConfig.field && entity?.label) {
-        entity.label.distanceDisplayCondition = getSuperMap3DDistanceDisplayCondition([
-          0,
-          labelConfig.maxVisibleAltitude
-        ])
-      }
       if (config.showCallout) {
         layer.addPolyline(
           [
@@ -1333,7 +1342,7 @@ class ClusterForeManager {
           ],
           {
             material: config.stroke,
-            distanceDisplayCondition: getSuperMap3DDistanceDisplayCondition([0, config.calloutMaxVisibleAltitude])
+            distanceDisplayCondition: [0, config.calloutMaxVisibleAltitude]
           }
         )
       }
@@ -1348,6 +1357,8 @@ class ClusterForeManager {
     const config = item.config || {}
     const fill = config.fill || 'rgba(0,0,255,0.2)'
     const stroke = config.stroke || 'rgba(0,0,255,1)'
+    const visibleAltitudeRange = getVisibleAltitudeRange(config)
+    const visibleAltitudeDisplayCondition = getSuperMap3DDistanceDisplayCondition(visibleAltitudeRange)
     const idFiled = config.idField || 'smid'
     let fillByFieldColorConfig = config.fillByFieldColorConfig
     let fillByFieldColorFun: ((prop: Record<string, any>) => { name: string; color: string | null }) | null = null
@@ -1413,6 +1424,7 @@ class ClusterForeManager {
     const entities = await layer.addGeoJSON(featureCollection, {
       fill: getSuperMap3DColor(fill),
       stroke: getSuperMap3DColor(stroke),
+      strokeWidth: config.lineWidth,
       clampToGround: true
     })
     entities.forEach(entity => {
@@ -1431,6 +1443,14 @@ class ClusterForeManager {
         }
         if (entity.polyline) {
           entity.polyline.material = getSuperMap3DColor(fillByFieldColorMap[prop[idFiled]])
+        }
+      }
+      if (visibleAltitudeDisplayCondition) {
+        if (entity.polygon) {
+          entity.polygon.distanceDisplayCondition = visibleAltitudeDisplayCondition
+        }
+        if (entity.polyline) {
+          entity.polyline.distanceDisplayCondition = visibleAltitudeDisplayCondition
         }
       }
       setLayerFeatureData(entity, item, prop)
