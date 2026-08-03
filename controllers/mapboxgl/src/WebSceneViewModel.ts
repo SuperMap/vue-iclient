@@ -299,48 +299,117 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
     });
   }
 
+  /** 检查是否为 WebScene 保存的内容 */
+  _checkInfoIsWebScene(info: any): boolean {
+    return !!(info && info.extensions && info.scene && info.metadata);
+  }
+
+  /** 从 iPortal 场景数据中提取打开场景所需的信息 */
+  _computedRequireInfoFromData(data: { content: any }): { sceneInfo?: any; webSceneContent?: any } | undefined {
+    let content: any;
+    if (data.content) {
+      content = typeof data.content === 'string' ? JSON.parse(data.content) : data.content;
+    }
+
+    // iEarth 和 WebScene 保存的场景信息统一放在 sceneInfo，通过内部属性区分
+    let sceneInfo = content && content.sceneInfo;
+
+    // 计算 WebScene
+    let webSceneContent: any;
+    if (this._checkInfoIsWebScene(data)) {
+      // 直接导入的 webScene
+      webSceneContent = data;
+    } else if (this._checkInfoIsWebScene(content)) {
+      // WebScene 直接放在 content 字段
+      webSceneContent = content;
+    } else if (this._checkInfoIsWebScene(sceneInfo)) {
+      // WebScene 放在 content.sceneInfo 字段
+      webSceneContent = sceneInfo;
+    }
+
+    // 既不是有效的 iEarth sceneInfo，也不是 WebScene
+    if (sceneInfo && !sceneInfo.LayerOptions && !webSceneContent) {
+      return;
+    }
+
+    return {
+      // 有 WebScene 时优先走 WebScene 通道，不再走 OpenConfig
+      sceneInfo: webSceneContent ? undefined : sceneInfo,
+      webSceneContent
+    };
+  }
+
   openExistScene(sceneID, viewer, serverUrl, options) {
-    const rootUrl = serverUrl;
-    const url = rootUrl + '/web/scenes/' + sceneID + '.json';
-    this.getToken(rootUrl).then(({ tiandituKey, bingMapkey }) => {
+    const url = serverUrl + '/web/scenes/' + sceneID + '.json';
+    this.getToken(serverUrl).then(({ tiandituKey, bingMapkey }) => {
       fetch(url)
         .then((response) => response.json())
         .then((response) => {
-          if (response.content) {
-            const openConfig = new window.OpenConfig(viewer, {
-              tiandituKey, bingMapkey
+          if (!response.content) return;
+
+          let content = response.content;
+          if (typeof content === 'string') {
+            content = JSON.parse(content.replace(/"\.\/images\//g, `"${serverUrl}/apps/earth/v2/images/`));
+          }
+
+          let sceneInfo: any;
+          let webSceneContent: any;
+          if (content.sceneInfo) {
+            // 新版 iEarth 保存的信息
+            const requireInfo = this._computedRequireInfoFromData({ content });
+            if (!requireInfo) return;
+            sceneInfo = requireInfo.sceneInfo;
+            webSceneContent = requireInfo.webSceneContent;
+          } else {
+            // 老版 iEarth 保存的信息
+            sceneInfo = content;
+          }
+
+          if (!sceneInfo && !webSceneContent) return;
+
+          const onLoaded = (data: any) => {
+            sceneEvent.setScene(this.target, { viewer, content: data, webscene: this });
+            sceneEvent.triggerLoadEvent(this.target, this);
+          };
+
+          // 打开场景：走之前 iEarth 的场景保存逻辑
+          if (sceneInfo) {
+            if (!window.OpenConfig) return;
+            const openConfig = new window.OpenConfig(viewer, { tiandituKey, bingMapkey });
+            window.SuperMap3D.when(openConfig.openScene(sceneInfo), () => onLoaded(sceneInfo));
+          }
+
+          // 打开场景：走 WebScene 通道
+          if (webSceneContent) {
+            if (viewer.webScene) {
+              viewer.webScene.fromJSON(webSceneContent);
+              onLoaded(webSceneContent);
+            } else {
+              console.warn('当前依赖的SDK不支持WebScene');
+            }
+          }
+
+          if (
+            options.position?.destination?.x !== null &&
+            options.position?.orientation &&
+            options.position.orientation.pitch !== null
+          ) {
+            let { heading, roll, pitch } = options.position.orientation;
+            heading = window.SuperMap3D.Math.toRadians(heading);
+            roll = window.SuperMap3D.Math.toRadians(roll);
+            pitch = window.SuperMap3D.Math.toRadians(pitch);
+            viewer.scene.camera.setView({
+              destination: window.SuperMap3D.Cartesian3.fromDegrees(
+                options.position.destination.x,
+                options.position.destination.y,
+                options.position.destination.z
+              ),
+              orientation: { heading, pitch, roll }
             });
-            const content = response.content.replaceAll('"./images/', `"${serverUrl}/apps/earth/v2/images/`);
-            const data = JSON.parse(content);
-            const promise = openConfig.openScene(data);
-
-            window.SuperMap3D.when(promise, () => {
-              sceneEvent.setScene(this.target, { viewer, content: data, webscene: this });
-              sceneEvent.triggerLoadEvent(this.target, this);
-            })
-
-            if (
-              options.position.destination.x !== null &&
-              options.position.orientation &&
-              options.position.orientation.pitch !== null
-            ) {
-              let { heading, roll, pitch } = options.position.orientation;
-              heading = window.SuperMap3D.Math.toRadians(heading);
-              roll = window.SuperMap3D.Math.toRadians(roll);
-              pitch = window.SuperMap3D.Math.toRadians(pitch);
-              viewer.scene.camera.setView({
-                destination: window.SuperMap3D.Cartesian3.fromDegrees(
-                  options.position.destination.x,
-                  options.position.destination.y,
-                  options.position.destination.z
-                ),
-                orientation: { heading, pitch, roll }
-              });
-            }
-            if (options.tiandituOptions) {
-              const { type, label, token } = options.tiandituOptions;
-              this.openTianditu(this.viewer, token, type, label);
-            }
+          }
+          if (options.tiandituOptions) {
+            const { type, label, token } = options.tiandituOptions as { type: string; label: boolean; token: string };
+            this.openTianditu(this.viewer, token, type, label);
           }
         })
         .catch(function (error) {
