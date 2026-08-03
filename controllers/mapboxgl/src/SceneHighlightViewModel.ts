@@ -242,6 +242,8 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
   private onModifierKeyUp: (e: KeyboardEvent) => void;
   /** Ignore stale async click results when a newer click started */
   private clickSeq = 0;
+  /** Ignore stale async highlight when a newer highlight started */
+  private highlightSeq = 0;
   /** popup anchor in world coords; projected to screen every frame */
   private popupAnchor: { lng: number; lat: number; height: number } | null = null;
   private trackingPopupPosition = false;
@@ -782,7 +784,7 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
           this.clear();
         }
         this.emitSelectionChanged({
-          lngLat: [lng, lat],
+          lngLat: undefined,
           height,
           screenPosition: { x: position.x, y: position.y },
           features: isMultipleClick ? this.selectedFeatures.slice() : [],
@@ -795,13 +797,58 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
       this.fire('querystart', { lngLat: [lng, lat], height, isMultipleClick });
       const clickedFeatures = pickedFeatures.length
         ? pickedFeatures
-        : this.pickSingleLayerFeatures(await this.queryAtPoint(lng, lat));
+        : this.filterValidQueryFeatures(await this.queryAtPoint(lng, lat), lng, lat);
       if (seq !== this.clickSeq) {
         return;
       }
-      const nextLayerId = clickedFeatures[0]?.layerId;
-      // Ctrl+click accumulates only within the same layer; switching layer clears previous
-      // Evaluate before merge so plain click never takes the append-highlight path
+      if (!clickedFeatures.length) {
+        if (!isMultipleClick) {
+          this.clear();
+        }
+        this.emitSelectionChanged({
+          lngLat: undefined,
+          screenPosition: { x: position.x, y: position.y },
+          features: isMultipleClick ? this.selectedFeatures.slice() : [],
+          isMultipleClick,
+          isSecMultipleClick: false
+        });
+        this.fire('queryend', {
+          features: [],
+          layerIds: [],
+          layers: [],
+          isMultipleClick,
+          isSecMultipleClick: false
+        });
+        return;
+      }
+
+      const hitLayerIds = Array.from(new Set(clickedFeatures.map(item => item.layerId).filter(Boolean)));
+      const needsLayerPick =
+        !pickedFeatures.length && hitLayerIds.length > 1 && !isMultipleClick;
+
+      if (needsLayerPick) {
+        this.selectedFeatures = clickedFeatures.slice();
+        this.multiSelectActive = false;
+        this.clearHighlight();
+        if (clickedFeatures.length) {
+          this.setPopupAnchor(lng, lat, height);
+        }
+        const pickResult = this.emitSelectionChanged({
+          lngLat: [lng, lat],
+          height,
+          screenPosition: { x: position.x, y: position.y },
+          features: clickedFeatures,
+          isMultipleClick,
+          isSecMultipleClick: false
+        });
+        this.fire('queryend', pickResult);
+        return;
+      }
+
+      const featuresForHighlight = pickedFeatures.length
+        ? pickedFeatures
+        : this.pickSingleLayerFeatures(clickedFeatures);
+      const nextLayerId = featuresForHighlight[0]?.layerId;
       const sameLayerContinue = !!(
         isMultipleClick &&
         this.multiSelectActive &&
@@ -810,14 +857,13 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
         nextLayerId &&
         prevLayerId === nextLayerId
       );
-      this.mergeSelectedFeatures(clickedFeatures, isMultipleClick);
+      this.mergeSelectedFeatures(featuresForHighlight, isMultipleClick);
       const features = this.selectedFeatures.slice();
-      const clickedPrimary = clickedFeatures[0] ? [clickedFeatures[0]] : [];
+      const clickedPrimary = featuresForHighlight[0] ? [featuresForHighlight[0]] : [];
       if (sameLayerContinue) {
         await this.appendHighlightFeatures(clickedPrimary);
       } else {
-        // Single select / new multi session: full rebuild so previous highlights are dropped
-        await this.highlightFeatures(features);
+        await this.highlightFeatures(features, { replace: true });
       }
       if (seq !== this.clickSeq) {
         return;
@@ -835,6 +881,9 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
         isMultipleClick,
         isSecMultipleClick: sameLayerContinue
       });
+      if (features.length === 1 && !needsLayerPick) {
+        this.queryFeaturesByLayerId(features[0].layerId, { highlight: false });
+      }
       this.fire('queryend', result);
     } catch (error) {
       if (seq !== this.clickSeq) {
@@ -924,6 +973,116 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
     return result;
   }
 
+  private filterValidQueryFeatures(
+    features: SceneQueryFeature[],
+    lng?: number,
+    lat?: number
+  ): SceneQueryFeature[] {
+    return (features || []).filter(feature => {
+      const properties = feature?.properties || {};
+      if (!feature?.geometry || !Object.keys(properties).length) {
+        return false;
+      }
+      if (typeof lng === 'number' && typeof lat === 'number') {
+        return this.geometryIntersectsClick(feature.geometry, lng, lat);
+      }
+      return true;
+    });
+  }
+
+  private geometryIntersectsClick(geometry: GeoJSON.Geometry, lng: number, lat: number) {
+    const tolerance = Math.max(this.options.clickTolerance || 10, 1);
+    switch (geometry.type) {
+      case 'Point':
+        return this.planarDistanceMeters(geometry.coordinates as number[], lng, lat) <= tolerance;
+      case 'MultiPoint':
+        return (geometry.coordinates as number[][]).some(point =>
+          this.planarDistanceMeters(point, lng, lat) <= tolerance
+        );
+      case 'LineString':
+        return this.lineIntersectsClick(geometry.coordinates as number[][], lng, lat, tolerance);
+      case 'MultiLineString':
+        return (geometry.coordinates as number[][][]).some(line =>
+          this.lineIntersectsClick(line, lng, lat, tolerance)
+        );
+      case 'Polygon':
+        return this.pointInPolygonRing(lng, lat, geometry.coordinates[0] as number[][]);
+      case 'MultiPolygon':
+        return geometry.coordinates.some(polygon =>
+          this.pointInPolygonRing(lng, lat, polygon[0] as number[][])
+        );
+      default:
+        return true;
+    }
+  }
+
+  private planarDistanceMeters(coord: number[], lng: number, lat: number) {
+    const metersPerDegreeLat = 111320;
+    const dLng = (coord[0] - lng) * Math.cos((lat * Math.PI) / 180) * metersPerDegreeLat;
+    const dLat = (coord[1] - lat) * metersPerDegreeLat;
+    return Math.sqrt(dLng * dLng + dLat * dLat);
+  }
+
+  private lineIntersectsClick(line: number[][], lng: number, lat: number, tolerance: number) {
+    for (let index = 1; index < line.length; index++) {
+      if (
+        this.pointToSegmentDistanceMeters(line[index - 1], line[index], lng, lat) <= tolerance
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private pointToSegmentDistanceMeters(a: number[], b: number[], lng: number, lat: number) {
+    const ax = a[0];
+    const ay = a[1];
+    const bx = b[0];
+    const by = b[1];
+    const dx = bx - ax;
+    const dy = by - ay;
+    if (dx === 0 && dy === 0) {
+      return this.planarDistanceMeters(a, lng, lat);
+    }
+    const t = Math.max(0, Math.min(1, ((lng - ax) * dx + (lat - ay) * dy) / (dx * dx + dy * dy)));
+    const proj = [ax + t * dx, ay + t * dy];
+    return this.planarDistanceMeters(proj, lng, lat);
+  }
+
+  private pointInPolygonRing(lng: number, lat: number, ring: number[][]) {
+    if (!Array.isArray(ring) || ring.length < 3) {
+      return false;
+    }
+    let inside = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const xi = ring[i][0];
+      const yi = ring[i][1];
+      const xj = ring[j][0];
+      const yj = ring[j][1];
+      const intersects = yi > lat !== yj > lat && lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi;
+      if (intersects) {
+        inside = !inside;
+      }
+    }
+    return inside;
+  }
+
+  private geometryTypeToLayerType(geometry?: GeoJSON.Geometry): string {
+    if (!geometry) {
+      return 'fill';
+    }
+    switch (geometry.type) {
+      case 'Point':
+      case 'MultiPoint':
+        return 'circle';
+      case 'LineString':
+      case 'MultiLineString':
+        return 'line';
+      default:
+        return 'fill';
+    }
+  }
+
   private buildClickedLayers(
     features: SceneQueryFeature[],
     layerIds?: string[]
@@ -933,7 +1092,7 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
       const first = features.find(item => item.layerId === id);
       return {
         id,
-        type: 'fill',
+        type: this.geometryTypeToLayerType(first?.geometry),
         name: first?.layerTitle || id
       };
     });
@@ -1120,24 +1279,33 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
     }));
   }
 
-  async highlightFeatures(features: SceneQueryFeature[]) {
+  async highlightFeatures(
+    features: SceneQueryFeature[],
+    options: { replace?: boolean } = {}
+  ) {
+    const seq = ++this.highlightSeq;
     const withGeometry = features.filter(item => item.geometry);
     if (!withGeometry.length || !this.viewer || !window.SuperMap3D) {
-      this.clearHighlight();
+      if (seq === this.highlightSeq) {
+        this.clearHighlight();
+      }
       return;
+    }
+    if (options.replace !== false && seq === this.highlightSeq) {
+      this.clearHighlight();
     }
     try {
       const dataSource = await this.loadHighlightDataSource(withGeometry);
-      // Keep previous highlight until the new one is ready to avoid a blank frame
-      const previous = this.highlightDataSource;
+      if (seq !== this.highlightSeq) {
+        return;
+      }
       await this.viewer.dataSources.add(dataSource);
       this.highlightDataSource = dataSource;
       this.highlightedFeatureKeys = new Set(withGeometry.map(item => this.getFeatureKey(item)));
-      if (previous && this.viewer) {
-        this.viewer.dataSources.remove(previous, true);
-      }
     } catch (error) {
-      console.warn('[SceneHighlightViewModel] highlight features failed', error);
+      if (seq === this.highlightSeq) {
+        console.warn('[SceneHighlightViewModel] highlight features failed', error);
+      }
     }
   }
 
@@ -1173,11 +1341,14 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
    * Build popup rows / anchors for a selected layer and fire mapselectionchanged.
    * Mirrors PopupViewModel.queryFeaturesByLayerId for scene cached features.
    */
-  queryFeaturesByLayerId(layerId: string) {
+  queryFeaturesByLayerId(layerId: string, options: { highlight?: boolean } = {}) {
     if (!layerId) {
       return;
     }
     const features = this.selectedFeatures.filter(item => item.layerId === layerId);
+    if (options.highlight !== false && features.length) {
+      void this.highlightFeatures(features, { replace: true });
+    }
     const popupInfos = features.map(item => this.featureToPopupData(item));
     const lnglats = features.map(feature => {
       const center = this.getGeometryCenter(feature.geometry);
@@ -1212,7 +1383,7 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
     const filtered = source.filter(feature =>
       identifyFields.values.includes(feature.properties?.[identifyFields.field])
     );
-    this.highlightFeatures(filtered);
+    this.highlightFeatures(filtered, { replace: true });
   }
 
   private featureToPopupData(feature: SceneQueryFeature): ScenePopupFieldItem[] {
@@ -1868,6 +2039,7 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
   }
 
   clear() {
+    this.highlightSeq++;
     this.selectedFeatures = [];
     this.multiSelectActive = false;
     this.popupVisible = false;

@@ -10,7 +10,6 @@ import { useSceneGetter } from '@supermapgis/common/hooks/index.common'
 import SceneHighlightViewModel from 'vue-iclient-controllers-mapboxgl/src/SceneHighlightViewModel'
 import {
   popupInfosToQueryLayers,
-  toDisplayLayerId,
   toInternalLayerId
 } from '../types'
 import WebSceneViewModel from 'vue-iclient-controllers-mapboxgl/src/WebSceneViewModel'
@@ -156,17 +155,16 @@ export function useLayerHighlightHooks(
     options.onSelectionChanged?.(result)
 
     const features = result?.features || []
-    const popupInfos = props.popupInfos
     clickedLayers.value = result?.layers?.length
       ? result.layers.map((layer: { id: string; type?: string; name?: string }) => ({
-          id: toDisplayLayerId(layer.id, popupInfos),
+          id: layer.id,
           type: layer.type,
           name: layer.name
         }))
       : (result?.layerIds || []).map((id: string) => ({
-          id: toDisplayLayerId(id, popupInfos),
+          id,
           type: 'fill',
-          name: toDisplayLayerId(id, popupInfos)
+          name: id
         }))
     clickedLngLat.value = result?.lngLat
       ? {
@@ -182,7 +180,11 @@ export function useLayerHighlightHooks(
     lnglats.value = []
 
     if (!features.length) {
+      clickedLayers.value = []
+      clickedLngLat.value = undefined
+      screenPosition.value = null
       removePopup()
+      return
     }
   }
 
@@ -256,6 +258,21 @@ export function useLayerHighlightHooks(
     viewModel.clear()
   }
 
+  function returnToLayerSelect() {
+    allPopupDatas.value = []
+    lnglats.value = []
+    viewModel.clearHighlight()
+    if (!clickedLayers.value.length || !clickedLngLat.value) {
+      return
+    }
+    isRender.value = true
+    viewModel.setPopupVisible(true)
+    const { lng, lat, height } = clickedLngLat.value
+    if (typeof lng === 'number' && typeof lat === 'number') {
+      viewModel.setPopupAnchor(lng, lat, height || 0)
+    }
+  }
+
   return {
     isRender,
     isMultipleClick,
@@ -273,6 +290,7 @@ export function useLayerHighlightHooks(
     setPopupCoordinates,
     bindRootEl,
     removePopup,
-    clear
+    clear,
+    returnToLayerSelect
   }
 }

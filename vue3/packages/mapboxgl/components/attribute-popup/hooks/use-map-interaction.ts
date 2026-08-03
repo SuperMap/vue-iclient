@@ -190,6 +190,15 @@ export function useMapAttributePopupInteraction(
     highlightViewModel?.clear()
   }
 
+  function returnToLayerSelect() {
+    allPopupDatas.value = []
+    lnglats.value = []
+    highlightViewModel?.returnToLayerSelect()
+    if (clickedLngLat.value) {
+      setPopupCoordinates(clickedLngLat.value)
+    }
+  }
+
   return {
     isRender,
     isMultipleClick,
@@ -206,6 +215,7 @@ export function useMapAttributePopupInteraction(
     setPopupCoordinates,
     bindRootEl,
     removePopup,
-    clear
+    clear,
+    returnToLayerSelect
   }
 }

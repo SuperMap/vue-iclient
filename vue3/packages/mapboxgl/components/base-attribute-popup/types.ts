@@ -73,6 +73,8 @@ export interface AttributePopupInteraction {
   bindRootEl?: (el: HTMLElement | null | undefined) => void
   removePopup: () => void
   clear: () => void
+  /** 从属性面板返回到「选择图层」；仅清除属性内容与高亮，保留命中图层列表 */
+  returnToLayerSelect?: () => void
 }
 
 /** 通用属性弹窗 UI Props */

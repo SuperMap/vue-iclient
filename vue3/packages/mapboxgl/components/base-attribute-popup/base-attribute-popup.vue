@@ -330,7 +330,7 @@ watch(
   () => interaction.value.allPopupDatas.value,
   () => {
     const allPopupDatas = interaction.value.allPopupDatas.value
-    if (!allPopupDatas?.length) {
+    if (!allPopupDatas?.length && !showSelectLayer.value) {
       interaction.value.removePopup()
     }
     allPupDatasDisabled.value =
@@ -372,6 +372,11 @@ function handleReturn() {
   showSelectLayer.value = true
   currentLayerId.value = ''
   currentIndex.value = 0
+  if (interaction.value.returnToLayerSelect) {
+    interaction.value.returnToLayerSelect()
+    return
+  }
+  interaction.value.removePopup()
   interaction.value.clear()
 }
 

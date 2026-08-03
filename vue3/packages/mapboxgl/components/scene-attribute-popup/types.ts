@@ -63,23 +63,56 @@ export interface SceneAttributePopupProps extends ThemeProps, SceneGetterProps {
   showPopupTip?: boolean
 }
 
-/** ??popupInfos ?????????? dataSource ????ViewModel ???????????????? */
-export function toUniqueLayerId(info: ScenePopupInfo): string {
+/**
+ * ViewModel 内部分组 id：仅当多条 popup 配置共用同一个 layerId 时才拼接 @@。
+ */
+export function toUniqueLayerId(info: ScenePopupInfo, allInfos?: ScenePopupInfo[]): string {
   const layerId = Array.isArray(info.layerId) ? info.layerId[0] : info.layerId
-  const base = layerId || info.title || ''
+  const base = String(layerId || info.title || '').trim()
   const ds = info.dataSource
-  // ?? rest/map  overlay ???? dataset?? dataSource ????????????
-  if (base && ds?.dataSourceName && ds?.datasetName) {
-    return `${base}@@${ds.dataSourceName}.${ds.datasetName}`
+  if (!base || !ds?.dataSourceName || !ds?.datasetName) {
+    return base
   }
-  return base
+  const infos = allInfos?.length ? allInfos : [info]
+  const duplicateBase =
+    infos.filter(item => {
+      const itemBase = String(
+        (Array.isArray(item.layerId) ? item.layerId[0] : item.layerId) || item.title || ''
+      ).trim()
+      return itemBase === base
+    }).length > 1
+  if (!duplicateBase) {
+    return base
+  }
+  return `${base}@@${ds.dataSourceName}.${ds.datasetName}`
+}
+
+/** popup 展示 layerId ↔ ViewModel 内部分组 id */
+export function buildScenePopupLayerIdMaps(popupInfos?: ScenePopupInfo[]) {
+  const queryLayers = popupInfosToQueryLayers(popupInfos)
+  const displayToInternal = new Map<string, string>()
+  const internalToDisplay = new Map<string, string>()
+  queryLayers.forEach(layer => {
+    const displayId = String(layer.matchId || layer.id).trim()
+    const internalId = String(layer.id).trim()
+    displayToInternal.set(displayId, internalId)
+    displayToInternal.set(internalId, internalId)
+    internalToDisplay.set(internalId, displayId)
+  })
+  return { displayToInternal, internalToDisplay, queryLayers }
+}
+
+export function toInternalLayerId(layerId: string, popupInfos?: ScenePopupInfo[]) {
+  const { displayToInternal } = buildScenePopupLayerIdMaps(popupInfos)
+  return displayToInternal.get(layerId) || layerId
 }
 
 export function popupInfosToQueryLayers(popupInfos?: ScenePopupInfo[]): SceneQueryLayer[] {
-  return (popupInfos || [])
+  const list = popupInfos || []
+  return list
     .map(info => {
       const layerId = Array.isArray(info.layerId) ? info.layerId[0] : info.layerId
-      const id = toUniqueLayerId(info)
+      const id = toUniqueLayerId(info, list)
       return {
         id,
         matchId: layerId || undefined,

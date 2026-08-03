@@ -483,6 +483,13 @@ export default class HighlightLayer extends mapboxgl.Evented {
     this.dataSelectorMode = DataSelectorMode.SINGLE;
   }
 
+  /** 从属性面板返回到「选择图层」：清除高亮与当前选中，保留点击上下文 */
+  returnToLayerSelect() {
+    this.removeHighlightLayers();
+    this.activeTargetId = null;
+    this.resultFeatures = [];
+  }
+
   removed() {
     this.clear();
     this.unregisterLayerMouseEvents();
