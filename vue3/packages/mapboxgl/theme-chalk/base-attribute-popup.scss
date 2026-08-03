@@ -32,6 +32,7 @@
 
     .title {
       width: 100%;
+      padding: 1px 0;
       margin-left: 4px;
       font-size: inherit;
     }
@@ -104,6 +105,10 @@
       font-size: 12px;
       word-break: break-all;
 
+      &:only-child {
+        padding-top: 8px;
+      }
+
       > div {
         display: flex;
         align-items: center;
@@ -151,6 +156,14 @@
 
       .ql-editor {
         padding: 0;
+
+        > *:first-child {
+          margin-top: 0;
+        }
+      }
+
+      &:only-child .ql-editor {
+        padding-top: 8px;
       }
 
       a:any-link {
