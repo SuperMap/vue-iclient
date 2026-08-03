@@ -8,7 +8,11 @@ import type { ScenePopupInfo } from '../types'
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useSceneGetter } from '@supermapgis/common/hooks/index.common'
 import SceneHighlightViewModel from 'vue-iclient-controllers-mapboxgl/src/SceneHighlightViewModel'
-import { popupInfosToQueryLayers } from '../types'
+import {
+  popupInfosToQueryLayers,
+  toDisplayLayerId,
+  toInternalLayerId
+} from '../types'
 import WebSceneViewModel from 'vue-iclient-controllers-mapboxgl/src/WebSceneViewModel'
 
 interface UseSceneHighlightOptions {
@@ -152,12 +156,17 @@ export function useLayerHighlightHooks(
     options.onSelectionChanged?.(result)
 
     const features = result?.features || []
+    const popupInfos = props.popupInfos
     clickedLayers.value = result?.layers?.length
-      ? result.layers
+      ? result.layers.map((layer: { id: string; type?: string; name?: string }) => ({
+          id: toDisplayLayerId(layer.id, popupInfos),
+          type: layer.type,
+          name: layer.name
+        }))
       : (result?.layerIds || []).map((id: string) => ({
-          id,
+          id: toDisplayLayerId(id, popupInfos),
           type: 'fill',
-          name: id
+          name: toDisplayLayerId(id, popupInfos)
         }))
     clickedLngLat.value = result?.lngLat
       ? {
@@ -204,14 +213,14 @@ export function useLayerHighlightHooks(
   function setLayerIds(_layerIds: string[], _sourceLayers?: string[][]) {}
 
   function queryFeaturesByLayerId(layerId: string) {
-    viewModel.queryFeaturesByLayerId(layerId)
+    viewModel.queryFeaturesByLayerId(toInternalLayerId(layerId, props.popupInfos))
   }
 
   function setHighlightLayerFilter(
     layerId: string,
     identifyFields: { field: string; values: any[] }
   ) {
-    viewModel.setHighlightLayerFilter(layerId, identifyFields)
+    viewModel.setHighlightLayerFilter(toInternalLayerId(layerId, props.popupInfos), identifyFields)
   }
 
   function setPopupCoordinates(coordinate: any) {

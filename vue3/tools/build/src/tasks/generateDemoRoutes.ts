@@ -23,13 +23,23 @@ const generageRoutes = async (pkgName: Pkg | 'common') => {
     onlyFiles: true
   })
   const allPaths = [...paths, ...commonPaths]
+  const routeMap = new Map<string, { component: string; pkg: string }>()
+  allPaths.forEach(item => {
+    const normalized = item.replace(/\\/g, '/')
+    const usedPath = normalized.split('vue3/packages/')[1]
+    if (!usedPath) {
+      return
+    }
+    const [pkg, , component] = usedPath.split('/')
+    if (!pkg || !component || routeMap.has(component)) {
+      return
+    }
+    routeMap.set(component, { component, pkg })
+  })
 
   const TEMPLATE = `
 export default [
-  ${allPaths.map(item => {
-    const usedPath = item.split('vue3/packages/')[1]
-    const component = usedPath.split('/')[2]
-    const pkg = usedPath.split('/')[0]
+  ${[...routeMap.values()].map(({ component, pkg }) => {
     return `
         {
           path: '/${component}',

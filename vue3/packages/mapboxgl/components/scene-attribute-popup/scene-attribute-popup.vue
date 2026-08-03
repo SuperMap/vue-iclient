@@ -2,7 +2,7 @@
   <BaseAttributePopup
     popup-class="sm-component-scene-attribute-popup"
     :show-popup-tip="showPopupTip"
-    :popup-infos="normalizedPopupInfos"
+    :popup-infos="popupInfos"
     :popup-config="popupConfig"
     :multi-select="multiSelect"
     :background="background"
@@ -13,12 +13,11 @@
 </template>
 
 <script setup lang="ts">
-import type { SceneAttributePopupProps, ScenePopupInfo } from './types'
+import type { SceneAttributePopupProps } from './types'
 import type { SceneHighlightResult } from 'vue-iclient-controllers-mapboxgl/src/SceneHighlightViewModel'
-import { computed } from 'vue'
 import BaseAttributePopup from '@supermapgis/mapboxgl/components/base-attribute-popup/base-attribute-popup.vue'
 import { useLayerHighlightHooks } from './hooks/use-highlight'
-import { sceneAttributePopupPropsDefault, toUniqueLayerId } from './types'
+import { sceneAttributePopupPropsDefault } from './types'
 
 defineOptions({
   name: 'SmSceneAttributePopup'
@@ -32,14 +31,6 @@ const emit = defineEmits<{
   (e: 'queryend', payload: SceneHighlightResult): void
   (e: 'queryfailed', payload: unknown): void
 }>()
-
-/** 同一 overlay layerId 挂多个 dataset 时，归一成唯一 layerId，便于图层选择与结果分组 */
-const normalizedPopupInfos = computed<ScenePopupInfo[]>(() =>
-  (props.popupInfos || []).map(info => ({
-    ...info,
-    layerId: toUniqueLayerId(info)
-  }))
-)
 
 const interaction = useLayerHighlightHooks({
   props,

@@ -8,6 +8,7 @@ import SceneAttributePopup from '../scene-attribute-popup.vue'
 import { getDefaultLayerStyle } from '../types'
 import '../style'
 import '@supermapgis/mapboxgl/components/web-scene/style'
+import '@supermapgis/mapboxgl/components/scene-layer-list/style'
 
 const sceneBaseProps = {
   sceneUrl: '/iportal/web/scenes/1753822233',
@@ -48,11 +49,50 @@ const dataSource = {
   datasetName: 'Buildings_R'
 }
 
+/** Buildings 数据源下的 County_P 区县面 */
+const countyPDataSource = {
+  url: 'http://172.16.14.44:8090/iserver/services/data-Buildings/rest/data',
+  dataSourceName: 'Buildings',
+  datasetName: 'County_P'
+}
+
+/** 默认点选场景：WebScene.layers 挂 rest/data 上图 */
+const defaultSceneLayers = [
+  {
+    id: 'County_P',
+    name: 'County_P',
+    type: 'data' as const,
+    autoLocate: false,
+   
+    config: {
+      type: 'rest',
+      url: countyPDataSource.url,
+      datasourceName: countyPDataSource.dataSourceName,
+      datasetName: countyPDataSource.datasetName,
+      "label": {
+        "labelOffsetY": 10,
+        "labelOffsetX": 0,
+        "fontFamily": "Microsoft YaHei",
+        "field": "SmID",
+        "outlineWidth": 1,
+        "hideTitle": false,
+        "color": "rgba(255, 255, 255, 0.95)",
+        "maxVisibleAltitude": 1.7976931348623157e+308,
+        "fontSize": 18,
+        "align": "top",
+        "strokeColor": "rgba(255, 255, 255, 0)",
+        "textMaxWidth": 100
+      },
+    }
+  }
+]
+
 /** 京津 BaseMap_R：rest/data 上图到场景（点选走 scene.pick properties） */
 const JINGJIN_REST_DATA = {
   url: 'http://172.16.14.44:8090/iserver/services/data-jingjin/rest/data',
   dataSourceName: 'Jingjin',
-  datasetName: 'BaseMap_R'
+  datasetName: 'BaseMap_R',
+  
 }
 
 
@@ -93,10 +133,16 @@ const worldSceneBaseProps = {
 /** 默认点选：不配 elements，自动展示全部属性。layerId 需等于场景影像 customName / MVT name */
 const defaultPopupInfos = ref<ScenePopupInfo[]>([
   {
-    layerId: 'building',
+    layerId: 'Buildings_R',
     title: '建筑（默认）',
     identifyField: 'SMID',
     dataSource
+  },
+  {
+    layerId: 'County_P',
+    title: '区县（County_P）',
+    identifyField: 'SMID',
+    dataSource: countyPDataSource
   }
 ])
 
@@ -147,7 +193,7 @@ const worldPopupInfos = ref<ScenePopupInfo[]>([
 /** 自定义点选：显式配置 elements，含 CUSTOM 组件（按钮打开 Modal 展示选中要素） */
 const customPopupInfos = ref<ScenePopupInfo[]>([
   {
-    layerId: 'building',
+    layerId: 'Buildings_R',
     title: '建筑（自定义）',
     identifyField: 'SMID',
     dataSource,
@@ -219,6 +265,16 @@ const popupConfig = ref({
   keyWordWrap: 'ellipsis' as const,
   valueWordWrap: 'ellipsis' as const
 })
+
+const sceneLayerListControl = {
+  show: true,
+  position: 'top-left',
+  collapsed: false,
+  operations: {
+    fitBounds: true,
+    draggable: true
+  }
+}
 
 /** 与地图 attribute-popup 相同的 layerStyle 结构；场景按点/线/面取对应 paint */
 const buildingLayerStyle = getDefaultLayerStyle('#67c23a')
@@ -317,10 +373,9 @@ async function onSceneCustomLoaded(e: { Cesium?: any; viewer?: any }) {
       </Button>
     </div>
     <p class="demo-tip">
-      中间场景叠加京津 BaseMap_R（rest/data → GeoJSON 上图）。点到 GeoJSON 实体时直接用
-      scene.pick 的 properties 弹窗，不再请求数据服务；点到建筑 rest/map 仍走几何查询。layerId
-      需与 dataSource.name / rest/map customName 对齐。popupConfig 已开 keyWordWrap /
-      valueWordWrap: 'ellipsis'（字段列、值列超长省略）。多选：Ctrl + 左键仅在同一图层内累加。
+      「默认点选」通过 WebScene.layers 挂 Buildings_R、County_P（rest/data），点选走
+      scene.pick；左上角为 sceneLayerListControl 图层列表。layerId 需与 layers[].id
+      对齐。多选：Ctrl + 左键仅在同一图层内累加。
     </p>
     <div class="demo-scenes">
       <div class="demo-scene-panel">
@@ -328,6 +383,8 @@ async function onSceneCustomLoaded(e: { Cesium?: any; viewer?: any }) {
         <WebScene
           v-bind="sceneBaseProps"
           target="scene-default"
+          :layers="defaultSceneLayers"
+          :scene-layer-list-control="sceneLayerListControl"
           :scene-attribute-popup-control="{
             show: true,
             popupInfos: defaultPopupInfos,

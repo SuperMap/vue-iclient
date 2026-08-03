@@ -534,16 +534,24 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
   }
 
   private getEntityProperties(entity: any): Record<string, any> {
-    // LayerManager rest/data front mode caches plain props on entity
     if (entity?.___data && typeof entity.___data === 'object') {
-      return { ...entity.___data };
+      const data = { ...entity.___data };
+      if (Object.keys(data).length) {
+        return data;
+      }
     }
     const layerFeatureProps =
       entity?.___layerFeatureData?.props ?? entity?.___layerFeatureData?.properties;
     if (layerFeatureProps && typeof layerFeatureProps === 'object') {
-      return { ...layerFeatureProps };
+      const props = { ...layerFeatureProps };
+      if (Object.keys(props).length) {
+        return props;
+      }
     }
-    const props = entity?.properties;
+    return this.extractEntityPropertiesFromBag(entity?.properties);
+  }
+
+  private extractEntityPropertiesFromBag(props: any): Record<string, any> {
     if (!props) {
       return {};
     }
@@ -570,51 +578,77 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
     const featureLayerData = entity?.___layerFeatureData;
     const layerData = featureLayerData?.data;
     const layerConfig = layerData?.config;
-    const ownerName = String(owner?.name || '').trim();
-    const metadataLayerId = String(featureLayerData?.layerId || layerData?.id || '').trim();
-    const appreciableLayer = (this.webscene?.getAppreciableLayers?.() || []).find(layer => {
-      if (layer.category !== 'dataLayers') {
-        return false;
+    const isRestDataEntity =
+      !!featureLayerData && layerData?.type === 'data' && layerConfig?.type === 'rest';
+
+    if (isRestDataEntity) {
+      const datasetName = String(layerConfig?.datasetName || featureLayerData?.layerId || '').trim();
+      const dataSourceName = String(
+        layerConfig?.datasourceName || layerConfig?.dataSourceName || ''
+      ).trim();
+      const layerId = String(featureLayerData?.layerId || layerData?.id || '').trim();
+      const ownerName = String(owner?.name || '').trim();
+
+      // Same rest/data service may back multiple popup configs — dataset wins over dataSourceName.
+      const exact = this.findLayerByDataSourceDataset(dataSourceName, datasetName);
+      if (exact) {
+        return exact;
       }
-      return (
-        (!!metadataLayerId && this.isSameLayerIdentity(String(layer.id || ''), metadataLayerId)) ||
-        (!!ownerName && this.isSameLayerIdentity(String(layer.customName || ''), ownerName))
-      );
-    });
-    const pickedIdentities = [
-      metadataLayerId,
-      layerData?.name,
-      ownerName,
-      appreciableLayer?.id,
-      appreciableLayer?.customName,
-      layerConfig?.datasetName,
-      layerConfig?.datasourceName,
-      layerConfig?.datasetName && layerConfig?.datasourceName
-        ? `${layerConfig.datasetName}@${layerConfig.datasourceName}`
-        : ''
-    ]
-      .filter(Boolean)
-      .map(item => String(item).trim());
-    if (!pickedIdentities.length) {
+
+      const datasetIdentities = [datasetName, layerId, layerData?.name, ownerName].filter(Boolean);
+      return this.matchLayerByIdentities(datasetIdentities, { skipDataSourceName: true });
+    }
+
+    const ownerName = String(owner?.name || '').trim();
+    if (!ownerName) {
       return null;
     }
-    const layers = this.options.layers || [];
-    const hit = layers.find(layer => {
-      const candidates = [
-        layer.id,
-        layer.matchId,
-        layer.title,
-        layer.dataSource?.datasetName,
-        layer.dataSource?.dataSourceName,
-        layer.dataSource ? `${layer.dataSource.datasetName}@${layer.dataSource.dataSourceName}` : ''
-      ]
-        .filter(Boolean)
-        .map(item => String(item).trim());
-      return candidates.some(candidate =>
-        pickedIdentities.some(identity => this.isSameLayerIdentity(candidate, identity))
-      );
-    });
-    return hit || null;
+    return this.matchLayerByIdentities([ownerName], { skipDataSourceName: true });
+  }
+
+  private findLayerByDataSourceDataset(
+    dataSourceName: string,
+    datasetName: string
+  ): SceneQueryLayer | null {
+    if (!dataSourceName || !datasetName) {
+      return null;
+    }
+    return (
+      (this.options.layers || []).find(
+        layer =>
+          layer.dataSource?.dataSourceName === dataSourceName &&
+          layer.dataSource?.datasetName === datasetName
+      ) || null
+    );
+  }
+
+  private matchLayerByIdentities(
+    pickedIdentities: Array<string | undefined>,
+    options: { skipDataSourceName?: boolean } = {}
+  ): SceneQueryLayer | null {
+    const identities = pickedIdentities.filter(Boolean).map(item => String(item).trim());
+    if (!identities.length) {
+      return null;
+    }
+    return (
+      (this.options.layers || []).find(layer => {
+        const candidates = [
+          layer.id,
+          layer.matchId,
+          layer.title,
+          layer.dataSource?.datasetName,
+          options.skipDataSourceName ? undefined : layer.dataSource?.dataSourceName,
+          layer.dataSource
+            ? `${layer.dataSource.datasetName}@${layer.dataSource.dataSourceName}`
+            : undefined
+        ]
+          .filter(Boolean)
+          .map(item => String(item).trim());
+        return candidates.some(candidate =>
+          identities.some(identity => this.isSameLayerIdentity(candidate, identity))
+        );
+      }) || null
+    );
   }
 
   private isSameLayerIdentity(first: string, second: string) {
