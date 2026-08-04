@@ -35,24 +35,13 @@
         </div>
 
         <template v-if="selectedMode !== 'NONE'">
-          <div v-if="layersInfo.length" class="sm-component-scene-split-screen__item">
-            <label>{{ t('sceneSplitScreen.layerVisibilityLabel') }}</label>
-            <div class="sm-component-scene-split-screen__layer-list">
-              <div
-                v-for="layer in layersInfo"
-                :key="layer.name"
-                class="sm-component-scene-split-screen__layer-item"
-              >
-                <span class="sm-component-scene-split-screen__layer-name">{{ layer.name }}</span>
-                <SmCheckboxGroup
-                  v-model:value="layer.visibleInViewports"
-                  class="sm-component-scene-split-screen__viewport-checkboxes"
-                  :options="viewportOptions"
-                  @change="(value: number[]) => toggleViewport(value, layer.name)"
-                />
-              </div>
-            </div>
-          </div>
+          <SceneLayerMultiSelectList
+            v-if="layersInfo.length"
+            :title="t('sceneSplitScreen.layerVisibilityLabel')"
+            :items="layersInfo"
+            :options="viewportOptions"
+            @change="handleLayerViewportChange"
+          />
           <div v-else class="sm-component-scene-split-screen__item">
             <span class="sm-component-scene-split-screen__loading">
               {{ t('sceneSplitScreen.loading') }}
@@ -74,15 +63,19 @@ import { SplitScreen } from 'vue-iclient-core/utils/scene/split-screen'
 import SmCard from '@supermapgis/common/components/card/Card'
 import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'
 import SmSelect, { SmSelectOption } from '@supermapgis/common/components/select/Select'
-import { SmCheckboxGroup } from '@supermapgis/common/components/checkbox'
+import SceneLayerMultiSelectList from '@supermapgis/mapboxgl/components/scene-layer-list/scene-layer-multi-select-list.vue'
+import type {
+  SceneLayerMultiSelectItem,
+  SceneLayerMultiSelectOption,
+  SceneLayerMultiSelectValue
+} from '@supermapgis/mapboxgl/components/scene-layer-list/scene-layer-multi-select-list.types'
 
 defineOptions({
   name: 'SmSceneSplitScreen'
 })
 
-interface LayerInfo {
-  name: string
-  visibleInViewports: number[]
+interface LayerInfo extends SceneLayerMultiSelectItem {
+  layer: any
 }
 
 const props = withDefaults(defineProps<SceneSplitScreenProps>(), sceneSplitScreenPropsDefault)
@@ -107,7 +100,7 @@ const splitModes = computed(() => [
   { label: t('sceneSplitScreen.modeVerticalTrisection'), value: 'VerticalTrisection' }
 ])
 
-const viewportOptions = computed(() => {
+const viewportOptions = computed<SceneLayerMultiSelectOption[]>(() => {
   const count = splitScreen?.getViewModeCount(selectedMode.value) ?? 1
   const viewportLabels = [
     t('sceneSplitScreen.viewport1'),
@@ -126,11 +119,14 @@ function refreshLayersInfo() {
 
   queue
     .filter((layer: any) => typeof layer.setVisibleInViewport === 'function')
-    .forEach((layer: any) => {
+    .forEach((layer: any, index: number) => {
+      const id = getLayerId(layer, index)
       splitScreen!.setLayerVisibility(layer, defaultIndices, true)
       nextLayers.push({
+        id,
         name: layer.name,
-        visibleInViewports: [...defaultIndices]
+        layer,
+        selectedValues: [...defaultIndices]
       })
     })
 
@@ -168,12 +164,20 @@ function handleModeChange(mode: string) {
   refreshLayersInfo()
 }
 
-function toggleViewport(value: number[], name: string) {
-  const layer = viewer?.scene?.layers?.find(name)
-  if (!layer || !splitScreen) return
+function handleLayerViewportChange(id: string, values: SceneLayerMultiSelectValue[]) {
+  const layerInfo = layersInfo.find(item => item.id === id)
+  if (!layerInfo || !splitScreen) return
+  const selectedViewports = values.filter(
+    (value): value is number => typeof value === 'number'
+  )
+  layerInfo.selectedValues = selectedViewports
   const defaultIndices = splitScreen.getViewportIndices()
-  splitScreen.setLayerVisibility(layer, defaultIndices, false)
-  splitScreen.setLayerVisibility(layer, value, true)
+  splitScreen.setLayerVisibility(layerInfo.layer, defaultIndices, false)
+  splitScreen.setLayerVisibility(layerInfo.layer, selectedViewports, true)
+}
+
+function getLayerId(layer: any, index: number) {
+  return String(layer?.id ?? layer?.name ?? index) + '-' + index
 }
 
 onBeforeUnmount(() => {

@@ -1,0 +1,42 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+
+@include b(scene-layer-multi-select-list) {
+  width: 100%;
+  min-width: 0;
+
+  @include e(title) {
+    margin-bottom: 8px;
+  }
+
+  @include e(items) {
+    width: 100%;
+    min-width: 0;
+  }
+
+  @include e(item) {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+    min-height: 40px;
+    padding: 8px 0;
+    border-bottom: 1px solid $border-color-split;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  @include e(name) {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  @include e(select) {
+    width: 100%;
+    min-width: 0;
+  }
+}

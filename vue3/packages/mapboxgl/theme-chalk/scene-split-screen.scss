@@ -3,6 +3,7 @@
 @use '@supermapgis/common/theme-chalk/collapse-card';
 @use '@supermapgis/common/theme-chalk/card';
 @use '@supermapgis/common/theme-chalk/select';
+@use './scene-layer-multi-select-list';
 
 @include b(scene-split-screen) {
   z-index: 1;
@@ -15,8 +16,7 @@
 
   .sm-component-card,
   .sm-component-select,
-  .sm-component-select-selector,
-  .sm-component-checkbox-wrapper {
+  .sm-component-select-selector {
     color: inherit;
     /* stylelint-disable-next-line */
     font-size: 12px;
@@ -65,38 +65,6 @@
 
   @include e(control) {
     width: 100%;
-  }
-
-  @include e(layer-list) {
-    width: 100%;
-  }
-
-  @include e(layer-item) {
-    padding: 8px;
-    margin-bottom: 8px;
-    border: 1px solid $border-color-secondary;
-    border-radius: 4px;
-    background: $color-fill-tertiary;
-  }
-
-  @include e(layer-name) {
-    display: block;
-    margin-bottom: 8px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  @include e(viewport-checkboxes) {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-
-    .sm-component-checkbox-wrapper {
-      display: inline-flex;
-      align-items: center;
-      white-space: nowrap;
-    }
   }
 
   @include e(loading) {

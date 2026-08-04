@@ -36,95 +36,14 @@
             </SmSelect>
           </div>
 
-          <template v-if="layers.length">
-            <div class="sm-component-scene-roller-shutter__layer-list">
-              <section
-                v-if="sceneLayerItems.length"
-                class="sm-component-scene-roller-shutter__layer-section"
-              >
-                <h4 class="sm-component-scene-roller-shutter__layer-section-title">
-                  {{ t('sceneRollerShutter.s3mLayers') }}
-                </h4>
-                <div
-                  v-for="layer in sceneLayerItems"
-                  :key="layer.id"
-                  class="sm-component-scene-roller-shutter__layer-item"
-                >
-                  <span class="sm-component-scene-roller-shutter__layer-name" :title="layer.name">
-                    {{ layer.name }}
-                  </span>
-                  <div
-                    v-if="mode !== 'NONE'"
-                    class="sm-component-scene-roller-shutter__display-row"
-                  >
-                    <label class="sm-component-scene-roller-shutter__display-label">
-                      {{ t('sceneRollerShutter.displayLabel') }}
-                    </label>
-                    <SmSelect
-                      v-model:value="layer.display"
-                      class="sm-component-scene-roller-shutter__display-control"
-                      @change="setLayerDisplay(layer)"
-                    >
-                      <SmSelectOption
-                        v-for="option in layerDisplayOptions"
-                        :key="option.value"
-                        :value="option.value"
-                      >
-                        {{ option.label }}
-                      </SmSelectOption>
-                    </SmSelect>
-                  </div>
-                  <span v-else class="sm-component-scene-roller-shutter__status">
-                    {{ t('sceneRollerShutter.modeNone') }}
-                  </span>
-                </div>
-              </section>
-
-              <section
-                v-if="imageryLayerItems.length"
-                class="sm-component-scene-roller-shutter__layer-section"
-              >
-                <h4 class="sm-component-scene-roller-shutter__layer-section-title">
-                  {{ t('sceneRollerShutter.imageryLayers') }}
-                </h4>
-                <div
-                  v-for="layer in imageryLayerItems"
-                  :key="layer.id"
-                  class="sm-component-scene-roller-shutter__layer-item"
-                >
-                  <span class="sm-component-scene-roller-shutter__layer-name" :title="layer.name">
-                    {{ layer.name }}
-                  </span>
-                  <div
-                    v-if="mode !== 'NONE'"
-                    class="sm-component-scene-roller-shutter__display-row"
-                  >
-                    <label class="sm-component-scene-roller-shutter__display-label">
-                      {{ t('sceneRollerShutter.displayLabel') }}
-                    </label>
-                    <SmSelect
-                      v-model:value="layer.display"
-                      class="sm-component-scene-roller-shutter__display-control"
-                      @change="setLayerDisplay(layer)"
-                    >
-                      <SmSelectOption
-                        v-for="option in layerDisplayOptions"
-                        :key="option.value"
-                        :value="option.value"
-                      >
-                        {{ option.label }}
-                      </SmSelectOption>
-                    </SmSelect>
-                  </div>
-                  <span v-else class="sm-component-scene-roller-shutter__status">
-                    {{ t('sceneRollerShutter.modeNone') }}
-                  </span>
-                </div>
-              </section>
-            </div>
-          </template>
+          <SceneLayerMultiSelectList
+            v-if="mode !== 'NONE' && layers.length"
+            :items="layers"
+            :options="layerSideOptions"
+            @change="handleLayerSidesChange"
+          />
           <SmEmpty
-            v-else
+            v-else-if="mode !== 'NONE'"
             class="sm-component-scene-roller-shutter__empty"
             :description="t('sceneRollerShutter.noLayers')"
           />
@@ -177,6 +96,12 @@ import SmCard from '@supermapgis/common/components/card/Card'
 import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'
 import SmEmpty from '@supermapgis/common/components/empty/Empty'
 import SmSelect, { SmSelectOption } from '@supermapgis/common/components/select/Select'
+import SceneLayerMultiSelectList from '@supermapgis/mapboxgl/components/scene-layer-list/scene-layer-multi-select-list.vue'
+import type {
+  SceneLayerMultiSelectItem,
+  SceneLayerMultiSelectOption,
+  SceneLayerMultiSelectValue
+} from '@supermapgis/mapboxgl/components/scene-layer-list/scene-layer-multi-select-list.types'
 
 defineOptions({
   name: 'SmSceneRollerShutter',
@@ -185,6 +110,8 @@ defineOptions({
 
 type LayerKind = 'scene' | 'imagery'
 type SceneLayer = Record<string, unknown>
+const rollerShutterSides = ['first', 'second'] as const
+type RollerShutterSide = (typeof rollerShutterSides)[number]
 
 interface SceneViewer extends SceneLayer {
   container?: HTMLElement
@@ -199,12 +126,11 @@ interface SceneViewer extends SceneLayer {
   }
 }
 
-interface LayerItem {
+interface LayerItem extends SceneLayerMultiSelectItem {
   id: string
   name: string
   layer: SceneLayer
-  kind: LayerKind
-  display: RollerShutterLayerDisplay
+  selectedValues: RollerShutterSide[]
 }
 
 const props = withDefaults(defineProps<SceneRollerShutterProps>(), sceneRollerShutterPropsDefault)
@@ -226,6 +152,8 @@ let viewer: SceneViewer | null = null
 let rollerShutter: SceneRollerShutter | null = null
 let loadVersion = 0
 let layerObjectId = 0
+// S3M layers can be appended after the scene load event.
+let layerRefreshTimer: ReturnType<typeof setInterval> | null = null
 const layerIdMap = new WeakMap<object, string>()
 
 const modeOptions = computed(() => [
@@ -234,25 +162,18 @@ const modeOptions = computed(() => [
   { label: t('sceneRollerShutter.modeVertical'), value: 'VERTICAL' }
 ])
 
-const layerDisplayOptions = computed(() => {
+const layerSideOptions = computed<SceneLayerMultiSelectOption[]>(() => {
   if (mode.value === 'VERTICAL') {
     return [
-      { label: t('sceneRollerShutter.displayAll'), value: 'all' },
-      { label: t('sceneRollerShutter.displayNone'), value: 'none' },
       { label: t('sceneRollerShutter.top'), value: 'first' },
       { label: t('sceneRollerShutter.bottom'), value: 'second' }
     ]
   }
   return [
-    { label: t('sceneRollerShutter.displayAll'), value: 'all' },
-    { label: t('sceneRollerShutter.displayNone'), value: 'none' },
     { label: t('sceneRollerShutter.left'), value: 'first' },
     { label: t('sceneRollerShutter.right'), value: 'second' }
   ]
 })
-
-const sceneLayerItems = computed(() => layers.value.filter(layer => layer.kind === 'scene'))
-const imageryLayerItems = computed(() => layers.value.filter(layer => layer.kind === 'imagery'))
 
 useSceneGetter({
   loaded: setViewer,
@@ -261,6 +182,7 @@ useSceneGetter({
 
 async function setViewer(sceneViewer: unknown) {
   const currentLoadVersion = ++loadVersion
+  stopLayerRefresh()
   destroyRollerShutter()
   const rawViewer = toRaw(sceneViewer)
   if (!isSceneViewer(rawViewer)) {
@@ -283,10 +205,12 @@ async function setViewer(sceneViewer: unknown) {
     sliderElement: sliderElement.value,
     layers: buildControllerLayers()
   })
+  startLayerRefresh(currentLoadVersion)
 }
 
 function clearViewer() {
   loadVersion += 1
+  stopLayerRefresh()
   destroyRollerShutter()
   viewer = null
   viewerContainer.value = null
@@ -300,12 +224,53 @@ function destroyRollerShutter() {
   rollerShutter = null
 }
 
+function startLayerRefresh(currentLoadVersion: number) {
+  stopLayerRefresh()
+  layerRefreshTimer = setInterval(() => {
+    if (currentLoadVersion !== loadVersion || !viewer || !rollerShutter) {
+      stopLayerRefresh()
+      return
+    }
+    refreshLayerItems()
+  }, 2000)
+}
+
+function stopLayerRefresh() {
+  if (layerRefreshTimer !== null) {
+    clearInterval(layerRefreshTimer)
+    layerRefreshTimer = null
+  }
+}
+
+function refreshLayerItems() {
+  if (!viewer || !rollerShutter) return
+  const nextLayers = buildLayerItems()
+  const layersChanged =
+    nextLayers.length !== layers.value.length ||
+    nextLayers.some(
+      (nextLayer, index) =>
+        nextLayer.id !== layers.value[index]?.id || nextLayer.layer !== layers.value[index]?.layer
+    )
+  if (layersChanged) {
+    layers.value = nextLayers
+    rollerShutter.setLayers(buildControllerLayers())
+  }
+}
+
 function handleModeChange(nextMode: RollerShutterMode) {
   mode.value = rollerShutter?.setMode(nextMode) ?? nextMode
 }
 
-function setLayerDisplay(layerItem: LayerItem) {
-  rollerShutter?.setLayerDisplay(toRaw(layerItem.layer), layerItem.display)
+function handleLayerSidesChange(id: string, values: SceneLayerMultiSelectValue[]) {
+  const layerItem = layers.value.find(layer => layer.id === id)
+  if (!layerItem) {
+    return
+  }
+  layerItem.selectedValues = normalizeRollerShutterSides(values)
+  rollerShutter?.setLayerDisplay(
+    toRaw(layerItem.layer),
+    getRollerShutterLayerDisplay(layerItem.selectedValues)
+  )
 }
 
 function buildLayerItems() {
@@ -321,8 +286,7 @@ function buildLayerItems() {
       id,
       name: getLayerName(layer) ?? t('sceneRollerShutter.layer') + ' ' + (index + 1),
       layer,
-      kind: 'scene' as const,
-      display: existing?.display ?? 'all'
+      selectedValues: [...(existing?.selectedValues ?? rollerShutterSides)]
     }
   })
   const imageryItems: LayerItem[] = getImageryLayers().map((imageryLayer, index) => {
@@ -335,8 +299,7 @@ function buildLayerItems() {
         fallback: t('sceneRollerShutter.imageryLayer') + ' ' + (index + 1)
       }),
       layer,
-      kind: 'imagery' as const,
-      display: existing?.display ?? 'all'
+      selectedValues: [...(existing?.selectedValues ?? rollerShutterSides)]
     }
   })
   return [...sceneItems, ...imageryItems]
@@ -345,13 +308,34 @@ function buildLayerItems() {
 function buildControllerLayers() {
   return layers.value.map(layerItem => ({
     layer: toRaw(layerItem.layer),
-    display: layerItem.display
+    display: getRollerShutterLayerDisplay(layerItem.selectedValues)
   }))
+}
+
+function normalizeRollerShutterSides(values: SceneLayerMultiSelectValue[]): RollerShutterSide[] {
+  return rollerShutterSides.filter(side => values.includes(side))
+}
+
+function getRollerShutterLayerDisplay(
+  selectedValues: RollerShutterSide[]
+): RollerShutterLayerDisplay {
+  const hasFirst = selectedValues.includes('first')
+  const hasSecond = selectedValues.includes('second')
+  if (hasFirst && hasSecond) {
+    return 'all'
+  }
+  if (hasFirst) {
+    return 'first'
+  }
+  if (hasSecond) {
+    return 'second'
+  }
+  return 'none'
 }
 
 function getSceneLayers() {
   const sceneLayers = viewer?.scene?.layers
-  const layerQueue = sceneLayers?.layerQueue ?? sceneLayers?._layerQueue
+  const layerQueue = sceneLayers?._layerQueue ?? sceneLayers?.layerQueue
   return Array.isArray(layerQueue) ? layerQueue : []
 }
 

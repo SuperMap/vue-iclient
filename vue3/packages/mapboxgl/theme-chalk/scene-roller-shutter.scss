@@ -3,6 +3,7 @@
 @use '@supermapgis/common/theme-chalk/collapse-card';
 @use '@supermapgis/common/theme-chalk/card';
 @use '@supermapgis/common/theme-chalk/select';
+@use './scene-layer-multi-select-list';
 
 @include b(scene-roller-shutter) {
   z-index: 1;
@@ -12,6 +13,7 @@
   .sm-component-select-selector,
   .sm-component-empty {
     color: inherit;
+    font-size: inherit;
   }
 
   .sm-component-select .sm-component-select-selector,
@@ -68,62 +70,6 @@
 
   @include e(control) {
     width: 100%;
-  }
-
-  @include e(layer-list) {
-    min-width: 0;
-    width: 100%;
-    padding-right: 4px;
-    overflow: auto;
-  }
-
-  @include e(layer-section) {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    min-width: 0;
-
-    + .sm-component-scene-roller-shutter__layer-section {
-      margin-top: 12px;
-    }
-  }
-
-  @include e(layer-section-title) {
-    margin: 0;
-  }
-
-  @include e(layer-item) {
-    width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-    padding: 8px;
-    border: 1px solid $border-color-secondary;
-    border-radius: 4px;
-    background: $color-fill-tertiary;
-  }
-
-  @include e(layer-name) {
-    display: block;
-    margin-bottom: 8px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  @include e(display-row) {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  @include e(display-label) {
-    flex: none;
-    margin: 0;
-  }
-
-  @include e(display-control) {
-    flex: 1;
-    min-width: 0;
   }
 
   @include e(empty) {
