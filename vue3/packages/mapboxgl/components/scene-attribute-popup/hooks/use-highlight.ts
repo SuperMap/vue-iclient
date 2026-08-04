@@ -198,9 +198,10 @@ export function useLayerHighlightHooks(
       allPopupDatas.value = (e.popupInfos as PopupFieldItem[][]) || []
       lnglats.value = e.lnglats || []
       // 查到数据后立刻显示，并刷新锚点（不依赖 base sync 时序）
+      // 优先用点击位置；要素几何中心对长线/面（如黄河）会偏离点击点很远
       isRender.value = true
       viewModel.setPopupVisible(true)
-      const coord = e.lnglats?.[0] || clickedLngLat.value
+      const coord = clickedLngLat.value || e.lnglats?.[0]
       if (coord && typeof coord.lng === 'number' && typeof coord.lat === 'number') {
         viewModel.setPopupAnchor(coord.lng, coord.lat, coord.height || 0)
       }

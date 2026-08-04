@@ -1350,17 +1350,18 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
       void this.highlightFeatures(features, { replace: true });
     }
     const popupInfos = features.map(item => this.featureToPopupData(item));
+    // Prefer click position for popup anchor. Geometry center is wrong for long features (e.g. rivers).
     const lnglats = features.map(feature => {
-      const center = this.getGeometryCenter(feature.geometry);
-      if (center) {
-        return { lng: center[0], lat: center[1], height: center[2] || 0 };
-      }
       if (this.popupAnchor) {
         return {
           lng: this.popupAnchor.lng,
           lat: this.popupAnchor.lat,
           height: this.popupAnchor.height || 0
         };
+      }
+      const center = this.getGeometryCenter(feature.geometry);
+      if (center) {
+        return { lng: center[0], lat: center[1], height: center[2] || 0 };
       }
       return { lng: 0, lat: 0, height: 0 };
     });
