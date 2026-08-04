@@ -59,30 +59,41 @@ const countyPDataSource = {
 /** 默认点选场景：WebScene.layers 挂 rest/data 上图 */
 const defaultSceneLayers = [
   {
+    id: 'Buildings_R',
+    name: 'Buildings_R',
+    type: 'data' as const,
+    autoLocate: true,
+    config: {
+      type: 'rest',
+      url: dataSource.url,
+      datasourceName: dataSource.dataSourceName,
+      datasetName: dataSource.datasetName
+    }
+  },
+  {
     id: 'County_P',
     name: 'County_P',
     type: 'data' as const,
     autoLocate: false,
-   
     config: {
       type: 'rest',
       url: countyPDataSource.url,
       datasourceName: countyPDataSource.dataSourceName,
       datasetName: countyPDataSource.datasetName,
-      "label": {
-        "labelOffsetY": 10,
-        "labelOffsetX": 0,
-        "fontFamily": "Microsoft YaHei",
-        "field": "SmID",
-        "outlineWidth": 1,
-        "hideTitle": false,
-        "color": "rgba(255, 255, 255, 0.95)",
-        "maxVisibleAltitude": 1.7976931348623157e+308,
-        "fontSize": 18,
-        "align": "top",
-        "strokeColor": "rgba(255, 255, 255, 0)",
-        "textMaxWidth": 100
-      },
+      label: {
+        labelOffsetY: 10,
+        labelOffsetX: 0,
+        fontFamily: 'Microsoft YaHei',
+        field: 'SmID',
+        outlineWidth: 1,
+        hideTitle: false,
+        color: 'rgba(255, 255, 255, 0.95)',
+        maxVisibleAltitude: 1.7976931348623157e308,
+        fontSize: 18,
+        align: 'top',
+        strokeColor: 'rgba(255, 255, 255, 0)',
+        textMaxWidth: 100
+      }
     }
   }
 ]
@@ -402,6 +413,7 @@ async function onSceneCustomLoaded(e: { Cesium?: any; viewer?: any }) {
         <WebScene
           v-bind="sceneBaseProps"
           target="scene-custom"
+          :layers="defaultSceneLayers"
           @instance-did-load="onSceneCustomLoaded"
         >
           <SceneAttributePopup

@@ -1,4 +1,5 @@
 import mapboxgl from 'mapbox-gl';
+import turfCenter from '@turf/center';
 import { GeometryPolygon, GeometryLinearRing, GeometryPoint } from '@supermapgis/iclient-common/commontypes';
 import iServerRestService from 'vue-iclient-core/utils/iServerRestService';
 import WebSceneViewModel, { type SceneAppreciableLayer } from './WebSceneViewModel';
@@ -247,6 +248,7 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
   /** popup anchor in world coords; projected to screen every frame */
   private popupAnchor: { lng: number; lat: number; height: number } | null = null;
   private trackingPopupPosition = false;
+  private trackingCameraPosition = false;
   /** whether popup shell is visible — layout only updates while true */
   private popupVisible = false;
   private popupRootEl: HTMLElement | null = null;
@@ -257,6 +259,11 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
   private lastPopupMaxHeight: number | null = null;
   private onPostRender = () => {
     this.updatePopupScreenPosition();
+  };
+  private onCameraChanged = () => {
+    if (this.popupAnchor && this.popupVisible) {
+      this.updatePopupScreenPosition();
+    }
   };
 
   constructor(options: SceneHighlightOptions = {}) {
@@ -831,6 +838,7 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
         this.multiSelectActive = false;
         this.clearHighlight();
         if (clickedFeatures.length) {
+          // 图层选择阶段暂用点击点；选定图层后由 queryFeaturesByLayerId 改为几何中心
           this.setPopupAnchor(lng, lat, height);
         }
         const pickResult = this.emitSelectionChanged({
@@ -869,6 +877,7 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
         return;
       }
       if (features.length) {
+        // 最终锚点在 queryFeaturesByLayerId 中按要素几何中心设置
         this.setPopupAnchor(lng, lat, height);
       } else if (!isMultipleClick) {
         this.clearPopupAnchor();
@@ -1350,8 +1359,15 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
       void this.highlightFeatures(features, { replace: true });
     }
     const popupInfos = features.map(item => this.featureToPopupData(item));
-    // Prefer click position for popup anchor. Geometry center is wrong for long features (e.g. rivers).
     const lnglats = features.map(feature => {
+      const center = this.getGeometryCenter(feature.geometry);
+      if (center) {
+        return {
+          lng: center[0],
+          lat: center[1],
+          height: this.popupAnchor?.height ?? 0
+        };
+      }
       if (this.popupAnchor) {
         return {
           lng: this.popupAnchor.lng,
@@ -1359,12 +1375,13 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
           height: this.popupAnchor.height || 0
         };
       }
-      const center = this.getGeometryCenter(feature.geometry);
-      if (center) {
-        return { lng: center[0], lat: center[1], height: center[2] || 0 };
-      }
       return { lng: 0, lat: 0, height: 0 };
     });
+    // 弹窗锚到第一个要素的几何中心（@turf/center），不再使用点击屏幕坐标
+    const anchor = lnglats[0];
+    if (anchor && Number.isFinite(anchor.lng) && Number.isFinite(anchor.lat)) {
+      this.setPopupAnchor(anchor.lng, anchor.lat, anchor.height || 0);
+    }
     const emitData: SceneLayerSelectionChangedEmit = {
       features,
       popupInfos,
@@ -1395,44 +1412,25 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
     }));
   }
 
-  /** Compute [lng, lat, height?] center from a GeoJSON geometry for popup anchoring. */
+  /** Compute [lng, lat] center from a GeoJSON geometry via @turf/center. */
   private getGeometryCenter(geometry: GeoJSON.Geometry | undefined): [number, number, number?] | null {
-    if (!geometry) {
+    if (!geometry || geometry.type === 'GeometryCollection') {
       return null;
     }
-    const coords = this.flattenGeometryCoords(geometry);
-    if (!coords.length) {
+    try {
+      const centerFeature = turfCenter({
+        type: 'Feature',
+        properties: {},
+        geometry
+      });
+      const [lng, lat] = centerFeature.geometry.coordinates;
+      if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
+        return null;
+      }
+      return [lng, lat];
+    } catch {
       return null;
     }
-    let sumLng = 0;
-    let sumLat = 0;
-    let sumHeight = 0;
-    let hasHeight = false;
-    coords.forEach(c => {
-      sumLng += c[0];
-      sumLat += c[1];
-      if (c[2] !== undefined) {
-        sumHeight += c[2];
-        hasHeight = true;
-      }
-    });
-    const n = coords.length;
-    return hasHeight ? [sumLng / n, sumLat / n, sumHeight / n] : [sumLng / n, sumLat / n];
-  }
-
-  private flattenGeometryCoords(geometry: GeoJSON.Geometry): number[][] {
-    const out: number[][] = [];
-    const walk = (node: any) => {
-      if (typeof node?.[0] === 'number') {
-        out.push(node as number[]);
-        return;
-      }
-      if (Array.isArray(node)) {
-        node.forEach(walk);
-      }
-    };
-    walk((geometry as any).coordinates);
-    return out;
   }
 
   private async loadHighlightDataSource(features: SceneQueryFeature[]) {
@@ -1651,11 +1649,11 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
   }
 
   /**
-   * Bind popup to a world position and project + layout every frame.
-   * Fires popuppositionchanged with { screenPosition, lngLat, height, layout, placement, rootStyle, rootClass }.
+   * Bind popup to a world position (通常为要素 @turf/center) and project + layout every frame.
    */
   setPopupAnchor(lng: number, lat: number, height = 0) {
     this.popupAnchor = { lng, lat, height: height || 0 };
+    this.ensureViewerSized();
     this.startPopupPositionTracking();
     this.updatePopupScreenPosition();
   }
@@ -1665,6 +1663,25 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
     this.popupAnchor = null;
     this.lastScreenPosition = null;
     this.clearPopupLayout();
+  }
+
+  /** Viewer may be created before flex layout settles; resize so transforms match CSS size. */
+  private ensureViewerSized() {
+    const canvas = this.scene?.canvas as HTMLCanvasElement | undefined;
+    if (!canvas || !this.viewer?.resize) {
+      return;
+    }
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    if (width <= 0 || height <= 0) {
+      return;
+    }
+    const scale = this.viewer.resolutionScale || 1;
+    const expectedW = Math.max(1, Math.floor(width * scale));
+    const expectedH = Math.max(1, Math.floor(height * scale));
+    if (canvas.width !== expectedW || canvas.height !== expectedH) {
+      this.viewer.resize();
+    }
   }
 
   /** Bind popup root element so ViewModel can measure size for placement */
@@ -1682,16 +1699,26 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
       this.clearPopupLayout();
       return;
     }
+    if (this.popupAnchor) {
+      this.startPopupPositionTracking();
+      return;
+    }
     this.updatePopupLayout();
   }
 
   startPopupPositionTracking() {
-    if (!this.scene?.postRender || this.trackingPopupPosition) {
-      this.updatePopupScreenPosition();
+    if (!this.popupAnchor) {
       return;
     }
-    this.scene.postRender.addEventListener(this.onPostRender);
-    this.trackingPopupPosition = true;
+    if (this.scene?.postRender && !this.trackingPopupPosition) {
+      this.scene.postRender.addEventListener(this.onPostRender);
+      this.trackingPopupPosition = true;
+    }
+    const camera = this.viewer?.camera;
+    if (camera?.changed && !this.trackingCameraPosition) {
+      camera.changed.addEventListener(this.onCameraChanged);
+      this.trackingCameraPosition = true;
+    }
     this.updatePopupScreenPosition();
   }
 
@@ -1702,8 +1729,17 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
       } catch {
         // ignore
       }
+      this.trackingPopupPosition = false;
     }
-    this.trackingPopupPosition = false;
+    const camera = this.viewer?.camera;
+    if (camera?.changed && this.trackingCameraPosition) {
+      try {
+        camera.changed.removeEventListener(this.onCameraChanged);
+      } catch {
+        // ignore
+      }
+      this.trackingCameraPosition = false;
+    }
   }
 
   private worldToWindowCoordinates(lng: number, lat: number, height: number) {
@@ -1716,11 +1752,19 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
     if (!transforms) {
       return null;
     }
-    if (typeof transforms.worldToWindowCoordinates === 'function') {
-      return transforms.worldToWindowCoordinates(this.scene, cartesian);
-    }
+    // 与 iEarth CustomBubble 一致：优先 wgs84ToWindowCoordinates + Cartesian2 result
     if (typeof transforms.wgs84ToWindowCoordinates === 'function') {
-      return transforms.wgs84ToWindowCoordinates(this.scene, cartesian);
+      const windowPos = new SuperMap3D.Cartesian2();
+      const ok = transforms.wgs84ToWindowCoordinates(this.scene, cartesian, windowPos);
+      if (ok && Number.isFinite(windowPos.x) && Number.isFinite(windowPos.y)) {
+        return { x: windowPos.x, y: windowPos.y };
+      }
+    }
+    if (typeof transforms.worldToWindowCoordinates === 'function') {
+      const windowPos = transforms.worldToWindowCoordinates(this.scene, cartesian);
+      if (windowPos && Number.isFinite(windowPos.x) && Number.isFinite(windowPos.y)) {
+        return { x: windowPos.x, y: windowPos.y };
+      }
     }
     return null;
   }
@@ -1729,6 +1773,7 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
     if (!this.popupAnchor) {
       return;
     }
+    this.ensureViewerSized();
     const windowPos = this.worldToWindowCoordinates(
       this.popupAnchor.lng,
       this.popupAnchor.lat,
