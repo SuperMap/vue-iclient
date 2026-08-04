@@ -1,6 +1,6 @@
 <template>
   <div class="sm-identify-popup-content">
-    <div :style="maxHeight">
+    <div :style="contentBoxStyle">
       <component
         v-for="(item, index) in renderedContent"
         :key="index"
@@ -55,8 +55,16 @@ const features = computed(() => {
 
 const { attributeStyle } = usePopupConfigHooks(popupConfig)
 
-const maxHeight = computed(() => {
-  return popupConfig.value.height || popupConfig.value.maxHeight
+/** 内容区限高：autoResize 用 maxHeight，固定尺寸用 height */
+const contentBoxStyle = computed(() => {
+  const { autoResize, maxHeight, height } = popupConfig.value
+  if (autoResize === false) {
+    return height ? { height, maxHeight: height } : {}
+  }
+  if (maxHeight) {
+    return { maxHeight }
+  }
+  return height ? { maxHeight: height } : {}
 })
 
 /** 内置类型与扩展类型共用同一个解析、渲染注册入口。 */

@@ -1883,7 +1883,9 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
       position: 'absolute',
       left: `${layout.left}px`,
       top: `${layout.top}px`,
-      zIndex: 1000
+      zIndex: 1000,
+      // maxHeight 只做上限；高度随内容，避免短内容被撑满限高
+      height: 'fit-content'
     };
     if (this.lastPopupMaxHeight && this.lastPopupMaxHeight > 0) {
       style.maxHeight = `${this.lastPopupMaxHeight}px`;

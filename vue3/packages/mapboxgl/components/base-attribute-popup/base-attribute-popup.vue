@@ -8,7 +8,7 @@
       showPopupTip && 'has-popup-tip',
       interactionRootClass
     ]"
-    :style="[textColorStyle, popupBgStyleValue, popupWidth, interactionRootStyle]"
+    :style="[textColorStyle, popupBgStyleValue, popupWidth, interactionRootStyleMerged]"
   >
     <div v-if="showPopupTip" class="popup-tip" />
     <SelectLayer
@@ -83,7 +83,7 @@ import { Checkbox, Dropdown, Menu, MenuItem } from 'ant-design-vue'
 import { MenuUnfoldOutlined } from '@ant-design/icons-vue'
 import { useTheme } from '@supermapgis/common/hooks/index.common'
 import PopupContent from './popup-content.vue'
-import { usePopupConfigHooks } from './hooks/use-popup-config'
+import { usePopupConfigHooks, mergePopupMaxHeight } from './hooks/use-popup-config'
 import SelectLayer from './select-layer.vue'
 import { useResizeHooks } from './hooks/use-resize'
 import { baseAttributePopupPropsDefault } from './types'
@@ -125,6 +125,25 @@ const { popupWidth, popupHeight, popupStyle } = usePopupConfigHooks(popupConfigV
 const popupBgStyleValue = computed(() => ({ ...popupBgStyle.value, ...popupStyle.value }))
 const interactionRootStyle = computed(() => interaction.value.rootStyle?.value || {})
 const interactionRootClass = computed(() => interaction.value.rootClass?.value || '')
+/**
+ * 场景贴边会给根节点写 maxHeight，并配合 popup-height-constrained 清掉内容区 max-height。
+ * 这里与 popupConfig.maxHeight 取更小值，保证配置限高仍然生效。
+ */
+const interactionRootStyleMerged = computed(() => {
+  const rootStyle = { ...(interactionRootStyle.value || {}) }
+  if (!rootStyle.maxHeight) {
+    return rootStyle
+  }
+  const configMaxHeight =
+    popupConfigValue.value.autoResize === false
+      ? popupConfigValue.value.height
+      : popupConfigValue.value.maxHeight
+  const mergedMaxHeight = mergePopupMaxHeight(configMaxHeight, rootStyle.maxHeight as string)
+  if (mergedMaxHeight) {
+    rootStyle.maxHeight = mergedMaxHeight
+  }
+  return rootStyle
+})
 
 const highlightLayerIds = computed(
   () => popupInfosValue.value?.flatMap(item => (item.layerId as string[]) || []) || []

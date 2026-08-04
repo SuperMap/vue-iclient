@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ScenePopupInfo } from '../types'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import WebScene from '@supermapgis/mapboxgl/components/web-scene/webscene.vue'
 import Button from '@supermapgis/common/components/button/Button'
 import SceneAttributePopup from '../scene-attribute-popup.vue'
@@ -270,8 +270,9 @@ const customPopupInfos = ref<ScenePopupInfo[]>([
 
 const popupConfig = ref({
   autoResize: true,
-  maxWidth: '320px',
-  maxHeight: '400px',
+  // 最大宽高：内容超出后出现滚动，便于验证 popupConfig 是否生效
+  maxWidth: '260px',
+  maxHeight: '220px',
   // 字段列 / 值列超长时显示省略号（可改为 'wrap' 换行）
   keyWordWrap: 'ellipsis' as const,
   valueWordWrap: 'ellipsis' as const
@@ -294,6 +295,17 @@ const worldLayerStyle = getDefaultLayerStyle('#e6a23c')
 const bgColor = ref<string>()
 const multiSelect = ref(true)
 const enabled = ref(true)
+
+const sceneAttributePopupControl = computed(() => ({
+  show: true,
+  popupInfos: defaultPopupInfos.value,
+  popupConfig: popupConfig.value,
+  multiSelect: true,
+  enabled: enabled.value,
+  background: bgColor.value,
+  clickTolerance: 5,
+  layerStyle: buildingLayerStyle
+}))
 
 const changeBg = () => {
   bgColor.value = bgColor.value === '#d90f' ? '#f0f' : '#d90f'
@@ -386,7 +398,8 @@ async function onSceneCustomLoaded(e: { Cesium?: any; viewer?: any }) {
     <p class="demo-tip">
       「默认点选」通过 WebScene.layers 挂 Buildings_R、County_P（rest/data），点选走
       scene.pick；左上角为 sceneLayerListControl 图层列表。layerId 需与 layers[].id
-      对齐。多选：Ctrl + 左键仅在同一图层内累加。
+      对齐。多选：Ctrl + 左键仅在同一图层内累加。popupConfig：maxWidth 260px /
+      maxHeight 220px（autoResize），属性较多时可观察滚动与限宽。
     </p>
     <div class="demo-scenes">
       <div class="demo-scene-panel">
@@ -396,16 +409,7 @@ async function onSceneCustomLoaded(e: { Cesium?: any; viewer?: any }) {
           target="scene-default"
           :layers="defaultSceneLayers"
           :scene-layer-list-control="sceneLayerListControl"
-          :scene-attribute-popup-control="{
-            show: true,
-            popupInfos: defaultPopupInfos,
-            popupConfig,
-            multiSelect: true,
-            enabled,
-            background: bgColor,
-            clickTolerance: 5,
-            layerStyle: buildingLayerStyle
-          }"
+          :scene-attribute-popup-control="sceneAttributePopupControl"
         />
       </div>
       <div class="demo-scene-panel">

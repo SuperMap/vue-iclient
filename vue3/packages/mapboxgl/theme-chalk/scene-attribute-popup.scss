@@ -9,21 +9,22 @@
   max-width: 100%;
 
   // 默认：滚动只在 base 的 .sm-identify-popup-content > div
-  // 贴边限高时：根节点 flex + maxHeight，避免 .content 与内层同时 overflow:auto 出现双滚动条
+  // 贴边限高时：根节点 flex + maxHeight；子项只收缩不拉伸，避免短内容被撑到 maxHeight
   > .content {
     display: flex;
     flex-direction: column;
-    flex: 1 1 auto;
+    flex: 0 1 auto;
     min-height: 0;
     overflow: hidden;
   }
 
   &.popup-height-constrained {
     .sm-identify-popup-content {
-      flex: 1 1 auto;
+      flex: 0 1 auto;
       min-height: 0;
-      max-height: none !important;
-      height: auto !important;
+      // 限高交给根节点（含 popupConfig.maxHeight 与贴边限高的合并结果）
+      max-height: none;
+      height: auto;
       overflow: auto;
 
       > div {
