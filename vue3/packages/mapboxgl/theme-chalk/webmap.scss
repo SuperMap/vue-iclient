@@ -7,7 +7,7 @@
   & > .#{$ant-prefix}-spin-nested-loading {
     position: absolute;
     top: 0;
-    left: 0;
+    @include position-row(left, 0, false, false);
     width: 100%;
     height: 100%;
     display: flex;
@@ -44,7 +44,7 @@
   z-index: 3;
 
   .mapboxgl-ctrl {
-    margin: 10px 0 0 16px;
+    @include spacing-complate-margin(10px 0 0 16px, false);
   }
 }
 
@@ -52,7 +52,7 @@
   z-index: 3;
 
   .mapboxgl-ctrl {
-    margin: 10px 16px 0 0;
+    @include spacing-complate-margin(10px 16px 0 0, false);
   }
 }
 
@@ -60,7 +60,7 @@
   z-index: 3;
 
   .mapboxgl-ctrl {
-    margin: 0 0 10px 16px;
+    @include spacing-complate-margin(0 0 10px 16px, false);
   }
 }
 
@@ -68,7 +68,7 @@
   z-index: 3;
 
   .mapboxgl-ctrl {
-    margin: 0 16px 10px 0;
+    @include spacing-complate-margin(0 16px 10px 0, false);
   }
 }
 

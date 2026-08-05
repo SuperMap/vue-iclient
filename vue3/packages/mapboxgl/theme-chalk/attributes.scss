@@ -4,7 +4,6 @@
 
 @include b(attributes) {
   $attributes-prefix: &;
-
   height: 100%;
   width: 100%;
   overflow: hidden;
@@ -31,7 +30,7 @@
           display: block;
           .#{$ant-prefix}-table-column-sorter {
             position: absolute;
-            right: 4px;
+            @include position-row(right, 4px, false, false);
             top: 50%;
             margin-top: -6px;
           }
@@ -63,7 +62,7 @@
       }
       tr > th .anticon-filter,
       tr > th .#{$ant-prefix}-table-filter-icon {
-        right: 15px;
+        @include position-row(right, 15px, false, false);
         display: flex;
         align-items: center;
       }
@@ -120,7 +119,7 @@
       width: 90px;
 
       &-primary {
-        margin-right: 8px;
+        @include spacing-margin(8px, right, false);
       }
     }
   }
@@ -134,10 +133,10 @@
   }
 
   @include e(count) {
-    margin-left: 15px;
+    @include spacing-margin(15px, left, false);
 
     > span {
-      margin-right: 8px;
+      @include spacing-margin(8px, right, false);
       /* stylelint-disable-next-line */
       font-size: 16px;
       /* stylelint-disable-next-line */
@@ -155,7 +154,7 @@
 
   @include e(dropdown-menu) {
     .#{$ant-prefix}-dropdown-menu-submenu-title > span > .anticon:first-child {
-      margin-right: 0;
+      @include spacing-margin(0, right, false);
     }
   }
   .#{$ant-prefix}-dropdown-link {

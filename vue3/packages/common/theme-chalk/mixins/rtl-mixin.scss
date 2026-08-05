@@ -1,0 +1,300 @@
+@use 'sass:list';
+
+// -------------------- Margin --------------------
+@function with-important($value, $important: false) {
+  @if $important == true {
+    @return #{$value} !important;
+  }
+
+  @return $value;
+}
+
+@mixin spacing-margin($padding: 16px, $direction: right, $important: false) {
+  @if $direction == right {
+    html:not([dir='rtl']) & {
+      margin-right: with-important($padding, $important);
+    }
+
+    html[dir='rtl'] & {
+      margin-left: with-important($padding, $important);
+    }
+  } @else if $direction == left {
+    html:not([dir='rtl']) & {
+      margin-left: with-important($padding, $important);
+    }
+
+    html[dir='rtl'] & {
+      margin-right: with-important($padding, $important);
+    }
+  }
+}
+
+@mixin spacing-complate-margin($margin, $important: false) {
+  $len: list.length($margin);
+  @if $len == 4 {
+    $top: list.nth($margin, 1);
+    $right: list.nth($margin, 2);
+    $bottom: list.nth($margin, 3);
+    $left: list.nth($margin, 4);
+
+    html:not([dir='rtl']) & {
+      margin: with-important($top $right $bottom $left, $important);
+    }
+
+    html[dir='rtl'] & {
+      margin: with-important($top $left $bottom $right, $important);
+    }
+  } @else {
+    margin: with-important($margin, $important);
+  }
+}
+
+// -------------------- Padding --------------------
+@mixin spacing-padding($padding: 16px, $direction: right, $important: false) {
+  @if $direction == right {
+    html:not([dir='rtl']) & {
+      padding-right: with-important($padding, $important);
+    }
+
+    html[dir='rtl'] & {
+      padding-left: with-important($padding, $important);
+    }
+  } @else if $direction == left {
+    html:not([dir='rtl']) & {
+      padding-left: with-important($padding, $important);
+    }
+
+    html[dir='rtl'] & {
+      padding-right: with-important($padding, $important);
+    }
+  }
+}
+
+@mixin spacing-complate-padding($padding, $important: false) {
+  $len: list.length($padding);
+  @if $len == 4 {
+    $top: list.nth($padding, 1);
+    $right: list.nth($padding, 2);
+    $bottom: list.nth($padding, 3);
+    $left: list.nth($padding, 4);
+
+    html:not([dir='rtl']) & {
+      padding: with-important($top $right $bottom $left, $important);
+    }
+
+    html[dir='rtl'] & {
+      padding: with-important($top $left $bottom $right, $important);
+    }
+  } @else {
+    padding: with-important($padding, $important);
+  }
+}
+
+@mixin rtl-direction-property($ltr-property, $rtl-property, $value, $important: false) {
+  html:not([dir='rtl']) & {
+    #{$ltr-property}: with-important($value, $important);
+  }
+
+  html[dir='rtl'] & {
+    #{$rtl-property}: with-important($value, $important);
+  }
+}
+
+// -------------------- Border --------------------
+@mixin border-line-style($direction, $width: 1px, $style: solid, $color: #ccc, $important: false) {
+
+  @if $direction == right {
+    html:not([dir='rtl']) & {
+      @if $width == none {
+        border-right: with-important(none, $important);
+      } @else {
+        border-right: with-important($width $style $color, $important);
+      }
+    }
+
+    html[dir='rtl'] & {
+      @if $width == none {
+        border-left: with-important(none, $important);
+      } @else {
+        border-left: with-important($width $style $color, $important);
+      }
+    }
+
+  } @else if $direction == left {
+    html:not([dir='rtl']) & {
+      @if $width == none {
+        border-left: with-important(none, $important);
+      } @else {
+        border-left: with-important($width $style $color, $important);
+      }
+    }
+
+    html[dir='rtl'] & {
+      @if $width == none {
+        border-right: with-important(none, $important);
+      } @else {
+        border-right: with-important($width $style $color, $important);
+      }
+    }
+
+  }
+}
+
+@mixin border-line-width($direction, $value, $important: false) {
+  @if $direction == right {
+    @include rtl-direction-property(border-right-width, border-left-width, $value, $important);
+  } @else if $direction == left {
+    @include rtl-direction-property(border-left-width, border-right-width, $value, $important);
+  }
+}
+
+@mixin border-line-type($direction, $value, $important: false) {
+  @if $direction == right {
+    @include rtl-direction-property(border-right-style, border-left-style, $value, $important);
+  } @else if $direction == left {
+    @include rtl-direction-property(border-left-style, border-right-style, $value, $important);
+  }
+}
+
+@mixin border-line-color($direction, $value, $important: false) {
+  @if $direction == right {
+    @include rtl-direction-property(border-right-color, border-left-color, $value, $important);
+  } @else if $direction == left {
+    @include rtl-direction-property(border-left-color, border-right-color, $value, $important);
+  }
+}
+
+// -------------------- Position --------------------
+@mixin position-row($direction, $value, $isContrary: false, $important: false) {
+  @if $direction == right {
+    html:not([dir='rtl']) & {
+      right: with-important($value, $important);
+      @if $isContrary == true {
+        right: with-important($value, $important);
+        left: auto;
+      }
+    }
+
+    html[dir='rtl'] & {
+      left: with-important($value, $important);
+      @if $isContrary == true {
+        left: with-important($value, $important);
+        right: auto;
+      }
+    }
+  } @else if $direction == left {
+    html:not([dir='rtl']) & {
+      left: with-important($value, $important);
+      @if $isContrary == true {
+        left: with-important($value, $important);
+        right: auto;
+      }
+    }
+
+    html[dir='rtl'] & {
+      right: with-important($value, $important);
+      @if $isContrary == true {
+        right: with-important($value, $important);
+        left: auto;
+      }
+    }
+  }
+}
+
+// -------------------- Float --------------------
+@mixin float-row($direction: left, $important: false) {
+  @if $direction == left {
+    html:not([dir='rtl']) & {
+      float: with-important(left, $important);
+    }
+
+    html[dir='rtl'] & {
+      float: with-important(right, $important);
+    }
+  } @else if $direction == right {
+    html:not([dir='rtl']) & {
+      float: with-important(right, $important);
+    }
+
+    html[dir='rtl'] & {
+      float: with-important(left, $important);
+    }
+  }
+}
+
+// -------------------- Text Align --------------------
+@mixin text-align-transform($direction: right, $important: false) {
+  @if $direction == right {
+    html:not([dir='rtl']) & {
+      text-align: with-important(right, $important);
+    }
+
+    html[dir='rtl'] & {
+      text-align: with-important(left, $important);
+    }
+  } @else if $direction == left {
+    html:not([dir='rtl']) & {
+      text-align: with-important(left, $important);
+    }
+
+    html[dir='rtl'] & {
+      text-align: with-important(right, $important);
+    }
+  } @else {
+    text-align: with-important($direction, $important);
+  }
+}
+
+// -------------------- Transform --------------------
+@mixin transform-translate($x, $y, $important: false) {
+  html:not([dir='rtl']) & {
+    transform: with-important(translate($x, $y), $important);
+  }
+
+  html[dir='rtl'] & {
+    transform: with-important(translate(-$x, $y), $important);
+  }
+}
+
+@mixin transform-translate-x($x, $important: false) {
+  html:not([dir='rtl']) & {
+    transform: with-important(translateX($x), $important);
+  }
+
+  html[dir='rtl'] & {
+    transform: with-important(translateX(-$x), $important);
+  }
+}
+
+// -------------------- Border Radius --------------------
+@mixin spacing-complate-radius($radius, $important: false) {
+  $len: list.length($radius);
+  @if $len == 4 {
+    $top-left: list.nth($radius, 1);
+    $top-right: list.nth($radius, 2);
+    $bottom-right: list.nth($radius, 3);
+    $bottom-left: list.nth($radius, 4);
+
+    html:not([dir='rtl']) & {
+      border-radius: with-important($top-left $top-right $bottom-right $bottom-left, $important);
+    }
+
+    html[dir='rtl'] & {
+      border-radius: with-important($top-right $top-left $bottom-left $bottom-right, $important);
+    }
+  } @else {
+    border-radius: with-important($radius, $important);
+  }
+}
+
+@mixin border-corner-radius($vertical, $direction, $value, $important: false) {
+  @if $vertical == top and $direction == right {
+    @include rtl-direction-property(border-top-right-radius, border-top-left-radius, $value, $important);
+  } @else if $vertical == top and $direction == left {
+    @include rtl-direction-property(border-top-left-radius, border-top-right-radius, $value, $important);
+  } @else if $vertical == bottom and $direction == right {
+    @include rtl-direction-property(border-bottom-right-radius, border-bottom-left-radius, $value, $important);
+  } @else if $vertical == bottom and $direction == left {
+    @include rtl-direction-property(border-bottom-left-radius, border-bottom-right-radius, $value, $important);
+  }
+}

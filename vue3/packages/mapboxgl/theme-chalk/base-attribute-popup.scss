@@ -33,7 +33,7 @@
     .title {
       width: 100%;
       padding: 1px 0;
-      margin-left: 4px;
+      @include spacing-margin(4px, left, false);
       font-size: inherit;
     }
 
@@ -41,7 +41,7 @@
       display: inline-flex;
       align-items: center;
       padding: 8px 0;
-      margin-right: 10px;
+      @include spacing-margin(10px, right, false);
 
       span {
         /* stylelint-disable-next-line */
@@ -56,11 +56,11 @@
       }
 
       .left-icon {
-        padding-right: 5px;
+        @include spacing-padding(5px, right, false);
       }
 
       .right-icon {
-        padding-left: 5px;
+        @include spacing-padding(5px, left, false);
       }
 
       .disabled {
@@ -75,7 +75,7 @@
     }
 
     .identify-fields {
-      margin-right: 10px;
+      @include spacing-margin(10px, right, false);
       display: flex;
       align-items: center;
     }
@@ -146,7 +146,7 @@
 
         .sm-player-loade-error{
           height: 100px;
-          margin-left: -10px;
+          @include spacing-margin(-10px, left, false);
         } 
       }
     }
@@ -251,7 +251,7 @@
 
     > div {
       overflow: auto;
-      margin-right: -8px;
+      @include spacing-margin(-8px, right, false);
       margin-bottom: -8px;
       min-height: 8px;
       max-height: 100%;
@@ -306,7 +306,7 @@
       .ant-card-head-title {
         /* stylelint-disable-next-line */
         line-height: 38px;
-        padding-right: 8px;
+        @include spacing-padding(8px, right, false);
       }
     }
 
@@ -322,19 +322,19 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 16px 0 8px;
+        @include spacing-complate-padding(0 16px 0 8px, false);
         height: 28px;
 
         .sm-component-layer-next {
           /* stylelint-disable-next-line */
           font-size: 16px;
-          margin-left: 32px;
+          @include spacing-margin(32px, left, false);
           transform: rotate(180deg);
         }
 
         .sm-component-layer-name {
           width: 100%;
-          margin-left: 4px;
+          @include spacing-margin(4px, left, false);
           /* stylelint-disable-next-line */
           font-size: 12px;
         }

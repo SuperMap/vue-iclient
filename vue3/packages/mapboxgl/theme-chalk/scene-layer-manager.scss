@@ -257,7 +257,7 @@
     width: 100%;
     min-width: 0;
     gap: 8px;
-    padding: 8px 8px 0 0;
+    @include spacing-complate-padding(8px 8px 0 0, false);
     box-sizing: border-box;
   }
 
@@ -297,7 +297,7 @@
     padding: 16px;
     /* stylelint-disable-next-line */
     color: $text-color-disabled;
-    text-align: center;
+    @include text-align-transform(center, false);
     overflow-wrap: anywhere;
   }
 

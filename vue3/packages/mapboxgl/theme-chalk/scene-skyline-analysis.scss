@@ -95,7 +95,7 @@
       min-width: 0;
 
       /* 抵消 SmCheckbox 空 label（ConfigProvider）带来的左右 padding，视觉间距保持 gap 的 8px */
-      margin-left: -16px;
+      @include spacing-margin(-16px, left, false);
     }
   }
 

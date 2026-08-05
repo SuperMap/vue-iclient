@@ -4,7 +4,6 @@
 
 @include b(table-popup) {
   $table-prefix: #{$ant-prefix}-table;
-
   border-radius: 4px;
   /* stylelint-disable-next-line */
   font-size: 12px;

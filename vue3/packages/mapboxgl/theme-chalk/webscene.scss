@@ -19,11 +19,11 @@
 
   .scene-control-top-right {
     top: 0;
-    right: 0;
+    @include position-row(right, 0, false, false);
 
     .scene-ctrl {
-      margin: 10px 10px 0 0;
-      float: right;
+      @include spacing-complate-margin(10px 10px 0 0, false);
+      @include float-row(right, false);
     }
 
     .supermap3d-viewer-navigationContainer {
@@ -34,31 +34,31 @@
 
   .scene-control-top-left {
     top: 0;
-    left: 0;
+    @include position-row(left, 0, false, false);
 
     .scene-ctrl {
-      margin: 10px 0 0 10px;
-      float: left;
+      @include spacing-complate-margin(10px 0 0 10px, false);
+      @include float-row(left, false);
     }
   }
 
   .scene-control-bottom-right {
     bottom: 0;
-    right: 0;
+    @include position-row(right, 0, false, false);
 
     .scene-ctrl {
-      margin: 0 10px 10px 0;
-      float: right;
+      @include spacing-complate-margin(0 10px 10px 0, false);
+      @include float-row(right, false);
     }
   }
 
   .scene-control-bottom-left {
     bottom: 0;
-    left: 0;
+    @include position-row(left, 0, false, false);
 
     .scene-ctrl {
-      margin: 0 0 10px 10px;
-      float: left;
+      @include spacing-complate-margin(0 0 10px 10px, false);
+      @include float-row(left, false);
     }
   }
 
@@ -75,7 +75,7 @@
       font-size: 11px;
       /* stylelint-disable-next-line */
       font-weight: 400;
-      text-align: center;
+      @include text-align-transform(center, false);
       text-decoration: none;
       box-shadow: 0 4px 12px rgb(0 0 0 / 28%);
       pointer-events: none;
@@ -95,7 +95,7 @@
       content: '';
       position: absolute;
       top: 50%;
-      left: -5px;
+      @include position-row(left, -5px, false, false);
       transform: translateY(-50%);
       width: 0;
       height: 0;
@@ -106,8 +106,8 @@
 
   /* 箭头在右侧（提示在鼠标左侧） */
   .sm-scene-tooltip.is-left::before {
-      left: auto;
-      right: -5px;
+      @include position-row(left, auto, false, false);
+      @include position-row(right, -5px, false, false);
       border-width: 5px 0 5px 5px;
       border-color: transparent transparent transparent rgb(17 21 28 / 94%);
   }

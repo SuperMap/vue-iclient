@@ -1,4 +1,5 @@
 @use './config.scss' as *;
+@forward './rtl-mixin';
 
 $--tdt-assets-path: './tdt/_assets' !default;
 $N: null;

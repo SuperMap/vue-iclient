@@ -3,7 +3,6 @@
 
 @include b(collapse-card) {
   $collapse-card-prefix: &;
-
   position: relative;
   overflow: visible;
   /* stylelint-disable-next-line */
@@ -26,7 +25,7 @@
     height: 32px;
     /* stylelint-disable-next-line */
     line-height: 32px;
-    text-align: center;
+    @include text-align-transform(center, false);
 
     &:hover {
       background: #fff;
@@ -54,6 +53,9 @@
     @include when(click-in) {
       border-radius: 4px;
 
+      /* 折叠图标停靠角为物理方向，与 iconPosition API 一致，不随 RTL 翻转 */
+
+      /* rtl:physical:start */
       @include when(top-right) {
         float: right;
       }
@@ -69,6 +71,8 @@
       @include when(bottom-left) {
         float: left !important;
       }
+
+      /* rtl:physical:end */
     }
 
     @include when(click-out) {
@@ -76,6 +80,7 @@
       background: transparent !important;
     }
 
+    /* rtl:physical:start */
     @include when(top-left) {
       top: 0;
       left: 0;
@@ -111,27 +116,38 @@
         transform: rotate(135deg);
       }
     }
+
+    /* rtl:physical:end */
   }
 
   @include e(header) {
     height: 32px;
     /* stylelint-disable-next-line */
     line-height: 32px;
+
+    /* 基础内边距与图标避让均用物理方向，避免 html[dir] 选择器盖掉 is-top-right 的 padding-right */
+
+    /* rtl:physical:start */
     padding-left: 8px;
+
+    /* rtl:physical:end */
     box-shadow: 0 1px 0 0 $shadow-color;
     /* stylelint-disable-next-line */
     color: $text-color-heading;
     background: $gis-control-header-bg;
-    border-radius: 4px 4px 0 0;
+    @include spacing-complate-radius(4px 4px 0 0, false);
 
     &.with-split-line {
       border-bottom: 1px solid $gis-control-header-border;
     }
     + #{$collapse-card-prefix}__body {
-      border-top-left-radius: 0;
-      border-top-right-radius: 0;
+      @include border-corner-radius(top, left, 0, false);
+      @include border-corner-radius(top, right, 0, false);
     }
 
+    /* 为物理方位图标预留空间，与 icon 同侧，避免 RTL 下标题压住图标 */
+
+    /* rtl:physical:start */
     @include when(top-right) {
       padding-right: 30px;
     }
@@ -147,6 +163,8 @@
     @include when(bottom-left) {
       padding-left: 30px;
     }
+
+    /* rtl:physical:end */
   }
 
   @include e(content) {
@@ -180,7 +198,10 @@
 
       @include when(icon) {
         & > .sm-component-collapse-card__header {
+          /* rtl:physical:start */
           padding-left: 38px;
+
+          /* rtl:physical:end */
         }
       }
     }
@@ -190,7 +211,10 @@
 
       @include when(icon) {
         & > .sm-component-collapse-card__header {
+          /* rtl:physical:start */
           padding-left: 38px;
+
+          /* rtl:physical:end */
         }
       }
     }

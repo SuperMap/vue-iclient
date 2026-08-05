@@ -125,7 +125,7 @@
   @include e(slider-value) {
     flex-shrink: 0;
     min-width: 60px;
-    text-align: right;
+    @include text-align-transform(right, false);
   }
 
   @include e(buttons) {

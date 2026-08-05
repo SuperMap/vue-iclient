@@ -7,7 +7,6 @@
     --color: rgb(18 28 141);
     --light-color: #14c8ff;
     --line-color: rgb(18 28 141 / 40%);
-
     width: var(--container-width);
   }
 
@@ -76,7 +75,7 @@
     --box-shadow-color: rgb(126 214 223);
     --light-color: white;
     .#{$sm-prefix}-animate-marker__name-container > span {
-      padding-left: 30px;
+      @include spacing-padding(30px, left, false);
     }
   }
 
@@ -92,7 +91,7 @@
   @include e(dot-point) {
     background: #009fd9;
     position: absolute;
-    left: -5px;
+    @include position-row(left, -5px, false, false);
     top: -5px;
     width: 10px;
     height: 10px;
@@ -124,7 +123,7 @@
     background: 0 0;
     border-color: #009fd9;
     top: -44px;
-    left: -44px;
+    @include position-row(left, -44px, false, false);
     height: 88px;
     width: 88px;
     box-shadow: 0 0 12px #0080d9, 0 0 20px #0080d9 inset;
@@ -134,7 +133,7 @@
     position: absolute;
     /* stylelint-disable-next-line */
     color: #ccc;
-    left: 0;
+    @include position-row(left, 0, false, false);
     height: 0;
     top: -10px;
     width: 11px;
@@ -145,33 +144,33 @@
     & > span {
       width: 80px;
       position: absolute;
-      left: 0;
+      @include position-row(left, 0, false, false);
       top: 0;
       border-radius: 2px;
       white-space: nowrap;
-      padding-left: 14px;
+      @include spacing-padding(14px, left, false);
     }
 
     @include m(breathing-aperture-name) {
       padding: 6px 10px;
 
       & > span {
-        padding-left: 20px;
+        @include spacing-padding(20px, left, false);
       }
     }
 
     @include m(halo-ring-name) {
       top: -10px;
-      left: calc(var(--halo-width) / 2);
+      @include position-row(left, calc(var(--halo-width) / 2), false, false);
     }
 
     @include m(rotating-aperture-name) {
-      left: var(--container-width);
+      @include position-row(left, var(--container-width), false, false);
       top: -10px;
     }
 
     @include m(diffused-aperture-name) {
-      left: var(--container-width);
+      @include position-row(left, var(--container-width), false, false);
       top: calc(var(--container-width) / 2 - 10px);
     }
   }
@@ -251,7 +250,7 @@
 
   @include e(halo) {
     position: absolute;
-    left: var(--halo-left);
+    @include position-row(left, var(--halo-left), false, false);
     top: var(--halo-left);
     border-radius: 100%;
     width: var(--halo-width);
@@ -346,7 +345,7 @@
     }
 
     & {
-      left: var(--text-left-position);
+      @include position-row(left, var(--text-left-position), false, false);
     }
 
     &::before,
@@ -392,7 +391,7 @@
     border-radius: 50%;
     position: absolute;
     top: 0;
-    left: 0;
+    @include position-row(left, 0, false, false);
     animation: pulse 3s infinite;
   }
 

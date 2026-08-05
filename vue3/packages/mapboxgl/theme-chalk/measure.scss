@@ -15,10 +15,14 @@
     position: relative;
     width: 100%;
     display: flex;
+    align-items: center;
+
+    /* gap 在 LTR/RTL 下都能正确分隔按钮与单位选择，避免方向性 margin 失效 */
+    gap: 8px;
   }
 
   @include e(modeWrap) {
-    text-align: left;
+    @include text-align-transform(left, false);
     /* stylelint-disable-next-line */
     font-size: 0;
     padding: 10px 0;
@@ -29,9 +33,10 @@
     height: 28px;
     /* stylelint-disable-next-line */
     line-height: 25px;
-    text-align: center;
+    @include text-align-transform(center, false);
     /* stylelint-disable-next-line */
     font-size: 22px;
+    flex-shrink: 0;
 
     &:hover {
       /* stylelint-disable-next-line */
@@ -40,13 +45,13 @@
     }
 
     &:first-child {
-      border-radius: 4px 0 0 4px;
-      margin-right: 1px;
+      @include spacing-complate-radius(4px 0 0 4px, false);
+      @include spacing-margin(1px, right, false);
     }
 
     &:nth-child(2) {
-      border-radius: 0 4px 4px 0;
-      margin-right: 1px;
+      @include spacing-complate-radius(0 4px 4px 0, false);
+      @include spacing-margin(1px, right, false);
     }
 
     @include when(active) {
@@ -64,8 +69,8 @@
 
   @include e(unit) {
     flex: 1;
+    min-width: 0;
     position: relative;
-    margin-left: 8px;
     &,
     .#{$ant-prefix}-select-selection--single {
       height: 28px;

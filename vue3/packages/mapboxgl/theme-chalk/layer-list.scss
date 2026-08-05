@@ -6,7 +6,6 @@
 
 @include b(layer-list) {
   $layer-list-prefix: &;
-
   z-index: 10;
 
   @include e(content) {
@@ -19,7 +18,7 @@
       position: relative;
     }
     & .#{$ant-prefix}-tree {
-      border-radius: 0 0 2px 2px;
+      @include spacing-complate-radius(0 0 2px 2px, false);
       padding-bottom: 2px;
       background: inherit;
       color: inherit;
@@ -33,17 +32,17 @@
           }
         }
         & > .#{$ant-prefix}-tree-treenode:not(:has(.#{$ant-prefix}-tree-indent-unit)) {
-          padding-left: 8px;
+          @include spacing-padding(8px, left, false);
         }
         & > .#{$ant-prefix}-tree-treenode:has(.#{$ant-prefix}-tree-indent-unit) {
-          padding-left: 8px;
+          @include spacing-padding(8px, left, false);
         }
       }
       .#{$ant-prefix}-tree-switcher {
         width: 14px;
         /* stylelint-disable-next-line */
         line-height: 22px;
-        margin-right: 4px;
+        @include spacing-margin(4px, right, false);
 
         i {
           /* stylelint-disable-next-line */
@@ -81,16 +80,16 @@
       display: flex;
       justify-content: flex-end;
       height: 20px;
-      margin-left: 16px;
+      @include spacing-margin(16px, left, false);
 
       & i {
-        margin-right: 0;
+        @include spacing-margin(0, right, false);
         /* stylelint-disable-next-line */
         font-size: 16px;
       }
 
       & div {
-        margin-right: 8px;
+        @include spacing-margin(8px, right, false);
       }
 
       & .highlight-icon:hover {
@@ -103,7 +102,7 @@
       display:flex;
       align-items:center;
       width: 80%;
-      padding-left: 24px;
+      @include spacing-padding(24px, left, false);
       /* stylelint-disable-next-line */
       font-size: 12px;
       height: 20px;
@@ -114,14 +113,14 @@
 
       &::before {
         position: absolute;
-        left: 8px;
+        @include position-row(left, 8px, false, false);
         top: 0;
         content: "";
         height: 14px;
         width: 8px;
         border: 1px solid $border-color-split;
         border-top: none;
-        border-right: none;
+        @include border-line-style(right, none, undefined, undefined, false);
       }
     }
   }
@@ -155,7 +154,7 @@
         cursor: pointer;
 
         &:first-child {
-          margin-right: 9px;
+          @include spacing-margin(9px, right, false);
           /* stylelint-disable-next-line */
           font-size: 14px;
         }

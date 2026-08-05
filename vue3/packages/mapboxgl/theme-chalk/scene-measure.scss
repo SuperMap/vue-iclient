@@ -35,7 +35,7 @@
     display: flex;
 
     &-left {
-      padding-right: 32px;
+      @include spacing-padding(32px, right, false);
     }
 
     &-right {

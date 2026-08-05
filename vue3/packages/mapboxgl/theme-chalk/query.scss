@@ -134,7 +134,7 @@
       content: '';
       position: absolute;
       top: 2px;
-      left: 2px;
+      @include position-row(left, 2px, false, false);
       width: 7px;
       height: 7px;
       border-radius: 50%;
@@ -285,7 +285,7 @@
       margin: 0;
 
       & > li {
-        padding: 8px 30px 8px 18px;
+        @include spacing-complate-padding(8px 30px 8px 18px, false);
         /* stylelint-disable-next-line */
         line-height: 20px;
         min-height: 36px;
@@ -316,7 +316,7 @@
 
         > i {
           position: absolute;
-          right: 10px;
+          @include position-row(right, 10px, false, false);
           top: 50%;
           transform: translateY(-50%);
           color: inherit;

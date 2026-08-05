@@ -1,4 +1,5 @@
 @use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+@use '@supermapgis/common/theme-chalk/mixins/rtl-mixin.scss' as *;
 @use 'video.js/dist/video-js.css';
 
 .sm-component-video-player__player.video-js {
@@ -26,7 +27,7 @@
 
 .sm-component-video-player__player.video-js .vjs-control.vjs-live-control {
   width: auto;
-  padding-left: 0.5em;
+  @include spacing-padding(0.5em, left, false);
   letter-spacing: 0.1em;
 }
 
@@ -35,7 +36,7 @@
 }
 
 .sm-component-video-player__player.video-js .vjs-big-play-button {
-  left: calc(50% - 1.5em);
+  @include position-row(left, calc(50% - 1.5em), false, false);
   top: 50%;
 }
 
@@ -116,7 +117,7 @@
 }
 
 .vjs-menu-button-popup.vjs-volume-menu-button-vertical .vjs-menu {
-  left: 0;
+  @include position-row(left, 0, false, false);
 }
 
 .sm-component-video-player__player.video-js .vjs-menu li {
@@ -143,18 +144,18 @@
 
 .sm-component-video-player__player.video-js .vjs-menu-button-popup .vjs-menu {
   width: 5em;
-  left: -1em;
+  @include position-row(left, -1em, false, false);
 }
 
 .sm-component-video-player__player.video-js .vjs-menu-button-popup.vjs-volume-menu-button-vertical .vjs-menu {
-  left: 0;
+  @include position-row(left, 0, false, false);
 }
 
 .sm-component-video-player__player.video-js .vjs-control-bar .vjs-time-control {
   min-width: 1em;
   padding: 0;
   margin: 0 0.1em;
-  text-align: center;
+  @include text-align-transform(center, false);
   display: block;
   order: 1;
 }
@@ -200,7 +201,7 @@
   .ant-modal-close {
     /* stylelint-disable-next-line */
     color: #a2a3a5;
-    right: -5%;
+    @include position-row(right, -5%, false, false);
     top: -3%;
 
     &:hover {

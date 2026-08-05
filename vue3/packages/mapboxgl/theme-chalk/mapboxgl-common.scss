@@ -22,6 +22,9 @@
   }
 }
 
+/* mapbox popup tip 三角边为物理方向，不随 RTL 翻转 */
+
+/* rtl:physical:start */
 .mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
   border-right-color: var(--color-bg-elevated);
 }
@@ -29,3 +32,5 @@
 .mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
   border-left-color: var(--color-bg-elevated);
 }
+
+/* rtl:physical:end */

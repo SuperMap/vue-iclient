@@ -1,6 +1,8 @@
 @use '@supermapgis/common/theme-chalk/collapse-card';
 @use '@supermapgis/common/theme-chalk/card';
 
+@use '@supermapgis/common/theme-chalk/mixins/rtl-mixin.scss' as *;
+
 .sm-component-directory-tree {
   display: flex;
   flex-direction: column;
@@ -15,7 +17,6 @@
     .sm-component-collapse-card__header {
       height: 32px;
     }
-
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -115,7 +116,7 @@
     flex: none;
     width: 16px;
     height: 16px;
-    margin-right: 6px;
+    @include spacing-margin(6px, right, false);
     object-fit: contain;
   }
 
@@ -137,7 +138,7 @@
   }
 
   .sm-component-directory-tree__node-status {
-    margin-left: 8px;
+    @include spacing-margin(8px, left, false);
     display: inline-flex;
     align-items: center;
     gap: 4px;

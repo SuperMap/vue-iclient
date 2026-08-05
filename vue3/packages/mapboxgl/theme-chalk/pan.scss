@@ -3,7 +3,6 @@
 
 @include b(pan) {
   $pan-prefix: &;
-
   min-width: 64px;
   min-height: 64px;
   max-width: 126px;
@@ -18,9 +17,9 @@
   }
   #{$pan-prefix}__center, .#{$iconfont-class-prefix}-fullscreen {
     position: absolute;
-    left: 50%;
+    @include position-row(left, 50%, false, false);
     top: 50%;
-    transform: translate(-50%, -50%);
+    @include transform-translate(-50%, -50%, false);
     z-index: 10;
   }
 
@@ -79,7 +78,7 @@
       font-size: 12px;
       /* stylelint-disable-next-line */
       line-height: 1;
-      transform: translate(-50%, -50%);
+      @include transform-translate(-50%, -50%, false);
     }
 
     &-left, &-right {
@@ -87,15 +86,15 @@
     }
 
     &-up, &-down {
-      left: 50%;
+      @include position-row(left, 50%, false, false);
     }
 
     &-left {
-      left: 13%;
+      @include position-row(left, 13%, false, false);
     }
 
     &-right {
-      left: 86%;
+      @include position-row(left, 86%, false, false);
     }
 
     &-up {

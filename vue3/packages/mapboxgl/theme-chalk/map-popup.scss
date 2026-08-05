@@ -16,7 +16,7 @@
   .switchDataText {
     display: inline-flex;
     padding: 8px 0;
-    margin-right: 10px;
+    @include spacing-margin(10px, right, false);
 
     span {
       vertical-align: 3px;
@@ -28,11 +28,11 @@
     }
 
     .left-icon {
-      padding-right: 5px;
+      @include spacing-padding(5px, right, false);
     }
 
     .right-icon {
-      padding-left: 5px;
+      @include spacing-padding(5px, left, false);
     }
 
     .disabled {
@@ -65,7 +65,7 @@
 
       .title {
         width: 100%;
-        margin-left: 4px;
+        @include spacing-margin(4px, left, false);
         /* stylelint-disable-next-line */
         font-size: 12px;
         overflow: hidden;
@@ -75,7 +75,7 @@
 
       .switchDataText {
         padding: 8px 0;
-        margin-right: 10px;
+        @include spacing-margin(10px, right, false);
       }
 
       .sm-components-icon-close {

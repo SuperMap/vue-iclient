@@ -7,7 +7,6 @@
   $layer-preview-size: 76px;
   $layer-name-height: 20px;
   $layer-name-bg: rgb(0 0 0 / 45%);
-
   z-index: 1;
   width: 370px;
   /* stylelint-disable-next-line */
@@ -92,9 +91,9 @@
 
   @include e(layer-name) {
     position: absolute;
-    right: 0;
+    @include position-row(right, 0, false, false);
     bottom: 0;
-    left: 0;
+    @include position-row(left, 0, false, false);
     z-index: 1;
     max-width: 100%;
     height: $layer-name-height;
@@ -103,7 +102,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    text-align: center;
+    @include text-align-transform(center, false);
     /* stylelint-disable-next-line */
     line-height: $layer-name-height;
     background: $layer-name-bg;

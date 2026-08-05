@@ -5,7 +5,7 @@
 @include b(draw) {
   @include e(panel) {
     padding: 16px;
-    padding-right: 0;
+    @include spacing-padding(0, right, false);
     box-shadow: 0 2px 4px 0 rgb(0 0 0 / 26%);
   }
 
@@ -16,7 +16,7 @@
     height: 28px;
     /* stylelint-disable-next-line */
     line-height: 28px;
-    text-align: center;
+    @include text-align-transform(center, false);
     cursor: pointer;
 
     &:hover {
@@ -25,7 +25,7 @@
     }
 
     &:first-child {
-      border-radius: 4px 0 0 4px;
+      @include spacing-complate-radius(4px 0 0 4px, false);
     }
 
     &:nth-child(2) {
@@ -33,7 +33,7 @@
     }
 
     &:nth-child(3) {
-      border-radius: 0 4px 4px 0;
+      @include spacing-complate-radius(0 4px 4px 0, false);
     }
 
     &:last-child {
