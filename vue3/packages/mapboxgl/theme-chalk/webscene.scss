@@ -19,6 +19,7 @@
 
   .scene-control-top-right {
     top: 0;
+
     @include position-row(right, 0, false, false);
 
     .scene-ctrl {
@@ -34,6 +35,7 @@
 
   .scene-control-top-left {
     top: 0;
+
     @include position-row(left, 0, false, false);
 
     .scene-ctrl {
@@ -44,6 +46,7 @@
 
   .scene-control-bottom-right {
     bottom: 0;
+
     @include position-row(right, 0, false, false);
 
     .scene-ctrl {
@@ -54,6 +57,7 @@
 
   .scene-control-bottom-left {
     bottom: 0;
+
     @include position-row(left, 0, false, false);
 
     .scene-ctrl {
@@ -75,7 +79,9 @@
       font-size: 11px;
       /* stylelint-disable-next-line */
       font-weight: 400;
+
       @include text-align-transform(center, false);
+
       text-decoration: none;
       box-shadow: 0 4px 12px rgb(0 0 0 / 28%);
       pointer-events: none;
@@ -95,7 +101,9 @@
       content: '';
       position: absolute;
       top: 50%;
+
       @include position-row(left, -5px, false, false);
+
       transform: translateY(-50%);
       width: 0;
       height: 0;
@@ -108,6 +116,7 @@
   .sm-scene-tooltip.is-left::before {
       @include position-row(left, auto, false, false);
       @include position-row(right, -5px, false, false);
+
       border-width: 5px 0 5px 5px;
       border-color: transparent transparent transparent rgb(17 21 28 / 94%);
   }

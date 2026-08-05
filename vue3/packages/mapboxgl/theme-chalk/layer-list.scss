@@ -6,6 +6,7 @@
 
 @include b(layer-list) {
   $layer-list-prefix: &;
+
   z-index: 10;
 
   @include e(content) {
@@ -19,6 +20,7 @@
     }
     & .#{$ant-prefix}-tree {
       @include spacing-complate-radius(0 0 2px 2px, false);
+
       padding-bottom: 2px;
       background: inherit;
       color: inherit;
@@ -42,6 +44,7 @@
         width: 14px;
         /* stylelint-disable-next-line */
         line-height: 22px;
+
         @include spacing-margin(4px, right, false);
 
         i {
@@ -80,6 +83,7 @@
       display: flex;
       justify-content: flex-end;
       height: 20px;
+
       @include spacing-margin(16px, left, false);
 
       & i {
@@ -102,6 +106,7 @@
       display:flex;
       align-items:center;
       width: 80%;
+
       @include spacing-padding(24px, left, false);
       /* stylelint-disable-next-line */
       font-size: 12px;
@@ -113,13 +118,16 @@
 
       &::before {
         position: absolute;
+
         @include position-row(left, 8px, false, false);
+
         top: 0;
         content: "";
         height: 14px;
         width: 8px;
         border: 1px solid $border-color-split;
         border-top: none;
+
         @include border-line-style(right, none, undefined, undefined, false);
       }
     }

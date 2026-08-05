@@ -20,7 +20,9 @@
     height: 24px;
     /* stylelint-disable-next-line */
     line-height: 24px;
+
     @include text-align-transform(center, false);
+
     text-shadow: none;
     border: none;
     outline: none;
@@ -37,12 +39,14 @@
   .sm-progress-control-wrapper {
     position: relative;
     width: calc(100% - 36px);
+
     @include spacing-margin(12px, left, false);
   }
 
   .sm-progress-control {
     @include flex(auto);
     @include display-flex(center);
+
     position: relative;
     width: 100%;
     border-radius: 3px;
@@ -72,8 +76,11 @@
   .sm-progress-holder {
     @include flex(auto);
     @include transition(all 0.2s);
+
     position: absolute;
+
     @include position-row(left, 0, false, false);
+
     width: 100%;
     height: 100%;
     outline: none;
@@ -82,7 +89,9 @@
 
   .sm-load-progress {
     position: absolute;
+
     @include position-row(left, 0, false, false);
+
     width: 100%;
     border-radius: 3px;
     outline: none;
@@ -114,11 +123,13 @@
 
     .sm-start-node {
       position: absolute;
+
       @include position-row(left, 0, false, false);
     }
 
     .sm-end-node {
       position: absolute;
+
       @include position-row(right, 0, false, false);
     }
   }
@@ -138,7 +149,9 @@
 
   .sm-time-tooltip {
     position: relative;
+
     @include position-row(left, -50%, false, false);
+
     top: -50px;
     display: flex;
     justify-content: center;

@@ -7,7 +7,9 @@
   & > .#{$ant-prefix}-spin-nested-loading {
     position: absolute;
     top: 0;
+
     @include position-row(left, 0, false, false);
+
     width: 100%;
     height: 100%;
     display: flex;

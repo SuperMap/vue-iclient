@@ -7,6 +7,7 @@
     --color: rgb(18 28 141);
     --light-color: #14c8ff;
     --line-color: rgb(18 28 141 / 40%);
+
     width: var(--container-width);
   }
 
@@ -91,7 +92,9 @@
   @include e(dot-point) {
     background: #009fd9;
     position: absolute;
+
     @include position-row(left, -5px, false, false);
+
     top: -5px;
     width: 10px;
     height: 10px;
@@ -123,7 +126,9 @@
     background: 0 0;
     border-color: #009fd9;
     top: -44px;
+
     @include position-row(left, -44px, false, false);
+
     height: 88px;
     width: 88px;
     box-shadow: 0 0 12px #0080d9, 0 0 20px #0080d9 inset;
@@ -133,7 +138,9 @@
     position: absolute;
     /* stylelint-disable-next-line */
     color: #ccc;
+
     @include position-row(left, 0, false, false);
+
     height: 0;
     top: -10px;
     width: 11px;
@@ -144,10 +151,13 @@
     & > span {
       width: 80px;
       position: absolute;
+
       @include position-row(left, 0, false, false);
+
       top: 0;
       border-radius: 2px;
       white-space: nowrap;
+
       @include spacing-padding(14px, left, false);
     }
 
@@ -161,16 +171,19 @@
 
     @include m(halo-ring-name) {
       top: -10px;
+
       @include position-row(left, calc(var(--halo-width) / 2), false, false);
     }
 
     @include m(rotating-aperture-name) {
       @include position-row(left, var(--container-width), false, false);
+
       top: -10px;
     }
 
     @include m(diffused-aperture-name) {
       @include position-row(left, var(--container-width), false, false);
+
       top: calc(var(--container-width) / 2 - 10px);
     }
   }
@@ -250,7 +263,9 @@
 
   @include e(halo) {
     position: absolute;
+
     @include position-row(left, var(--halo-left), false, false);
+
     top: var(--halo-left);
     border-radius: 100%;
     width: var(--halo-width);
@@ -391,7 +406,9 @@
     border-radius: 50%;
     position: absolute;
     top: 0;
+
     @include position-row(left, 0, false, false);
+
     animation: pulse 3s infinite;
   }
 

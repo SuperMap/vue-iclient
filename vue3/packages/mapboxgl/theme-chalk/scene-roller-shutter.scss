@@ -88,12 +88,15 @@
   top: 0;
   width: 6px;
   height: 100%;
+
   @include transform-translate-x(-50%, false);
+
   cursor: col-resize;
 }
 
 .sm-component-scene-roller-shutter__slider--horizontal {
   @include position-row(left, 0, false, false);
+
   width: 100%;
   height: 6px;
   transform: translateY(-50%);

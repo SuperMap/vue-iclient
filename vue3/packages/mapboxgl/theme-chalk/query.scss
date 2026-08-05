@@ -134,7 +134,9 @@
       content: '';
       position: absolute;
       top: 2px;
+
       @include position-row(left, 2px, false, false);
+
       width: 7px;
       height: 7px;
       border-radius: 50%;
@@ -316,7 +318,9 @@
 
         > i {
           position: absolute;
+
           @include position-row(right, 10px, false, false);
+
           top: 50%;
           transform: translateY(-50%);
           color: inherit;

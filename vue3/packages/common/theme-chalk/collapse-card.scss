@@ -3,6 +3,7 @@
 
 @include b(collapse-card) {
   $collapse-card-prefix: &;
+
   position: relative;
   overflow: visible;
   /* stylelint-disable-next-line */
@@ -25,6 +26,7 @@
     height: 32px;
     /* stylelint-disable-next-line */
     line-height: 32px;
+
     @include text-align-transform(center, false);
 
     &:hover {
@@ -135,6 +137,7 @@
     /* stylelint-disable-next-line */
     color: $text-color-heading;
     background: $gis-control-header-bg;
+
     @include spacing-complate-radius(4px 4px 0 0, false);
 
     &.with-split-line {

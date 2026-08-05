@@ -50,6 +50,7 @@
     @include m(show-zoom) {
       @include border-corner-radius(top, right, 0, false);
       @include border-corner-radius(top, left, 0, false);
+
       height: 20px;
       /* stylelint-disable-next-line */
       line-height: 20px;

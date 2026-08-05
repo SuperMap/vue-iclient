@@ -18,7 +18,9 @@
     border-radius: 4px;
     /* stylelint-disable-next-line */
     font-size: 16px;
+
     @include text-align-transform(center, false);
+
     display: inline-block;
     box-shadow: 0 3px 13px 0 $shadow-color;
 
@@ -48,18 +50,23 @@
 
   @include e(search-icon) {
     width: 32px;
+
     @include border-line-style(left, 1px, solid, $border-color-split, false);
   }
 
   @include e(arrow-icon) {
     width: 32px;
+
     @include border-line-style(right, 1px, solid, $border-color-split, false);
+
     background: $gis-control-suffix-bg;
   }
 
   @include e(datasource-icon) {
     width: 32px;
+
     @include border-line-style(right, 1px, solid, $border-color-split, false);
+
     background: $gis-control-suffix-bg;
 
     > i {
@@ -121,7 +128,9 @@
       width: auto;
       flex: 1 1 auto;
       min-width: 0;
+
       @include spacing-complate-padding(5px 13px 5px 11px, false);
+
       color: inherit;
       background-color: inherit;
       border-radius: 0;
@@ -163,6 +172,7 @@
 
       & > li {
         @include spacing-complate-padding(6px 16px 6px 24px, false);
+
         display: block;
         cursor: pointer;
 

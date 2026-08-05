@@ -4,6 +4,7 @@
 
 @include b(attributes) {
   $attributes-prefix: &;
+
   height: 100%;
   width: 100%;
   overflow: hidden;
@@ -30,7 +31,9 @@
           display: block;
           .#{$ant-prefix}-table-column-sorter {
             position: absolute;
+
             @include position-row(right, 4px, false, false);
+
             top: 50%;
             margin-top: -6px;
           }
@@ -63,6 +66,7 @@
       tr > th .anticon-filter,
       tr > th .#{$ant-prefix}-table-filter-icon {
         @include position-row(right, 15px, false, false);
+
         display: flex;
         align-items: center;
       }

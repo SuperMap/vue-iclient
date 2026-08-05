@@ -3,6 +3,7 @@
 
 @include b(pan) {
   $pan-prefix: &;
+
   min-width: 64px;
   min-height: 64px;
   max-width: 126px;
@@ -17,9 +18,13 @@
   }
   #{$pan-prefix}__center, .#{$iconfont-class-prefix}-fullscreen {
     position: absolute;
+
     @include position-row(left, 50%, false, false);
+
     top: 50%;
+
     @include transform-translate(-50%, -50%, false);
+
     z-index: 10;
   }
 
@@ -78,6 +83,7 @@
       font-size: 12px;
       /* stylelint-disable-next-line */
       line-height: 1;
+
       @include transform-translate(-50%, -50%, false);
     }
 

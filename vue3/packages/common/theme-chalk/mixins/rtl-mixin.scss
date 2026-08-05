@@ -31,6 +31,7 @@
 
 @mixin spacing-complate-margin($margin, $important: false) {
   $len: list.length($margin);
+
   @if $len == 4 {
     $top: list.nth($margin, 1);
     $right: list.nth($margin, 2);
@@ -72,6 +73,7 @@
 
 @mixin spacing-complate-padding($padding, $important: false) {
   $len: list.length($padding);
+
   @if $len == 4 {
     $top: list.nth($padding, 1);
     $right: list.nth($padding, 2);
@@ -102,7 +104,6 @@
 
 // -------------------- Border --------------------
 @mixin border-line-style($direction, $width: 1px, $style: solid, $color: #ccc, $important: false) {
-
   @if $direction == right {
     html:not([dir='rtl']) & {
       @if $width == none {
@@ -169,6 +170,7 @@
   @if $direction == right {
     html:not([dir='rtl']) & {
       right: with-important($value, $important);
+
       @if $isContrary == true {
         right: with-important($value, $important);
         left: auto;
@@ -177,6 +179,7 @@
 
     html[dir='rtl'] & {
       left: with-important($value, $important);
+
       @if $isContrary == true {
         left: with-important($value, $important);
         right: auto;
@@ -185,6 +188,7 @@
   } @else if $direction == left {
     html:not([dir='rtl']) & {
       left: with-important($value, $important);
+
       @if $isContrary == true {
         left: with-important($value, $important);
         right: auto;
@@ -193,6 +197,7 @@
 
     html[dir='rtl'] & {
       right: with-important($value, $important);
+
       @if $isContrary == true {
         right: with-important($value, $important);
         left: auto;
@@ -269,6 +274,7 @@
 // -------------------- Border Radius --------------------
 @mixin spacing-complate-radius($radius, $important: false) {
   $len: list.length($radius);
+
   @if $len == 4 {
     $top-left: list.nth($radius, 1);
     $top-right: list.nth($radius, 2);

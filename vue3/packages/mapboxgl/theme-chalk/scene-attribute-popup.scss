@@ -39,7 +39,9 @@
   .popup-tip {
     position: absolute;
     top: -20px;
+
     @include position-row(left, 16px, false, false);
+
     width: 0;
     height: 0;
     border: 10px solid transparent;
@@ -74,7 +76,9 @@
       inset: 50% auto auto -20px;
       transform: translateY(-50%);
       border-color: transparent;
+
       @include border-line-color(right, var(--color-bg-elevated, #{$color-bg-container}), false);
+
       filter: drop-shadow(-1px 0 1px rgb(0 0 0 / 6%));
     }
   }
@@ -85,7 +89,9 @@
       inset: 50% -20px auto auto;
       transform: translateY(-50%);
       border-color: transparent;
+
       @include border-line-color(left, var(--color-bg-elevated, #{$color-bg-container}), false);
+
       filter: drop-shadow(1px 0 1px rgb(0 0 0 / 6%));
     }
   }

@@ -33,7 +33,9 @@
     .title {
       width: 100%;
       padding: 1px 0;
+
       @include spacing-margin(4px, left, false);
+
       font-size: inherit;
     }
 
@@ -41,6 +43,7 @@
       display: inline-flex;
       align-items: center;
       padding: 8px 0;
+
       @include spacing-margin(10px, right, false);
 
       span {
@@ -76,6 +79,7 @@
 
     .identify-fields {
       @include spacing-margin(10px, right, false);
+
       display: flex;
       align-items: center;
     }
@@ -146,6 +150,7 @@
 
         .sm-player-loade-error{
           height: 100px;
+
           @include spacing-margin(-10px, left, false);
         } 
       }
@@ -251,7 +256,9 @@
 
     > div {
       overflow: auto;
+
       @include spacing-margin(-8px, right, false);
+
       margin-bottom: -8px;
       min-height: 8px;
       max-height: 100%;
@@ -306,6 +313,7 @@
       .ant-card-head-title {
         /* stylelint-disable-next-line */
         line-height: 38px;
+
         @include spacing-padding(8px, right, false);
       }
     }
@@ -322,18 +330,23 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+
         @include spacing-complate-padding(0 16px 0 8px, false);
+
         height: 28px;
 
         .sm-component-layer-next {
           /* stylelint-disable-next-line */
           font-size: 16px;
+
           @include spacing-margin(32px, left, false);
+
           transform: rotate(180deg);
         }
 
         .sm-component-layer-name {
           width: 100%;
+
           @include spacing-margin(4px, left, false);
           /* stylelint-disable-next-line */
           font-size: 12px;

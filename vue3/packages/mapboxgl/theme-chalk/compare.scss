@@ -9,7 +9,9 @@
   & > div:not(.mapboxgl-compare) {
     position: absolute;
     top: 0;
+
     @include position-row(left, 0, false, false);
+
     width: 100%;
     height: 100%;
   }
@@ -24,6 +26,7 @@
     .compare-swiper-vertical,
     .compare-swiper-horizontal {
       @include position-row(left, 50%, false, false);
+
       margin: 0;
       box-shadow: none;
       border: 2px solid;
@@ -33,7 +36,9 @@
       box-sizing: content-box;
       background-size: contain;
       background-image: none;
+
       @include text-align-transform(center, false);
+
       display: flex;
       align-items: center;
       justify-content: center;

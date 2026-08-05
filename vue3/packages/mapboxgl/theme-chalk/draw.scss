@@ -5,7 +5,9 @@
 @include b(draw) {
   @include e(panel) {
     padding: 16px;
+
     @include spacing-padding(0, right, false);
+
     box-shadow: 0 2px 4px 0 rgb(0 0 0 / 26%);
   }
 
@@ -16,7 +18,9 @@
     height: 28px;
     /* stylelint-disable-next-line */
     line-height: 28px;
+
     @include text-align-transform(center, false);
+
     cursor: pointer;
 
     &:hover {
