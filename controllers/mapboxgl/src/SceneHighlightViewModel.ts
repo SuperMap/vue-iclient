@@ -839,7 +839,7 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
         this.clearHighlight();
         if (clickedFeatures.length) {
           // 图层选择阶段暂用点击点；选定图层后由 queryFeaturesByLayerId 改为几何中心
-          this.setPopupAnchor(lng, lat, height);
+          this.setPopupAnchor(lng, lat, this.getGroundHeight(lng, lat, height || 0));
         }
         const pickResult = this.emitSelectionChanged({
           lngLat: [lng, lat],
@@ -877,8 +877,8 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
         return;
       }
       if (features.length) {
-        // 最终锚点在 queryFeaturesByLayerId 中按要素几何中心设置
-        this.setPopupAnchor(lng, lat, height);
+        // 最终锚点在 queryFeaturesByLayerId 中按要素几何中心 + 地表高度设置
+        this.setPopupAnchor(lng, lat, this.getGroundHeight(lng, lat, height || 0));
       } else if (!isMultipleClick) {
         this.clearPopupAnchor();
       }
@@ -1111,10 +1111,12 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
     const SuperMap3D = window.SuperMap3D;
     let cartesian: any;
     try {
-      if (this.scene.pickPositionAsync) {
-        cartesian = await this.scene.pickPositionAsync(screenPosition);
-      } else if (this.scene.pickPosition) {
+      // Prefer sync pickPosition: pickPositionAsync can introduce a large Y offset
+      // (same workaround as iEarth CustomBubble), which skews popup height near the view bottom.
+      if (typeof this.scene.pickPosition === 'function') {
         cartesian = this.scene.pickPosition(screenPosition);
+      } else if (typeof this.scene.pickPositionAsync === 'function') {
+        cartesian = await this.scene.pickPositionAsync(screenPosition);
       }
     } catch {
       cartesian = undefined;
@@ -1135,6 +1137,30 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
       SuperMap3D.Math.toDegrees(cartographic.latitude),
       cartographic.height || 0
     ];
+  }
+
+  /**
+   * Height for clampToGround / rest-data popup anchors.
+   * Prefer globe terrain height at the feature center — click pick height can be wrong
+   * (especially near the bottom of the view) and pushes the projected popup far above the feature.
+   */
+  private getGroundHeight(lng: number, lat: number, fallback = 0): number {
+    const SuperMap3D = window.SuperMap3D;
+    if (!SuperMap3D || !this.scene?.globe || !Number.isFinite(lng) || !Number.isFinite(lat)) {
+      return fallback;
+    }
+    try {
+      const cartographic = SuperMap3D.Cartographic.fromDegrees(lng, lat);
+      if (typeof this.scene.globe.getHeight === 'function') {
+        const height = this.scene.globe.getHeight(cartographic);
+        if (typeof height === 'number' && Number.isFinite(height)) {
+          return height;
+        }
+      }
+    } catch {
+      // ignore and fall through
+    }
+    return fallback;
   }
 
   async queryAtPoint(lng: number, lat: number): Promise<SceneQueryFeature[]> {
@@ -1362,22 +1388,27 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
     const lnglats = features.map(feature => {
       const center = this.getGeometryCenter(feature.geometry);
       if (center) {
+        // rest/data & clampToGround highlights sit on terrain — do not reuse click pick height
         return {
           lng: center[0],
           lat: center[1],
-          height: this.popupAnchor?.height ?? 0
+          height: this.getGroundHeight(center[0], center[1], 0)
         };
       }
       if (this.popupAnchor) {
         return {
           lng: this.popupAnchor.lng,
           lat: this.popupAnchor.lat,
-          height: this.popupAnchor.height || 0
+          height: this.getGroundHeight(
+            this.popupAnchor.lng,
+            this.popupAnchor.lat,
+            this.popupAnchor.height || 0
+          )
         };
       }
       return { lng: 0, lat: 0, height: 0 };
     });
-    // 弹窗锚到第一个要素的几何中心（@turf/center），不再使用点击屏幕坐标
+    // 弹窗锚到第一个要素的几何中心（@turf/center）+ 地表高度，避免下边界点选高度偏移
     const anchor = lnglats[0];
     if (anchor && Number.isFinite(anchor.lng) && Number.isFinite(anchor.lat)) {
       this.setPopupAnchor(anchor.lng, anchor.lat, anchor.height || 0);
@@ -1887,6 +1918,11 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
       // maxHeight 只做上限；高度随内容，避免短内容被撑满限高
       height: 'fit-content'
     };
+    // top-*：top 表示弹窗底边（贴 tip），用 translateY(-100%) 上推，避免 fit-content
+    // 实测高度与定位高度不一致时 tip 悬空（下边界点选尤其明显）
+    if (this.lastPopupPlacement.startsWith('top')) {
+      style.transform = 'translateY(-100%)';
+    }
     if (this.lastPopupMaxHeight && this.lastPopupMaxHeight > 0) {
       style.maxHeight = `${this.lastPopupMaxHeight}px`;
       // Keep overflow visible so popup-tip is not clipped; body scrolls under .popup-height-constrained
@@ -2033,7 +2069,7 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
       }
 
       // Keep popup clear of the feature:
-      // - top placement: pin bottom edge above anchor, shrink maxHeight if needed
+      // - top placement: pin bottom edge above anchor (top = bottom edge + translateY(-100%))
       // - bottom placement: pin top edge below anchor
       // Avoid clampVertical pushing the body over the click point.
       const minTop = bounds.top + POPUP_VIEW_PADDING;
@@ -2041,10 +2077,10 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
       if (chosen.name.startsWith('top')) {
         const popupBottom = anchorY - gap;
         maxHeight = Math.max(80, Math.floor(popupBottom - minTop));
-        const usedHeight = Math.min(height, maxHeight);
         layoutViewport = {
           left: this.clampHorizontal(chosen.left, width, bounds),
-          top: popupBottom - usedHeight
+          // bottom edge; buildRootStyle applies translateY(-100%)
+          top: popupBottom
         };
       } else if (chosen.name.startsWith('bottom')) {
         const popupTop = anchorY + gap;
