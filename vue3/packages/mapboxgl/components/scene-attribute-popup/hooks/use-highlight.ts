@@ -197,14 +197,10 @@ export function useLayerHighlightHooks(
     if (features?.[0]) {
       allPopupDatas.value = (e.popupInfos as PopupFieldItem[][]) || []
       lnglats.value = e.lnglats || []
-      // 查到数据后立刻显示，并刷新锚点（不依赖 base sync 时序）
-      // 弹窗锚定要素几何中心（@turf/center）
+      // ViewModel.queryFeaturesByLayerId 已按 rest/map 点击点 / rest/data 几何中心设好锚点
+      // 这里只负责显示，避免再次 setPopupAnchor 丢掉首帧点击像素
       isRender.value = true
       viewModel.setPopupVisible(true)
-      const coord = e.lnglats?.[0] || clickedLngLat.value
-      if (coord && typeof coord.lng === 'number' && typeof coord.lat === 'number') {
-        viewModel.setPopupAnchor(coord.lng, coord.lat, coord.height || 0)
-      }
       return
     }
     allPopupDatas.value = []

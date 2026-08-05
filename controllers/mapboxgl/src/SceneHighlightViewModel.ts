@@ -247,6 +247,13 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
   private highlightSeq = 0;
   /** popup anchor in world coords; projected to screen every frame */
   private popupAnchor: { lng: number; lat: number; height: number } | null = null;
+  /** Last successful click — rest/map keeps select-layer & content popups on this point */
+  private lastClickAnchor: {
+    lng: number;
+    lat: number;
+    height: number;
+    screenPosition: { x: number; y: number };
+  } | null = null;
   private trackingPopupPosition = false;
   private trackingCameraPosition = false;
   /** whether popup shell is visible — layout only updates while true */
@@ -775,6 +782,13 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
         return;
       }
       const [lng, lat, height] = lngLatHeight;
+      const groundHeight = this.getGroundHeight(lng, lat, height || 0);
+      this.lastClickAnchor = {
+        lng,
+        lat,
+        height: groundHeight,
+        screenPosition: { x: position.x, y: position.y }
+      };
 
       // 1) Prefer entity pick properties (GeoJSON / rest data on scene) — no data service request
       const pickedFeatures = this.pickEntityFeatures(position);
@@ -838,12 +852,12 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
         this.multiSelectActive = false;
         this.clearHighlight();
         if (clickedFeatures.length) {
-          // 图层选择阶段暂用点击点；选定图层后由 queryFeaturesByLayerId 改为几何中心
-          this.setPopupAnchor(lng, lat, this.getGroundHeight(lng, lat, height || 0));
+          // rest/map 等多图层：选图层与内容都锚定点击点，避免切换后弹窗跳动
+          this.setPopupAnchor(lng, lat, groundHeight, position);
         }
         const pickResult = this.emitSelectionChanged({
           lngLat: [lng, lat],
-          height,
+          height: groundHeight,
           screenPosition: { x: position.x, y: position.y },
           features: clickedFeatures,
           isMultipleClick,
@@ -877,14 +891,14 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
         return;
       }
       if (features.length) {
-        // 最终锚点在 queryFeaturesByLayerId 中按要素几何中心 + 地表高度设置
-        this.setPopupAnchor(lng, lat, this.getGroundHeight(lng, lat, height || 0));
+        // 点击点先落下；queryFeaturesByLayerId 里 rest/map 继续用点击点，rest/data 再切几何中心
+        this.setPopupAnchor(lng, lat, groundHeight, position);
       } else if (!isMultipleClick) {
         this.clearPopupAnchor();
       }
       const result = this.emitSelectionChanged({
         lngLat: [lng, lat],
-        height,
+        height: groundHeight,
         screenPosition: { x: position.x, y: position.y },
         features,
         isMultipleClick,
@@ -1385,33 +1399,41 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
       void this.highlightFeatures(features, { replace: true });
     }
     const popupInfos = features.map(item => this.featureToPopupData(item));
+    const useClickAnchor = this.shouldUseClickPopupAnchor(layerId);
+    const clickAnchor = this.lastClickAnchor || this.popupAnchor;
     const lnglats = features.map(feature => {
+      if (useClickAnchor && clickAnchor) {
+        return {
+          lng: clickAnchor.lng,
+          lat: clickAnchor.lat,
+          height: clickAnchor.height || 0
+        };
+      }
       const center = this.getGeometryCenter(feature.geometry);
       if (center) {
-        // rest/data & clampToGround highlights sit on terrain — do not reuse click pick height
+        // rest/data & clampToGround：锚几何中心 + 地表高度
         return {
           lng: center[0],
           lat: center[1],
           height: this.getGroundHeight(center[0], center[1], 0)
         };
       }
-      if (this.popupAnchor) {
+      if (clickAnchor) {
         return {
-          lng: this.popupAnchor.lng,
-          lat: this.popupAnchor.lat,
-          height: this.getGroundHeight(
-            this.popupAnchor.lng,
-            this.popupAnchor.lat,
-            this.popupAnchor.height || 0
-          )
+          lng: clickAnchor.lng,
+          lat: clickAnchor.lat,
+          height: clickAnchor.height || 0
         };
       }
       return { lng: 0, lat: 0, height: 0 };
     });
-    // 弹窗锚到第一个要素的几何中心（@turf/center）+ 地表高度，避免下边界点选高度偏移
     const anchor = lnglats[0];
     if (anchor && Number.isFinite(anchor.lng) && Number.isFinite(anchor.lat)) {
-      this.setPopupAnchor(anchor.lng, anchor.lat, anchor.height || 0);
+      const screenHint =
+        useClickAnchor && this.lastClickAnchor
+          ? this.lastClickAnchor.screenPosition
+          : undefined;
+      this.setPopupAnchor(anchor.lng, anchor.lat, anchor.height || 0, screenHint);
     }
     const emitData: SceneLayerSelectionChangedEmit = {
       features,
@@ -1420,6 +1442,33 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
       targetId: layerId
     };
     this.fire('mapselectionchanged', emitData);
+  }
+
+  /**
+   * rest/map & mvt：弹窗锚定点击点，保证「选择图层」与内容弹窗位置一致。
+   * rest/data（实体拾取）：锚定几何中心，tip 贴高亮要素。
+   */
+  private shouldUseClickPopupAnchor(layerId: string): boolean {
+    const layer = (this.options.layers || []).find(
+      item => item.id === layerId || item.matchId === layerId
+    );
+    if (layer?.type === 'restMap' || layer?.type === 'mvt') {
+      return true;
+    }
+    if (layer?.type === 'restData') {
+      return false;
+    }
+    const overlays = this.getVisibleOverlayLayers();
+    const config: SceneQueryLayer = layer || { id: layerId, matchId: layerId };
+    const matched = overlays.find(overlay => this.matchLayerConfig(config, overlay));
+    if (matched?.category === 'imagLayers' || matched?.category === 'mvtLayers') {
+      return true;
+    }
+    if (matched?.category === 'dataLayers') {
+      return false;
+    }
+    // 默认跟点击点：多图层选择场景更常见，避免选层后弹窗跳动
+    return true;
   }
 
   /**
@@ -1680,12 +1729,31 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
   }
 
   /**
-   * Bind popup to a world position (通常为要素 @turf/center) and project + layout every frame.
+   * Bind popup to a world position and project + layout every frame.
+   * @param screenHint Optional click screen position for first-frame accuracy (rest/map).
    */
-  setPopupAnchor(lng: number, lat: number, height = 0) {
+  setPopupAnchor(
+    lng: number,
+    lat: number,
+    height = 0,
+    screenHint?: { x: number; y: number } | null
+  ) {
     this.popupAnchor = { lng, lat, height: height || 0 };
     this.ensureViewerSized();
     this.startPopupPositionTracking();
+    const hint =
+      screenHint ||
+      (this.lastClickAnchor &&
+      this.lastClickAnchor.lng === lng &&
+      this.lastClickAnchor.lat === lat
+        ? this.lastClickAnchor.screenPosition
+        : null);
+    if (hint && Number.isFinite(hint.x) && Number.isFinite(hint.y)) {
+      // Use exact click pixel first so tip matches the cursor before postRender reprojects
+      this.lastScreenPosition = { x: hint.x, y: hint.y };
+      this.updatePopupLayout();
+      return;
+    }
     this.updatePopupScreenPosition();
   }
 
@@ -2127,6 +2195,7 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
     this.selectedFeatures = [];
     this.multiSelectActive = false;
     this.popupVisible = false;
+    this.lastClickAnchor = null;
     this.clearPopupAnchor();
     this.clearHighlight();
   }

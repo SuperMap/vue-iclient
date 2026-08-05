@@ -22,6 +22,7 @@
     .sm-identify-popup-content {
       flex: 0 1 auto;
       min-height: 0;
+
       // 限高交给根节点（含 popupConfig.maxHeight 与贴边限高的合并结果）
       max-height: none;
       height: auto;
