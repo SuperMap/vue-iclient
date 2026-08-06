@@ -18,7 +18,11 @@
     overflow: auto;
   }
 
-  .ant-input, .ant-input-search-button, .sm-component-tree {
+  .ant-input,
+  .ant-input-search-button,
+  .sm-component-input,
+  .sm-component-input-search-button,
+  .sm-component-tree {
     background: inherit;
     color: inherit;
     line-height: inherit;

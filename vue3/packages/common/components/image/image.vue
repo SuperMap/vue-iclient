@@ -7,14 +7,15 @@
       :target="target"
     >
       <div
-        v-if="src"
+        v-if="displaySrc"
         @click="startPreview"
         class="sm-component-image__content"
         :style="[repeatStyle, imgUrl]"
       >
-        <!-- 用img标签确保没有给定宽高时，能使用src图片的宽高 -->
+        <!-- 用img标签确保没有给定宽高时，能使用src图片的宽高；no-referrer 规避防盗链 -->
         <img
-          :src="src"
+          :src="displaySrc"
+          referrerpolicy="no-referrer"
           @error="e => emit('error', e)"
           @load="e => emit('load', e)"
         />
@@ -30,7 +31,8 @@
       :footer="null"
     >
       <img
-        :src="src"
+        :src="displaySrc"
+        referrerpolicy="no-referrer"
         @click="endPreview"
         :style="{ 'object-fit': 'contain', width: '100%', height: '100%' }"
         @error="e => emit('error', e)"
@@ -45,7 +47,8 @@ import { computed, ref } from 'vue'
 import { imagePropsDefault } from './types'
 import type { ImageProps } from './types'
 import { parseUrl } from 'vue-iclient-core/utils/util'
-import { useTheme, useLocale } from '@supermapgis/common/hooks/index.common'
+import { useTheme, useLocale, useNoReferrerImageUrl } from '@supermapgis/common/hooks/index.common'
+import { toLatinNumber } from '@supermapgis/common/utils/index.common'
 import { Modal, message } from 'ant-design-vue'
 
 defineOptions({
@@ -96,14 +99,32 @@ const repeatStyle = computed(() => {
   return repeatOption[props.repeat]
 })
 
+const safeSrc = computed(() => {
+  if (!props.src) {
+    return ''
+  }
+  return toLatinNumber(String(props.src)).replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, '').trim()
+})
+
+// 外链防盗链：CSS background-image 无法设 referrerpolicy，经 no-referrer fetch 转 blob 后再渲染
+const displaySrc = useNoReferrerImageUrl(safeSrc)
+
 const imgUrl = computed(() => {
+  const src = displaySrc.value
+  if (!src) {
+    return {}
+  }
+  const escaped = src.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
   return {
-    backgroundImage: `url(${props.src})`
+    backgroundImage: `url("${escaped}")`
   }
 })
 
 const realHref = computed(() => {
-  let href = props.href.replace(/ /g, '')
+  let href = toLatinNumber(props.href.replace(/ /g, '')).replace(
+    /[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g,
+    ''
+  )
   if (href && !parseUrl(href)) {
     return `http://${href}`
   }

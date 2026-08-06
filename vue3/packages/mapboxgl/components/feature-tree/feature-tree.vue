@@ -1,6 +1,6 @@
 <template>
   <div class="sm-component-feature-tree">
-    <InputSearch class="searchHolder" @search="onSearch" />
+    <sm-input-search class="searchHolder" @search="onSearch" />
     <sm-tree
       class="treeHolder"
       :expandedKeys="expandedKeys"
@@ -23,9 +23,9 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import SmTree from '@supermapgis/common/components/tree/Tree'
+import { SmInputSearch } from '@supermapgis/common/components/input/Input'
 import type { FeatureTreeProps, FeatureTreeEvents } from './types'
 import { featureTreePropsDefault } from './types'
-import { InputSearch } from 'ant-design-vue'
 import { useRequest } from '@supermapgis/mapboxgl/hooks'
 import type { TreeData } from '@supermapgis/mapboxgl/hooks'
 import omit from 'omit.js'

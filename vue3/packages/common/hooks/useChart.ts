@@ -9,6 +9,7 @@ import {
   chartThemeUtil,
   handleMultiGradient
 } from '@supermapgis/common/utils/theme/chart'
+import { applyArabicDigitsToChartOptions } from '../utils/chart-arabic-number'
 import EchartsDataService from 'vue-iclient-core/utils/EchartsDataService'
 import {
   getFeatureCenter,
@@ -669,7 +670,8 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
   })
 
   const _chartOptions = computed(() => {
-    return (_isRequestData.value && echartOptions.value) || parseOptions.value
+    const options = (_isRequestData.value && echartOptions.value) || parseOptions.value
+    return applyArabicDigitsToChartOptions(options)
   })
 
   const chartUpdateOptions = ref({
