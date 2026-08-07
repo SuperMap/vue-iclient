@@ -115,6 +115,8 @@ export interface SceneQueryFeature {
   layerTitle?: string;
   properties: Record<string, any>;
   geometry?: GeoJSON.Geometry;
+  /** 拾取/点击时的弹窗锚点（多选翻页无几何时回退） */
+  popupAnchor?: { lng: number; lat: number; height?: number };
 }
 
 export interface SceneHighlightResult {
@@ -432,7 +434,16 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
 
   private mergeSelectedFeatures(nextFeatures: SceneQueryFeature[], isMultiple: boolean) {
     // Each click contributes at most one feature (top hit)
-    const primary = nextFeatures[0] ? [nextFeatures[0]] : [];
+    const clickAnchor = this.lastClickAnchor
+      ? {
+          lng: this.lastClickAnchor.lng,
+          lat: this.lastClickAnchor.lat,
+          height: this.lastClickAnchor.height || 0
+        }
+      : undefined;
+    const primary = (nextFeatures[0] ? [nextFeatures[0]] : []).map(feature =>
+      clickAnchor ? { ...feature, popupAnchor: feature.popupAnchor || clickAnchor } : feature
+    );
     if (!isMultiple) {
       // Plain click: replace selection, end any multi-select session
       this.selectedFeatures = primary;
@@ -1401,8 +1412,10 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
     const popupInfos = features.map(item => this.featureToPopupData(item));
     const useClickAnchor = this.shouldUseClickPopupAnchor(layerId);
     const clickAnchor = this.lastClickAnchor || this.popupAnchor;
+    // 多要素翻页时必须按要素各自锚点，否则左右切换弹窗位置不变
+    const perFeatureAnchor = features.length > 1;
     const lnglats = features.map(feature => {
-      if (useClickAnchor && clickAnchor) {
+      if (!perFeatureAnchor && useClickAnchor && clickAnchor) {
         return {
           lng: clickAnchor.lng,
           lat: clickAnchor.lat,
@@ -1411,11 +1424,18 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
       }
       const center = this.getGeometryCenter(feature.geometry);
       if (center) {
-        // rest/data & clampToGround：锚几何中心 + 地表高度
+        // rest/data、多选翻页：锚几何中心 + 地表高度，tip 贴对应要素
         return {
           lng: center[0],
           lat: center[1],
           height: this.getGroundHeight(center[0], center[1], 0)
+        };
+      }
+      if (feature.popupAnchor) {
+        return {
+          lng: feature.popupAnchor.lng,
+          lat: feature.popupAnchor.lat,
+          height: feature.popupAnchor.height || 0
         };
       }
       if (clickAnchor) {
@@ -1427,10 +1447,11 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
       }
       return { lng: 0, lat: 0, height: 0 };
     });
-    const anchor = lnglats[0];
+    // 弹窗默认展示最后一项（与 base-attribute-popup currentIndex 对齐）
+    const anchor = lnglats[lnglats.length - 1] || lnglats[0];
     if (anchor && Number.isFinite(anchor.lng) && Number.isFinite(anchor.lat)) {
       const screenHint =
-        useClickAnchor && this.lastClickAnchor
+        !perFeatureAnchor && useClickAnchor && this.lastClickAnchor
           ? this.lastClickAnchor.screenPosition
           : undefined;
       this.setPopupAnchor(anchor.lng, anchor.lat, anchor.height || 0, screenHint);
@@ -1445,8 +1466,8 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
   }
 
   /**
-   * rest/map & mvt：弹窗锚定点击点，保证「选择图层」与内容弹窗位置一致。
-   * rest/data（实体拾取）：锚定几何中心，tip 贴高亮要素。
+   * rest/map & mvt（单要素）：弹窗锚定点击点，保证「选择图层」与内容弹窗位置一致。
+   * rest/data（实体拾取）或多要素翻页：锚定几何中心，tip 贴对应要素。
    */
   private shouldUseClickPopupAnchor(layerId: string): boolean {
     const layer = (this.options.layers || []).find(
