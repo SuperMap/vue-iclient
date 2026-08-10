@@ -21,15 +21,15 @@
       <div class="header">
         <i v-show="canReturn" class="sm-components-icon-left" @click="handleReturn" />
         <div class="title ellipsis" :title="currentLayerName">{{ currentLayerName }}</div>
-        <div v-show="showPagination" class="switchDataText">
+        <div v-show="showPagination" class="switchDataText" :style="paginationDirectionStyle">
           <i
             :class="[
               'icon',
               'left-icon',
               'sm-components-icon-solid-triangle-left',
-              currentIndex === 0 && 'disabled'
+              leftArrowDisabled && 'disabled'
             ]"
-            @click="changeIndex(-1)"
+            @click="changeIndex(leftArrowStep)"
           />
           <span :title="paginationContent">{{ paginationContent }}</span>
           <i
@@ -37,9 +37,9 @@
               'icon',
               'right-icon',
               'sm-components-icon-solid-triangle-right',
-              currentIndex === enablePopupDatasLength - 1 && 'disabled'
+              rightArrowDisabled && 'disabled'
             ]"
-            @click="changeIndex(1)"
+            @click="changeIndex(rightArrowStep)"
           />
         </div>
         <Dropdown v-if="showIdentifyFields" class="identify-fields">
@@ -82,6 +82,11 @@ import { computed, nextTick, onMounted, ref, useTemplateRef, watch, watchEffect 
 import { Checkbox, Dropdown, Menu, MenuItem } from 'ant-design-vue'
 import { MenuUnfoldOutlined } from '@ant-design/icons-vue'
 import { useTheme } from '@supermapgis/common/hooks/index.common'
+import {
+  resolveLayoutDirection,
+  shouldTransformArabicNumbers,
+  toArabicNumber
+} from '@supermapgis/common/utils/index.common'
 import PopupContent from './popup-content.vue'
 import { usePopupConfigHooks, mergePopupMaxHeight } from './hooks/use-popup-config'
 import SelectLayer from './select-layer.vue'
@@ -266,7 +271,26 @@ const enableLngLats = computed(() => {
   )
 })
 const data = computed(() => enablePopupDatas.value[currentIndex.value] || [])
-const paginationContent = computed(() => `${currentIndex.value + 1}/${enablePopupDatasLength.value}`)
+const isRtl = computed(() => resolveLayoutDirection() === 'rtl')
+// 外观与中文一致（左◀ 右▶）；RTL 仅交换翻页语义：左=下一页，右=上一页
+const paginationDirectionStyle = { direction: 'ltr', unicodeBidi: 'isolate' } as const
+const leftArrowStep = computed(() => (isRtl.value ? 1 : -1))
+const rightArrowStep = computed(() => (isRtl.value ? -1 : 1))
+const leftArrowDisabled = computed(() =>
+  isRtl.value
+    ? currentIndex.value === enablePopupDatasLength.value - 1
+    : currentIndex.value === 0
+)
+const rightArrowDisabled = computed(() =>
+  isRtl.value
+    ? currentIndex.value === 0
+    : currentIndex.value === enablePopupDatasLength.value - 1
+)
+const paginationContent = computed(() => {
+  const text = `${currentIndex.value + 1}/${enablePopupDatasLength.value}`
+  // RTL：页码数字转阿拉伯字形
+  return shouldTransformArabicNumbers() ? toArabicNumber(text) : text
+})
 const showPagination = computed(
   () =>
     enablePopupDatasLength.value > 1 ||

@@ -42,6 +42,10 @@
     .switchDataText {
       display: inline-flex;
       align-items: center;
+
+      // 箭头外观与中文一致（左◀ 右▶）；隔离父级 RTL，避免 flex 左右颠倒
+      direction: ltr;
+      unicode-bidi: isolate;
       padding: 8px 0;
 
       @include spacing-margin(10px, right, false);
@@ -235,6 +239,9 @@
 
       .pagination {
         margin: 8px 0 0;
+
+        // 页码展示保持 LTR，避免 RTL 下数字顺序翻转
+        direction: ltr;
         /* stylelint-disable-next-line */
         font-size: 12px;
       }

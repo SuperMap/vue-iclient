@@ -8,15 +8,15 @@
     <div v-if="useRichPopup" class="content">
       <div class="header">
         <div class="title ellipsis" :title="title">{{ title }}</div>
-        <div v-show="showIcon" class="switchDataText">
+        <div v-show="showIcon" class="switchDataText" :style="paginationDirectionStyle">
           <i
             :class="[
               'icon',
               'left-icon',
               'sm-components-icon-solid-triangle-left',
-              currentIndex === 0 && 'disabled'
+              leftArrowDisabled && 'disabled'
             ]"
-            @click="changeIndex(-1)"
+            @click="changeIndex(leftArrowStep)"
           />
           <span :title="paginationContent">{{ paginationContent }}</span>
           <i
@@ -24,9 +24,9 @@
               'icon',
               'right-icon',
               'sm-components-icon-solid-triangle-right',
-              currentIndex === (lnglats.length || data.length) - 1 && 'disabled'
+              rightArrowDisabled && 'disabled'
             ]"
-            @click="changeIndex(1)"
+            @click="changeIndex(rightArrowStep)"
           />
         </div>
         <i class="sm-components-icon-close" @click="handleClose" />
@@ -53,15 +53,15 @@
     >
       <template #header>
         <div class="title ellipsis" :title="title">{{ title }}</div>
-        <div v-show="showIcon" class="switchDataText">
+        <div v-show="showIcon" class="switchDataText" :style="paginationDirectionStyle">
           <i
             :class="[
               'icon',
               'left-icon',
               'sm-components-icon-solid-triangle-left',
-              currentIndex === 0 && 'disabled'
+              leftArrowDisabled && 'disabled'
             ]"
-            @click="changeIndex(-1)"
+            @click="changeIndex(leftArrowStep)"
           />
           <span :title="paginationContent">{{ paginationContent }}</span>
           <i
@@ -69,9 +69,9 @@
               'icon',
               'right-icon',
               'sm-components-icon-solid-triangle-right',
-              currentIndex === (lnglats.length || data.length) - 1 && 'disabled'
+              rightArrowDisabled && 'disabled'
             ]"
-            @click="changeIndex(1)"
+            @click="changeIndex(rightArrowStep)"
           />
         </div>
       </template>
@@ -88,6 +88,11 @@ import SmAttributePanel from '@supermapgis/common/components/attribute-panel/att
 import PopupContent from '@supermapgis/mapboxgl/components/base-attribute-popup/popup-content.vue'
 import { usePopupConfigHooks } from '@supermapgis/mapboxgl/components/base-attribute-popup/hooks/use-popup-config'
 import { useTheme, useMapGetter } from '@supermapgis/common/hooks/index.common'
+import {
+  resolveLayoutDirection,
+  shouldTransformArabicNumbers,
+  toArabicNumber
+} from '@supermapgis/common/utils/index.common'
 import MapPopupViewModel from 'vue-iclient-controllers-mapboxgl/src/MapPopupViewModel'
 import { setPopupArrowStyle } from 'vue-iclient-core/utils/util'
 import { omit } from 'lodash-es'
@@ -146,8 +151,21 @@ const filterData = computed(() => {
 })
 
 const paginationContent = computed(() => {
-  return `${currentIndex.value + 1}/${props.lnglats.length || props.data.length}`
+  const text = `${currentIndex.value + 1}/${props.lnglats.length || props.data.length}`
+  return shouldTransformArabicNumbers() ? toArabicNumber(text) : text
 })
+const isRtl = computed(() => resolveLayoutDirection() === 'rtl')
+const maxPageIndex = computed(() => Math.max((props.lnglats.length || props.data.length) - 1, 0))
+// 外观与中文一致（左◀ 右▶）；RTL 仅交换翻页语义：左=下一页，右=上一页
+const paginationDirectionStyle = { direction: 'ltr', unicodeBidi: 'isolate' } as const
+const leftArrowStep = computed(() => (isRtl.value ? 1 : -1))
+const rightArrowStep = computed(() => (isRtl.value ? -1 : 1))
+const leftArrowDisabled = computed(() =>
+  isRtl.value ? currentIndex.value === maxPageIndex.value : currentIndex.value === 0
+)
+const rightArrowDisabled = computed(() =>
+  isRtl.value ? currentIndex.value === 0 : currentIndex.value === maxPageIndex.value
+)
 
 const removePopup = () => {
   viewModel.removePopup()

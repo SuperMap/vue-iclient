@@ -14,7 +14,7 @@
           </swiper-slide>
         </template>
       </swiper>
-      <span class="pagination">{{ currentIndex }} / {{ infos.length }}</span>
+      <span class="pagination">{{ paginationText }}</span>
     </template>
     <template v-else>
       <Player :type="infos[0].type" :value="infos[0].value" :options="infos[0].options" />
@@ -30,6 +30,10 @@ import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation } from 'swiper/modules'
 import { ref, computed, watch, shallowRef } from 'vue'
 import Player from './player.vue'
+import {
+  shouldTransformArabicNumbers,
+  toArabicNumber
+} from '@supermapgis/common/utils/index.common'
 
 interface Infos {
   value: string
@@ -48,6 +52,10 @@ const sliderIndex = ref(0)
 const swiperVal = shallowRef()
 const currentInfo = computed(() => props.infos?.[sliderIndex.value])
 const currentIndex = computed(() => sliderIndex.value + 1)
+const paginationText = computed(() => {
+  const text = `${currentIndex.value} / ${props.infos.length}`
+  return shouldTransformArabicNumbers() ? toArabicNumber(text) : text
+})
 const onSlideChange = swiper => {
   sliderIndex.value = swiper.activeIndex
 }
