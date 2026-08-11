@@ -122,6 +122,7 @@ export default {
     s3mLayer: 'S3M图层',
     imgLayer: '影像图层',
     mvtLayer: 'MVT图层',
+    entityLayer: '矢量图层',
     terrainLayer: '地形图层',
     lnglatMap: '经纬底图',
     defaultImage: '默认影像',

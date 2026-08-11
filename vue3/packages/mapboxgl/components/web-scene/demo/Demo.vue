@@ -84,6 +84,7 @@ const scenePresets: ScenePreset[] = [
           id: 'buildings-r',
           name: 'Buildings_R',
           type: 'data',
+          defaultLoad: true,
           autoLocate: true,
           config: {
             type: 'rest',
@@ -115,6 +116,7 @@ const scenePresets: ScenePreset[] = [
           id: 'jingjin-basemap-r',
           name: '京津面',
           type: 'data',
+          defaultLoad: true,
           autoLocate: true,
           config: {
             type: 'rest',

@@ -39,6 +39,24 @@ export default {
     switchTo2D: 'Switch to 2D',
     switchTo3D: 'Switch to 3D'
   },
+  sceneLayerList: {
+    title: 'Layers',
+    s3mLayer: 'S3M Layers',
+    imgLayer: 'Imagery Layers',
+    mvtLayer: 'MVT Layers',
+    entityLayer: 'Vector Layers',
+    terrainLayer: 'Terrain Layers',
+    lnglatMap: 'Longitude/Latitude Map',
+    defaultImage: 'Default Imagery',
+    stkTerrain: 'STK Terrain',
+    superMapTerrain: 'SuperMap Online Terrain',
+    tiandituTerrain: 'Tianditu Terrain',
+    LocalImage: 'Local Image',
+    BingMap: 'Bing Maps',
+    TIANDITU: 'Tianditu',
+    OSM: 'OSM',
+    GRIDIMAGERY: 'Longitude/Latitude Map'
+  },
   sceneMapSwitch: {
     title: 'Map Switch',
     original: 'Original Basemap',

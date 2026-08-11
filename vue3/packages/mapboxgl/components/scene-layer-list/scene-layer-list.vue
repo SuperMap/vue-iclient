@@ -129,6 +129,46 @@ const showIconsItem = ref('');
 const treeData = ref([]);
 let currentTerrainProvider = null;
 
+const getSceneDataSources = () => {
+  const collection = viewer?.dataSources;
+  if (!collection) {
+    return [];
+  }
+  if (typeof collection.length === 'number' && typeof collection.get === 'function') {
+    const dataSources = [];
+    for (let index = 0; index < collection.length; index++) {
+      const dataSource = collection.get(index);
+      if (dataSource) {
+        dataSources.push(dataSource);
+      }
+    }
+    return dataSources;
+  }
+  return Array.isArray(collection._dataSources) ? collection._dataSources : [];
+};
+
+const getEntityLayerData = (dataSource) => {
+  const entities = dataSource?.entities?.values || [];
+  const entityLayerData = entities.find((entity) => entity?.___layerFeatureData)?.___layerFeatureData;
+  return dataSource?.___layerData || entityLayerData?.data;
+};
+
+const getEntitySources = () => {
+  return getSceneDataSources().filter((dataSource) => {
+    const layerData = getEntityLayerData(dataSource);
+    const entities = dataSource?.entities;
+    const isRemovedLayer = entities?.show === false && !entities?.values?.length;
+    return layerData?.type === 'data' && layerData?.config?.type === 'rest' && !isRemovedLayer;
+  });
+};
+
+const getEntitySource = (layerId) => {
+  return getEntitySources().find((dataSource, index) => {
+    const layerData = getEntityLayerData(dataSource);
+    return String(layerData?.id || dataSource?.name || index) === String(layerId);
+  });
+};
+
 const getTerrainLayerName = () => {
   if (viewer.terrainProvider._baseUrl) {
     let baseUrl = viewer.terrainProvider._baseUrl;
@@ -185,6 +225,18 @@ const toggleItemVisibility = (option) => {
         currentTerrainProvider = null;
       }
       break;
+    case 'entity': {
+      const dataSource = getEntitySource(option.aliasKey);
+      if (!dataSource?.entities) {
+        return;
+      }
+      const visible = !option.visible;
+      dataSource.entities.show = visible;
+      if (visible && dataSource.show === false) {
+        dataSource.show = true;
+      }
+      break;
+    }
     default:
       break;
   }
@@ -192,10 +244,11 @@ const toggleItemVisibility = (option) => {
 };
 
 const updateTreeDataVisivle = (item) => {
-  const layerList = ['s3m', 'imagery', 'mvt', 'terrain'];
-  const treeIndex = layerList.indexOf(item.type);
-  const matchLayer = treeData.value[treeIndex].children.find((data) => data.key === item.key);
-  matchLayer.visible = !item.visible;
+  const group = treeData.value.find((data) => data.type === item.type);
+  const matchLayer = group?.children.find((data) => data.key === item.key);
+  if (matchLayer) {
+    matchLayer.visible = !item.visible;
+  }
 };
 
 const changeIconsStatus = (val) => {
@@ -271,6 +324,12 @@ const zoomToBounds = (option) => {
         }
       });
     }
+  } else if (option.type === 'entity') {
+    const dataSource = getEntitySource(option.aliasKey);
+    const entities = dataSource?.entities?.values;
+    if (entities?.length) {
+      viewer.flyTo(entities);
+    }
   }
 };
 
@@ -316,12 +375,14 @@ function getTreeData() {
   const layers = {
     s3mLayer: viewer.scene.layers._layerQueue,
     imageryLayer: viewer.imageryLayers._layers,
-    MVTLayer: viewer.scene._vectorTileMaps._layerQueue
+    MVTLayer: viewer.scene._vectorTileMaps._layerQueue,
+    entityLayer: getEntitySources()
   };
   treeData.value = [
     {
       key: '1',
       title: t('sceneLayerList.s3mLayer'),
+      type: 's3m',
       isLeaf: false,
       disabled: true,
       children: []
@@ -329,19 +390,30 @@ function getTreeData() {
     {
       key: '2',
       title: t('sceneLayerList.imgLayer'),
+      type: 'imagery',
       isLeaf: false,
       children: []
     },
     {
       key: '3',
       title: t('sceneLayerList.mvtLayer'),
+      type: 'mvt',
       isLeaf: false,
       disabled: true,
       children: []
     },
     {
       key: '4',
+      title: t('sceneLayerList.entityLayer'),
+      type: 'entity',
+      isLeaf: false,
+      disabled: true,
+      children: []
+    },
+    {
+      key: '5',
       title: t('sceneLayerList.terrainLayer'),
+      type: 'terrain',
       isLeaf: false,
       disabled: true,
       children: []
@@ -384,13 +456,27 @@ function getTreeData() {
       disabled: true
     });
   });
+  // 矢量图层:
+  layers.entityLayer.forEach((dataSource, index) => {
+    const layerData = getEntityLayerData(dataSource);
+    const layerId = String(layerData?.id || dataSource?.name || index);
+    const title = layerData?.name || dataSource?.name || layerId;
+    treeData.value[3].children.push({
+      title,
+      key: '4-' + layerId,
+      aliasKey: layerId,
+      type: 'entity',
+      visible: dataSource.show !== false && dataSource.entities?.show !== false,
+      disabled: true
+    });
+  });
   // 地形图层:
   let terrainLayerName = getTerrainLayerName();
   if (terrainLayerName !== 'invisible') {
     let title = terrainLayerName;
-    treeData.value[3].children.push({
+    treeData.value[4].children.push({
       title,
-      key: '4-0',
+      key: '5-0',
       type: 'terrain',
       visible: true,
       disabled: true

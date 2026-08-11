@@ -108,13 +108,16 @@ const getConfiguredLayers = () => {
   return uniqueLayers;
 };
 
+const shouldLoadConfiguredLayer = (layer: LayerCheckData) => layer.defaultLoad === true;
+
 const syncConfiguredLayers = async (manager: LayerManager, managerVersion: number) => {
   if (!isCurrentLayerManager(manager, managerVersion)) {
     return;
   }
   const configuredLayers = getConfiguredLayers();
   for (const [id, loadedLayer] of loadedLayers) {
-    if (!configuredLayers.has(id)) {
+    const configuredLayer = configuredLayers.get(id);
+    if (!configuredLayer || !shouldLoadConfiguredLayer(configuredLayer)) {
       try {
         await manager.check(loadedLayer, false);
         if (isCurrentLayerManager(manager, managerVersion)) {
@@ -128,6 +131,9 @@ const syncConfiguredLayers = async (manager: LayerManager, managerVersion: numbe
   for (const [id, configuredLayer] of configuredLayers) {
     if (!isCurrentLayerManager(manager, managerVersion)) {
       return;
+    }
+    if (!shouldLoadConfiguredLayer(configuredLayer)) {
+      continue;
     }
     const loadedLayer = loadedLayers.get(id);
     if (!loadedLayer) {
