@@ -335,6 +335,7 @@ export default class iPortalDataService extends Events {
         if (data.type) {
           let features;
           let type = 'FeatureCollection';
+          let contentCrs;
           if (data.type === 'JSON' || data.type === 'GEOJSON') {
             data.content = JSON.parse(data.content.trim());
             // 如果是json文件 data.content = {type:'fco', features},格式不固定
@@ -343,13 +344,16 @@ export default class iPortalDataService extends Events {
             }
             features = this._formatGeoJSON(features || data.content, queryInfo);
             type = data.content.type;
+            contentCrs = data.content.crs;
           } else if (data.type === 'EXCEL' || data.type === 'CSV') {
             features = this._excelData2Feature(data.content, queryInfo);
           } else if (data.type === 'SHP') {
             data.content = JSON.parse(data.content.trim());
-            features = this._formatGeoJSON(data.content.layers[0]);
+            const layer = data.content.layers[0];
+            contentCrs = layer && layer.crs;
+            features = this._formatGeoJSON(layer);
           }
-          features = this._transformContentFeatures(features);
+          features = this._transformContentFeatures(features, contentCrs);
           result.features = {
             type,
             features
@@ -447,11 +451,29 @@ export default class iPortalDataService extends Events {
     return { features };
   }
 
-  // 转坐标系
-  _transformContentFeatures(features) {
+  // 从 GeoJSON crs 解析 EPSG 代码，如 CRS:84 / EPSG:4326
+  _parseEpsgCodeFromCrs(crs) {
+    const name = crs && crs.properties && crs.properties.name;
+    if (!name) {
+      return null;
+    }
+    const crsName = String(name).trim();
+    // CRS:84 / OGC:1.3:CRS84 等价于 EPSG:4326（经度在前）
+    if (/CRS:?84/i.test(crsName) || /OGC(?::|::)2(?::|::)84/i.test(crsName)) {
+      return 4326;
+    }
+    const epsgMatch = crsName.match(/EPSG(?::|::)(\d+)/i);
+    if (epsgMatch) {
+      return parseInt(epsgMatch[1], 10);
+    }
+    return null;
+  }
+
+  // 转坐标系：优先使用 content 中的 crs，否则按坐标范围推断
+  _transformContentFeatures(features, crs) {
     let transformedFeatures = features;
     if (features && !!features.length) {
-      const epsgCode = vertifyEpsgCode(features[0]);
+      const epsgCode = this._parseEpsgCodeFromCrs(crs) || vertifyEpsgCode(features[0]);
       transformedFeatures = transformFeatures(epsgCode, features);
       this.vertified = true;
     }
