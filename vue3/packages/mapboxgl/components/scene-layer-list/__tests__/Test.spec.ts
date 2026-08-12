@@ -21,6 +21,7 @@ interface TreeNode {
 interface EntityDataSource {
   name: string
   show?: boolean
+  ___layerRemoved?: boolean
   entities: {
     show: boolean
     values: unknown[]
@@ -123,8 +124,19 @@ describe('SmSceneLayerList', () => {
         }
       },
       {
+        name: 'Hidden REST data source',
+        entities: { show: false, values: [] },
+        ___layerData: {
+          id: 'hidden-rest-data',
+          name: 'Hidden REST data',
+          type: 'data',
+          config: { type: 'rest' }
+        }
+      },
+      {
         name: 'Deleted REST data source',
         entities: { show: false, values: [] },
+        ___layerRemoved: true,
         ___layerData: {
           id: 'deleted-rest-data',
           name: 'Deleted REST data',
@@ -157,6 +169,12 @@ describe('SmSceneLayerList', () => {
         aliasKey: 'rest-cities',
         type: 'entity',
         visible: true
+      }),
+      expect.objectContaining({
+        title: 'Hidden REST data',
+        aliasKey: 'hidden-rest-data',
+        type: 'entity',
+        visible: false
       })
     ])
     expect(wrapper.text()).not.toContain('Other data')

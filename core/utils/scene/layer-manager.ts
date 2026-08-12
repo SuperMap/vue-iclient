@@ -22,6 +22,7 @@ export interface LayerCheckData {
   subdomains?: string | string[]
   source?: string
   resourceId?: string
+  defaultShow?: boolean
   config?: Record<string, any>
   [key: string]: any
 }
@@ -1279,6 +1280,7 @@ class ClusterForeManager {
       })
     this.layers[item.id as string] = layer
     layer.dataSource.___layerData = item
+    layer.dataSource.___layerRemoved = false
     return layer
   }
 
@@ -1349,15 +1351,13 @@ class ClusterForeManager {
     queryFun: () => Promise<LayerDataResult>
   ) {
     const layer = this.getLayer(item)
-    layer.show()
+    if (item.defaultShow === false) {
+      layer.hide()
+    } else {
+      layer.show()
+    }
     const dataResult = await queryFun()
     const featureCollection = dataResult.featureCollection
-    if (!layer.entities.show) {
-      return {
-        layer,
-        dataResult
-      }
-    }
     layer.removeAll()
     if (featureCollection.features.length > 0) {
       await this._addFeatures(featureCollection, item, layer)
@@ -1593,6 +1593,7 @@ class ClusterForeManager {
     if (layer) {
       layer.removeAll()
       layer.hide()
+      layer.dataSource.___layerRemoved = true
     }
   }
 
@@ -2085,6 +2086,20 @@ class LayerManager {
   getLayerManger() {
     this.layerManager = this.layerManager || new ClusterForeManager(this)
     return this.layerManager
+  }
+
+  setDataLayerVisibility(data: LayerCheckData, visible = data.defaultShow !== false) {
+    const id = String(data.id || '')
+    const layer = this.layerManager?.getLayerById(id)
+    if (!layer) {
+      return false
+    }
+    if (visible) {
+      layer.show()
+    } else {
+      layer.hide()
+    }
+    return true
   }
 
   async _loadData(data: LayerCheckData, checked: boolean, options: LayerCheckOptions) {

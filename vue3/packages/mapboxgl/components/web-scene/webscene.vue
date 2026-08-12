@@ -108,7 +108,13 @@ const getConfiguredLayers = () => {
   return uniqueLayers;
 };
 
-const shouldLoadConfiguredLayer = (layer: LayerCheckData) => layer.defaultLoad === true;
+const isDefaultShown = (layer: LayerCheckData) => layer.defaultShow !== false;
+
+const hasOnlyDefaultShowChanged = (previousLayer: LayerCheckData, nextLayer: LayerCheckData) => {
+  const { defaultShow: previousDefaultShow, ...previousLayerData } = previousLayer;
+  const { defaultShow: nextDefaultShow, ...nextLayerData } = nextLayer;
+  return previousDefaultShow !== nextDefaultShow && isEqual(previousLayerData, nextLayerData);
+};
 
 const syncConfiguredLayers = async (manager: LayerManager, managerVersion: number) => {
   if (!isCurrentLayerManager(manager, managerVersion)) {
@@ -117,7 +123,7 @@ const syncConfiguredLayers = async (manager: LayerManager, managerVersion: numbe
   const configuredLayers = getConfiguredLayers();
   for (const [id, loadedLayer] of loadedLayers) {
     const configuredLayer = configuredLayers.get(id);
-    if (!configuredLayer || !shouldLoadConfiguredLayer(configuredLayer)) {
+    if (!configuredLayer) {
       try {
         await manager.check(loadedLayer, false);
         if (isCurrentLayerManager(manager, managerVersion)) {
@@ -131,9 +137,6 @@ const syncConfiguredLayers = async (manager: LayerManager, managerVersion: numbe
   for (const [id, configuredLayer] of configuredLayers) {
     if (!isCurrentLayerManager(manager, managerVersion)) {
       return;
-    }
-    if (!shouldLoadConfiguredLayer(configuredLayer)) {
-      continue;
     }
     const loadedLayer = loadedLayers.get(id);
     if (!loadedLayer) {
@@ -149,10 +152,14 @@ const syncConfiguredLayers = async (manager: LayerManager, managerVersion: numbe
     }
     if (!isEqual(loadedLayer, configuredLayer)) {
       try {
-        await manager.handleDataChange({
-          ...configuredLayer,
-          checked: true
-        });
+        if (configuredLayer.type === 'data' && hasOnlyDefaultShowChanged(loadedLayer, configuredLayer)) {
+          manager.setDataLayerVisibility(configuredLayer, isDefaultShown(configuredLayer));
+        } else {
+          await manager.handleDataChange({
+            ...configuredLayer,
+            checked: true
+          });
+        }
         if (isCurrentLayerManager(manager, managerVersion)) {
           loadedLayers.set(id, configuredLayer);
         }

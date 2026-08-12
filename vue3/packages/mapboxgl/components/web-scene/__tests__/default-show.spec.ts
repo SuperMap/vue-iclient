@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
     check: ReturnType<typeof vi.fn>;
     handleDataChange: ReturnType<typeof vi.fn>;
     removeAll: ReturnType<typeof vi.fn>;
+    setDataLayerVisibility: ReturnType<typeof vi.fn>;
   }>,
   webSceneViewModels: [] as Array<{
     emitInstanceDidLoad: (viewer: unknown) => void;
@@ -19,6 +20,7 @@ vi.mock('vue-iclient-core/utils/scene', () => {
     check = vi.fn().mockResolvedValue(undefined);
     handleDataChange = vi.fn().mockResolvedValue(undefined);
     removeAll = vi.fn().mockResolvedValue(undefined);
+    setDataLayerVisibility = vi.fn();
 
     constructor() {
       mocks.managers.push(this);
@@ -65,11 +67,11 @@ vi.mock('vue-iclient-core/types/scene-event', () => ({
 
 import WebScene from '../webscene.vue';
 
-const restDataLayer = (defaultLoad: unknown) => ({
+const restDataLayer = (defaultShow: unknown) => ({
   id: 'rest-data-layer',
   name: 'REST data layer',
   type: 'data',
-  defaultLoad,
+  defaultShow,
   config: {
     type: 'rest',
     url: 'https://example.com/iserver/services/data',
@@ -96,36 +98,54 @@ describe('SmWebScene configured layers', () => {
     mocks.webSceneViewModels.length = 0;
   });
 
-  it('loads only layers with top-level defaultLoad set to true', async () => {
+  it('loads every configured REST Data layer regardless of default visibility', async () => {
     const wrapper = await mountAndLoadScene([
-      { ...restDataLayer(true), id: 'rest-data-layer-enabled' },
-      restDataLayer(false),
-      {
-        ...restDataLayer(undefined),
-        id: 'rest-data-layer-without-default',
-        config: { ...restDataLayer(true).config, defaultLoad: true }
-      },
-      { ...restDataLayer('true'), id: 'rest-data-layer-with-string-default' }
+      { ...restDataLayer(true), id: 'shown-layer' },
+      { ...restDataLayer(false), id: 'hidden-layer' },
+      { ...restDataLayer(undefined), id: 'default-layer' }
     ]);
 
-    expect(mocks.managers[0].check).toHaveBeenCalledTimes(1);
-    expect(mocks.managers[0].check).toHaveBeenCalledWith(
-      expect.objectContaining({ id: 'rest-data-layer-enabled', defaultLoad: true }),
+    const manager = mocks.managers[0];
+    expect(manager.check).toHaveBeenCalledTimes(3);
+    expect(manager.check).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'shown-layer', defaultShow: true }),
+      true
+    );
+    expect(manager.check).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'hidden-layer', defaultShow: false }),
+      true
+    );
+    expect(manager.check).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'default-layer', defaultShow: undefined }),
       true
     );
     wrapper.unmount();
   });
 
-  it('loads a layer when enabled later and unloads it when disabled', async () => {
+  it('updates default visibility without unloading the loaded layer', async () => {
     const wrapper = await mountAndLoadScene([restDataLayer(false)]);
     const manager = mocks.managers[0];
 
     await wrapper.setProps({ layers: [restDataLayer(true)] });
     await flushPromises();
 
-    expect(manager.check).toHaveBeenLastCalledWith(expect.objectContaining({ id: 'rest-data-layer' }), true);
+    expect(manager.setDataLayerVisibility).toHaveBeenLastCalledWith(
+      expect.objectContaining({ id: 'rest-data-layer', defaultShow: true }),
+      true
+    );
+    expect(manager.handleDataChange).not.toHaveBeenCalled();
+    expect(manager.check).toHaveBeenCalledTimes(1);
 
     await wrapper.setProps({ layers: [restDataLayer(false)] });
+    await flushPromises();
+
+    expect(manager.setDataLayerVisibility).toHaveBeenLastCalledWith(
+      expect.objectContaining({ id: 'rest-data-layer', defaultShow: false }),
+      false
+    );
+    expect(manager.check).toHaveBeenCalledTimes(1);
+
+    await wrapper.setProps({ layers: [] });
     await flushPromises();
 
     expect(manager.check).toHaveBeenLastCalledWith(expect.objectContaining({ id: 'rest-data-layer' }), false);

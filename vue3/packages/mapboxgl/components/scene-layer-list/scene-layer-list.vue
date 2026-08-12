@@ -156,9 +156,11 @@ const getEntityLayerData = (dataSource) => {
 const getEntitySources = () => {
   return getSceneDataSources().filter((dataSource) => {
     const layerData = getEntityLayerData(dataSource);
-    const entities = dataSource?.entities;
-    const isRemovedLayer = entities?.show === false && !entities?.values?.length;
-    return layerData?.type === 'data' && layerData?.config?.type === 'rest' && !isRemovedLayer;
+    return (
+      layerData?.type === 'data' &&
+      layerData?.config?.type === 'rest' &&
+      dataSource?.___layerRemoved !== true
+    );
   });
 };
 
