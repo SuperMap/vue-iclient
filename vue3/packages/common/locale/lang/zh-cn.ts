@@ -44,6 +44,7 @@ export default {
     directoryTreeCsvExcelUnsupportedProjection: '当前 CSV/Excel 坐标系不是 EPSG:4326，无法勾选。',
     directoryTreeUnsupportedTileMatrixSet: '当前 WMTS 图层没有匹配当前地图的切片矩阵集，无法勾选。',
     directoryTreeLoadFailed: '当前资源加载失败，请稍后重试。',
+    sceneDataMissingCoordinates: '当前数据缺少坐标信息，无法在场景中展示。',
     videojs: '请引入video.js插件: https://github.com/videojs/video.js',
     flvPlayer:
       '请引入flv相关插件: https://github.com/bilibili/flv.js, https://github.com/mister-ben/videojs-flvjs',

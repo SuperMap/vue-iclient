@@ -2,6 +2,7 @@ import mapboxgl from 'mapbox-gl';
 import isEqual from 'lodash.isequal';
 import { loadSecureScript, loadLink } from 'vue-iclient-core/utils/util';
 import sceneEvent from 'vue-iclient-core/types/scene-event';
+import { isSceneEntityDataLayer } from 'vue-iclient-core/utils/scene';
 
 declare global {
   interface Window {
@@ -39,6 +40,8 @@ export interface SceneAppreciableLayer {
   customName?: string;
   dataSourceName?: string;
   datasetName?: string;
+  dataId?: string;
+  withCredentials?: boolean;
   serviceType?: string;
   maximumLevel?: number;
   show: boolean;
@@ -453,7 +456,7 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
   }
 
   /**
-   * 获取场景中可感知图层列表（影像 / MVT / S3M / REST Data / 地形），解析逻辑参考 scene-layer-list。
+   * 获取场景中可感知图层列表（影像 / MVT / S3M / 数据子图层 rest·iPortal·geoJSON / 地形），解析逻辑参考 scene-layer-list。
    */
   getAppreciableLayers(): SceneAppreciableLayer[] {
     if (!this.viewer) {
@@ -558,7 +561,7 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
       )?.___layerFeatureData;
       const layerData = dataSource?.___layerData || entityLayerData?.data;
       const config = layerData?.config;
-      if (layerData?.type !== 'data' || config?.type !== 'rest') {
+      if (!isSceneEntityDataLayer(layerData) || dataSource?.___layerRemoved === true) {
         return layers;
       }
       const id = String(layerData.id || entityLayerData?.layerId || '').trim();
@@ -566,15 +569,20 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
       if (!id && !customName) {
         return layers;
       }
+      const configType = String(config?.type || '');
       layers.push({
         category: 'dataLayers',
         id: id || customName,
         customName: customName || id,
         show: dataSource?.show !== false && dataSource?.entities?.show !== false,
-        serviceType: 'REST_DATA',
-        url: typeof config.url === 'string' ? config.url : undefined,
-        dataSourceName: config.datasourceName,
-        datasetName: config.datasetName
+        type: configType || 'data',
+        serviceType:
+          configType === 'iPortal' ? 'IPORTAL' : configType === 'geoJSON' ? 'GEOJSON' : 'REST_DATA',
+        url: typeof config?.url === 'string' ? config.url : undefined,
+        dataSourceName: config?.datasourceName,
+        datasetName: config?.datasetName,
+        dataId: typeof layerData.dataId === 'string' ? layerData.dataId : undefined,
+        withCredentials: typeof config?.withCredentials === 'boolean' ? config.withCredentials : undefined
       });
       return layers;
     }, []);

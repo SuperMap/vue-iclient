@@ -2,6 +2,7 @@ import mapboxgl from 'mapbox-gl';
 import turfCenter from '@turf/center';
 import { GeometryPolygon, GeometryLinearRing, GeometryPoint } from '@supermapgis/iclient-common/commontypes';
 import iServerRestService from 'vue-iclient-core/utils/iServerRestService';
+import { isSceneEntityDataLayer } from 'vue-iclient-core/utils/scene';
 import WebSceneViewModel, { type SceneAppreciableLayer } from './WebSceneViewModel';
 import type { HighlightStyle } from './LayerHighlightViewModel';
 import { getDefaultLayerStyle } from './types';
@@ -605,10 +606,9 @@ export default class SceneHighlightViewModel extends mapboxgl.Evented {
     const featureLayerData = entity?.___layerFeatureData;
     const layerData = featureLayerData?.data;
     const layerConfig = layerData?.config;
-    const isRestDataEntity =
-      !!featureLayerData && layerData?.type === 'data' && layerConfig?.type === 'rest';
+    const isLayerManagerDataEntity = !!featureLayerData && isSceneEntityDataLayer(layerData);
 
-    if (isRestDataEntity) {
+    if (isLayerManagerDataEntity) {
       const datasetName = String(layerConfig?.datasetName || featureLayerData?.layerId || '').trim();
       const dataSourceName = String(
         layerConfig?.datasourceName || layerConfig?.dataSourceName || ''

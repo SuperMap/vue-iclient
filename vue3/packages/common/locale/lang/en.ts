@@ -19,7 +19,9 @@ export default {
       'This CSV/Excel coordinate system is not EPSG:4326 and cannot be checked.',
     directoryTreeUnsupportedTileMatrixSet:
       'This WMTS layer has no tile matrix set supported by the current map and cannot be checked.',
-    directoryTreeLoadFailed: 'Failed to load this resource. Try again later.'
+    directoryTreeLoadFailed: 'Failed to load this resource. Try again later.',
+    sceneDataMissingCoordinates:
+      'The current data has no coordinate information and cannot be displayed in the scene.',
   },
   info: {
     loading: 'Loading',

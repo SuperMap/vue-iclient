@@ -19,8 +19,10 @@ import { webScenePropsDefault } from './types'
 import WebSceneViewModel from 'vue-iclient-controllers-mapboxgl/src/WebSceneViewModel';
 import { cloneDeep, isEqual } from 'lodash-es';
 import sceneEvent from 'vue-iclient-core/types/scene-event';
-import { LayerManager, type LayerCheckData } from 'vue-iclient-core/utils/scene';
+import { LayerManager, getSceneDataLayerConfigIssue, isDataLayerMissingCoordinates, type LayerCheckData } from 'vue-iclient-core/utils/scene';
 import { watch, computed, onMounted, onBeforeUnmount } from 'vue';
+import { useLocale } from '@supermapgis/common/hooks/index.common'
+import SmMessage from '@supermapgis/common/components/message/Message'
 import SmSceneLayerList from '@supermapgis/mapboxgl/components/scene-layer-list/scene-layer-list.vue'
 import SmSceneLayerManager from '@supermapgis/mapboxgl/components/scene-layer-manager/scene-layer-manager.vue'
 import SmSceneFlyTo from '@supermapgis/mapboxgl/components/scene-fly-to/scene-fly-to.vue'
@@ -41,6 +43,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<WebSceneProps>(), webScenePropsDefault)
 const emit = defineEmits<WebSceneEvents>()
+const { t } = useLocale()
 
 const componentMap: Record<string, any> = {
   SmSceneLayerList,
@@ -90,14 +93,8 @@ const getConfiguredLayers = () => {
   const uniqueLayers = new Map<string, LayerCheckData>();
   layers.forEach(layer => {
     const id = String(layer?.id || '').trim();
-    const config = layer?.config;
-    const isRestDataLayerValid =
-      layer?.type !== 'data' ||
-      (config?.type === 'rest' &&
-        !!String(config.url || '').trim() &&
-        !!String(config.datasourceName || '').trim() &&
-        !!String(config.datasetName || '').trim());
-    if (!id || uniqueLayers.has(id) || !isRestDataLayerValid) {
+    const isDataLayerValid = layer?.type !== 'data' || !getSceneDataLayerConfigIssue(layer?.config);
+    if (!id || uniqueLayers.has(id) || !isDataLayerValid) {
       return;
     }
     uniqueLayers.set(id, {
@@ -114,6 +111,12 @@ const hasOnlyDefaultShowChanged = (previousLayer: LayerCheckData, nextLayer: Lay
   const { defaultShow: previousDefaultShow, ...previousLayerData } = previousLayer;
   const { defaultShow: nextDefaultShow, ...nextLayerData } = nextLayer;
   return previousDefaultShow !== nextDefaultShow && isEqual(previousLayerData, nextLayerData);
+};
+
+const warnIfDataLayerMissingCoordinates = (manager: LayerManager, layer: LayerCheckData) => {
+  if (isDataLayerMissingCoordinates(manager, layer)) {
+    SmMessage.warning(t('warning.sceneDataMissingCoordinates'));
+  }
 };
 
 const syncConfiguredLayers = async (manager: LayerManager, managerVersion: number) => {
@@ -144,6 +147,7 @@ const syncConfiguredLayers = async (manager: LayerManager, managerVersion: numbe
         await manager.check(configuredLayer, true);
         if (isCurrentLayerManager(manager, managerVersion)) {
           loadedLayers.set(id, configuredLayer);
+          warnIfDataLayerMissingCoordinates(manager, configuredLayer);
         }
       } catch (error) {
         console.error(`[SmWebScene] Failed to add scene layer "${id}".`, error);
@@ -159,6 +163,7 @@ const syncConfiguredLayers = async (manager: LayerManager, managerVersion: numbe
             ...configuredLayer,
             checked: true
           });
+          warnIfDataLayerMissingCoordinates(manager, configuredLayer);
         }
         if (isCurrentLayerManager(manager, managerVersion)) {
           loadedLayers.set(id, configuredLayer);

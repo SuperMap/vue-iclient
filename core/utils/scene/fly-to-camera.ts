@@ -1,9 +1,17 @@
 type ScenePositionLatLng = { lon?: number; lng?: number; lat: number; height?: number };
 type ScenePositionXYZ = { x?: number; y?: number; z?: number };
 
+function isGeographicXYZ(position: ScenePositionXYZ) {
+  const x = Number(position.x);
+  const y = Number(position.y);
+  return Number.isFinite(x) && Number.isFinite(y) && Math.abs(x) <= 180 && Math.abs(y) <= 90;
+}
+
 /**
  * 场景导航工具使用的目标位置。
- * 支持经纬度数组、经纬度对象和笛卡尔坐标对象。
+ * 支持经纬度数组、经纬度对象，以及 `{ x, y, z }`。
+ * `{ x, y, z }` 在经纬度范围内时与 WebScene `options.position.destination` 一致，表示 lon/lat/height；
+ * 超出该范围时按 ECEF 笛卡尔坐标（米）处理。
  */
 export type ScenePosition =
   | [number, number, number?]
@@ -63,6 +71,9 @@ export function getArrayPosition(position: ScenePosition) {
   if (isLngLatPosition(position)) {
     return [position.lon ?? position.lng ?? 0, position.lat, position.height ?? 0];
   }
+  if (isGeographicXYZ(position)) {
+    return [Number(position.x), Number(position.y), Number(position.z) || 0];
+  }
   return position;
 }
 
@@ -74,7 +85,7 @@ export function getSuperMap3DCartesian3(position: ScenePosition) {
   if (position === void 0) {
     throw new Error('position is invalid');
   }
-  if (Array.isArray(position) || isLngLatPosition(position)) {
+  if (Array.isArray(position) || isLngLatPosition(position) || isGeographicXYZ(position)) {
     const nextPosition = getArrayPosition(position);
     return SuperMap3D.Cartesian3.fromDegrees(nextPosition[0], nextPosition[1], nextPosition[2]);
   }

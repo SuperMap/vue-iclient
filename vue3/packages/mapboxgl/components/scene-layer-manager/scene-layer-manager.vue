@@ -211,7 +211,7 @@ import SmSpin from '@supermapgis/common/components/spin/Spin'
 import SmTree from '@supermapgis/common/components/tree/Tree'
 import { useLocale, useSceneGetter, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useSceneControl } from '@supermapgis/mapboxgl/hooks'
-import { LayerManager } from 'vue-iclient-core/utils/scene'
+import { LayerManager, getSceneDataLayerConfigIssue, isDataLayerMissingCoordinates } from 'vue-iclient-core/utils/scene'
 import type { SceneLayerConfigNode, SceneLayerType } from './types'
 import { SCENE_LAYER_TYPES, sceneLayerManagerPropsDefault } from './types'
 import { isEqual } from 'lodash-es'
@@ -372,11 +372,9 @@ function getConfigIssue(type: SceneLayerType, config: RuntimeConfig) {
     }
     return hasUrl ? undefined : 'config.url is required'
   }
-  if (config.type !== 'rest') {
-    return 'data layers only support config.type = rest'
-  }
-  if (!hasUrl) {
-    return 'config.url is required'
+  const dataConfigIssue = getSceneDataLayerConfigIssue(config)
+  if (dataConfigIssue) {
+    return dataConfigIssue
   }
   return Number(config.cluster) === 2 ? 'data layers do not support cluster = 2' : undefined
 }
@@ -658,11 +656,14 @@ async function toggleLayer(
   const previousChecked = node.checked
   node.loading = true
   try {
-    await managerOverride.check(createManagerData(node), checked)
+    const managerData = createManagerData(node)
+    await managerOverride.check(managerData, checked)
     if (expectedToken === lifecycleToken && managerOverride === layerManager) {
       node.checked = checked
       if (!checked) {
         node.showConfig = false
+      } else if (isDataLayerMissingCoordinates(managerOverride, managerData)) {
+        SmMessage.warning(t('warning.sceneDataMissingCoordinates'))
       }
     }
   } catch (error) {

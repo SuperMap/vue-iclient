@@ -85,6 +85,7 @@ import SmTree from '@supermapgis/common/components/tree/Tree'
 import { sceneLayerListPropsDefault } from './types'
 import { message } from 'ant-design-vue'
 import { getImageryLayerName } from '@supermapgis/mapboxgl/utils'
+import { isSceneEntityDataLayer } from 'vue-iclient-core/utils/scene'
 
 defineOptions({
   name: 'SmSceneLayerList'
@@ -156,11 +157,7 @@ const getEntityLayerData = (dataSource) => {
 const getEntitySources = () => {
   return getSceneDataSources().filter((dataSource) => {
     const layerData = getEntityLayerData(dataSource);
-    return (
-      layerData?.type === 'data' &&
-      layerData?.config?.type === 'rest' &&
-      dataSource?.___layerRemoved !== true
-    );
+    return isSceneEntityDataLayer(layerData) && dataSource?.___layerRemoved !== true;
   });
 };
 

@@ -60,7 +60,18 @@ export {
 } from './sightline-analysis';
 export {
   LayerManager,
+  dataLayerConfigTypes,
+  isSceneDataLayerConfigType,
+  isSceneEntityDataLayer,
+  getSceneDataLayerConfigIssue,
+  applySceneDataLayerClampToGround,
+  getFeatureCollectionLonLatBounds,
+  featureCollectionHasCoordinates,
+  isDataLayerMissingCoordinates,
+  hasGeoJSONPayload,
+  resolveRestDatasetNames,
   type LayerType,
+  type DataLayerConfigType,
   type LayerCheckData,
   type LayerCheckOptions,
   type LayerCameraConfig,
@@ -68,6 +79,7 @@ export {
   type LayerLifecycleRuntime,
   type LayerLifecyclePayload,
   type LayerDataFrontHandlers,
+  type LayerDataResult,
   type LayerManagerOptions,
   type LayerManagerContext
 } from './layer-manager';

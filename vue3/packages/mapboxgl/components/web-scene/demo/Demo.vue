@@ -3,6 +3,7 @@ import type { LayerCheckData } from 'vue-iclient-core/utils/scene'
 import WebScene from '../webscene.vue'
 import sceneEvent from 'vue-iclient-core/types/scene-event'
 import '../style'
+import '../../scene-layer-list/style'
 import { ref, computed, nextTick, onMounted, onBeforeUnmount } from 'vue'
 
 const sceneLibPaths = {
@@ -18,6 +19,16 @@ const emptyScanOptions = {
     centerPostion: { x: null, y: null, z: null },
     period: 2000,
     speed: 500
+  }
+}
+
+const sceneLayerListControl = {
+  show: true,
+  position: 'top-left',
+  collapsed: false,
+  operations: {
+    fitBounds: true,
+    draggable: false
   }
 }
 
@@ -131,6 +142,337 @@ const scenePresets: ScenePreset[] = [
         position: {
           orientation: { pitch: -90, roll: 0, heading: 0 },
           destination: { x: 116.4, y: 39.9, z: 800000 }
+        }
+      }
+    }
+  },
+  {
+    id: 'geojson',
+    label: '空场景 + GeoJSON',
+    description: '场景 1753822233，内联点/线/面',
+    props: {
+      sceneUrl: '/iportal/web/scenes/1753822233',
+      target: 'web-scene-demo',
+      ...sceneLibPaths,
+      layers: [
+        {
+          id: 'geojson-sample',
+          name: '示例 GeoJSON',
+          type: 'data',
+          defaultShow: true,
+          autoLocate: true,
+          config: {
+            type: 'geoJSON',
+            geoJSON: {
+              type: 'FeatureCollection',
+              features: [
+                {
+                  type: 'Feature',
+                  properties: { name: '北京', type: 'city' },
+                  geometry: { type: 'Point', coordinates: [116.4, 39.9] }
+                },
+                {
+                  type: 'Feature',
+                  properties: { name: '上海', type: 'city' },
+                  geometry: { type: 'Point', coordinates: [121.47, 31.23] }
+                },
+                {
+                  type: 'Feature',
+                  properties: { name: '重庆', type: 'city' },
+                  geometry: { type: 'Point', coordinates: [106.55, 29.56] }
+                },
+                {
+                  type: 'Feature',
+                  properties: { name: '京沪走廊', type: 'corridor' },
+                  geometry: {
+                    type: 'LineString',
+                    coordinates: [
+                      [116.4, 39.9],
+                      [117.2, 39.1],
+                      [118.8, 32.9],
+                      [121.47, 31.23]
+                    ]
+                  }
+                },
+                {
+                  type: 'Feature',
+                  properties: { name: '示例区域', type: 'area' },
+                  geometry: {
+                    type: 'Polygon',
+                    coordinates: [
+                      [
+                        [106.4, 29.4],
+                        [106.7, 29.4],
+                        [106.7, 29.7],
+                        [106.4, 29.7],
+                        [106.4, 29.4]
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            label: {
+              field: 'name',
+              fontSize: 14,
+              color: '#ffffff'
+            }
+          }
+        }
+      ],
+      options: {
+        ...emptyScanOptions,
+        position: {
+          orientation: { pitch: -90, roll: 0, heading: 0 },
+          destination: { x: 110, y: 34, z: 4000000 }
+        }
+      }
+    }
+  },
+  {
+    id: 'iportal-shp',
+    label: 'iPortal SHP',
+    description: 'attraction 1735674086',
+    props: {
+      sceneUrl: '/iportal/web/scenes/1753822233',
+      target: 'web-scene-demo',
+      ...sceneLibPaths,
+      layers: [
+        {
+          id: 'iportal-shp',
+          name: 'attraction',
+          type: 'data',
+          defaultShow: true,
+          autoLocate: true,
+          locateParams: {
+            position: { x: 120.15, y: 30.25, z: 80000 },
+            hpr: { heading: 0, pitch: -90, roll: 0 },
+            duration: 1.5
+          },
+          config: {
+            type: 'iPortal',
+            url: '/iportal/web/datas/1735674086',
+            withCredentials: false,
+            preferContent: true,
+            maxFeatures: 1000,
+            fill: '#3b82f6',
+            stroke: '#ffffff',
+            pointSize: 12,
+            label: {
+              field: 'name',
+              fontSize: 12,
+              color: '#ffffff'
+            }
+          }
+        }
+      ],
+      options: {
+        ...emptyScanOptions,
+        position: {
+          orientation: { pitch: -90, roll: 0, heading: 0 },
+          destination: { x: 120.15, y: 30.25, z: 80000 }
+        }
+      }
+    }
+  },
+  {
+    id: 'iportal-geojson',
+    label: 'iPortal GeoJSON',
+    description: '北京地铁线 1854715858',
+    props: {
+      sceneUrl: '/iportal/web/scenes/1753822233',
+      target: 'web-scene-demo',
+      ...sceneLibPaths,
+      layers: [
+        {
+          id: 'iportal-geojson',
+          name: '北京地铁线',
+          type: 'data',
+          defaultShow: true,
+          autoLocate: true,
+          locateParams: {
+            position: { x: 116.4, y: 39.94, z: 60000 },
+            hpr: { heading: 0, pitch: -90, roll: 0 },
+            duration: 1.5
+          },
+          config: {
+            type: 'iPortal',
+            url: 'http://172.16.14.44:8190/iportal/web/datas/1854715858',
+            withCredentials: false,
+            preferContent: true,
+            maxFeatures: 1000,
+            stroke: '#ffcc00',
+            fill: 'rgba(255,204,0,0.25)',
+            lineWidth: 4
+          }
+        }
+      ],
+      options: {
+        ...emptyScanOptions,
+        position: {
+          orientation: { pitch: -90, roll: 0, heading: 0 },
+          destination: { x: 116.4, y: 39.94, z: 60000 }
+        }
+      }
+    }
+  },
+  {
+    id: 'iportal-excel',
+    label: 'iPortal Excel',
+    description: '气象站 39120541',
+    props: {
+      sceneUrl: '/iportal/web/scenes/1753822233',
+      target: 'web-scene-demo',
+      ...sceneLibPaths,
+      layers: [
+        {
+          id: 'iportal-excel',
+          name: '气象站观测',
+          type: 'data',
+          defaultShow: true,
+          autoLocate: true,
+          locateParams: {
+            position: { x: 105, y: 35, z: 4500000 },
+            hpr: { heading: 0, pitch: -90, roll: 0 },
+            duration: 1.5
+          },
+          config: {
+            type: 'iPortal',
+            url: 'http://172.16.14.44:8190/iportal/web/datas/39120541',
+            withCredentials: false,
+            preferContent: true,
+            maxFeatures: 1000,
+            label: {
+              field: '站台',
+              fontSize: 12,
+              color: '#ffffff'
+            }
+          }
+        }
+      ],
+      options: {
+        ...emptyScanOptions,
+        position: {
+          orientation: { pitch: -90, roll: 0, heading: 0 },
+          destination: { x: 105, y: 35, z: 4500000 }
+        }
+      }
+    }
+  },
+  {
+    id: 'iportal-structured',
+    label: 'iPortal 结构化数据',
+    description: 'beijing 1141472549',
+    props: {
+      sceneUrl: '/iportal/web/scenes/1753822233',
+      target: 'web-scene-demo',
+      ...sceneLibPaths,
+      layers: [
+        {
+          id: 'iportal-structured',
+          name: 'beijing 结构化',
+          type: 'data',
+          defaultShow: true,
+          autoLocate: true,
+          locateParams: {
+            // 数据范围约 116.7~117.5 / 40.2~40.8
+            position: { x: 117.09, y: 40.51, z: 80000 },
+            hpr: { heading: 0, pitch: -90, roll: 0 },
+            duration: 1.5
+          },
+          config: {
+            type: 'iPortal',
+            url: 'http://172.16.14.44:8190/iportal/web/datas/1141472549',
+            dataType: 'STRUCTUREDDATA',
+            withCredentials: false,
+            maxFeatures: 1000,
+            stroke: '#00e5ff',
+            fill: 'rgba(0,229,255,0.35)',
+            lineWidth: 2,
+            label: {
+              field: 'name',
+              fontSize: 12,
+              color: '#ffffff'
+            }
+          }
+        }
+      ],
+      options: {
+        ...emptyScanOptions,
+        position: {
+          orientation: { pitch: -90, roll: 0, heading: 0 },
+          destination: { x: 117.09, y: 40.51, z: 80000 }
+        }
+      }
+    }
+  },
+  {
+    id: 'iportal-csv',
+    label: 'iPortal CSV',
+    description: 'CSV 1492269764（含坐标）',
+    props: {
+      sceneUrl: '/iportal/web/scenes/1753822233',
+      target: 'web-scene-demo',
+      ...sceneLibPaths,
+      layers: [
+        {
+          id: 'iportal-csv',
+          name: 'CSV 数据',
+          type: 'data',
+          defaultShow: true,
+          autoLocate: true,
+          locateParams: {
+            position: { x: 105, y: 35, z: 4500000 },
+            hpr: { heading: 0, pitch: -90, roll: 0 },
+            duration: 1.5
+          },
+          config: {
+            type: 'iPortal',
+            url: 'http://172.16.14.44:8190/iportal/web/datas/1492269764',
+            withCredentials: false,
+            preferContent: true,
+            maxFeatures: 1000
+          }
+        }
+      ],
+      options: {
+        ...emptyScanOptions,
+        position: {
+          orientation: { pitch: -90, roll: 0, heading: 0 },
+          destination: { x: 105, y: 35, z: 4500000 }
+        }
+      }
+    }
+  },
+  {
+    id: 'iportal-csv-no-coords',
+    label: 'iPortal CSV（无坐标）',
+    description: '省级人口密度 674058126，应弹出无坐标提示',
+    props: {
+      sceneUrl: '/iportal/web/scenes/1753822233',
+      target: 'web-scene-demo',
+      ...sceneLibPaths,
+      layers: [
+        {
+          id: 'iportal-csv-no-coords',
+          name: '省级人口密度 CSV',
+          type: 'data',
+          defaultShow: true,
+          autoLocate: true,
+          config: {
+            type: 'iPortal',
+            url: 'http://172.16.14.44:8190/iportal/web/datas/674058126',
+            withCredentials: false,
+            preferContent: true,
+            maxFeatures: 1000
+          }
+        }
+      ],
+      options: {
+        ...emptyScanOptions,
+        position: {
+          orientation: { pitch: -90, roll: 0, heading: 0 },
+          destination: { x: 105, y: 35, z: 4500000 }
         }
       }
     }
@@ -262,7 +604,7 @@ onBeforeUnmount(() => {
     </div>
 
     <div class="scene-container">
-      <WebScene v-bind="sceneProps" />
+      <WebScene v-bind="sceneProps" :scene-layer-list-control="sceneLayerListControl" />
     </div>
   </div>
 </template>

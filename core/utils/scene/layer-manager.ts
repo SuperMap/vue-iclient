@@ -1,10 +1,27 @@
 import { FeatureService } from '@supermapgis/iclient-common/iServer/FeatureService'
 import { GetFeaturesBySQLParameters } from '@supermapgis/iclient-common/iServer/GetFeaturesBySQLParameters'
+import getFeatures from 'vue-iclient-core/utils/get-features'
 import { flyToCamera, getSuperMap3DCartesian3, type FlyToOptions, type ScenePosition } from './fly-to-camera'
 
 export const layerTypes = ['terrain', 's3m', 'map', 'data', '3dtiles'] as const
 
 export type LayerType = (typeof layerTypes)[number]
+
+export const dataLayerConfigTypes = ['rest', 'iServer', 'iPortal', 'geoJSON'] as const
+
+export type DataLayerConfigType = (typeof dataLayerConfigTypes)[number]
+
+export function isSceneDataLayerConfigType(type: unknown): type is DataLayerConfigType {
+  return dataLayerConfigTypes.includes(type as DataLayerConfigType)
+}
+
+export function isSceneEntityDataLayer(layerData: unknown): boolean {
+  if (layerData === null || typeof layerData !== 'object') {
+    return false
+  }
+  const data = layerData as Record<string, any>
+  return data.type === 'data' && isSceneDataLayerConfigType(data.config?.type)
+}
 
 export interface LayerCameraConfig {
   position: ScenePosition
@@ -55,6 +72,8 @@ export interface LayerDataRequest {
 export interface LayerDataResult {
   featureCollection: GeoJSON.FeatureCollection
   totalCount?: number
+  /** 有要素但全部缺少可绘制坐标时为 true */
+  missingCoordinates?: boolean
   meta?: Record<string, any>
 }
 
@@ -154,9 +173,249 @@ function getFeatureCollection(features: GeoJSON.Feature[]) {
   } as GeoJSON.FeatureCollection
 }
 
-function getFeatureGeometryType(featureCollection: GeoJSON.FeatureCollection) {
-  const firstFeature = featureCollection?.features?.find(item => item?.geometry?.type)
-  return firstFeature?.geometry?.type || ''
+function isRecord(value: unknown): value is Record<string, any> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value)
+}
+
+export function hasGeoJSONPayload(geoJSON: unknown): boolean {
+  if (Array.isArray(geoJSON)) {
+    return true
+  }
+  if (!isRecord(geoJSON)) {
+    return false
+  }
+  return (
+    geoJSON.type === 'FeatureCollection' ||
+    geoJSON.type === 'Feature' ||
+    Array.isArray(geoJSON.features) ||
+    Boolean(geoJSON.geometry)
+  )
+}
+
+export function resolveRestDatasetNames(config: Record<string, any> = {}) {
+  const datasourceName = String(config.datasourceName || '').trim()
+  const datasetName = String(config.datasetName || '').trim()
+  if (datasourceName && datasetName) {
+    return { datasourceName, datasetName }
+  }
+  const dataName = Array.isArray(config.dataName) ? config.dataName[0] : config.dataName
+  if (typeof dataName === 'string' && dataName.includes(':')) {
+    const separatorIndex = dataName.indexOf(':')
+    return {
+      datasourceName: dataName.slice(0, separatorIndex).trim(),
+      datasetName: dataName.slice(separatorIndex + 1).trim()
+    }
+  }
+  return { datasourceName: '', datasetName: '' }
+}
+
+export function getSceneDataLayerConfigIssue(config: Record<string, any> | null | undefined): string | undefined {
+  if (!isRecord(config)) {
+    return 'config is required'
+  }
+  const dataType = String(config.type || '')
+  const hasUrl = typeof config.url === 'string' && Boolean(config.url.trim())
+  if (dataType === 'rest' || dataType === 'iServer') {
+    if (!hasUrl) {
+      return 'config.url is required'
+    }
+    const { datasourceName, datasetName } = resolveRestDatasetNames(config)
+    if (!datasourceName || !datasetName) {
+      return 'config.datasourceName and config.datasetName are required'
+    }
+    return undefined
+  }
+  if (dataType === 'iPortal') {
+    return hasUrl ? undefined : 'config.url is required'
+  }
+  if (dataType === 'geoJSON') {
+    return hasGeoJSONPayload(config.geoJSON) ? undefined : 'config.geoJSON is required'
+  }
+  return `data layers only support config.type = ${dataLayerConfigTypes.join(' | ')}`
+}
+function setEntityGraphicProperty(graphic: any, key: string, value: unknown) {
+  if (!graphic) {
+    return
+  }
+  const current = graphic[key]
+  if (current && typeof current.setValue === 'function') {
+    current.setValue(value)
+    return
+  }
+  graphic[key] = value
+}
+
+/**
+ * 面/线默认贴地。未贴地时多边形落在椭球面，和地形相交后填充会只剩边缘碎条。
+ * 与 SceneHighlightViewModel 的 classificationType.BOTH 对齐，兼容地形和 S3M。
+ */
+export function applySceneDataLayerClampToGround(
+  entity: any,
+  SuperMap3D: any,
+  clampToGround = true
+) {
+  if (!clampToGround || !entity || !SuperMap3D) {
+    return
+  }
+  const classificationType = SuperMap3D.ClassificationType?.BOTH
+  if (entity.polygon) {
+    setEntityGraphicProperty(entity.polygon, 'perPositionHeight', false)
+    setEntityGraphicProperty(entity.polygon, 'height', undefined)
+    setEntityGraphicProperty(entity.polygon, 'extrudedHeight', undefined)
+    setEntityGraphicProperty(entity.polygon, 'clampToGround', true)
+    if (classificationType != null) {
+      setEntityGraphicProperty(entity.polygon, 'classificationType', classificationType)
+    }
+  }
+  if (entity.polyline) {
+    setEntityGraphicProperty(entity.polyline, 'clampToGround', true)
+    if (classificationType != null) {
+      setEntityGraphicProperty(entity.polyline, 'classificationType', classificationType)
+    }
+  }
+}
+
+function normalizeGeoJSONToFeatureCollection(geoJSON: unknown): GeoJSON.FeatureCollection {
+  if (Array.isArray(geoJSON)) {
+    return getFeatureCollection(geoJSON as GeoJSON.Feature[])
+  }
+  if (!isRecord(geoJSON)) {
+    return getFeatureCollection([])
+  }
+  if (geoJSON.type === 'FeatureCollection' && Array.isArray(geoJSON.features)) {
+    return getFeatureCollection(geoJSON.features)
+  }
+  if (geoJSON.type === 'Feature' || geoJSON.geometry) {
+    return getFeatureCollection([geoJSON as GeoJSON.Feature])
+  }
+  if (Array.isArray(geoJSON.features)) {
+    return getFeatureCollection(geoJSON.features)
+  }
+  return getFeatureCollection([])
+}
+
+function applyMaxFeatures(featureCollection: GeoJSON.FeatureCollection, maxFeatures: unknown) {
+  const max = Number(maxFeatures)
+  if (Number.isFinite(max) && max > 0 && featureCollection.features.length > max) {
+    return getFeatureCollection(featureCollection.features.slice(0, max))
+  }
+  return featureCollection
+}
+
+function normalizeGetFeaturesResult(result: any): GeoJSON.FeatureCollection {
+  if (Array.isArray(result)) {
+    return getFeatureCollection(result)
+  }
+  if (Array.isArray(result?.features?.features)) {
+    return getFeatureCollection(result.features.features)
+  }
+  if (result?.features?.type === 'FeatureCollection' && Array.isArray(result.features.features)) {
+    return getFeatureCollection(result.features.features)
+  }
+  if (result?.type === 'FeatureCollection' && Array.isArray(result.features)) {
+    return getFeatureCollection(result.features)
+  }
+  if (Array.isArray(result?.features)) {
+    return getFeatureCollection(result.features)
+  }
+  return getFeatureCollection([])
+}
+
+function isPointGeometryType(type?: string | null) {
+  return type === 'Point' || type === 'MultiPoint'
+}
+
+function getRawPointCoordinates(coordinates: unknown): number[][] {
+  if (!Array.isArray(coordinates) || coordinates.length === 0) {
+    return []
+  }
+  if (typeof coordinates[0] === 'number') {
+    return [coordinates as number[]]
+  }
+  return (coordinates as unknown[]).filter(
+    (point): point is number[] => Array.isArray(point) && typeof point[0] === 'number'
+  )
+}
+
+function splitFeatureCollectionByPoint(featureCollection: GeoJSON.FeatureCollection) {
+  const points: GeoJSON.Feature[] = []
+  const others: GeoJSON.Feature[] = []
+  featureCollection.features.forEach(feature => {
+    const type = feature?.geometry?.type
+    if (isPointGeometryType(type)) {
+      points.push(feature)
+    } else if (type) {
+      others.push(feature)
+    }
+  })
+  return {
+    points: getFeatureCollection(points),
+    others: getFeatureCollection(others)
+  }
+}
+
+function collectLonLatCoordinates(coordinates: unknown, result: Array<[number, number]>) {
+  if (!Array.isArray(coordinates) || coordinates.length === 0) {
+    return
+  }
+  if (typeof coordinates[0] === 'number') {
+    const lon = Number(coordinates[0])
+    const lat = Number(coordinates[1])
+    if (Number.isFinite(lon) && Number.isFinite(lat)) {
+      result.push([lon, lat])
+    }
+    return
+  }
+  coordinates.forEach(item => collectLonLatCoordinates(item, result))
+}
+
+export function getFeatureCollectionLonLatBounds(featureCollection?: GeoJSON.FeatureCollection | null) {
+  if (!featureCollection?.features?.length) {
+    return null
+  }
+  const coords: Array<[number, number]> = []
+  featureCollection.features.forEach(feature => {
+    collectLonLatCoordinates((feature?.geometry as any)?.coordinates, coords)
+  })
+  if (!coords.length) {
+    return null
+  }
+  let west = coords[0][0]
+  let east = coords[0][0]
+  let south = coords[0][1]
+  let north = coords[0][1]
+  coords.forEach(([lon, lat]) => {
+    west = Math.min(west, lon)
+    east = Math.max(east, lon)
+    south = Math.min(south, lat)
+    north = Math.max(north, lat)
+  })
+  return { west, south, east, north }
+}
+
+export function featureCollectionHasCoordinates(featureCollection?: GeoJSON.FeatureCollection | null) {
+  return getFeatureCollectionLonLatBounds(featureCollection) != null
+}
+
+export function isDataLayerMissingCoordinates(
+  manager: { layerLifecycleLayerStateMap?: Record<string, Record<string, any>> } | null | undefined,
+  layer: Pick<LayerCheckData, 'id' | 'type'> | null | undefined
+) {
+  if (!manager || layer?.type !== 'data') {
+    return false
+  }
+  const dataResult = manager.layerLifecycleLayerStateMap?.[String(layer.id || '')]?.runtime?.dataResult
+  if (typeof dataResult?.missingCoordinates === 'boolean') {
+    return dataResult.missingCoordinates
+  }
+  const featureCollection = dataResult?.featureCollection
+  return Boolean(featureCollection?.features?.length) && !featureCollectionHasCoordinates(featureCollection)
+}
+
+function getFlyHeightByLonLatBounds(bounds: { west: number; south: number; east: number; north: number }) {
+  const spanDeg = Math.max(bounds.east - bounds.west, bounds.north - bounds.south)
+  // 约 1° ≈ 111km，再留一点边距；单点给默认高度
+  return Math.min(Math.max(spanDeg * 111000 * 2.2, 3000), 8000000)
 }
 
 function getFeatureCoordinates(feature: GeoJSON.Feature) {
@@ -546,6 +805,17 @@ function ensureEntityPrototype() {
         disableDepthTestDistance: options.disableDepthTestDistance,
         distanceDisplayCondition: getSuperMap3DDistanceDisplayCondition(options.distanceDisplayCondition)
       }
+    } else {
+      // 无 icon 时回退为 Point，避免仅有坐标/标签时在高空“看不见”
+      entityOptions.point = {
+        color: getSuperMap3DColor(options.pointColor || options.color || '#3b82f6'),
+        pixelSize: Number(options.pixelSize) > 0 ? Number(options.pixelSize) : 10,
+        outlineColor: getSuperMap3DColor(options.outlineColor || '#ffffff'),
+        outlineWidth: Number.isFinite(Number(options.outlineWidth)) ? Number(options.outlineWidth) : 2,
+        heightReference: options.heightReference,
+        disableDepthTestDistance: options.disableDepthTestDistance,
+        distanceDisplayCondition: getSuperMap3DDistanceDisplayCondition(options.distanceDisplayCondition)
+      }
     }
 
     if (options.labelText) {
@@ -610,6 +880,9 @@ function ensureEntityPrototype() {
     this.position = entityOptions.position
     if (entityOptions.billboard) {
       this.billboard = entityOptions.billboard
+    }
+    if (entityOptions.point) {
+      this.point = entityOptions.point
     }
     if (entityOptions.label) {
       this.label = entityOptions.label
@@ -1357,9 +1630,12 @@ class ClusterForeManager {
       layer.show()
     }
     const dataResult = await queryFun()
-    const featureCollection = dataResult.featureCollection
+    const featureCollection = dataResult.featureCollection || getFeatureCollection([])
+    dataResult.featureCollection = featureCollection
+    dataResult.missingCoordinates =
+      featureCollection.features.length > 0 && !featureCollectionHasCoordinates(featureCollection)
     layer.removeAll()
-    if (featureCollection.features.length > 0) {
+    if (featureCollection.features.length > 0 && !dataResult.missingCoordinates) {
       await this._addFeatures(featureCollection, item, layer)
     }
     if (this.simplificationLayers.size) {
@@ -1376,12 +1652,14 @@ class ClusterForeManager {
     item: LayerCheckData,
     layer: EntitiesLayer
   ) {
-    const geometryType = getFeatureGeometryType(featureCollection)
-    if (geometryType === 'Point' || geometryType === 'MultiPoint') {
-      this._renderPoints(featureCollection, item, layer)
-      return
+    // 混合点/线/面时按类型拆分：点走 marker，线面走 GeoJsonDataSource，避免 Polygon 坐标被当成点产生 NaN
+    const { points, others } = splitFeatureCollectionByPoint(featureCollection)
+    if (points.features.length > 0) {
+      this._renderPoints(points, item, layer)
     }
-    await this._renderLineOrPolygon(featureCollection, item, layer)
+    if (others.features.length > 0) {
+      await this._renderLineOrPolygon(others, item, layer)
+    }
   }
 
   _renderPoints(
@@ -1401,61 +1679,64 @@ class ClusterForeManager {
     )
     featureCollection.features.forEach(feature => {
       const props = feature.properties || {}
-      const position = this._getPointPosition(feature, item)
-      if (!position) {
-        return
-      }
-      let entity
-      if (config.model?.url) {
-        let minimumPixelSize = 0
-        if (typeof config.model.minimumPixelSize === 'number') {
-          minimumPixelSize = (getSuperMap3D().defaults?.ratio || 1) * config.model.minimumPixelSize
-        }
-        entity = layer.addModel(position, {
-          uri: config.model.url,
-          minimumPixelSize,
-          scale: config.model?.scale || 1,
-          distanceDisplayCondition:
-            visibleAltitudeRange || [0, config.model.maxVisibleAltitude]
-        });
-      } else {
-        entity = layer.addMarker(position, {
-          url: icon.url,
-          width: icon.width,
-          height: icon.height,
-          align: 'bottom',
-          labelText: labelConfig.field ? props[labelConfig.field] || '' : '',
-          labelAlign: 'top',
-          labelFontFamily: 'Alibaba PuHuiTi',
-          labelFontSize: labelConfig.fontSize,
-          labelColor: labelConfig.color || '#fff',
-          labelOutline: true,
-          labelOutlineColor: labelConfig.strokeColor || config.stroke || '#000',
-          labelOutlineWidth: 1,
-          labelOffsetX: labelConfig.field ? labelConfig.labelOffsetX || 0 : 0,
-          labelOffsetY: labelConfig.field ? labelConfig.labelOffsetY || 0 : 0,
-          data: props,
-          disableDepthTestDistance: config.disableDepthTest ? undefined : Number.POSITIVE_INFINITY,
-          distanceDisplayCondition: visibleAltitudeRange,
-          heightReference: config.heightField
-            ? getSuperMap3D().HeightReference.NONE
-            : getSuperMap3D().HeightReference.RELATIVE_TO_GROUND
-        })
-      };
-      (entity as any).___data = props
-      setLayerFeatureData(entity, item, props as Record<string, any>)
-      if (config.showCallout) {
-        layer.addPolyline(
-          [
-            [position[0], position[1], 0],
-            position
-          ],
-          {
-            material: config.stroke,
-            distanceDisplayCondition: [0, config.calloutMaxVisibleAltitude]
+      this._getPointPositions(feature, item).forEach(position => {
+        let entity
+        if (config.model?.url) {
+          let minimumPixelSize = 0
+          if (typeof config.model.minimumPixelSize === 'number') {
+            minimumPixelSize = (getSuperMap3D().defaults?.ratio || 1) * config.model.minimumPixelSize
           }
-        )
-      }
+          entity = layer.addModel(position, {
+            uri: config.model.url,
+            minimumPixelSize,
+            scale: config.model?.scale || 1,
+            distanceDisplayCondition:
+              visibleAltitudeRange || [0, config.model.maxVisibleAltitude]
+          });
+        } else {
+          entity = layer.addMarker(position, {
+            url: icon.url,
+            width: icon.width,
+            height: icon.height,
+            align: 'bottom',
+            // 无 icon 时用 fill/stroke 画默认圆点，保证 iPortal SHP 等点数据可上图
+            color: config.fill || '#3b82f6',
+            pixelSize: Number(config.pointSize) > 0 ? Number(config.pointSize) : 10,
+            outlineColor: config.stroke || '#ffffff',
+            outlineWidth: 2,
+            labelText: labelConfig.field ? props[labelConfig.field] || '' : '',
+            labelAlign: 'top',
+            labelFontFamily: 'Alibaba PuHuiTi',
+            labelFontSize: labelConfig.fontSize,
+            labelColor: labelConfig.color || '#fff',
+            labelOutline: true,
+            labelOutlineColor: labelConfig.strokeColor || config.stroke || '#000',
+            labelOutlineWidth: 1,
+            labelOffsetX: labelConfig.field ? labelConfig.labelOffsetX || 0 : 0,
+            labelOffsetY: labelConfig.field ? labelConfig.labelOffsetY || 0 : 0,
+            data: props,
+            disableDepthTestDistance: config.disableDepthTest ? undefined : Number.POSITIVE_INFINITY,
+            distanceDisplayCondition: visibleAltitudeRange,
+            heightReference: config.heightField
+              ? getSuperMap3D().HeightReference.NONE
+              : getSuperMap3D().HeightReference.RELATIVE_TO_GROUND
+          })
+        };
+        (entity as any).___data = props
+        setLayerFeatureData(entity, item, props as Record<string, any>)
+        if (config.showCallout) {
+          layer.addPolyline(
+            [
+              [position[0], position[1], 0],
+              position
+            ],
+            {
+              material: config.stroke,
+              distanceDisplayCondition: [0, config.calloutMaxVisibleAltitude]
+            }
+          )
+        }
+      })
     })
   }
 
@@ -1531,13 +1812,16 @@ class ClusterForeManager {
       }
     }
 
+    const clampToGround = config.clampToGround !== false
+    const SuperMap3D = getSuperMap3D()
     const entities = await layer.addGeoJSON(featureCollection, {
       fill: getSuperMap3DColor(fill),
       stroke: getSuperMap3DColor(stroke),
-      strokeWidth: config.lineWidth,
-      clampToGround: true
+      strokeWidth: config.lineWidth || 3,
+      clampToGround
     })
     entities.forEach(entity => {
+      applySceneDataLayerClampToGround(entity, SuperMap3D, clampToGround)
       entity.___data = (() => {
         let props = entity.properties;
         let data = {};
@@ -1567,21 +1851,34 @@ class ClusterForeManager {
     })
   }
 
-  _getPointPosition(feature: GeoJSON.Feature, item: LayerCheckData) {
+  _getPointPositions(feature: GeoJSON.Feature, item: LayerCheckData) {
+    if (!isPointGeometryType(feature?.geometry?.type)) {
+      return []
+    }
     const config = item.config || {}
-    const coordinates = getFeatureCoordinates(feature)
-    if (!coordinates) {
-      return null
+    const points = getRawPointCoordinates(getFeatureCoordinates(feature))
+    if (!points.length) {
+      return []
     }
-    const point = Array.isArray(coordinates[0]) ? coordinates[0] : coordinates
     const props = feature.properties || {}
-    const position: [number, number, number] = [Number(point[0]), Number(point[1]), Number(point[2]) || 0]
-    if (config.heightField) {
-      position[2] =
-        (Number((props as Record<string, any>)[config.heightField]) || 0) +
-        (Number(config.offsetHeight) || 0)
-    }
-    return position
+    const positions: Array<[number, number, number]> = []
+    points.forEach(point => {
+      const position: [number, number, number] = [
+        Number(point[0]),
+        Number(point[1]),
+        Number.isFinite(Number(point[2])) ? Number(point[2]) : 0
+      ]
+      if (!Number.isFinite(position[0]) || !Number.isFinite(position[1])) {
+        return
+      }
+      if (config.heightField) {
+        position[2] =
+          (Number((props as Record<string, any>)[config.heightField]) || 0) +
+          (Number(config.offsetHeight) || 0)
+      }
+      positions.push(position)
+    })
+    return positions
   }
 
   remove(id: string) {
@@ -1646,7 +1943,8 @@ class LayerManager {
     }
     this._parseSubdomains(data)
     try {
-      if (checked && data.autoLocate) {
+      // 数据图层要等要素加载后再定位，避免与 _loadData 里的 locate 重复飞行
+      if (checked && data.autoLocate && data.type !== 'data') {
         this.locateByCamera(data)
       }
 
@@ -1704,6 +2002,25 @@ class LayerManager {
     return true
   }
 
+  flyToFeatureCollection(featureCollection?: GeoJSON.FeatureCollection | null, duration = 1.5) {
+    const bounds = getFeatureCollectionLonLatBounds(featureCollection)
+    if (!bounds) {
+      return false
+    }
+    const destination: [number, number, number] = [
+      (bounds.west + bounds.east) / 2,
+      (bounds.south + bounds.north) / 2,
+      getFlyHeightByLonLatBounds(bounds)
+    ]
+    const hpr = { heading: 0, pitch: -90, roll: 0 }
+    if (typeof this.viewer?.flyToCamera === 'function') {
+      this.viewer.flyToCamera(destination, { duration, hpr })
+      return true
+    }
+    flyToCamera(this.viewer, destination, { duration, hpr })
+    return true
+  }
+
   async locate(data: LayerCheckData) {
     if (!data) {
       return false
@@ -1714,12 +2031,23 @@ class LayerManager {
       return true
     }
 
+    const viewer = this.viewer
+    const id = String(data.id || '')
+
+    // 数据图层优先按已加载要素范围定位，保证能看见子图层；
+    // locateParams 仅在没有有效坐标范围时作为兜底。
+    if (data.type === 'data') {
+      const featureCollection =
+        this.layerLifecycleLayerStateMap[id]?.runtime?.dataResult?.featureCollection
+      if (this.flyToFeatureCollection(featureCollection)) {
+        return true
+      }
+    }
+
     if (this.locateByCamera(data)) {
       return true
     }
 
-    const viewer = this.viewer
-    const id = String(data.id || '')
     let layer
 
     switch (data.type) {
@@ -1772,13 +2100,19 @@ class LayerManager {
         viewer.flyTo(layer)
         return true
       }
-      case 'data':
+      case 'data': {
         layer = this.getLayerManger().getLayerById(id)
-        if (layer?.getValues) {
-          viewer.flyTo(layer.getValues())
-          return true
+        const entities = layer?.getValues?.() || []
+        if (entities.length > 0 && typeof viewer.flyTo === 'function') {
+          try {
+            viewer.flyTo(entities)
+            return true
+          } catch (error) {
+            console.warn('[LayerManager] flyTo data entities failed', error)
+          }
         }
         return false
+      }
       case 'terrain': {
         const terrainProvider = viewer.getTerrainProvider?.() || viewer.terrainProvider
         const bounds = terrainProvider?._bounds
@@ -2139,6 +2473,9 @@ class LayerManager {
         layer,
         dataResult
       })
+      if (data.autoLocate) {
+        await this.locate(data)
+      }
       return
     }
 
@@ -2155,35 +2492,40 @@ class LayerManager {
 
   async _getDataFrontHandlers(data: LayerCheckData, options: LayerCheckOptions) {
     const config = data.config || {}
+    const dataType = String(config.type || '')
     const queryFun =
-      config.type === 'rest'
+      dataType === 'rest' || dataType === 'iServer'
         ? () => this._loadRestFeatures(data)
-        : async () => {
-            const loadDataFeatures = this.options.extension?.loadDataFeatures
-            if (!loadDataFeatures) {
-              console.warn(
-                `[LayerManager] data type "${config.type}" requires options.extension.loadDataFeatures.`
-              )
-              return {
-                featureCollection: getFeatureCollection([])
+        : dataType === 'geoJSON'
+          ? () => this._loadGeoJSONFeatures(data)
+          : dataType === 'iPortal'
+            ? () => this._loadIPortalFeatures(data)
+            : async () => {
+                const loadDataFeatures = this.options.extension?.loadDataFeatures
+                if (!loadDataFeatures) {
+                  console.warn(
+                    `[LayerManager] data type "${config.type}" requires options.extension.loadDataFeatures.`
+                  )
+                  return {
+                    featureCollection: getFeatureCollection([])
+                  }
+                }
+                const result = await loadDataFeatures(
+                  {
+                    data,
+                    options,
+                    mode: 'front'
+                  },
+                  this.getContext()
+                )
+                if (!result || !result.featureCollection) {
+                  console.warn(`[LayerManager] data type "${config.type}" did not return a featureCollection.`)
+                  return {
+                    featureCollection: getFeatureCollection([])
+                  }
+                }
+                return result
               }
-            }
-            const result = await loadDataFeatures(
-              {
-                data,
-                options,
-                mode: 'front'
-              },
-              this.getContext()
-            )
-            if (!result || !result.featureCollection) {
-              console.warn(`[LayerManager] data type "${config.type}" did not return a featureCollection.`)
-              return {
-                featureCollection: getFeatureCollection([])
-              }
-            }
-            return result
-          }
     return {
       mode: 'front' as const,
       queryFun
@@ -2198,8 +2540,42 @@ class LayerManager {
     }
   }
 
+  async _loadGeoJSONFeatures(data: LayerCheckData): Promise<LayerDataResult> {
+    const config = data.config || {}
+    const featureCollection = applyMaxFeatures(
+      normalizeGeoJSONToFeatureCollection(config.geoJSON),
+      config.maxFeatures
+    )
+    return {
+      featureCollection,
+      totalCount: featureCollection.features.length
+    }
+  }
+
+  async _loadIPortalFeatures(data: LayerCheckData): Promise<LayerDataResult> {
+    const config = data.config || {}
+    const result = await getFeatures({
+      type: 'iPortal',
+      url: config.url,
+      withCredentials: config.withCredentials ?? config.requestOptions?.withCredentials ?? false,
+      maxFeatures: config.maxFeatures,
+      attributeFilter: config.attributeFilter || config.filter,
+      queryMode: config.queryMode,
+      preferContent: config.preferContent,
+      epsgCode: config.epsgCode,
+      dataType: config.dataType,
+      id: config.id || config.resourceId || data.resourceId
+    })
+    const featureCollection = applyMaxFeatures(normalizeGetFeaturesResult(result), config.maxFeatures)
+    return {
+      featureCollection,
+      totalCount: Number(result?.totalCount || featureCollection.features.length)
+    }
+  }
+
   async _queryRestDataBySql(data: LayerCheckData): Promise<GeoJSON.FeatureCollection> {
     const config = data.config || {}
+    const { datasourceName, datasetName } = resolveRestDatasetNames(config)
     const idFiled = data.config?.idField || 'smid'
     const fields = [
       idFiled,
@@ -2210,15 +2586,15 @@ class LayerManager {
       .filter(val => !!val && String(val).length > 0)
 
     const queryParameter: Record<string, any> = {
-      name: `${config.datasetName}@${config.datasourceName}`,
-      attributeFilter: config.filter || ''
+      name: `${datasetName}@${datasourceName}`,
+      attributeFilter: config.filter || config.attributeFilter || ''
     }
     if (!config.returnAllFields && String(idFiled).toLowerCase() === 'smid') {
       queryParameter.fields = fields
     }
     const params = new GetFeaturesBySQLParameters({
       queryParameter,
-      datasetNames: [`${config.datasourceName}:${config.datasetName}`],
+      datasetNames: [`${datasourceName}:${datasetName}`],
       hasGeometry: true,
       returnFeaturesOnly: false,
       targetPrj: {
