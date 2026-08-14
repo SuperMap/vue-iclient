@@ -7,15 +7,23 @@ const sleep = (timeout = 0) => new Promise(resolve => setTimeout(resolve, timeou
 
 describe('Chart Mixin Component', () => {
   let wrapper;
+  let previousDirection;
   const localVue = createLocalVue();
   localVue.prototype.$message = message;
 
   beforeEach(() => {
     wrapper = null;
+    previousDirection = document.documentElement.getAttribute('dir');
+    document.documentElement.setAttribute('dir', 'ltr');
   });
 
   afterEach(() => {
     wrapper && wrapper.destroy();
+    if (previousDirection === null) {
+      document.documentElement.removeAttribute('dir');
+    } else {
+      document.documentElement.setAttribute('dir', previousDirection);
+    }
   });
 
   describe('toggle component by isShow props', () => {
@@ -433,6 +441,41 @@ describe('Chart Mixin Component', () => {
       [`{color_1|2}  1.23`].join('\n')
     );
     done();
+  });
+
+  it('formats rank labels with Arabic digits without changing rich style keys in rtl', async () => {
+    document.documentElement.setAttribute('dir', 'rtl');
+    const options = {
+      xAxis: yAxis,
+      yAxis: {
+        ...xAxis,
+        decimals: 2
+      },
+      series: [
+        {
+          name: 'sale',
+          type: 'bar',
+          data: [22, 65, 86]
+        }
+      ],
+      visualMap: [
+        {
+          show: false,
+          seriesIndex: 0,
+          pieces: [{ min: 0, max: 100, color: 'blue' }]
+        }
+      ]
+    };
+    wrapper = factory({
+      options,
+      datasetOptions: [{ ...datasetOptionsFactory(['bar'])[0], rankLabel: true }],
+      dataset: geoJSONDataset
+    });
+    await flushPromises();
+
+    const formatter = wrapper.vm._chartOptions.yAxis[0].axisLabel.formatter;
+    expect(formatter('0Mon', 0)).toBe('{color_0|١}  Mon');
+    expect(wrapper.vm._chartOptions.yAxis[0].axisLabel.rich.color_0).toBeDefined();
   });
 
   it('decimals smart label', async done => {
@@ -1117,6 +1160,26 @@ describe('Chart Mixin Component', () => {
       expect(mock.dispatchAction).toHaveBeenCalledWith({ type: 'test' });
       const cv = wrapper.vm.convertToPixel('finder', [1, 2]);
       expect(cv).toBe('pixel');
+    });
+
+    it('formats options passed through mergeOptions in rtl', () => {
+      document.documentElement.setAttribute('dir', 'rtl');
+      wrapper = factory();
+      const mergeOptions = jest.fn();
+      wrapper.vm.smChart = { mergeOptions };
+
+      wrapper.vm.mergeOptions({
+        yAxis: {
+          axisLabel: {
+            formatter: () => '{color_0|1}',
+            rich: { color_0: { color: 'blue' } }
+          }
+        }
+      });
+
+      const option = mergeOptions.mock.calls[0][0];
+      expect(option.yAxis.axisLabel.formatter()).toBe('{color_0|١}');
+      expect(option.yAxis.axisLabel.rich.color_0).toBeDefined();
     });
 
     it('chart static methods delegate to ECharts when available', () => {

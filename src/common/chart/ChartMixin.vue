@@ -31,7 +31,10 @@
   </sm-collapse-card>
 </template>
 <script>
-import 'echarts';
+import { Axis } from 'echarts';
+import AxisPointerViewHelper from 'echarts/lib/component/axisPointer/viewHelper';
+import TooltipContent from 'echarts/lib/component/tooltip/TooltipContent';
+import TooltipRichContent from 'echarts/lib/component/tooltip/TooltipRichContent';
 import ECharts from 'vue-echarts';
 import UniqueId from 'lodash.uniqueid';
 import isEqual from 'lodash.isequal';
@@ -43,11 +46,21 @@ import Timer from 'vue-iclient/src/common/_mixin/Timer';
 import { chartThemeUtil, handleMultiGradient } from 'vue-iclient/src/common/_utils/style/theme/chart';
 import EchartsDataService from 'vue-iclient/src/common/_utils/EchartsDataService';
 import { getFeatureCenter, setPopupArrowStyle, getDecimalsFormatterVal } from 'vue-iclient/src/common/_utils/util';
+import {
+  applyArabicDigitsToChartOptions,
+  installArabicAxisLabelFormatter,
+  installArabicAxisPointerLabelFormatter,
+  installArabicTooltipContentFormatter
+} from 'vue-iclient/src/common/_utils/chart-arabic-number';
 import { ColorsPickerUtil } from 'vue-iclient/static/libs/iclient-common/iclient-common';
 import TablePopup from 'vue-iclient/src/common/table-popup/TablePopup.vue';
 import Message from 'vue-iclient/src/common/message/index.js';
 import { addListener, removeListener } from 'resize-detector';
 import ChartHandleMixin from './ChartHandleMixin.vue';
+
+installArabicAxisLabelFormatter(Axis);
+installArabicAxisPointerLabelFormatter(AxisPointerViewHelper);
+installArabicTooltipContentFormatter(TooltipContent, TooltipRichContent);
 
 // 枚举事件类型
 const EVENTS = [
@@ -235,7 +248,8 @@ export default {
     },
     _chartOptions() {
       const data = (this._isRequestData && this.echartOptions) || this.parseOptions;
-      return this.dataZoom && data ? { ...data, dataZoom: this.dataZoom } : data;
+      const options = this.dataZoom && data ? { ...data, dataZoom: this.dataZoom } : data;
+      return applyArabicDigitsToChartOptions(options);
     },
     // 是否传入dataset和datasetOptions
     _isRequestData() {
@@ -681,7 +695,7 @@ export default {
      * @param {Boolean} [lazyUpdate = false] - 可选，阻止调用 setOption 时抛出事件，默认为 false，即抛出事件
      */
     mergeOptions(options, notMerge, lazyUpdate) {
-      this._delegateMethod('mergeOptions', options, notMerge, lazyUpdate);
+      this._delegateMethod('mergeOptions', applyArabicDigitsToChartOptions(options), notMerge, lazyUpdate);
     },
     /**
      * 此接口用于，在大数据量（百万以上）的渲染场景，分片加载数据和增量渲染。
