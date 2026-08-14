@@ -462,7 +462,7 @@ describe('Chart Mixin Component', () => {
         {
           show: false,
           seriesIndex: 0,
-          pieces: [{ min: 0, max: 100, color: 'blue' }]
+          pieces: [{ min: 0, max: 500, color: 'blue' }]
         }
       ]
     };
