@@ -306,5 +306,98 @@ describe('getFeatures test', () => {
       done();
     });
   });
+
+  it('csv uses dataMetaInfo xField/yField before isXField', done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/web/datas/1223144892?parentResType=DATA&parentResId=1223144892': {
+        type: 'CSV',
+        dataItemServices: [],
+        dataMetaInfo: {
+          xField: 'XCoord',
+          yField: 'YCoord',
+          xIndex: 3,
+          yIndex: 4
+        }
+      },
+      'https://fakeiportal.supermap.io/web/datas/1223144892/content.json?parentResType=DATA&parentResId=1223144892&pageSize=9999999&currentPage=1': {
+        type: 'CSV',
+        content: {
+          colTitles: ['年', '经度', '纬度', 'XCoord', 'YCoord'],
+          rows: [
+            [1970, 1, 2, 120.15, 30.25],
+            [1971, 3, 4, 104.97, 20.1]
+          ]
+        }
+      }
+    };
+    mockFetch(fetchResource);
+    getFeatures({
+      type: 'iPortal',
+      id: '1223144892',
+      url: 'https://fakeiportal.supermap.io/web/datas/1223144892',
+      withCredentials: false,
+      preferContent: false
+    }).then(data => {
+      expect(data.features[0].geometry.coordinates).toEqual([120.15, 30.25]);
+      expect(data.features[1].geometry.coordinates).toEqual([104.97, 20.1]);
+      done();
+    });
+  });
+
+  it('csv falls back to isXField when dataMetaInfo has no xy fields', done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/web/datas/1223144893?parentResType=DATA&parentResId=1223144893': {
+        type: 'CSV',
+        dataItemServices: [],
+        dataMetaInfo: { firstRowIsHead: true }
+      },
+      'https://fakeiportal.supermap.io/web/datas/1223144893/content.json?parentResType=DATA&parentResId=1223144893&pageSize=9999999&currentPage=1': {
+        type: 'CSV',
+        content: {
+          colTitles: ['年', '经度', '纬度'],
+          rows: [[1970, -104.97, 20]]
+        }
+      }
+    };
+    mockFetch(fetchResource);
+    getFeatures({
+      type: 'iPortal',
+      id: '1223144893',
+      url: 'https://fakeiportal.supermap.io/web/datas/1223144893',
+      withCredentials: false,
+      preferContent: false
+    }).then(data => {
+      expect(data.features[0].geometry.coordinates).toEqual([-104.97, 20]);
+      done();
+    });
+  });
+
+  it('csv ignores whitespace-only xIndex/yIndex and falls back to isXField', done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/web/datas/1223144894?parentResType=DATA&parentResId=1223144894': {
+        type: 'CSV',
+        dataItemServices: [],
+        dataMetaInfo: { firstRowIsHead: true, xIndex: ' ', yIndex: '\t' }
+      },
+      'https://fakeiportal.supermap.io/web/datas/1223144894/content.json?parentResType=DATA&parentResId=1223144894&pageSize=9999999&currentPage=1': {
+        type: 'CSV',
+        content: {
+          colTitles: ['年', '经度', '纬度'],
+          rows: [[1970, -104.97, 20]]
+        }
+      }
+    };
+    mockFetch(fetchResource);
+    getFeatures({
+      type: 'iPortal',
+      id: '1223144894',
+      url: 'https://fakeiportal.supermap.io/web/datas/1223144894',
+      withCredentials: false,
+      preferContent: false
+    }).then(data => {
+      expect(data.features[0].geometry.coordinates).toEqual([-104.97, 20]);
+      done();
+    });
+  });
 });
 

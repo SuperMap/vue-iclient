@@ -128,10 +128,10 @@ export default class iPortalDataService extends Events {
             }
             this._getDatafromRest(resultData.serviceType, serviceUrl, queryInfo);
           } else {
-            this._getDatafromContent(datasetUrl, queryInfo);
+            this._getDatafromContent(datasetUrl, queryInfo, data.dataMetaInfo);
           }
         } else {
-          this._getDatafromContent(datasetUrl, queryInfo);
+          this._getDatafromContent(datasetUrl, queryInfo, data.dataMetaInfo);
         }
       })
       .catch(error => {
@@ -313,18 +313,94 @@ export default class iPortalDataService extends Events {
     }
   }
 
-  _getDatafromContent(datasetUrl, queryInfo) {
+  _getDataInfoUrl(datasetUrl) {
+    const raw = String(datasetUrl || this.url || '');
+    const [pathPart, queryPart = ''] = raw.split('?');
+    const dataRoot = pathPart.replace(/\/content\.json$/i, '').replace(/\.json$/i, '').replace(/\/$/, '');
+    const params = queryPart
+      .split('&')
+      .filter(Boolean)
+      .filter(item => !/^(pageSize|currentPage)=/i.test(item));
+    return params.length ? `${dataRoot}?${params.join('&')}` : dataRoot;
+  }
+
+  _fetchDataMetaInfo(datasetUrl) {
+    const infoUrl = this._getDataInfoUrl(datasetUrl);
+    if (!infoUrl) {
+      return Promise.resolve(undefined);
+    }
+    return FetchRequest.get(infoUrl, null, {
+      withCredentials: this.withCredentials
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (!data || data.succeed === false) {
+          return undefined;
+        }
+        return data.dataMetaInfo;
+      })
+      .catch(() => undefined);
+  }
+
+  _parseCoordinateIndex(rawIndex, titlesLength) {
+    const idx =
+      typeof rawIndex === 'number' || (typeof rawIndex === 'string' && rawIndex.trim() !== '')
+        ? Number(rawIndex)
+        : NaN;
+    if (Number.isInteger(idx) && idx >= 0 && idx < titlesLength) {
+      return idx;
+    }
+    return -1;
+  }
+
+  _resolveExcelXYFieldIndexes(fieldCaptions, dataMetaInfo) {
+    const titles = (fieldCaptions || []).map(item => String(item == null ? '' : item).trim());
+    let xfieldIndex = -1;
+    let yfieldIndex = -1;
+    const xField = dataMetaInfo && String(dataMetaInfo.xField || '').trim();
+    const yField = dataMetaInfo && String(dataMetaInfo.yField || '').trim();
+    if (xField) {
+      xfieldIndex = titles.indexOf(xField);
+    }
+    if (yField) {
+      yfieldIndex = titles.indexOf(yField);
+    }
+    if (xfieldIndex < 0 && dataMetaInfo) {
+      const idx = this._parseCoordinateIndex(dataMetaInfo.xIndex, titles.length);
+      if (idx >= 0) {
+        xfieldIndex = idx;
+      }
+    }
+    if (yfieldIndex < 0 && dataMetaInfo) {
+      const idx = this._parseCoordinateIndex(dataMetaInfo.yIndex, titles.length);
+      if (idx >= 0) {
+        yfieldIndex = idx;
+      }
+    }
+    if (xfieldIndex < 0 || yfieldIndex < 0) {
+      for (let i = 0, len = titles.length; i < len; i++) {
+        if (xfieldIndex < 0 && isXField(titles[i])) {
+          xfieldIndex = i;
+        }
+        if (yfieldIndex < 0 && isYField(titles[i])) {
+          yfieldIndex = i;
+        }
+      }
+    }
+    return { xfieldIndex, yfieldIndex };
+  }
+
+  _getDatafromContent(datasetUrl, queryInfo, dataMetaInfo) {
     let result = {};
-    datasetUrl = Util.urlPathAppend(datasetUrl, 'content.json');
-    datasetUrl = Util.urlAppend(datasetUrl, 'pageSize=9999999&currentPage=1');
+    const contentUrl = Util.urlAppend(Util.urlPathAppend(datasetUrl, 'content.json'), 'pageSize=9999999&currentPage=1');
     // 获取图层数据
-    FetchRequest.get(datasetUrl, null, {
+    FetchRequest.get(contentUrl, null, {
       withCredentials: this.withCredentials
     })
       .then(response => {
         return response.json();
       })
-      .then(data => {
+      .then(async data => {
         if (data.succeed === false) {
           // 请求失败
           this.triggerEvent('getdatafailed', {
@@ -346,7 +422,8 @@ export default class iPortalDataService extends Events {
             type = data.content.type;
             contentCrs = data.content.crs;
           } else if (data.type === 'EXCEL' || data.type === 'CSV') {
-            features = this._excelData2Feature(data.content, queryInfo);
+            const metaInfo = dataMetaInfo || (await this._fetchDataMetaInfo(datasetUrl));
+            features = this._excelData2Feature(data.content, queryInfo, metaInfo);
           } else if (data.type === 'SHP') {
             data.content = JSON.parse(data.content.trim());
             const layer = data.content.layers[0];
@@ -381,19 +458,9 @@ export default class iPortalDataService extends Events {
     return features;
   }
 
-  _excelData2Feature(dataContent, queryInfo) {
+  _excelData2Feature(dataContent, queryInfo, dataMetaInfo) {
     let fieldCaptions = dataContent.colTitles;
-    // 位置属性处理
-    let xfieldIndex = -1;
-    let yfieldIndex = -1;
-    for (let i = 0, len = fieldCaptions.length; i < len; i++) {
-      if (isXField(fieldCaptions[i])) {
-        xfieldIndex = i;
-      }
-      if (isYField(fieldCaptions[i])) {
-        yfieldIndex = i;
-      }
-    }
+    const { xfieldIndex, yfieldIndex } = this._resolveExcelXYFieldIndexes(fieldCaptions, dataMetaInfo);
 
     // feature 构建后期支持坐标系 4326/3857
     let features = [];
