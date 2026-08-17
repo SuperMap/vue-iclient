@@ -178,4 +178,181 @@ describe('chart arabic number utility', () => {
 
     expect(formatter(2)).toEqual({ value: 2 });
   });
+
+  it('formats template values from arrays, custom vars and array data', () => {
+    document.documentElement.setAttribute('dir', 'rtl');
+    const formatter = wrapChartFormatter('{a}: {b}: {c}');
+    expect(
+      formatter([
+        {
+          seriesName: 'Series 1',
+          name: 'Item 2',
+          value: [3, 4]
+        }
+      ])
+    ).toBe('Series ١: Item ٢: ٣, ٤');
+
+    const dataFormatter = wrapChartFormatter('{c}');
+    expect(dataFormatter({ data: 8 })).toBe('٨');
+
+    const customFormatter = wrapChartFormatter('{a0}/{a1}');
+    expect(
+      customFormatter([
+        { $vars: ['name'], name: 'First 1' },
+        { $vars: ['name'], name: 'Second 2' }
+      ])
+    ).toBe('First ١/Second ٢');
+  });
+
+  it('handles dataZoom templates and native formatter passthrough', () => {
+    document.documentElement.setAttribute('dir', 'rtl');
+    const dataZoomFormatter = wrapChartFormatter('{value}%', { dataZoom: true });
+    expect(dataZoomFormatter(2, '1.50')).toBe('١.٥٠%');
+
+    const nativeFormatter = wrapChartFormatter('{value}', { axis: true, preserveNativeAxis: true });
+    expect(nativeFormatter).toBe('{value}');
+    expect(wrapChartFormatter(undefined, { axis: true, preserveNativeAxis: true })).toBeUndefined();
+    expect(wrapChartFormatter(null)).toBeNull();
+  });
+
+  it('leaves display text unchanged in ltr', () => {
+    const formatter = wrapChartFormatter(value => `Value ${value}`);
+    expect(formatter(12)).toBe('Value 12');
+  });
+
+  it('returns unsupported options unchanged', () => {
+    document.documentElement.setAttribute('dir', 'rtl');
+    expect(applyArabicDigitsToChartOptions(null)).toBeNull();
+    expect(applyArabicDigitsToChartOptions('options')).toBe('options');
+  });
+
+  it('formats series, gauge, legend, radar and dataZoom branches', () => {
+    document.documentElement.setAttribute('dir', 'rtl');
+    const options = {
+      xAxis: [null, { name: 10, axisLabel: false }],
+      yAxis: [{ axisLabel: { formatter: null } }],
+      series: [
+        {
+          type: 'line',
+          label: {
+            formatter: value => `Label ${value}`,
+            normal: { formatter: value => `Normal ${value}` }
+          },
+          endLabel: { formatter: value => `End ${value}` }
+        },
+        { type: 'gauge', axisLabel: false, detail: false }
+      ],
+      legend: [
+        {},
+        {
+          formatter: name => `Series ${name}`,
+          pageFormatter: params => `${params.current}/${params.total}`
+        }
+      ],
+      radar: [
+        {
+          indicator: { first: { name: 'Axis 1', text: 'Text 2' }, empty: null },
+          name: { formatter: value => `Name ${value}` }
+        },
+        { indicator: null },
+        { indicator: [{ name: 'Array axis 3', text: 'Array text 4' }, null] }
+      ],
+      dataZoom: [
+        { type: 'inside', labelFormatter: '{value}' },
+        { type: 'slider', labelFormatter: value => `Zoom ${value}` }
+      ]
+    };
+
+    const next = applyArabicDigitsToChartOptions(options);
+    expect(next.xAxis[1].name).toBe('١٠');
+    expect(next.series[0].label.formatter(2)).toBe('Label ٢');
+    expect(next.series[0].label.normal.formatter(3)).toBe('Normal ٣');
+    expect(next.series[0].endLabel.formatter(4)).toBe('End ٤');
+    expect(next.series[1].axisLabel).toBe(false);
+    expect(next.series[1].detail).toBe(false);
+    expect(next.legend[0].formatter()).toBeUndefined();
+    expect(next.legend[0].pageFormatter({})).toBe('/');
+    expect(next.legend[1].formatter('2')).toBe('Series ٢');
+    expect(next.legend[1].pageFormatter({ current: 1, total: 2 })).toBe('١/٢');
+    expect(next.radar[0].indicator.first.name).toBe('Axis ١');
+    expect(next.radar[0].indicator.first.text).toBe('Text ٢');
+    expect(next.radar[0].name.formatter('Name 3')).toBe('Name Name ٣');
+    expect(next.radar[2].indicator[0].name).toBe('Array axis ٣');
+    expect(next.radar[2].indicator[0].text).toBe('Array text ٤');
+    expect(next.dataZoom[0].labelFormatter(2, 'Value 3')).toBe('Value ٣');
+    expect(next.dataZoom[1].labelFormatter(4)).toBe('Zoom ٤');
+  });
+
+  it('handles axis label installer guards, ltr and mixed labels', () => {
+    expect(installArabicAxisLabelFormatter()).toBeUndefined();
+    expect(installArabicAxisLabelFormatter({ prototype: {} })).toBeUndefined();
+
+    function EmptyAxis() {}
+    installArabicAxisLabelFormatter(EmptyAxis);
+
+    function Axis() {}
+    const sourceLabels = [null, 'raw', { formattedLabel: '1' }, { formattedLabel: '1' }, { formattedLabel: 'plain' }];
+    Axis.prototype.getViewLabels = () => sourceLabels;
+    installArabicAxisLabelFormatter(Axis);
+    const wrapped = Axis.prototype.getViewLabels;
+    installArabicAxisLabelFormatter(Axis);
+    expect(Axis.prototype.getViewLabels).toBe(wrapped);
+
+    expect(new Axis().getViewLabels()).toBe(sourceLabels);
+    document.documentElement.setAttribute('dir', 'rtl');
+    const labels = new Axis().getViewLabels();
+    expect(labels[0]).toBeNull();
+    expect(labels[1]).toBe('raw');
+    expect(labels[2].formattedLabel).toBe('١');
+    expect(labels[4]).toBe(sourceLabels[4]);
+    expect(sourceLabels[2].formattedLabel).toBe('1');
+
+    function NonArrayAxis() {}
+    NonArrayAxis.prototype.getViewLabels = () => null;
+    installArabicAxisLabelFormatter(NonArrayAxis);
+    expect(new NonArrayAxis().getViewLabels()).toBeNull();
+  });
+
+  it('handles axis pointer installer guards and missing styles', () => {
+    expect(installArabicAxisPointerLabelFormatter()).toBeUndefined();
+    expect(installArabicAxisPointerLabelFormatter({})).toBeUndefined();
+
+    const helper = {
+      buildLabelElOption: option => {
+        option.label = {};
+      },
+      buildCartesianSingleLabelElOption: (value, option) => {
+        option.label = { style: {} };
+      }
+    };
+    installArabicAxisPointerLabelFormatter(helper);
+    const buildLabel = helper.buildLabelElOption;
+    installArabicAxisPointerLabelFormatter(helper);
+    expect(helper.buildLabelElOption).toBe(buildLabel);
+
+    const option = {};
+    helper.buildLabelElOption(option);
+    expect(option.label).toEqual({});
+    const cartesianOption = {};
+    helper.buildCartesianSingleLabelElOption(1, cartesianOption);
+    expect(cartesianOption.label.style).toEqual({});
+  });
+
+  it('handles tooltip installer guards and non-string content', () => {
+    expect(installArabicTooltipContentFormatter()).toBeUndefined();
+    expect(installArabicTooltipContentFormatter({})).toBeUndefined();
+
+    function NoSetContent() {}
+    installArabicTooltipContentFormatter(NoSetContent);
+
+    function TooltipContent() {}
+    TooltipContent.prototype.setContent = (content, extra) => [content, extra];
+    installArabicTooltipContentFormatter(TooltipContent);
+    const setContent = TooltipContent.prototype.setContent;
+    installArabicTooltipContentFormatter(TooltipContent);
+    expect(TooltipContent.prototype.setContent).toBe(setContent);
+
+    document.documentElement.setAttribute('dir', 'rtl');
+    expect(new TooltipContent().setContent(12, 'extra')).toEqual(['١٢', 'extra']);
+  });
 });
