@@ -206,7 +206,18 @@ export default {
     queryFailed: '查询失败!',
     seviceNotSupport: '此服务不支持查询！',
     keyQueryPlaceholder: '请输入关查询键字',
-    sqlQueryPlaceholder: '请输入SQL表达式'
+    sqlQueryPlaceholder: '请输入SQL表达式',
+    sqlBuilderTitle: 'SQL表达式',
+    sqlBuilderField: '字段',
+    sqlBuilderOperator: '条件',
+    sqlBuilderValue: '值',
+    sqlBuilderValueRequest: '请求唯一值',
+    sqlBuilderValueLoaded: '字段唯一值已成功缓存',
+    sqlBuilderValueLimitPlaceholder: '下拉框最多显示前100条数据',
+    sqlBuilderAddCondition: '添加条件',
+    sqlBuilderDelete: '删除',
+    sqlBuilderClear: '清空',
+    sqlBuilderCancel: '取消'
   },
   cascader: {
     placeholder: '请选择'
