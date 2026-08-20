@@ -46,7 +46,8 @@ export const createWrappedComponent = <
 >(
   Component: ReturnType<typeof defineComponent>,
   className: string,
-  configProps?: ConfigProviderProps
+  configProps?: ConfigProviderProps,
+  extraComponentProps?: Record<string, unknown>
 ) => {
   const componentName = Component.name.replace('A', '')
   const nextName = `Sm${componentName}`
@@ -88,6 +89,7 @@ export const createWrappedComponent = <
           {
             ...props,
             ...ctx.attrs,
+            ...extraComponentProps,
             prefixCls: customPrefixCls
           },
           {

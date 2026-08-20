@@ -9,4 +9,23 @@
         box-shadow: none;
     }
   }
+
+  @include e(search, '-') {
+    > .#{$ant-prefix}-input-group > .#{$ant-prefix}-input-group-addon:last-child,
+    > .ant-input-group > .ant-input-group-addon:last-child {
+      inset-inline-start: -1px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+
+      .#{$ant-prefix}-input-search-button,
+      .#{$ant-prefix}-input-button,
+      .ant-input-search-button,
+      .ant-btn {
+        padding-block: 0;
+        border-start-start-radius: 0;
+        border-end-start-radius: 0;
+      }
+    }
+  }
 }

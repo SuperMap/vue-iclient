@@ -13,8 +13,14 @@ import {
 import { createWrappedComponent } from '@supermapgis/common/utils/index.common'
 import { useArabicDigits } from '@supermapgis/common/hooks/index.common'
 
+const SM_INPUT_PREFIX_CLS = 'sm-component-input'
 const BaseSmInput = createWrappedComponent<InputProps>(Input, 'input')
-const BaseSmInputSearch = createWrappedComponent<InputProps>(Input.Search, 'input')
+const BaseSmInputSearch = createWrappedComponent<InputProps>(
+  Input.Search,
+  'input-search',
+  undefined,
+  { inputPrefixCls: SM_INPUT_PREFIX_CLS }
+)
 const BaseSmInputTextArea = createWrappedComponent<InputProps>(Input.TextArea, 'input')
 
 type SmInputValue = string | number | undefined | null

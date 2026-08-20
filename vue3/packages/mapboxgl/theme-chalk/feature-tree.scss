@@ -11,6 +11,23 @@
 
   .searchHolder {
     margin-bottom: 10px;
+
+    .ant-input-group-addon,
+    .sm-component-input-group-addon {
+      inset-inline-start: -1px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+
+      .ant-btn,
+      .ant-input-search-button,
+      .sm-component-input-button,
+      .sm-component-input-search-button {
+        padding-block: 0;
+        border-start-start-radius: 0;
+        border-end-start-radius: 0;
+      }
+    }
   }
 
   .treeHolder {
@@ -20,7 +37,9 @@
 
   .ant-input,
   .ant-input-search-button,
+  .ant-btn,
   .sm-component-input,
+  .sm-component-input-button,
   .sm-component-input-search-button,
   .sm-component-tree {
     background: inherit;
