@@ -11,13 +11,22 @@ localVue.use(Input);
 
 describe('Input.vue', () => {
   let wrapper;
+  let previousDirection;
+
   beforeEach(() => {
     wrapper = null;
+    previousDirection = document.documentElement.getAttribute('dir');
+    document.documentElement.setAttribute('dir', 'ltr');
   });
 
   afterEach(() => {
     if (wrapper) {
       wrapper.destroy();
+    }
+    if (previousDirection === null) {
+      document.documentElement.removeAttribute('dir');
+    } else {
+      document.documentElement.setAttribute('dir', previousDirection);
     }
   });
 
@@ -123,5 +132,45 @@ describe('Input.vue', () => {
       }
     );
     expect(wrapper.find('.sm-component-input-group').exists()).toBe(true);
+  });
+
+  it('converts displayed digits and normalizes emitted values in RTL', async () => {
+    document.documentElement.setAttribute('dir', 'rtl');
+    wrapper = mount(SmInput, {
+      localVue,
+      propsData: {
+        value: '123',
+        placeholder: 'Page 2'
+      }
+    });
+
+    const input = wrapper.find('.sm-component-input');
+    expect(input.element.value).toBe('١٢٣');
+    expect(input.element.placeholder).toBe('Page ٢');
+
+    input.element.value = '٤٥٦';
+    await input.trigger('input');
+
+    const inputEvent = wrapper.emitted('input').pop()[0];
+    const changeEvent = wrapper.emitted('change').pop()[0];
+    expect(inputEvent.target.value).toBe('456');
+    expect(changeEvent.target.value).toBe('456');
+    expect(wrapper.emitted('change.value').pop()[0]).toBe('456');
+  });
+
+  it('can disable Arabic digit transformation', () => {
+    document.documentElement.setAttribute('dir', 'rtl');
+    wrapper = mount(SmInput, {
+      localVue,
+      propsData: {
+        value: '123',
+        placeholder: 'Page 2',
+        transformArabicNumbers: false
+      }
+    });
+
+    const input = wrapper.find('.sm-component-input');
+    expect(input.element.value).toBe('123');
+    expect(input.element.placeholder).toBe('Page 2');
   });
 });
