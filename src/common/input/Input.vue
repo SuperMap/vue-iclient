@@ -62,7 +62,7 @@ export default {
       return this.shouldUseArabicDigits ? this.formatDisplayValue(this.placeholder) : this.placeholder;
     },
     extralProps() {
-      const props = {
+      const props: Record<string, any> = {
         size: this.size === 'middle' ? undefined : this.size,
         addonAfter: this.unit || this.addonAfter
       };
