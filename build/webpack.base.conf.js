@@ -10,7 +10,7 @@ const getOriginArgs = require('./get-origin-args');
 function resolve(dir) {
   return path.join(__dirname, '..', dir);
 }
-export const nodeModulesParse = [
+exports.nodeModulesParse = [
   'node_modules/vue-echarts',
   'node_modules/resize-detector',
   'node_modules/colorcolor',
