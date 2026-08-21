@@ -6,7 +6,8 @@ const os = require('os');
 const cpuCount = os.cpus().length;
 const threads = Number(process.env.STORYBOOK_TERSER_PARALLEL) || Math.max(1, Math.min(cpuCount - 1, 2));
 const TerserPlugin = require('terser-webpack-plugin');
-import { nodeModulesParse } from '../build/webpack.base.conf';
+const nodeModulesParse= require('../build/webpack.base.conf').nodeModulesParse;
+consol.log(nodeModulesParse)
 // const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 // const smp = new SpeedMeasurePlugin();
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
