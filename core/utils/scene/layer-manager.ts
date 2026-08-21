@@ -2,6 +2,7 @@ import { FeatureService } from '@supermapgis/iclient-common/iServer/FeatureServi
 import { GetFeaturesBySQLParameters } from '@supermapgis/iclient-common/iServer/GetFeaturesBySQLParameters'
 import getFeatures from 'vue-iclient-core/utils/get-features'
 import { flyToCamera, getSuperMap3DCartesian3, type FlyToOptions, type ScenePosition } from './fly-to-camera'
+import { prepareSuperMap3DServiceAuth } from './supermap3d-credential'
 
 export const layerTypes = ['terrain', 's3m', 'map', 'data', '3dtiles'] as const
 
@@ -549,6 +550,7 @@ function parseLayerCameraConfig(
 }
 
 function loadByJsonConfig(imageLayerManager: any, config: Record<string, any>) {
+  prepareSuperMap3DServiceAuth(config?.url, config?.credential)
   const SuperMap3D = getSuperMap3D()
   let options: Record<string, any>
   config.type = config.type || 'supermap'
@@ -1281,6 +1283,7 @@ class SceneImageryLayerManager {
 
   add(options: Record<string, any>, type?: string) {
     const SuperMap3D = getSuperMap3D()
+    prepareSuperMap3DServiceAuth(options?.url, options?.credential)
     let provider
     switch (type) {
       case 'arcgis':
@@ -1345,6 +1348,7 @@ class SceneS3MTilesLayerManager {
   }
 
   add(url: string, options: Record<string, any> = {}) {
+    prepareSuperMap3DServiceAuth(url, options?.credential ?? options?.options?.credential)
     const finalOptions = Object.assign({ name: this._createLayerName() }, options)
     if (this._map[finalOptions.name]) {
       throw new Error('Layer name already exists')
@@ -1394,6 +1398,7 @@ class SceneS3MTilesLayerManager {
   }
 
   open(url: string, options: Record<string, any> = {}) {
+    prepareSuperMap3DServiceAuth(url, options?.credential ?? options?.options?.credential)
     const finalOptions = Object.assign({}, options)
     const openOptions: Record<string, any> = {
       autoSetView: finalOptions.autoSetView
@@ -2253,6 +2258,7 @@ class LayerManager {
         manager: this.viewer,
         layer: this.viewer.getTerrainProvider?.() || this.viewer.terrainProvider
       })
+      prepareSuperMap3DServiceAuth(data.config?.url, data.config?.credential)
       if (data.config?.url?.endsWith?.('/realspace')) {
         this.viewer.scene.open(data.config.url, undefined, {
           autoSetView: false,

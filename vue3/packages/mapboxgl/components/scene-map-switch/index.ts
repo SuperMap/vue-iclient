@@ -7,3 +7,11 @@ export default SmSceneMapSwitch
 
 export * from './types'
 export type { SceneMapSwitchInstance } from './instance'
+export {
+  applySuperMap3DCredential,
+  enableSuperMap3DProxyCookies,
+  getSuperMap3DIportalKey,
+  isIportalProxyUrl,
+  prepareSuperMap3DServiceAuth,
+  registerSuperMap3DIportalKey
+} from 'vue-iclient-core/utils/scene/supermap3d-credential'

@@ -1,4 +1,9 @@
 import { Events } from 'vue-iclient-core/types/event/Events';
+import {
+  prepareSuperMap3DServiceAuth,
+  registerSuperMap3DIportalKey,
+  type SuperMap3DServiceCredential
+} from './supermap3d-credential';
 
 /**
  * 底图图层类型（原始底图、影像、天地图）
@@ -118,6 +123,8 @@ export interface ImageLayerConfig {
   transparentBackColor?: string;
   /** 透明背景色容差 */
   transparentBackColorTolerance?: number;
+  /** SuperMap3D Credential。portalproxy 默认使用已注册的 iPortal key */
+  credential?: SuperMap3DServiceCredential;
 }
 
 /**
@@ -146,6 +153,8 @@ export interface TerrainLayerConfig {
   invisibility?: boolean;
   /** 批量请求编码方式 */
   packingRequest?: object;
+  /** SuperMap3D Credential。portalproxy 默认使用已注册的 iPortal key */
+  credential?: SuperMap3DServiceCredential;
 }
 
 /**
@@ -175,6 +184,8 @@ export interface MapSwitchOptions {
   annotation?: Annotation | null;
   /** 天地图全局密钥，各图层未配置 token 时作为默认值 */
   token?: string;
+  /** iPortal key，portalproxy REST 地图未配置 credential 时使用 */
+  iportalKey?: string;
   /** 默认底图索引 */
   defaultIndex?: number;
   /** 主题配置 */
@@ -240,6 +251,9 @@ export class MapSwitch extends Events {
           : undefined;
     this._terrain = options.terrain ?? null;
     this._annotation = options.annotation ?? null;
+    if (options.iportalKey) {
+      registerSuperMap3DIportalKey(options.iportalKey);
+    }
   }
 
   /** 当前底图索引 */
@@ -307,6 +321,24 @@ export class MapSwitch extends Events {
       this._applyAnnotation(annotation);
     } else {
       this._removeAnnotation();
+    }
+  }
+
+  /** 设置 iPortal key，供 portalproxy 影像 / 地形请求注入 Credential */
+  setIportalKey(iportalKey?: string): void {
+    this.options.iportalKey = iportalKey;
+    if (iportalKey) {
+      registerSuperMap3DIportalKey(iportalKey);
+    }
+    if (this._currentIndex === undefined) {
+      return;
+    }
+    const currentMap = this._baseMapLayers[this._currentIndex];
+    if (currentMap?.type === 'SuperMapImagery') {
+      this._applyMap(currentMap);
+    }
+    if (this._terrain?.type === 'SuperMapTerrain') {
+      this._applyTerrain(this._terrain);
     }
   }
 
@@ -515,6 +547,11 @@ export class MapSwitch extends Events {
     const imageryProviderOptions: any = config;
     // 规范化 URL，避免被浏览器拼上本地主机地址
     imageryProviderOptions.url = this._normalizeUrl(imageryProviderOptions.url);
+    prepareSuperMap3DServiceAuth(
+      imageryProviderOptions.url,
+      config.credential,
+      this.options.iportalKey
+    );
     // TODO可选参数
     if (config.transparentBackColor)
       imageryProviderOptions.transparentBackColor = config.transparentBackColor;
@@ -570,6 +607,11 @@ export class MapSwitch extends Events {
     if (!config.url) return;
     const { type, ...terrainProviderOptions }: any = config;
     terrainProviderOptions.url = this._normalizeUrl(terrainProviderOptions.url);
+    prepareSuperMap3DServiceAuth(
+      terrainProviderOptions.url,
+      config.credential,
+      this.options.iportalKey
+    );
     const terrainProvider = new window.SuperMap3D.SuperMapTerrainProvider(terrainProviderOptions);
     viewer.terrainProvider = terrainProvider;
   }

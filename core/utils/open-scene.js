@@ -1,4 +1,5 @@
 import sceneEvent from 'vue-iclient-core/types/scene-event';
+import { prepareSuperMap3DServiceAuth } from 'vue-iclient-core/utils/scene/supermap3d-credential';
 
 var bingMapkey = '';
 var terrainToken = '';
@@ -229,6 +230,7 @@ function openImagery(content, viewer, serverUrl, options) {
             });
             break;
           case 'SuperMapImageryProvider':
+            prepareSuperMap3DServiceAuth(content.layers.imageryLayer[i].url);
             imageryProvider = new window.SuperMap3D.SuperMapImageryProvider({
               url: content.layers.imageryLayer[i].url
             });
@@ -270,6 +272,7 @@ function openTerrain(content, viewer) {
         let isSctFlag = true;
         // if(content.layers.terrainLayer[0].url.indexOf('8090') != -1) isSctFlag = true;
         if (content.layers.terrainLayer[0].url.indexOf('/info/') !== -1) isSctFlag = false;
+        prepareSuperMap3DServiceAuth(content.layers.terrainLayer[0].url);
         viewer.terrainProvider = new window.SuperMap3D.SuperMapTerrainProvider({
           url: content.layers.terrainLayer[0].url,
           isSct: isSctFlag

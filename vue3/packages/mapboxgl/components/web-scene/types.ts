@@ -12,6 +12,8 @@ interface scanEffect {
 }
 interface cesiumOptions {
   withCredentials?: boolean;
+  iportalKey?: string;
+  credential?: { value?: string; type?: string; rooturl?: string };
   orientation?: any;
   position?: Object;
   scanEffect?: scanEffect;

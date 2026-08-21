@@ -30,6 +30,8 @@ export interface SceneMapSwitchProps extends CardProps, ControlProps, ThemeProps
   annotation?: Annotation | null
   /** 天地图全局密钥 */
   token?: string
+  /** iPortal key，portalproxy REST 地图未配置 credential 时使用 */
+  iportalKey?: string
   /** 默认选中的展示索引（有原始底图时 0 为 Original / 原始底图，其后依次对应 baseMapLayers） */
   defaultIndex?: number
 }
@@ -53,6 +55,9 @@ export const sceneMapSwitchProps = () => ({
     default: null
   },
   token: {
+    type: String
+  },
+  iportalKey: {
     type: String
   }
 })

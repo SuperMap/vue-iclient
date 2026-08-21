@@ -2,7 +2,7 @@ import mapboxgl from 'mapbox-gl';
 import isEqual from 'lodash.isequal';
 import { loadSecureScript, loadLink } from 'vue-iclient-core/utils/util';
 import sceneEvent from 'vue-iclient-core/types/scene-event';
-import { isSceneEntityDataLayer } from 'vue-iclient-core/utils/scene';
+import { isSceneEntityDataLayer, prepareSuperMap3DServiceAuth } from 'vue-iclient-core/utils/scene';
 
 declare global {
   interface Window {
@@ -21,6 +21,8 @@ interface scanEffect {
 }
 interface cesiumOptions {
   withCredentials?: boolean;
+  iportalKey?: string;
+  credential?: { value?: string; type?: string; rooturl?: string };
   orientation?: any;
   position?: { x?: number; y?: number; z?: number };
   scanEffect?: scanEffect;
@@ -224,11 +226,7 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
     if (serverUrl === '/iportal') {
       serverUrl = location.origin + '/iportal';
     }
-    // const iportalProxyUrl = await getiPortalServiceProxy();
-    // if (iportalProxyUrl) {
-    //   const formatUrl = new URL(iportalProxyUrl);
-    //   window.SuperMap3D.TrustedServers.add(formatUrl.hostname, formatUrl.port || '8195');
-    // }
+    prepareSuperMap3DServiceAuth(sceneUrl, this.options.credential, this.options.iportalKey);
     this.openExistScene(url[url.length - 1], this.viewer, serverUrl, this.options);
     this.scene.fxaa = true;
     this.handler = new window.SuperMap3D.ScreenSpaceEventHandler(this.scene.canvas);

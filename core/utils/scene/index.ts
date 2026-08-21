@@ -2,6 +2,16 @@
  * 场景工具统一导出入口。
  * 包含分屏、视图切换、相机飞行、卷帘分析以及多种三维分析能力。
  */
+export {
+  applySuperMap3DCredential,
+  enableSuperMap3DProxyCookies,
+  getCredentialRootUrl,
+  getSuperMap3DIportalKey,
+  isIportalProxyUrl,
+  prepareSuperMap3DServiceAuth,
+  registerSuperMap3DIportalKey,
+  type SuperMap3DServiceCredential
+} from './supermap3d-credential';
 export { SplitScreen } from './split-screen';
 export {
   ViewModeSwitcher,

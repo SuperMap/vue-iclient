@@ -11,6 +11,15 @@ export * from './utils/statistics';
 export * from './utils/util';
 export * from './utils/layerCatalogGroupUtil';
 export { scene } from './utils/scene';
+export {
+  applySuperMap3DCredential,
+  enableSuperMap3DProxyCookies,
+  getCredentialRootUrl,
+  getSuperMap3DIportalKey,
+  isIportalProxyUrl,
+  prepareSuperMap3DServiceAuth,
+  registerSuperMap3DIportalKey
+} from './utils/scene/supermap3d-credential';
 
 export * from './types/map-event';
 export { default as mapEvent } from './types/map-event';

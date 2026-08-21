@@ -146,6 +146,14 @@ watch(
   }
 )
 
+watch(
+  () => props.iportalKey,
+  iportalKey => {
+    if (!mapSwitchController) return
+    mapSwitchController.setIportalKey(iportalKey)
+  }
+)
+
 const handleMapChange = (event: MapSwitchChangeEvent) => {
   currentIndex.value = event.currentIndex
 }
@@ -158,6 +166,7 @@ useSceneGetter({
       terrain: isShowTerrain.value ? (props.terrain ?? null) : null,
       annotation: isShowNameLabel.value ? (props.annotation ?? null) : null,
       token: props.token,
+      iportalKey: props.iportalKey,
       defaultIndex: props.defaultIndex
     })
     hasOriginalBaseLayer.value = mapSwitchController.hasOriginalBaseLayer
