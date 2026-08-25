@@ -22,6 +22,13 @@ export default {
     directoryTreeLoadFailed: 'Failed to load this resource. Try again later.',
     sceneDataMissingCoordinates:
       'The current data has no coordinate information and cannot be displayed in the scene.',
+    unsupportedVideoAddress: 'The video address is invalid',
+    unsupportedPosterAddress: 'The poster address is invalid',
+    unavailableVideo: 'This video is temporarily unavailable. Please try again later',
+    mapNotLoaded: 'The associated map has not finished loading. Please wait',
+    unassociatedMap: 'You need to configure the associated map!',
+    treeDargTipLevel: 'Please drag items at the same level',
+    treeDargTipImage: 'Only imagery layers support reordering'
   },
   info: {
     loading: 'Loading',
@@ -35,8 +42,357 @@ export default {
     directoryTreeOperationSuccessSummary:
       '{action} completed. {successCount} resource(s) succeeded.',
     directoryTreeOperationPartialSummary:
-      '{action} completed. {successCount} resource(s) succeeded, {failureCount} failed.'
+      '{action} completed. {successCount} resource(s) succeeded, {failureCount} failed.',
+    pressEscToExit: 'Press the ESC key or click the close button to exit',
+    pressEscOrClickToExit: 'Press the ESC key or click anywhere to exit'
   },
+  success: {
+    copySucccess: 'Copied successfully'
+  },
+  unit: {
+    kilometers: 'km',
+    miles: 'mi',
+    meters: 'm',
+    yards: 'yd',
+    feet: 'ft',
+    squarekilometers: 'sq km',
+    squaremiles: 'sq mi',
+    squaremeters: 'sq m',
+    squareyards: 'sq yd',
+    squarefeet: 'sq ft',
+    XY: 'XY',
+    BASEMAP: 'BASEMAP',
+    UTM: 'UTM',
+    DD: 'DD',
+    DOM: 'DOM',
+    DMS: 'DMS',
+    Mercator: 'Web Mercator'
+  },
+  error: {
+    loadError: 'Failed to load'
+  },
+  commontypes: {
+    restData: 'SuperMap Rest Data Service',
+    restMap: 'SuperMap Rest Map Service',
+    addressMatch: 'SuperMap Address Matching Service',
+    iportalData: 'SuperMap iPortal Data',
+    onlineLocalSearch: 'SuperMap Online Local Search'
+  },
+  timeText: {
+    Year: 'year',
+    Month: 'month',
+    Day: 'd',
+    hour: 'h',
+    minute: 'min',
+    second: 's'
+  },
+  zoom: {},
+  chart: {
+    unSupportedData: 'The current data does not support linkage with the map'
+  },
+  layerList: {
+    title: 'Layers',
+    layerStyle: 'Layer style',
+    attributes: 'Attributes',
+    zoomToLayer: 'Zoom to layer',
+    opacity: 'Opacity'
+  },
+  slideshow: {
+    title: 'Slideshow'
+  },
+  layerColor: {
+    title: 'Layer Color',
+    layer: 'Layer',
+    property: 'Property',
+    color: 'Color',
+    reset: 'Reset',
+    select: 'Select',
+    deselect: 'Deselect',
+    circleColor: 'Point color',
+    strokeColor: 'Stroke color',
+    lineColor: 'Line color',
+    fillColor: 'Fill color',
+    iconColor: 'Icon color',
+    textColor: 'Text color',
+    capture: 'Capture'
+  },
+  attributes: {
+    title: 'Attributes',
+    feature: 'Feature',
+    selected: 'Selected',
+    clearSelected: 'Clear selected',
+    zoomToFeatures: 'Zoom to selected features',
+    columnsControl: 'Show/Hide columns',
+    refreshData: 'Refresh data',
+    search: 'Search',
+    reset: 'Reset'
+  },
+  miniMap: {},
+  pan: {},
+  scale: {},
+  webmap: {
+    loadingTip: 'Map is loading...',
+    crsNotSupport: 'The coordinate system of the current map is not supported!',
+    TileMatrixSetNotSuppport: 'Incoming TileMatrixSet is not supported!',
+    getLayerInfoFailed: 'Failed to load layer!',
+    getThemeInfoFailed: 'Failed to get theme information!',
+    crsnotsupport: 'Unsupported coordinate system!',
+    baiduMapNotSupport: 'Baidu maps is not supported yet!',
+    layerorsourcenameduplicated: 'Layer or source name duplicated and cannot be added!',
+    sampleDataNotSupport: 'Sample data is not supported yet!',
+    drillLayersNotSupport: 'Drill-down layers are not supported yet!',
+    mvtNotSupport: 'Vector tile layers are not supported yet!',
+    mapCreatedFailed: 'Failed to load map!',
+    projectionnotmatch: '{title} does not match the current map projection!',
+    xyztilelayernotsupport:
+      '{title} XYZ Tile layer does not match the resolution or origin of the current map!'
+  },
+  videoPlus: {
+    loadingTip: 'Video is loading...'
+  },
+  drillMap: {
+    goBack: 'Go Back'
+  },
+  legend: {
+    themeField: 'Thematic Field',
+    title: 'Legend',
+    top: 'Highest',
+    bottom: 'Lowest',
+    noMatchLayer: 'No matching layer',
+    themeDefault: 'Default',
+    outOfRange: 'Out of range',
+    style: 'Style',
+    color: 'Color',
+    size: 'Size',
+    opacity: 'Opacity',
+    width: 'Width',
+    outlineColor: 'Outline Color',
+    haloColor: 'Halo Color',
+    label: 'Label',
+    parentheses: '({tips})',
+    colon: ':'
+  },
+  measure: {
+    mapMeasure: 'Measure',
+    measureResult: 'Measurement result:',
+    distance: 'Distance',
+    area: 'Area',
+    delete: 'Clear',
+    selectPlaceholder: 'Please select',
+    startingPoint: 'Start point'
+  },
+  search: {
+    noResult: 'The query result is empty!',
+    noKey: 'The search keyword cannot be empty. Please enter the search condition.',
+    inputPlaceHolder: 'Find an address or location',
+    attribute: 'Attribute',
+    attributeValue: 'Attribute value',
+    setSearchSource: 'Please set the search source!',
+    address: 'Address',
+    null: 'Null',
+    illegalFeature: 'Features must contain valid coordinates!'
+  },
+  query: {
+    query: 'Query',
+    queryJob: 'Task',
+    queryResult: 'Result',
+    queryLayer: 'Query layer',
+    queryMode: 'Query method',
+    queryBounds: 'Query spatial extent',
+    sqlExpression: 'SQL expression',
+    keywordQuery: 'Keyword query',
+    attributeCondition: 'Query condition',
+    keyQueryCondition: 'Search keyword',
+    spatialFilter: 'Spatial filter',
+    mapBounds: 'Full map extent',
+    currentMapBounds: 'Current map extent',
+    applicate: 'Query',
+    noResult: 'No result',
+    resultAlreadyExists: 'The current query result already exists!',
+    querying: 'Querying',
+    querySuccess: 'Query succeeded!',
+    attribute: 'Attribute',
+    attributeValue: 'Attribute value',
+    noResults: 'The query result is empty!',
+    queryFailed: 'Query failed!',
+    seviceNotSupport: 'This service does not support queries!',
+    sqlExpressionInvalid: 'Invalid SQL expression',
+    keyQueryPlaceholder: 'Please enter the search keyword',
+    sqlQueryPlaceholder: 'Please enter the SQL expression',
+    resultCount: '{count} result(s) in total'
+  },
+  identify: {
+    layerNotExit: "The layer '{layer}' does not exist in the map",
+    noData: 'No data'
+  },
+  openFile: {
+    fileSizeExceeded: "The file size is too big! The file size can't exceed 10M!",
+    fileTypeUnsupported: 'This file format is not supported!',
+    openFileFail: 'Failed to open the file!',
+    openFileSuccess: 'File opened successfully!',
+    selectFile: 'Select file',
+    openEmptyFile: 'The opened file is empty!',
+    openFile: 'Open file'
+  },
+  draw: {
+    draw: 'Draw'
+  },
+  indicator: {
+    title: 'Indicator title',
+    unit: 'Unit'
+  },
+  layerManager: {
+    title: 'Layer manager'
+  },
+  fillExtrusion: {
+    title: 'Fill extrusion',
+    polygonLayer: 'Polygon layer',
+    height: 'Height (m)',
+    heightValue: 'Height value',
+    fieldName: 'Field name',
+    customFieldPlaceholder: 'Enter the field name',
+    customNum: 'Custom',
+    multiple: 'Multiple',
+    fillColor: 'Fill color',
+    layerOpacity: 'Opacity',
+    hideOriginalLayer: 'Hide original layer',
+    reset: 'Reset'
+  },
+  tdtResults: {
+    on: 'on',
+    station: 'station',
+    total: 'total',
+    about: 'about',
+    homePage: 'Home',
+    prevPage: 'Previous',
+    nextPage: 'Next',
+    searchNoResult: 'No related results were found',
+    youCanTry: 'You can try',
+    enterCorrect: 'Check if the input is correct',
+    enterOtherKeyWords: 'Enter another keyword to search',
+    onTdtMap: 'On Tianditu',
+    addThisAddress: 'Add this address',
+    uWantTo: 'Are you looking for',
+    totalFind: 'found',
+    piecesResults: 'result(s)',
+    phone: 'Phone',
+    address: 'Address',
+    setStartPonint: 'Set as starting point',
+    setEndPonint: 'Set as end point',
+    totalMiles: 'Total mileage',
+    distance: 'About {distance} km',
+    showDetails: 'Show full details',
+    switchTimes: 'Transfer {switchTimes} times',
+    noSwitch: 'No transfer',
+    walk: 'Walk to',
+    getOff: 'Get off',
+    getOn: 'Get on',
+    take: 'Take',
+    noSearchResults: 'No line information was found',
+    fastRoute: 'Fastest route',
+    shortRoute: 'Shortest route',
+    walkRoute: 'Avoid highways',
+    fast: 'Faster',
+    noSubway: 'No subway',
+    lessSwitch: 'Fewer transfers',
+    lessWalk: 'Less walking',
+    cityHadResults: 'The following cities have results, please choose',
+    moreCity: 'More cities',
+    allFound: 'Found for you',
+    piecesBusRoute: 'bus route(s)',
+    showDetail: 'Expand details',
+    busEndTime: 'First and last bus time',
+    relateAdress: "Click here to see the location of '{keyWord}'",
+    switchTo: 'Switched to'
+  },
+  tdtRoute: {
+    title: 'Route',
+    pleaseEnterStartPoint: 'Please enter the starting address',
+    pleaseEnterEndPoint: 'Please enter the destination address',
+    search: 'Search',
+    startPoint: 'Starting address',
+    endPoint: 'Destination address',
+    mapLoadedFiled: 'Map failed to load',
+    busEndTime: 'First and last bus time',
+    about: 'about',
+    station: 'station',
+    total: 'total',
+    hour: 'hour',
+    minutes: 'minutes'
+  },
+  tdtSearch: {
+    phone: 'Phone',
+    address: 'Address',
+    noData: 'No data',
+    transport: 'Transit'
+  },
+  tdtMapSwitcher: {
+    title: 'Map switcher',
+    image: 'Imagery',
+    vector: 'Vector',
+    terrain: 'Terrain',
+    placeName: 'Place name',
+    TiandituVec: 'Tianditu vector basemap',
+    TiandituTer: 'Tianditu terrain basemap',
+    TiandituImg: 'Tianditu imagery basemap',
+    TiandituCva: 'Tianditu vector annotation',
+    TiandituCta: 'Tianditu terrain annotation',
+    TiandituCia: 'Tianditu imagery annotation'
+  },
+  coordinateConversion: {
+    inputPlaceHolder: 'Enter coordinates',
+    copy: 'Copy',
+    location: 'Locate',
+    capture: 'Snap',
+    realTime: 'Real-time',
+    errorCoordinate: 'Invalid coordinate format'
+  },
+  dataFlow: {
+    dataSubscriptionFailed: 'Data subscription failed!'
+  },
+  animateMarkerlayer: {
+    unsupportedData: 'The current layer does not support this data. Please reset the data!'
+  },
+  sceneMeasure: {
+    measure: 'Measure',
+    measureMode: 'Measure mode',
+    pickPoint: 'Snap vertices',
+    contour: 'Contour',
+    measureAction: 'Measure',
+    clear: 'Clear',
+    mode_space: 'Spatial',
+    mode_ground: 'Ground',
+    mode_projection: 'Planar projection',
+    measureDistence: 'Measure distance',
+    measureHeight: 'Measure height',
+    measureArea: 'Measure area',
+    distence_cl: 'Distance',
+    area: 'Area',
+    spaceDistance: 'Spatial distance',
+    verticalHeight: 'Vertical height',
+    horizontalDistance: 'Horizontal distance'
+  },
+  cascader: {
+    placeholder: 'Please select'
+  },
+  months: [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ],
+  weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+  monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+  weekdaysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+  weekdaysMin: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
   sceneViewModeSwitcher: {
     switchTo2D: 'Switch to 2D',
     switchTo3D: 'Switch to 3D'
