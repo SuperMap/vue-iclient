@@ -551,10 +551,5 @@ export default {
   popup: {
     selectLayer: 'Select layer',
     noData: 'No data'
-  },
-  sm: {
-    webmap: {
-      test: 'tesssssssssssssssdsd'
-    }
   }
 }
