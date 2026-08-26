@@ -424,6 +424,9 @@ export default {
   flyTo: {
     title: 'Fly To'
   },
+  sceneFullscreen: {
+    title: 'Fullscreen'
+  },
   sceneSplitScreen: {
     title: 'Split Screen',
     modeLabel: 'Split Mode:',

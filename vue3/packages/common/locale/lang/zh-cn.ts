@@ -320,6 +320,9 @@ export default {
   flyTo: {
     title: '飞行定位'
   },
+  sceneFullscreen: {
+    title: '全屏'
+  },
   sceneMapSwitch: {
     title: '底图切换',
     original: '原始底图',

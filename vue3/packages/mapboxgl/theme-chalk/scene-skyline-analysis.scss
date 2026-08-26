@@ -112,6 +112,12 @@
 
     .sm-component-btn {
       flex: 0 0 calc(46% - 4px);
+      height: auto;
+      min-height: 32px;
+      padding-block: 4px;
+      white-space: normal;
+      /* stylelint-disable-next-line */
+      line-height: 1.3;
     }
   }
 

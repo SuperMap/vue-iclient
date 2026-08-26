@@ -9,8 +9,7 @@ export const sceneFullscreenProps = () => ({
     default: 'sm-components-icon-fullscreen'
   },
   title: {
-    type: String,
-    default: '全屏'
+    type: String
   }
 })
 
