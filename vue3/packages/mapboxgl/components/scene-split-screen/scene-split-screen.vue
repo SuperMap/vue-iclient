@@ -1,6 +1,6 @@
 <template>
   <SmCollapseCard
-    icon-class="sm-components-icon-layer-list"
+    icon-class="sm-components-icon-shujufenping"
     :icon-position="position"
     :header-name="t('sceneSplitScreen.title')"
     :auto-rotate="autoRotate"

@@ -1,7 +1,7 @@
 <template>
   <SmCollapseCard
     ref="rootRef"
-    icon-class="sm-components-icon-layer-list"
+    icon-class="sm-components-icon-tongshifenxi"
     :icon-position="position"
     :header-name="t('sceneSightlineAnalysis.title')"
     :auto-rotate="autoRotate"

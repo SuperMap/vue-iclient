@@ -6,7 +6,7 @@ import { controlProps } from '@supermapgis/mapboxgl/utils'
 export const sceneFullscreenProps = () => ({
   iconClass: {
     type: String,
-    default: 'sm-components-icon-fullscreen'
+    default: 'sm-components-icon-quanping1'
   },
   title: {
     type: String

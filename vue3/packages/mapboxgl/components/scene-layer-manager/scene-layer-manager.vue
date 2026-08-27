@@ -2,7 +2,7 @@
   <SmCollapseCard
     ref="sceneLayerManagerRef"
     class="sm-component-scene-layer-manager"
-    icon-class="sm-components-icon-layer-list"
+    icon-class="sm-components-icon-tucengguanli1"
     :icon-position="position"
     :header-name="t('sceneLayerManager.title')"
     :auto-rotate="autoRotate"

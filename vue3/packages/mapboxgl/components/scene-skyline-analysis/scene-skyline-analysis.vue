@@ -1,6 +1,6 @@
 <template>
   <SmCollapseCard
-    icon-class="sm-components-icon-chart"
+    icon-class="sm-components-icon-tianjixianfenxi"
     :icon-position="position"
     :header-name="t('sceneSkylineAnalysis.title')"
     :auto-rotate="autoRotate"

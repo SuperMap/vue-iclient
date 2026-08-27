@@ -1,7 +1,7 @@
 <template>
   <SmCollapseCard
     ref="rootRef"
-    icon-class="sm-components-icon-layer-list"
+    icon-class="sm-components-icon-kaichangdufenxi"
     :icon-position="position"
     :header-name="t('sceneOpennessAnalysis.title')"
     :auto-rotate="autoRotate"

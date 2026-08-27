@@ -2,7 +2,7 @@
   <SmCollapseCard
     ref="rollerShutterRef"
     v-bind="attrs"
-    icon-class="sm-components-icon-layer-list"
+    icon-class="sm-components-icon-ditujuanlian1"
     :icon-position="position"
     :header-name="t('sceneRollerShutter.title')"
     :auto-rotate="autoRotate"

@@ -1,7 +1,7 @@
 <template>
   <SmCollapseCard
     v-show="isShow"
-    icon-class="sm-components-icon-layer-list"
+    icon-class="sm-components-icon-dituqiehuan1"
     :icon-position="position"
     :header-name="t('sceneMapSwitch.title')"
     :auto-rotate="autoRotate"

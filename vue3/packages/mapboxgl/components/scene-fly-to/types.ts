@@ -42,7 +42,7 @@ export const sceneFlyToProps = () => ({
   },
   iconClass: {
     type: String,
-    default: 'sm-components-icon-flyto'
+    default: 'sm-components-icon-feihangdingwei'
   },
   title: {
     type: String
