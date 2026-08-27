@@ -1510,7 +1510,10 @@ class ClusterForeManager {
     this.viewer = manager.viewer
     this.layers = {}
     this.simplificationLayers = new Map()
-    this.rectangleCollisionCheck = new SuperMap3D.RectangleCollisionChecker()
+    this.rectangleCollisionCheck =
+      typeof SuperMap3D.RectangleCollisionChecker === 'function'
+        ? new SuperMap3D.RectangleCollisionChecker()
+        : null
     this._cameraMoveEndEvent = null
   }
 
@@ -1567,7 +1570,7 @@ class ClusterForeManager {
     if (!id) {
       return
     }
-    if (item.config?.cover?.enabled === true) {
+    if (item.config?.cover?.enabled === true && this.rectangleCollisionCheck) {
       this.simplificationLayers.set(id, item)
       this._addCameraMoveEndEvent()
     } else {
@@ -1597,6 +1600,9 @@ class ClusterForeManager {
   }
 
   simplification() {
+    if (!this.rectangleCollisionCheck) {
+      return
+    }
     this.rectangleCollisionCheck._tree.clear()
     const cameraHeight = getViewerCameraHeight(this.viewer)
     this.simplificationLayers.forEach((item, id) => {
