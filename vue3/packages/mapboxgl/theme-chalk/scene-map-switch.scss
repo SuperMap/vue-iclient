@@ -5,17 +5,18 @@
 
 @include b(scene-map-switch) {
   $layer-preview-size: 76px;
-  $layer-name-height: 20px;
-  $layer-name-bg: rgb(0 0 0 / 45%);
 
   z-index: 1;
   width: 370px;
-  /* stylelint-disable-next-line */
-  color: $text-color-heading;
+  color: inherit;
 
-  .sm-component-card {
-    /* stylelint-disable-next-line */
-    font-size: 12px;
+  .sm-component-card,
+  .sm-component-card-body,
+  .sm-component-scene-map-switch__panel {
+    color: inherit;
+    font-size: inherit;
+    font-family: inherit;
+    background-color: transparent;
   }
 
   .sm-component-card-body {
@@ -43,6 +44,7 @@
   }
 
   @include e(layer-item) {
+    width: $layer-preview-size;
     cursor: pointer;
 
     &:hover {
@@ -57,7 +59,8 @@
       }
 
       .#{$N}__layer-name {
-        background: $primary-color;
+        /* stylelint-disable-next-line */
+        color: $primary-color;
       }
     }
   }
@@ -80,6 +83,12 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+
+      // 缩略图加载失败时避免把 alt 文字叠在名称上
+      /* stylelint-disable-next-line */
+      color: transparent;
+      /* stylelint-disable-next-line */
+      font-size: 0;
     }
 
     i {
@@ -91,30 +100,26 @@
   }
 
   @include e(layer-name) {
-    position: absolute;
-
-    @include position-row(right, 0, false, false);
-
-    bottom: 0;
-
-    @include position-row(left, 0, false, false);
-
-    z-index: 1;
-    max-width: 100%;
-    height: $layer-name-height;
-    padding: 0 4px;
+    position: static;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    margin-top: 4px;
+    padding: 0 2px;
     box-sizing: border-box;
+    display: -webkit-box;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow-wrap: anywhere;
+    background: transparent;
+    white-space: normal;
+    text-overflow: unset;
 
     @include text-align-transform(center, false);
     /* stylelint-disable-next-line */
-    line-height: $layer-name-height;
-    background: $layer-name-bg;
-    /* stylelint-disable-next-line */
-    color: $tooltip-color;
-    transition: background 0.2s;
+    line-height: 16px;
+    transition: color 0.2s;
   }
 
   @include e(footer) {

@@ -93,10 +93,15 @@ afterEach(() => {
   wrapper?.unmount()
   sceneEvent.deleteScene(sceneTarget)
   wrapper = undefined
+  vi.clearAllTimers()
+  vi.useRealTimers()
 })
 
 describe('SmSceneLayerList', () => {
-  it('lists vector layers and supports visibility and zoom actions', async () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+  it('lists rest, iPortal and geoJSON vector layers and supports visibility and zoom actions', async () => {
     const entityDataSource = {
       name: 'Cities',
       show: true,
@@ -114,13 +119,33 @@ describe('SmSceneLayerList', () => {
     const viewer = createViewer([
       entityDataSource,
       {
+        name: 'iPortal data source',
+        entities: { show: true, values: [] },
+        ___layerData: {
+          id: 'iportal-points',
+          name: 'iPortal Points',
+          type: 'data',
+          config: { type: 'iPortal' }
+        }
+      },
+      {
+        name: 'GeoJSON data source',
+        entities: { show: true, values: [] },
+        ___layerData: {
+          id: 'geojson-cities',
+          name: 'GeoJSON Cities',
+          type: 'data',
+          config: { type: 'geoJSON' }
+        }
+      },
+      {
         name: 'Other data source',
         entities: { show: true, values: [] },
         ___layerData: {
           id: 'other-data',
           name: 'Other data',
           type: 'data',
-          config: { type: 'geojson' }
+          config: { type: 'custom' }
         }
       },
       {
@@ -171,6 +196,18 @@ describe('SmSceneLayerList', () => {
         visible: true
       }),
       expect.objectContaining({
+        title: 'iPortal Points',
+        aliasKey: 'iportal-points',
+        type: 'entity',
+        visible: true
+      }),
+      expect.objectContaining({
+        title: 'GeoJSON Cities',
+        aliasKey: 'geojson-cities',
+        type: 'entity',
+        visible: true
+      }),
+      expect.objectContaining({
         title: 'Hidden REST data',
         aliasKey: 'hidden-rest-data',
         type: 'entity',
@@ -188,5 +225,43 @@ describe('SmSceneLayerList', () => {
     expect(getTreeData().find(group => group.type === 'entity')?.children?.[0]?.visible).toBe(
       false
     )
+  })
+
+  it('shows renamed scene basemap customName in the imagery layer list', async () => {
+    const viewer = createViewer([])
+    viewer.imageryLayers._layers = [
+      {
+        show: true,
+        customName: '自定义底图',
+        imageryProvider: {
+          url: 'https://iserver.supermap.io/iserver/services/map-china400/rest/maps/China_4326',
+          tablename: '/iserver/services/map-china400/rest/maps/China_4326'
+        }
+      }
+    ]
+    sceneTarget = 'scene-layer-list-basemap-rename'
+    sceneEvent.setScene(sceneTarget, { viewer })
+
+    wrapper = mount(SceneLayerList, {
+      props: { sceneTarget },
+      global: {
+        stubs: {
+          SmCollapseCard: ContainerStub,
+          SmCard: ContainerStub,
+          SmTree: TreeStub
+        }
+      }
+    })
+    await nextTick()
+
+    const imageryGroup = getTreeData().find(group => group.type === 'imagery')
+    expect(imageryGroup?.children).toEqual([
+      expect.objectContaining({
+        title: '自定义底图',
+        aliasKey: '自定义底图',
+        type: 'imagery',
+        visible: true
+      })
+    ])
   })
 })

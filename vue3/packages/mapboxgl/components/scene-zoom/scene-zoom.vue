@@ -36,6 +36,7 @@ import { ref, onBeforeUnmount } from 'vue'
 import { useSceneGetter, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useSceneControl } from '@supermapgis/mapboxgl/hooks'
 import { sceneZoomPropsDefault } from './types'
+import { getSceneCameraHeight, getSceneZoomAmount } from './zoom-amount'
 import SmButton from '@supermapgis/common/components/button/Button'
 
 defineOptions({
@@ -65,29 +66,34 @@ onBeforeUnmount(() => {
   clearTimer()
 })
 
-const getZoomStep = () => {
-  if (typeof props.step === 'number' && props.step > 0) {
-    return props.step
+const getCamera = () => viewer.value?.scene?.camera || viewer.value?.camera
+
+const zoomBy = (direction: 'in' | 'out') => {
+  const camera = getCamera()
+  if (!camera) {
+    return
   }
-  const cameraHeight = viewer.value?.scene?.camera?.positionCartographic?.height
-  if (!cameraHeight || cameraHeight <= 0) {
-    return 10
+  const amount = getSceneZoomAmount(getSceneCameraHeight(viewer.value), props.step)
+  if (direction === 'in') {
+    if (typeof camera.moveForward === 'function') {
+      camera.moveForward(amount)
+    } else {
+      camera.zoomIn?.(amount)
+    }
+  } else if (typeof camera.moveBackward === 'function') {
+    camera.moveBackward(amount)
+  } else {
+    camera.zoomOut?.(amount)
   }
-  return Math.max(cameraHeight * 0.05, 10)
+  viewer.value?.scene?.requestRender?.()
 }
 
 const zoomIn = () => {
-  if (!viewer.value?.scene?.camera) {
-    return
-  }
-  viewer.value.scene.camera.zoomIn(getZoomStep())
+  zoomBy('in')
 }
 
 const zoomOut = () => {
-  if (!viewer.value?.scene?.camera) {
-    return
-  }
-  viewer.value.scene.camera.zoomOut(getZoomStep())
+  zoomBy('out')
 }
 
 const startContinuousZoom = (direction: 'in' | 'out') => {

@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { SmInput } from '../Input'
+import { SmInput, SmInputSearch } from '../Input'
 
 describe('SmInput arabic digits', () => {
   beforeEach(() => {
@@ -47,5 +47,17 @@ describe('SmInput arabic digits', () => {
     })
     await nextTick()
     expect(wrapper.find('input').element.value).toBe('12')
+  })
+})
+
+describe('SmInputSearch prefixCls', () => {
+  it('uses sm-component-input-search and matching inner input prefix', async () => {
+    const wrapper = mount(SmInputSearch)
+    await nextTick()
+
+    expect(wrapper.find('.sm-component-input-search').exists()).toBe(true)
+    expect(wrapper.find('.sm-component-input-group-addon').exists()).toBe(true)
+    expect(wrapper.find('.sm-component-input-search-button').exists()).toBe(true)
+    expect(wrapper.find('.sm-component-input-group-wrapper').exists()).toBe(true)
   })
 })

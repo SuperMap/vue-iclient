@@ -28,10 +28,14 @@
           @click="switchTo(index)"
         >
           <div class="sm-component-scene-map-switch__layer-preview">
-            <img :src="item.image || DEFAULT_THUMBNAIL" :alt="item.label" />
-            <div class="sm-component-scene-map-switch__layer-name" :title="item.label">
-              {{ item.label }}
-            </div>
+            <img
+              :src="thumbnailSrc(item)"
+              alt=""
+              @error="handleThumbnailError(item.image)"
+            />
+          </div>
+          <div class="sm-component-scene-map-switch__layer-name" :title="item.label">
+            {{ item.label }}
           </div>
         </div>
       </div>
@@ -69,7 +73,26 @@ const DEFAULT_THUMBNAIL = new URL('./assets/defaultThumbnail.png', import.meta.u
 
 const props = withDefaults(defineProps<SceneMapSwitchProps>(), sceneMapSwitchPropsDefault)
 
+const failedThumbnails = ref(new Set<string>())
 const hasOriginalBaseLayer = ref(false)
+
+const thumbnailSrc = (item: BaseMapLayerConfig) => {
+  const image = item.image
+  if (!image || failedThumbnails.value.has(image)) {
+    return DEFAULT_THUMBNAIL
+  }
+  return image
+}
+
+const handleThumbnailError = (image?: string) => {
+  if (!image || failedThumbnails.value.has(image)) {
+    return
+  }
+  const next = new Set(failedThumbnails.value)
+  next.add(image)
+  failedThumbnails.value = next
+}
+
 const currentIndex = ref<number | undefined>(undefined)
 const isShowNameLabel = ref(false)
 const isShowTerrain = ref(false)
@@ -82,7 +105,15 @@ const { textColorHeadingStyle } = useTheme(props)
 const rootEl = useTemplateRef('mapSwitchRef')
 useSceneControl(() => rootEl.value?.$el)
 
-const baseMapLayersValue = computed(() => props.baseMapLayers.map(item => item.layer))
+const baseMapLayersValue = computed(() =>
+  (props.baseMapLayers ?? []).map(item => {
+    const label = typeof item.label === 'string' ? item.label.trim() : ''
+    if (!label || item.layer?.type === 'Original') {
+      return item.layer
+    }
+    return { ...item.layer, name: label }
+  })
+)
 
 /** UI 展示列表：有原始底图时第 0 项为 Original + 原始底图 */
 const displayBaseMapLayers = computed<BaseMapLayerConfig[]>(() => {

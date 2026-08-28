@@ -32,7 +32,18 @@
   .#{$sm-prefix}-btn,
   .#{$sm-prefix}-input-number,
   .#{$sm-prefix}-input-number-input {
+    color: inherit;
     font-size: inherit;
+    font-family: inherit;
+  }
+
+  .#{$sm-prefix}-btn-primary {
+    /* stylelint-disable-next-line */
+    color: $tooltip-color;
+  }
+
+  .#{$sm-prefix}-card {
+    background-color: transparent;
   }
 
   .#{$sm-prefix}-collapse-card__body {

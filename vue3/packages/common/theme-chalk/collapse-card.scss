@@ -8,6 +8,41 @@
   overflow: visible;
   /* stylelint-disable-next-line */
   font-size: 12px;
+  font-family: inherit;
+
+  .sm-component-card {
+    color: inherit;
+    font-size: inherit;
+    font-family: inherit;
+    background: transparent;
+  }
+
+  .sm-component-input,
+  .sm-component-input-affix-wrapper,
+  .sm-component-input-number,
+  .sm-component-input-number-input,
+  .sm-component-select,
+  .sm-component-select-selector,
+  .sm-component-select-selection-item,
+  .sm-component-select-selection-placeholder,
+  .sm-component-checkbox-wrapper,
+  .sm-component-radio-wrapper,
+  .sm-component-tree,
+  .sm-component-btn {
+    font-size: inherit;
+    font-family: inherit;
+  }
+
+  .sm-component-input,
+  .sm-component-input-affix-wrapper,
+  .sm-component-select,
+  .sm-component-select-selector,
+  .sm-component-select-selection-item,
+  .sm-component-checkbox-wrapper,
+  .sm-component-radio-wrapper,
+  .sm-component-tree {
+    color: inherit;
+  }
 
   .icon-box-shadow {
     box-shadow: 0 3px 13px 0 $shadow-color;
@@ -124,6 +159,8 @@
 
   @include e(header) {
     height: 32px;
+    font-size: inherit;
+    font-family: inherit;
     /* stylelint-disable-next-line */
     line-height: 32px;
 
@@ -170,11 +207,20 @@
     /* rtl:physical:end */
   }
 
+  @include e(header-name) {
+    font-size: inherit;
+    font-family: inherit;
+  }
+
   @include e(content) {
     box-shadow: 0 3px 13px 0 $shadow-color;
-    background: $gis-control-bg;
+
+    /* 用 background-color 而不是 background 简写，避免把根节点透传的背景图冲掉 */
+    background-color: $gis-control-bg;
     position: relative;
     border-radius: 4px;
+    font-size: inherit;
+    font-family: inherit;
 
     &.sm-component-zoom-in-enter-active {
       animation: zoom-in .5s;
@@ -244,5 +290,7 @@
   @include e(body) {
     height: 100%;
     border-radius: 4px;
+    font-size: inherit;
+    font-family: inherit;
   }
 }

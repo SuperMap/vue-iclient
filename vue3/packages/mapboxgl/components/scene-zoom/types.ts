@@ -15,6 +15,7 @@ export const sceneZoomProps = () => ({
 })
 
 export interface SceneZoomProps extends ControlProps, ThemeProps, SceneGetterProps {
+  /** 单次缩放步长，按当前相机高度的百分比计算。未设置时默认 5% */
   step?: number
 }
 

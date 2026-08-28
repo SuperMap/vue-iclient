@@ -43,6 +43,8 @@ export type TiandituMapStyle = 'CIA_C' | 'CIA_W' | 'CTA_C' | 'CTA_W'
 export interface TiandituLayerConfig {
   /** 类型 */
   type: 'TiandituImagery';
+  /** 图层列表显示名称 */
+  name?: string;
   /** 天地图样式（默认 IMG_C） */
   mapStyle?: TiandituMapStyle;
   /** 是否显示注记 */
@@ -291,6 +293,7 @@ export class MapSwitch extends Events {
   /** 更新底图列表 */
   setBaseMapLayers(maps: BaseMapLayer[]): void {
     this._baseMapLayers = this._normalizeBaseMapLayers(maps);
+    this._syncCurrentImageryCustomNames();
   }
 
   /**
@@ -561,11 +564,13 @@ export class MapSwitch extends Events {
 
     const imageryProvider = new window.SuperMap3D.SuperMapImageryProvider(imageryProviderOptions);
     const layer = viewer.imageryLayers.addImageryProvider(imageryProvider, 0);
+    this._applyCustomName(layer, config.name);
     this._imageryLayers.push(layer);
   }
 
   /** 添加天地图图层 */
   private _addTiandituLayer(viewer: any, config: TiandituLayerConfig): void {
+    const { name, type, ...providerConfig } = config;
     const labelVisible = config.labelVisible ?? true;
     // 获取地图样式
     const mapStyleKey = config.mapStyle ?? 'IMG_C';
@@ -574,11 +579,12 @@ export class MapSwitch extends Events {
 
     // 添加天地图底图
     const baseImageryProvider = new window.SuperMap3D.TiandituImageryProvider({
-      ...config,
+      ...providerConfig,
       mapStyle: baseMapStyle,
       ...(token ? { token } : {})
     });
     const baseLayer = viewer.imageryLayers.addImageryProvider(baseImageryProvider, 0);
+    this._applyCustomName(baseLayer, name);
     this._imageryLayers.push(baseLayer);
 
     // 添加天地图注记层（矢量/影像样式对应不同的注记）
@@ -593,13 +599,50 @@ export class MapSwitch extends Events {
       }
       const labelMapStyle = window.SuperMap3D.TiandituMapsStyle[labelMapStyleKey];
       const labelImageryProvider = new window.SuperMap3D.TiandituImageryProvider({
-        ...config,
+        ...providerConfig,
         mapStyle: labelMapStyle,
         ...(token ? { token } : {})
       });
       const labelLayer = viewer.imageryLayers.addImageryProvider(labelImageryProvider, 1);
+      this._applyCustomName(labelLayer, name, true);
       this._imageryLayers.push(labelLayer);
     }
+  }
+
+  /** 读取底图配置中的显示名称 */
+  private _getConfigName(config: BaseMapLayer): string | undefined {
+    if (config.type === 'Original') {
+      return undefined;
+    }
+    return config.name;
+  }
+
+  /** 将自定义名称写入影像图层，供图层列表读取 */
+  private _applyCustomName(layer: any, name?: string, isLabel = false): void {
+    if (!layer) {
+      return;
+    }
+    const trimmed = typeof name === 'string' ? name.trim() : '';
+    if (!trimmed) {
+      delete layer.customName;
+      return;
+    }
+    layer.customName = isLabel ? `${trimmed}_label` : trimmed;
+  }
+
+  /** 当前已应用底图时，同步自定义名称（改名无需重新加载图层） */
+  private _syncCurrentImageryCustomNames(): void {
+    if (this._currentIndex === undefined || !this._imageryLayers.length) {
+      return;
+    }
+    const currentMap = this._baseMapLayers[this._currentIndex];
+    if (!currentMap || currentMap.type === 'Original') {
+      return;
+    }
+    const name = this._getConfigName(currentMap);
+    this._imageryLayers.forEach((layer, index) => {
+      this._applyCustomName(layer, name, index > 0);
+    });
   }
 
   /** 添加地形图层 */

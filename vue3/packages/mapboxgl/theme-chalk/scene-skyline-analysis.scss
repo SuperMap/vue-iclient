@@ -11,8 +11,7 @@
   z-index: 1;
   width: 340px;
   height: 550px;
-  /* stylelint-disable-next-line */
-  color: $text-color-heading;
+  color: inherit;
 
   .sm-component-card,
   .sm-component-checkbox-wrapper,
@@ -21,8 +20,8 @@
   .sm-component-input,
   .sm-component-btn {
     color: inherit;
-    /* stylelint-disable-next-line */
-    font-size: 12px;
+    font-size: inherit;
+    font-family: inherit;
   }
 
   .sm-component-btn-primary {

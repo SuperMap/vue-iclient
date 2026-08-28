@@ -479,23 +479,31 @@ function getDefaultColorByIndex(index: number) {
   return colors[index % colors.length]
 }
 
+const DEFAULT_POINT_PIXEL_SIZE = 10
+const DEFAULT_POINT_OUTLINE_WIDTH = 2
+
+function hasCustomIconUrl(url: unknown): boolean {
+  return typeof url === 'string' ? Boolean(url.trim()) : Boolean(url)
+}
+
+function getDefaultPointPixelSize(pointSize: unknown) {
+  return Number(pointSize) > 0 ? Number(pointSize) : DEFAULT_POINT_PIXEL_SIZE
+}
+
 function getIcon(option: Record<string, any> = {}) {
   const iconScale = option.scale || 1
-  let icon = option.url
-  let width = 32
-  let height = 32
-  if (option.url) {
-    width = option.width || width
-    height = option.height || height
-  } else {
-    icon = null
-    height = 40
-    width = 24
+  if (hasCustomIconUrl(option.url)) {
+    return {
+      url: option.url,
+      height: (option.height || 32) * iconScale,
+      width: (option.width || 32) * iconScale
+    }
   }
+  const size = getDefaultPointPixelSize(option.pointSize) * iconScale
   return {
-    url: icon,
-    height: height * iconScale,
-    width: width * iconScale
+    url: null,
+    height: size,
+    width: size
   }
 }
 
@@ -519,7 +527,7 @@ function getEntityScreenRectangle(viewer: any, entity: any, config: Record<strin
   if (!screenPosition) {
     return null
   }
-  const icon = getIcon(config.icon || {})
+  const icon = getIcon({ ...(config.icon || {}), pointSize: config.pointSize })
   const cover = config.cover
   return new SuperMap3D.Rectangle(
     screenPosition.x,
@@ -763,18 +771,27 @@ function ensureEntityPrototype() {
         labelColor: '#fff',
         labelFontSize: 14,
         labelFontFamily: 'MicrosoftYaHei',
-        labelBackgroundPadding: [10, 10],
         labelOffsetX: 0,
         labelOffsetY: 0
       },
       options
     )
+    const hasCustomIcon = hasCustomIconUrl(options.url)
+    const pixelSize = getDefaultPointPixelSize(options.pixelSize)
+    const outlineWidth = Number.isFinite(Number(options.outlineWidth))
+      ? Number(options.outlineWidth)
+      : DEFAULT_POINT_OUTLINE_WIDTH
+    if (!hasCustomIcon) {
+      // 删除图标后不能沿用 icon.width/height（钉针 24x40 或上次图标尺寸），否则默认圆点会变大
+      options.width = pixelSize
+      options.height = pixelSize
+      options.align = 'center'
+    }
     if (ratio !== 1) {
       options.height = options.height * ratio
       options.width = options.width * ratio
       options.labelFontSize = options.labelFontSize * ratio
       options.labelOutlineWidth = options.labelOutlineWidth * ratio
-      options.labelBackgroundPadding = options.labelBackgroundPadding.map((item: number) => item * ratio)
       options.labelOffsetX = options.labelOffsetX * ratio
       options.labelOffsetY = options.labelOffsetY * ratio
     }
@@ -795,7 +812,7 @@ function ensureEntityPrototype() {
       position: getSuperMap3DCartesian3(position)
     }
 
-    if (options.url) {
+    if (hasCustomIcon) {
       entityOptions.billboard = {
         height: options.height,
         width: options.width,
@@ -808,12 +825,11 @@ function ensureEntityPrototype() {
         distanceDisplayCondition: getSuperMap3DDistanceDisplayCondition(options.distanceDisplayCondition)
       }
     } else {
-      // 无 icon 时回退为 Point，避免仅有坐标/标签时在高空“看不见”
       entityOptions.point = {
         color: getSuperMap3DColor(options.pointColor || options.color || '#3b82f6'),
-        pixelSize: Number(options.pixelSize) > 0 ? Number(options.pixelSize) : 10,
+        pixelSize: pixelSize * ratio,
         outlineColor: getSuperMap3DColor(options.outlineColor || '#ffffff'),
-        outlineWidth: Number.isFinite(Number(options.outlineWidth)) ? Number(options.outlineWidth) : 2,
+        outlineWidth: outlineWidth * ratio,
         heightReference: options.heightReference,
         disableDepthTestDistance: options.disableDepthTestDistance,
         distanceDisplayCondition: getSuperMap3DDistanceDisplayCondition(options.distanceDisplayCondition)
@@ -829,9 +845,7 @@ function ensureEntityPrototype() {
         text: options.labelText,
         font: `${options.labelFontSize * 4}px ${options.labelFontFamily}`,
         scale: 1 / 4,
-        backgroundPadding: Array.isArray(options.labelBackgroundPadding)
-          ? new SuperMap3D.Cartesian2(options.labelBackgroundPadding[0], options.labelBackgroundPadding[1])
-          : options.labelBackgroundPadding,
+        showBackground: false,
         pixelOffset: new SuperMap3D.Cartesian2(options.width / 2 + 10 + options.labelOffsetX, options.labelOffsetY),
         verticalOrigin: SuperMap3D.VerticalOrigin.CENTER,
         horizontalOrigin: SuperMap3D.HorizontalOrigin.LEFT,
@@ -842,8 +856,14 @@ function ensureEntityPrototype() {
       if (options.labelBackgroundColor) {
         entityOptions.label.showBackground = true
         entityOptions.label.backgroundColor = getSuperMap3DColor(options.labelBackgroundColor)
+        if (Array.isArray(options.labelBackgroundPadding)) {
+          entityOptions.label.backgroundPadding = new SuperMap3D.Cartesian2(
+            options.labelBackgroundPadding[0] * ratio,
+            options.labelBackgroundPadding[1] * ratio
+          )
+        }
       }
-      if (options.url) {
+      if (hasCustomIcon) {
         const labelOffsetX = options.width / 2 + options.labelFontSize / 2 + 2 + options.labelOffsetX
         const labelOffsetY = options.height / 2 + options.labelFontSize / 2 + 2 + options.labelOffsetY
         if (options.align === 'center') {
@@ -867,14 +887,11 @@ function ensureEntityPrototype() {
           entityOptions.label.horizontalOrigin = SuperMap3D.HorizontalOrigin.CENTER
         }
       } else {
-        entityOptions.label.pixelOffset = new SuperMap3D.Cartesian2(options.labelOffsetX, options.labelOffsetY)
-        if (options.labelAlign === 'right') {
-          entityOptions.label.horizontalOrigin = SuperMap3D.HorizontalOrigin.LEFT
-        } else if (options.labelAlign === 'left') {
-          entityOptions.label.horizontalOrigin = SuperMap3D.HorizontalOrigin.RIGHT
-        } else {
-          entityOptions.label.horizontalOrigin = SuperMap3D.HorizontalOrigin.CENTER
-        }
+        entityOptions.label.pixelOffset = new SuperMap3D.Cartesian2(
+          options.labelOffsetX,
+          -(options.height / 2 + options.labelFontSize / 2 + 2) + options.labelOffsetY
+        )
+        entityOptions.label.horizontalOrigin = SuperMap3D.HorizontalOrigin.CENTER
         entityOptions.label.verticalOrigin = SuperMap3D.VerticalOrigin.CENTER
       }
     }
@@ -1523,7 +1540,7 @@ class ClusterForeManager {
 
   getLayer(item: LayerCheckData) {
     const config = item.config || {}
-    const icon = getIcon(config.icon || {})
+    const icon = getIcon({ ...(config.icon || {}), pointSize: config.pointSize })
     this._syncSimplificationLayer(item)
     const layer =
       this.layers[item.id as string] ||
@@ -1546,13 +1563,11 @@ class ClusterForeManager {
             const count = entities.length
             newEntity.label.show = true
             newEntity.label.fillColor = SuperMap3D.Color.fromCssColorString('white')
-            newEntity.label.showBackground = true
-            newEntity.label.backgroundColor = SuperMap3D.Color.fromCssColorString('rgba(3,17,36,0.85)')
+            newEntity.label.showBackground = false
             newEntity.label.text = `${count}`
             newEntity.label.font = '32px SimHei'
             newEntity.label.scale = 0.5
             newEntity.label.pixelOffset = new SuperMap3D.Cartesian2(0, -(icon.height + 10))
-            newEntity.label.backgroundPadding = new SuperMap3D.Cartesian2(10, 10)
             newEntity.label.verticalOrigin = SuperMap3D.VerticalOrigin.CENTER
             newEntity.label.horizontalOrigin = SuperMap3D.HorizontalOrigin.CENTER
             newEntity.label.disableDepthTestDistance = Number.POSITIVE_INFINITY
@@ -1679,7 +1694,7 @@ class ClusterForeManager {
     layer: EntitiesLayer
   ) {
     const config = item.config || {}
-    const icon = getIcon(config.icon || {})
+    const icon = getIcon({ ...(config.icon || {}), pointSize: config.pointSize })
     const visibleAltitudeRange = getVisibleAltitudeRange(config)
     const labelConfig = Object.assign(
       {
@@ -1709,10 +1724,10 @@ class ClusterForeManager {
             url: icon.url,
             width: icon.width,
             height: icon.height,
-            align: 'bottom',
+            align: icon.url ? 'bottom' : 'center',
             // 无 icon 时用 fill/stroke 画默认圆点，保证 iPortal SHP 等点数据可上图
             color: config.fill || '#3b82f6',
-            pixelSize: Number(config.pointSize) > 0 ? Number(config.pointSize) : 10,
+            pixelSize: getDefaultPointPixelSize(config.pointSize),
             outlineColor: config.stroke || '#ffffff',
             outlineWidth: 2,
             labelText: labelConfig.field ? props[labelConfig.field] || '' : '',

@@ -11,10 +11,7 @@
   z-index: 1;
   width: 340px;
   height: 520px;
-  /* stylelint-disable-next-line */
-  color: $text-color-heading;
-  /* stylelint-disable-next-line */
-  font-size: 12px;
+  color: inherit;
 
   .sm-component-card,
   .sm-component-select,
@@ -24,8 +21,8 @@
   .sm-component-radio-wrapper,
   .sm-component-picker {
     color: inherit;
-    /* stylelint-disable-next-line */
-    font-size: 12px;
+    font-size: inherit;
+    font-family: inherit;
   }
 
   .sm-component-btn-primary {

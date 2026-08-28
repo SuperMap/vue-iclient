@@ -25,6 +25,12 @@ export function getImageryLayerName(
   t: ImageryLayerTranslator,
   options: ImageryLayerNameOptions = {}
 ) {
+  const layer = getLayerRecord(imageryLayer)
+  const customName = getString(layer?.customName)?.trim()
+  if (customName) {
+    return customName
+  }
+
   const imageryProvider = getImageryProvider(imageryLayer)
   const imageUrl = getString(imageryProvider?.url) ?? getString(imageryProvider?._url)
 

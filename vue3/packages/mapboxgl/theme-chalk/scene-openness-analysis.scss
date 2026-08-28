@@ -39,7 +39,18 @@
   .#{$sm-prefix}-select-selection-placeholder,
   .#{$sm-prefix}-select-dropdown,
   .#{$sm-prefix}-select-item {
+    color: inherit;
     font-size: inherit;
+    font-family: inherit;
+  }
+
+  .#{$sm-prefix}-btn-primary {
+    /* stylelint-disable-next-line */
+    color: $tooltip-color;
+  }
+
+  .#{$sm-prefix}-card {
+    background-color: transparent;
   }
 
   .#{$sm-prefix}-checkbox-wrapper {

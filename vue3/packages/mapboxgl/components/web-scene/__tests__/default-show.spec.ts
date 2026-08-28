@@ -27,7 +27,10 @@ vi.mock('vue-iclient-core/utils/scene', () => {
     }
   }
 
-  return { LayerManager };
+  return {
+    LayerManager,
+    getSceneDataLayerConfigIssue: () => undefined
+  };
 });
 
 vi.mock('vue-iclient-controllers-mapboxgl/src/WebSceneViewModel', () => {
@@ -79,6 +82,39 @@ const restDataLayer = (defaultShow: unknown) => ({
     datasetName: 'Countries'
   }
 });
+
+const geoJSONLayer = {
+  id: 'geojson-layer',
+  name: 'GeoJSON layer',
+  type: 'data',
+  defaultShow: true,
+  config: {
+    type: 'geoJSON',
+    geoJSON: {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: { name: '北京' },
+          geometry: { type: 'Point', coordinates: [116.4, 39.9] }
+        }
+      ]
+    }
+  }
+};
+
+const iPortalLayer = {
+  id: 'iportal-layer',
+  name: 'iPortal layer',
+  type: 'data',
+  defaultShow: true,
+  config: {
+    type: 'iPortal',
+    url: 'https://example.com/iportal/web/datas/123',
+    withCredentials: false,
+    maxFeatures: 1000
+  }
+};
 
 async function mountAndLoadScene(layers: unknown[]) {
   const wrapper = mount(WebScene, {
@@ -150,6 +186,22 @@ describe('SmWebScene configured layers', () => {
 
     expect(manager.check).toHaveBeenLastCalledWith(expect.objectContaining({ id: 'rest-data-layer' }), false);
     expect(manager.check).toHaveBeenCalledTimes(2);
+    wrapper.unmount();
+  });
+
+  it('loads geoJSON and iPortal data layers with chart-aligned config', async () => {
+    const wrapper = await mountAndLoadScene([geoJSONLayer, iPortalLayer]);
+    const manager = mocks.managers[0];
+
+    expect(manager.check).toHaveBeenCalledTimes(2);
+    expect(manager.check).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'geojson-layer', config: expect.objectContaining({ type: 'geoJSON' }) }),
+      true
+    );
+    expect(manager.check).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'iportal-layer', config: expect.objectContaining({ type: 'iPortal' }) }),
+      true
+    );
     wrapper.unmount();
   });
 });

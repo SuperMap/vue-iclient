@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-collapse-card" :style="textColorStyle" ref="el">
+  <div class="sm-component-collapse-card" :style="[textColorStyle, incomingTextStyle]" ref="el">
     <div
       v-if="iconClass"
       :class="{
@@ -36,11 +36,11 @@
             'with-split-line': splitLine,
             ['is-' + position]: true
           }"
-          :style="[gisControlHeaderBgStyle, textColorHeadingStyle]"
+          :style="[gisControlHeaderBgStyle, textColorHeadingStyle, incomingTextStyle]"
         >
           <span class="sm-component-collapse-card__header-name">{{ headerName }}</span>
         </div>
-        <div :style="getCardStyle" class="sm-component-collapse-card__body">
+        <div :style="getBodyStyle" class="sm-component-collapse-card__body">
           <slot></slot>
         </div>
       </div>
@@ -49,12 +49,23 @@
 </template>
 
 <script setup lang="ts">
+import type { CSSProperties } from 'vue'
 import type { CollapseCardProps } from './types'
-import { ref, computed, watch, onMounted, nextTick, useTemplateRef } from 'vue'
+import { ref, computed, watch, onMounted, nextTick, useAttrs, useTemplateRef } from 'vue'
 import { useTheme } from '@supermapgis/common/hooks/index.common'
 import { collapaseCardPropsDefault } from './types'
 
+const BACKGROUND_IMAGE_STYLE_KEYS = [
+  'backgroundImage',
+  'backgroundSize',
+  'backgroundRepeat',
+  'backgroundPosition'
+] as const
+
+const TEXT_STYLE_KEYS = ['fontSize', 'fontFamily'] as const
+
 const props = withDefaults(defineProps<CollapseCardProps>(), collapaseCardPropsDefault)
+const attrs = useAttrs()
 
 const { textColorStyle, textColorHeadingStyle, gisControlHeaderBgStyle, gisControlBgStyle } =
   useTheme(props)
@@ -63,11 +74,42 @@ const isShow = ref(true)
 const transform = ref(null)
 const el = useTemplateRef('el')
 
-// 计算属性
-const getCardStyle = computed(() => {
-  const style = { background: 'transparent' }
-  return !props.iconClass && !props.headerName ? style : gisControlBgStyle.value
+function pickIncomingStyle(keys: readonly string[]) {
+  const style = attrs.style
+  if (!style || typeof style !== 'object' || Array.isArray(style)) {
+    return {}
+  }
+  const nextStyle: CSSProperties = {}
+  for (const key of keys) {
+    const value = (style as CSSProperties)[key as keyof CSSProperties]
+    if (typeof value === 'string' && value) {
+      nextStyle[key as keyof CSSProperties] = value as never
+    }
+  }
+  return nextStyle
+}
+
+const incomingBackgroundImageStyle = computed<CSSProperties>(() => {
+  return pickIncomingStyle(BACKGROUND_IMAGE_STYLE_KEYS)
 })
+
+const incomingTextStyle = computed<CSSProperties>(() => {
+  return pickIncomingStyle(TEXT_STYLE_KEYS)
+})
+
+const getCardStyle = computed(() => {
+  const backgroundImageStyle = incomingBackgroundImageStyle.value
+  const textStyle = incomingTextStyle.value
+  if (!props.iconClass && !props.headerName) {
+    return { background: 'transparent', ...backgroundImageStyle, ...textStyle }
+  }
+  return { ...gisControlBgStyle.value, ...backgroundImageStyle, ...textStyle }
+})
+
+const getBodyStyle = computed(() => ({
+  background: 'transparent',
+  ...incomingTextStyle.value
+}))
 
 const iconStyle = computed(() => {
   return {

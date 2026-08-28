@@ -14,6 +14,26 @@
   min-height: 0;
   background: transparent;
   box-sizing: border-box;
+  color: inherit;
+
+  .sm-component-card,
+  .sm-component-input,
+  .sm-component-input-affix-wrapper,
+  .sm-component-btn,
+  .sm-component-tree,
+  .sm-component-checkbox-wrapper,
+  .sm-component-input-number,
+  .ant-card,
+  .ant-input,
+  .ant-input-affix-wrapper,
+  .ant-btn,
+  .ant-tree,
+  .ant-checkbox-wrapper,
+  .ant-input-number {
+    color: inherit;
+    font-size: inherit;
+    font-family: inherit;
+  }
 
   // CollapseCard uses float positioning after leave; flex items need an explicit cross-axis alignment instead.
   > .sm-component-collapse-card__icon.is-click-in.is-top-right,
@@ -165,6 +185,8 @@
       max-width: 100%;
       min-width: 0;
       color: inherit !important;
+      font-size: inherit;
+      font-family: inherit;
       overflow: hidden;
     }
   }
