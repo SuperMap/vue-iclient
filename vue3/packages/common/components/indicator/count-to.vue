@@ -80,7 +80,28 @@ export default {
       return this.displayValue.split('').map(num => num);
     }
   },
+  methods: {
+    finishImmediately() {
+      this.pause();
+      this.printVal = this.endVal;
+      this.displayValue = this.formatNumber(this.endVal);
+    }
+  },
   watch: {
+    autoplay(value) {
+      // 关闭动画时要同步终止当前帧，并立即显示最新值；否则已有计数任务仍会继续执行。
+      value ? this.start() : this.finishImmediately();
+    },
+    startVal() {
+      if (!this.autoplay) {
+        this.finishImmediately();
+      }
+    },
+    endVal() {
+      if (!this.autoplay) {
+        this.finishImmediately();
+      }
+    },
     separator() {
       this.start();
     },

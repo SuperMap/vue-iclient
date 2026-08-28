@@ -15,6 +15,7 @@
             :decimals="calDecimals"
             :startVal="startData"
             :endVal="numData"
+            :autoplay="animated"
             :duration="Number(duration) || 1000"
             :separator="filterSeparator"
             :numBackground="numBackground"
