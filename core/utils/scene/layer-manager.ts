@@ -490,6 +490,11 @@ function getDefaultPointPixelSize(pointSize: unknown) {
   return Number(pointSize) > 0 ? Number(pointSize) : DEFAULT_POINT_PIXEL_SIZE
 }
 
+function getPointOutlineWidth(outlineWidth: unknown) {
+  const value = Number(outlineWidth)
+  return Number.isFinite(value) && value >= 0 ? value : DEFAULT_POINT_OUTLINE_WIDTH
+}
+
 function getIcon(option: Record<string, any> = {}) {
   const iconScale = option.scale || 1
   if (hasCustomIconUrl(option.url)) {
@@ -777,6 +782,7 @@ function ensureEntityPrototype() {
       options
     )
     const hasCustomIcon = hasCustomIconUrl(options.url)
+    const useDefaultPoint = options.useDefaultPoint !== false
     const pixelSize = getDefaultPointPixelSize(options.pixelSize)
     const outlineWidth = Number.isFinite(Number(options.outlineWidth))
       ? Number(options.outlineWidth)
@@ -817,6 +823,7 @@ function ensureEntityPrototype() {
         height: options.height,
         width: options.width,
         scale: options.scale,
+        sizeInMeters: false,
         image: options.url,
         verticalOrigin,
         heightReference: options.heightReference,
@@ -824,7 +831,7 @@ function ensureEntityPrototype() {
         disableDepthTestDistance: options.disableDepthTestDistance,
         distanceDisplayCondition: getSuperMap3DDistanceDisplayCondition(options.distanceDisplayCondition)
       }
-    } else {
+    } else if (useDefaultPoint) {
       entityOptions.point = {
         color: getSuperMap3DColor(options.pointColor || options.color || '#3b82f6'),
         pixelSize: pixelSize * ratio,
@@ -846,6 +853,7 @@ function ensureEntityPrototype() {
         font: `${options.labelFontSize * 4}px ${options.labelFontFamily}`,
         scale: 1 / 4,
         showBackground: false,
+        backgroundColor: getSuperMap3DColor('rgba(0,0,0,0)'),
         pixelOffset: new SuperMap3D.Cartesian2(options.width / 2 + 10 + options.labelOffsetX, options.labelOffsetY),
         verticalOrigin: SuperMap3D.VerticalOrigin.CENTER,
         horizontalOrigin: SuperMap3D.HorizontalOrigin.LEFT,
@@ -897,14 +905,12 @@ function ensureEntityPrototype() {
     }
 
     this.position = entityOptions.position
-    if (entityOptions.billboard) {
-      this.billboard = entityOptions.billboard
-    }
-    if (entityOptions.point) {
-      this.point = entityOptions.point
-    }
+    this.billboard = entityOptions.billboard || undefined
+    this.point = entityOptions.point || undefined
     if (entityOptions.label) {
       this.label = entityOptions.label
+    } else {
+      this.label = undefined
     }
     return this.addEvents(options)
   }
@@ -1157,6 +1163,9 @@ class EntitiesLayer {
 
   removeAll() {
     this.entities.removeAll()
+    if (this.dataSource?.clustering) {
+      this.dataSource.clustering.enabled = false
+    }
   }
 
   getValues() {
@@ -1236,6 +1245,7 @@ class EntitiesLayer {
   }
 
   destroy() {
+    this.removeAll()
     if (this.dataSource) {
       this.viewer.dataSources.remove(this.dataSource)
       this.dataSource = null
@@ -1541,11 +1551,19 @@ class ClusterForeManager {
   getLayer(item: LayerCheckData) {
     const config = item.config || {}
     const icon = getIcon({ ...(config.icon || {}), pointSize: config.pointSize })
+    const usesIcon = hasCustomIconUrl(icon.url)
     this._syncSimplificationLayer(item)
+    const id = item.id as string
+    const existing = this.layers[id]
+    if (existing && existing.options?._usesIcon !== usesIcon) {
+      existing.destroy()
+      delete this.layers[id]
+    }
     const layer =
-      this.layers[item.id as string] ||
+      this.layers[id] ||
       new EntitiesLayer(this.viewer, {
         name: item.name,
+        _usesIcon: usesIcon,
         cluster: {
           enabled: config.cluster === FRONT_CLUSTER,
           minCameraHeight: 1200,
@@ -1574,7 +1592,7 @@ class ClusterForeManager {
           }
         }
       })
-    this.layers[item.id as string] = layer
+    this.layers[id] = layer
     layer.dataSource.___layerData = item
     layer.dataSource.___layerRemoved = false
     return layer
@@ -1720,24 +1738,30 @@ class ClusterForeManager {
               visibleAltitudeRange || [0, config.model.maxVisibleAltitude]
           });
         } else {
+          const hasIcon = hasCustomIconUrl(icon.url)
           entity = layer.addMarker(position, {
-            url: icon.url,
-            width: icon.width,
-            height: icon.height,
-            align: icon.url ? 'bottom' : 'center',
-            // 无 icon 时用 fill/stroke 画默认圆点，保证 iPortal SHP 等点数据可上图
+            ...(hasIcon
+              ? {
+                  url: icon.url,
+                  width: icon.width,
+                  height: icon.height,
+                  align: 'bottom' as const
+                }
+              : {
+                  align: 'center' as const
+                }),
+            useDefaultPoint: config.pointDisplay !== 'icon',
+            // 无 icon 且未选择图标模式时用 fill/stroke 画默认圆点
             color: config.fill || '#3b82f6',
             pixelSize: getDefaultPointPixelSize(config.pointSize),
             outlineColor: config.stroke || '#ffffff',
-            outlineWidth: 2,
+            outlineWidth: getPointOutlineWidth(config.outlineWidth),
             labelText: labelConfig.field ? props[labelConfig.field] || '' : '',
             labelAlign: 'top',
             labelFontFamily: 'Alibaba PuHuiTi',
             labelFontSize: labelConfig.fontSize,
             labelColor: labelConfig.color || '#fff',
-            labelOutline: true,
-            labelOutlineColor: labelConfig.strokeColor || config.stroke || '#000',
-            labelOutlineWidth: 1,
+            labelOutline: false,
             labelOffsetX: labelConfig.field ? labelConfig.labelOffsetX || 0 : 0,
             labelOffsetY: labelConfig.field ? labelConfig.labelOffsetY || 0 : 0,
             data: props,

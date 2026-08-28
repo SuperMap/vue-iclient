@@ -390,6 +390,24 @@ export default class iPortalDataService extends Events {
     return { xfieldIndex, yfieldIndex };
   }
 
+  _parsePortalJsonContent(content) {
+    if (content == null || typeof content === 'object') {
+      return content;
+    }
+    if (typeof content !== 'string') {
+      return content;
+    }
+    const text = content.trim();
+    if (!text) {
+      return content;
+    }
+    try {
+      return JSON.parse(text);
+    } catch {
+      return content;
+    }
+  }
+
   _getDatafromContent(datasetUrl, queryInfo, dataMetaInfo) {
     let result = {};
     const contentUrl = Util.urlAppend(Util.urlPathAppend(datasetUrl, 'content.json'), 'pageSize=9999999&currentPage=1');
@@ -413,20 +431,20 @@ export default class iPortalDataService extends Events {
           let type = 'FeatureCollection';
           let contentCrs;
           if (data.type === 'JSON' || data.type === 'GEOJSON') {
-            data.content = JSON.parse(data.content.trim());
+            data.content = this._parsePortalJsonContent(data.content);
             // 如果是json文件 data.content = {type:'fco', features},格式不固定
-            if (!data.content.features) {
+            if (!data.content?.features) {
               features = this._json2Feature(data.content);
             }
             features = this._formatGeoJSON(features || data.content, queryInfo);
-            type = data.content.type;
-            contentCrs = data.content.crs;
+            type = data.content?.type || type;
+            contentCrs = data.content?.crs;
           } else if (data.type === 'EXCEL' || data.type === 'CSV') {
             const metaInfo = dataMetaInfo || (await this._fetchDataMetaInfo(datasetUrl));
             features = this._excelData2Feature(data.content, queryInfo, metaInfo);
           } else if (data.type === 'SHP') {
-            data.content = JSON.parse(data.content.trim());
-            const layer = data.content.layers[0];
+            data.content = this._parsePortalJsonContent(data.content);
+            const layer = data.content?.layers?.[0];
             contentCrs = layer && layer.crs;
             features = this._formatGeoJSON(layer);
           }
@@ -448,11 +466,15 @@ export default class iPortalDataService extends Events {
   }
 
   _formatGeoJSON(data, queryInfo) {
-    let features = data.features;
+    let features = data?.features;
+    if (!Array.isArray(features)) {
+      return [];
+    }
     if (queryInfo && queryInfo.maxFeatures > 0) {
       features = features.slice(0, queryInfo.maxFeatures);
     }
     features.forEach((row, index) => {
+      row.properties = row.properties || {};
       row.properties.index = index;
     });
     return features;
@@ -502,16 +524,30 @@ export default class iPortalDataService extends Events {
   }
 
   _json2Feature(dataContent) {
-    let content = typeof dataContent === 'string' ? JSON.parse(dataContent) : dataContent;
+    let content = typeof dataContent === 'string' ? this._parsePortalJsonContent(dataContent) : dataContent;
     let features = [];
     if (content instanceof Array) {
       content.forEach(val => {
-        if (Object.prototype.hasOwnProperty.call(val, 'geometry')) {
-          features.push({ properties: val.properties || val, geometry: val.geometry });
+        if (val && (val.geometry || val.type === 'Feature')) {
+          features.push({
+            type: 'Feature',
+            properties: val.properties || {},
+            geometry: val.geometry || null
+          });
         } else {
           features.push({ properties: val });
         }
       });
+    } else if (content?.type === 'FeatureCollection' && Array.isArray(content.features)) {
+      return content;
+    } else if (content && (content.type === 'Feature' || content.geometry)) {
+      features = [
+        {
+          type: 'Feature',
+          properties: content.properties || {},
+          geometry: content.geometry || null
+        }
+      ];
     } else if (content) {
       features = [{ properties: content }];
     }
