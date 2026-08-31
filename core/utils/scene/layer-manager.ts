@@ -486,6 +486,13 @@ function hasCustomIconUrl(url: unknown): boolean {
   return typeof url === 'string' ? Boolean(url.trim()) : Boolean(url)
 }
 
+function toSceneLabelText(value: unknown): string {
+  if (value == null) {
+    return ''
+  }
+  return String(value)
+}
+
 function getDefaultPointPixelSize(pointSize: unknown) {
   return Number(pointSize) > 0 ? Number(pointSize) : DEFAULT_POINT_PIXEL_SIZE
 }
@@ -843,13 +850,14 @@ function ensureEntityPrototype() {
       }
     }
 
-    if (options.labelText) {
+    const labelText = toSceneLabelText(options.labelText)
+    if (labelText) {
       entityOptions.label = {
         fillColor: getSuperMap3DColor(options.labelColor),
         outlineColor: getSuperMap3DColor(options.labelOutlineColor || '#000'),
         outlineWidth: options.labelOutlineWidth,
         style: options.labelOutline ? SuperMap3D.LabelStyle.FILL_AND_OUTLINE : SuperMap3D.LabelStyle.FILL,
-        text: options.labelText,
+        text: labelText,
         font: `${options.labelFontSize * 4}px ${options.labelFontFamily}`,
         scale: 1 / 4,
         showBackground: false,
@@ -1756,7 +1764,7 @@ class ClusterForeManager {
             pixelSize: getDefaultPointPixelSize(config.pointSize),
             outlineColor: config.stroke || '#ffffff',
             outlineWidth: getPointOutlineWidth(config.outlineWidth),
-            labelText: labelConfig.field ? props[labelConfig.field] || '' : '',
+            labelText: labelConfig.field ? toSceneLabelText(props[labelConfig.field]) : '',
             labelAlign: 'top',
             labelFontFamily: 'Alibaba PuHuiTi',
             labelFontSize: labelConfig.fontSize,
