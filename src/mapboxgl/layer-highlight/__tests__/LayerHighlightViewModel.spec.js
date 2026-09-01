@@ -157,6 +157,55 @@ describe('LayerHighlightViewModel', () => {
       }
     });
   });
+
+  it('map click query result layer not in appreciableLayers', done => {
+    const queryLayerId = 'Countries-SM-query-result';
+    const queryLayer = { id: queryLayerId, type: 'circle', paint: {} };
+    const map = new Map({
+      style: { center: [0, 0], zoom: 1, layers: [queryLayer], sources: {} }
+    });
+    jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => [
+      {
+        type: 'Feature',
+        properties: {
+          NAME: '中国',
+          smid: 1
+        },
+        layer: { id: queryLayerId, paint: {}, type: 'circle' },
+        geometry: {
+          type: 'Point',
+          coordinates: [116.391, 39.907]
+        }
+      }
+    ]);
+    const viewModel = new LayerHighlightViewModel({
+      name: uniqueName,
+      style: highlightStyle,
+      layerIds: [queryLayerId]
+    });
+    const webmap = {
+      copyLayer: copyLayerSpy,
+      getAppreciableLayers: jest.fn().mockReturnValue([{ id: '动画点', dataSource: {}, l7layer: {} }])
+    };
+    viewModel.setMap({ map, webmap });
+    viewModel.once('mapselectionchanged', ({ features, popupInfos, lnglats }) => {
+      expect(features.length).toBe(1);
+      expect(popupInfos.length).toBe(1);
+      expect(lnglats.length).toBe(1);
+      const highlightLayer = map.getStyle().layers.find(layer => layer.id === `${queryLayerId}-${uniqueName}-SM-highlighted`);
+      expect(highlightLayer).not.toBeUndefined();
+      viewModel.unregisterMapClick();
+      done();
+    });
+    viewModel.map.fire('click', {
+      target: map,
+      point: {
+        x: 10,
+        y: 5
+      }
+    });
+  });
+
   it('map click ms fill extrusion', done => {
     const setSelectedDatas = jest.fn();
     const layer = { id: '3d填充面', sources: {}, type: 'fill-extrusion', paint: {} };
