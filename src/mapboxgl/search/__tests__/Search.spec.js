@@ -335,6 +335,38 @@ describe('Search.vue', () => {
       done();
     });
   });
+
+  it('renders data aliases without merging result groups that share an alias', async () => {
+    wrapper = mount(SmSearch, {
+      localVue,
+      propsData: {
+        showTitle: true
+      }
+    });
+    const feature = { filterVal: 'Matched result', properties: { name: 'Matched result' } };
+    const viewModel = wrapper.vm.viewModel;
+    viewModel.searchResult = {};
+    viewModel._searchFeaturesSucceed([feature], 'original-source-one', 'Shared alias');
+    viewModel._searchFeaturesSucceed([feature], 'original-source-two', 'Shared alias');
+    viewModel._searchFeaturesSucceed([feature], 'original-source-three', '');
+
+    await wrapper.setData({ searchResult: Object.values(viewModel.searchResult) });
+
+    expect(wrapper.vm.searchResult).toHaveLength(3);
+    expect(wrapper.vm.searchResult.map(item => item.source)).toEqual([
+      'original-source-one',
+      'original-source-two',
+      'original-source-three'
+    ]);
+    expect(wrapper.vm.searchResult.map(item => item.displaySource)).toEqual([
+      'Shared alias',
+      'Shared alias',
+      'original-source-three'
+    ]);
+    expect(wrapper.findAll('.sm-component-search__panel-header').at(0).text()).toContain('Shared alias');
+    expect(wrapper.findAll('.sm-component-search__panel-header').at(1).text()).toContain('Shared alias');
+    expect(wrapper.findAll('.sm-component-search__panel-header').at(2).text()).toContain('original-source-three');
+  });
   
   it('ketup down', async done => {
     const fetchResource = {
