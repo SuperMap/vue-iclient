@@ -2,7 +2,7 @@
   <div class="sm-component-image" :style="[textColorStyle, containerBgStyle]">
     <a
       :class="['sm-component-image__link']"
-      :href="realHref"
+      :href="realHref || undefined"
       @click="handleLinkClick"
       :target="target"
     >

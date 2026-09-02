@@ -13,8 +13,13 @@
     justify-content: center;
     align-items: center;
 
-    &:hover{
+    &:hover {
       cursor: pointer;
+    }
+
+    &.sm-component-image__noLink,
+    &.sm-component-image__noLink:hover {
+      cursor: default;
     }
 
     .sm-component-image__content{
@@ -72,7 +77,7 @@
     }
   }
 
-  @include e(noLink){
-    pointer-events: none;
+  @include e(noLink) {
+    cursor: default;
   }
 }
