@@ -206,6 +206,186 @@ describe('LayerHighlightViewModel', () => {
     });
   });
 
+  it('getMoreHighlightLayerIds returns empty without layerId', () => {
+    const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle });
+    expect(viewModel.getMoreHighlightLayerIds()).toEqual([]);
+    expect(viewModel.getMoreHighlightLayerIds('')).toEqual([]);
+  });
+
+  it('getMoreHighlightLayerIds returns layerId when sourceLayers is empty', () => {
+    const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle });
+    expect(viewModel.getMoreHighlightLayerIds('layer-a')).toEqual(['layer-a']);
+  });
+
+  it('getMoreHighlightLayerIds returns matched sourceLayers group', () => {
+    const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle });
+    viewModel.setTargetLayers(['a'], [['a', 'b'], ['c']]);
+    expect(viewModel.getMoreHighlightLayerIds('a')).toEqual(['a', 'b']);
+    expect(viewModel.getMoreHighlightLayerIds('c')).toEqual(['c']);
+  });
+
+  it('getMoreHighlightLayerIds returns empty when sourceLayers has no match', () => {
+    const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle });
+    viewModel.setTargetLayers(['a'], [['a', 'b']]);
+    expect(viewModel.getMoreHighlightLayerIds('c')).toEqual([]);
+  });
+
+  it('map click query result layer fallbacks to getLayer', done => {
+    const queryLayerId = 'Countries-SM-query-result';
+    const queryLayer = { id: queryLayerId, type: 'circle', paint: {} };
+    const map = new Map({
+      style: { center: [0, 0], zoom: 1, layers: [], sources: {} }
+    });
+    jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => [
+      {
+        type: 'Feature',
+        properties: { NAME: '中国', smid: 1 },
+        layer: { id: queryLayerId, paint: {}, type: 'circle' },
+        geometry: { type: 'Point', coordinates: [116.391, 39.907] }
+      }
+    ]);
+    jest.spyOn(map, 'getLayer').mockImplementation(id => (id === queryLayerId ? queryLayer : undefined));
+    const viewModel = new LayerHighlightViewModel({
+      name: uniqueName,
+      style: highlightStyle,
+      layerIds: [queryLayerId]
+    });
+    viewModel.setMap({
+      map,
+      webmap: {
+        copyLayer: copyLayerSpy,
+        getAppreciableLayers: jest.fn().mockReturnValueOnce([]).mockReturnValue(undefined)
+      }
+    });
+    viewModel.once('mapselectionchanged', ({ popupInfos, lnglats, targetId }) => {
+      expect(targetId).toBe(queryLayerId);
+      expect(popupInfos.length).toBe(1);
+      expect(lnglats.length).toBe(1);
+      viewModel.unregisterMapClick();
+      done();
+    });
+    viewModel.map.fire('click', { target: map, point: { x: 10, y: 5 } });
+  });
+
+  it('map click query result without map layer does not create popup', done => {
+    const queryLayerId = 'Countries-SM-query-result';
+    const map = new Map({
+      style: { center: [0, 0], zoom: 1, layers: [], sources: {} }
+    });
+    jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => [
+      {
+        type: 'Feature',
+        properties: { NAME: '中国' },
+        layer: { id: queryLayerId, paint: {}, type: 'circle' },
+        geometry: { type: 'Point', coordinates: [116.391, 39.907] }
+      }
+    ]);
+    jest.spyOn(map, 'getLayer').mockImplementation(() => undefined);
+    const viewModel = new LayerHighlightViewModel({
+      name: uniqueName,
+      style: highlightStyle,
+      layerIds: [queryLayerId]
+    });
+    viewModel.setMap({
+      map,
+      webmap: {
+        copyLayer: copyLayerSpy,
+        getAppreciableLayers: jest.fn().mockReturnValue([{ id: '动画点', dataSource: {}, l7layer: {} }])
+      }
+    });
+    viewModel.once('mapselectionchanged', ({ popupInfos, lnglats }) => {
+      expect(popupInfos.length).toBe(0);
+      expect(lnglats.length).toBe(0);
+      viewModel.unregisterMapClick();
+      done();
+    });
+    viewModel.map.fire('click', { target: map, point: { x: 10, y: 5 } });
+  });
+
+  it('map click prefers top appreciable layer among clicked features', done => {
+    const bottomLayer = { id: 'bottom-layer', type: 'circle', paint: {} };
+    const topLayer = { id: 'top-layer', type: 'circle', paint: {} };
+    const map = new Map({
+      style: { center: [0, 0], zoom: 1, layers: [bottomLayer, topLayer], sources: {} }
+    });
+    jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => [
+      {
+        type: 'Feature',
+        properties: { name: 'bottom' },
+        layer: { id: 'bottom-layer', type: 'circle', paint: {} },
+        geometry: { type: 'Point', coordinates: [0, 0] }
+      },
+      {
+        type: 'Feature',
+        properties: { name: 'top' },
+        layer: { id: 'top-layer', type: 'circle', paint: {} },
+        geometry: { type: 'Point', coordinates: [1, 1] }
+      }
+    ]);
+    const viewModel = new LayerHighlightViewModel({
+      name: uniqueName,
+      style: highlightStyle,
+      layerIds: ['bottom-layer', 'top-layer']
+    });
+    viewModel.setMap({
+      map,
+      webmap: {
+        copyLayer: copyLayerSpy,
+        getAppreciableLayers: jest.fn().mockReturnValue([
+          { id: 'bottom-layer', type: 'circle', dataSource: {} },
+          { id: 'top-layer', type: 'circle', dataSource: {} }
+        ])
+      }
+    });
+    viewModel.once('mapselectionchanged', ({ targetId, popupInfos }) => {
+      expect(targetId).toBe('top-layer');
+      expect(popupInfos[0].some(item => item.value === 'top')).toBe(true);
+      viewModel.unregisterMapClick();
+      done();
+    });
+    viewModel.map.fire('click', { target: map, point: { x: 10, y: 5 } });
+  });
+
+  it('map click uses sourceLayers group to resolve highlight layers', done => {
+    const layerA = { id: 'layer-a', type: 'circle', paint: {} };
+    const layerB = { id: 'layer-b', type: 'circle', paint: {} };
+    const map = new Map({
+      style: { center: [0, 0], zoom: 1, layers: [layerA, layerB], sources: {} }
+    });
+    jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => [
+      {
+        type: 'Feature',
+        properties: { name: 'a' },
+        layer: { id: 'layer-a', type: 'circle', paint: {} },
+        geometry: { type: 'Point', coordinates: [0, 0] }
+      }
+    ]);
+    const viewModel = new LayerHighlightViewModel({
+      name: uniqueName,
+      style: highlightStyle,
+      layerIds: ['layer-a'],
+      sourceLayers: [['layer-a', 'layer-b']]
+    });
+    viewModel.setMap({
+      map,
+      webmap: {
+        copyLayer: copyLayerSpy,
+        getAppreciableLayers: jest.fn().mockReturnValue([
+          { id: 'layer-a', type: 'circle', dataSource: {} },
+          { id: 'layer-b', type: 'circle', dataSource: {} }
+        ])
+      }
+    });
+    viewModel.once('mapselectionchanged', ({ targetId }) => {
+      expect(targetId).toBe('layer-a');
+      expect(map.getStyle().layers.some(layer => layer.id === `layer-a-${uniqueName}-SM-highlighted`)).toBe(true);
+      expect(map.getStyle().layers.some(layer => layer.id === `layer-b-${uniqueName}-SM-highlighted`)).toBe(true);
+      viewModel.unregisterMapClick();
+      done();
+    });
+    viewModel.map.fire('click', { target: map, point: { x: 10, y: 5 } });
+  });
+
   it('map click ms fill extrusion', done => {
     const setSelectedDatas = jest.fn();
     const layer = { id: '3d填充面', sources: {}, type: 'fill-extrusion', paint: {} };
