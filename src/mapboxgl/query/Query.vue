@@ -40,8 +40,8 @@
             class="sm-component-query__job-info-header"
             @click="activePanelIndex = activePanelIndex === index ? null : index"
           >
-            <span :title="jobInfo.queryParameter.name" class="sm-component-query__job-info-name">{{
-              jobInfo.queryParameter.name
+            <span :title="getDisplayName(jobInfo.queryParameter)" class="sm-component-query__job-info-name">{{
+              getDisplayName(jobInfo.queryParameter)
             }}</span>
             <i
               :class="
@@ -111,7 +111,9 @@
         </div>
         <template v-if="queryResult">
           <div class="sm-component-query__result-header" :style="headingTextColorStyle">
-            <span :title="queryResult.name" class="sm-component-query__header-name">{{ queryResult.name }}</span>
+            <span :title="queryResult.displayName || queryResult.name" class="sm-component-query__header-name">{{
+              queryResult.displayName || queryResult.name
+            }}</span>
             <i class="sm-components-icon-delete" @click="clearResult" />
           </div>
           <div class="sm-component-query__result-body">
@@ -147,7 +149,7 @@
       :customColumnRenders="$scopedSlots"
       :showPopup="showPopup"
       :ref="highlightCompRefName"
-      :title="queryResult && queryResult.name"
+      :title="queryResult && (queryResult.displayName || queryResult.name)"
       @mapselectionchanged="handleMapSeletionChanged"
     />
   </sm-collapse-card>
@@ -335,6 +337,9 @@ export default {
     this.clearResult();
   },
   methods: {
+    getDisplayName(data) {
+      return (data && data.dataAlias) || (data && data.name);
+    },
     formatJobInfos() {
       if (this.viewModel) {
         this.jobInfos = [];
@@ -392,6 +397,7 @@ export default {
         this.isQuery = false;
         this.queryResult = {
           ...e.result,
+          displayName: this.getDisplayName(this.activeQueryJob) || e.result.displayName || e.result.name,
           result: e.result.result.map(item => item.properties)
         };
         this.resultFeatures = e.result.result;

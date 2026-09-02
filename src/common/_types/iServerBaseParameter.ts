@@ -5,6 +5,7 @@ export interface iServerOptions {
   url?: string;
   attributeFilter?: string;
   name?: string;
+  dataAlias?: string;
   maxFeatures?: number;
   proxy?: proxyFn | string;
   layerName?: string;
@@ -19,6 +20,7 @@ export default class iServerBaseParameter {
   maxFeatures: number;
   proxy: proxyFn | string;
   queryMode: iServerOptions['queryMode'];
+  dataAlias?: string;
 
   constructor(options: iServerOptions) {
     this.type = 'iServer';
@@ -27,5 +29,6 @@ export default class iServerBaseParameter {
     this.maxFeatures = options.maxFeatures || 20;
     this.proxy = options.proxy;
     this.queryMode = options.queryMode || 'SQL';
+    this.dataAlias = options.dataAlias;
   }
 }

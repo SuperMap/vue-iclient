@@ -68,7 +68,7 @@
             >
               <div class="sm-component-search__panel-header">
                 <i class="sm-components-icon-list" />
-                <span class="add-ellipsis">{{ result.source }}</span>
+                <span class="add-ellipsis">{{ result.displaySource || result.source }}</span>
               </div>
             </div>
             <div

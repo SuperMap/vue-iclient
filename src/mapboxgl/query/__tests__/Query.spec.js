@@ -204,6 +204,54 @@ describe('query', () => {
     expect(spyquery).toBeCalled();
   });
 
+  it('uses dataAlias for query labels while retaining the original data name internally', async () => {
+    wrapper = mount(SmQuery, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        restData: [
+          new RestDataParameter({
+            name: 'Original data name',
+            dataAlias: 'Displayed data name',
+            url: 'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data',
+            attributeFilter: 'SmID>0',
+            dataName: ['World:Countries']
+          })
+        ]
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+
+    expect(wrapper.find('.sm-component-query__job-info-name').text()).toBe('Displayed data name');
+    expect(wrapper.vm.getDisplayName({ name: 'Original data name', dataAlias: '' })).toBe('Original data name');
+
+    const querySucceeded = new Promise(resolve => wrapper.vm.$once('query-succeeded', resolve));
+    await wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
+    await querySucceeded;
+
+    expect(wrapper.vm.queryResult).toMatchObject({
+      name: 'Original data name',
+      displayName: 'Displayed data name'
+    });
+    expect(wrapper.vm.viewModel.layerID).toBe('Original data name-SM-query-result');
+    expect(wrapper.find('.sm-component-query__header-name').text()).toBe('Displayed data name');
+    expect(wrapper.find({ ref: wrapper.vm.highlightCompRefName }).props('title')).toBe('Displayed data name');
+    wrapper.vm.handleMapSeletionChanged({ dataSelectorMode: 'ALL', highlightLayerIds: [] });
+    expect(wrapper.emitted().datachange.slice(-1)[0][0].layerName).toBe('Original data name');
+
+    wrapper.vm.activeQueryJob.dataAlias = 'Current data alias';
+    wrapper.vm.viewModel.fire('querysucceeded', {
+      result: {
+        name: 'Original data name',
+        displayName: 'Stale data alias',
+        result: wrapper.vm.resultFeatures,
+        fields: wrapper.vm.viewModel.queryResult.fields
+      },
+      layers: wrapper.vm.resultLayers
+    });
+    expect(wrapper.vm.queryResult.displayName).toBe('Current data alias');
+  });
+
   it('change iPortal Data', async done => {
     wrapper = mount(SmQuery, {
       localVue,

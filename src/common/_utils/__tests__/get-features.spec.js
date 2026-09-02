@@ -306,6 +306,20 @@ describe('getFeatures test', () => {
     done();
   });
 
+  it('does not forward dataAlias to service requests', () => {
+    let datasetInfo;
+    let queryInfo;
+    jest.spyOn(iServerRestService.default.prototype, 'getData').mockImplementation((data, query) => {
+      datasetInfo = data;
+      queryInfo = query;
+    });
+
+    getFeatures({ ...dataInfo, dataAlias: 'Displayed data name' });
+
+    expect(datasetInfo).not.toHaveProperty('dataAlias');
+    expect(queryInfo).not.toHaveProperty('dataAlias');
+  });
+
   it('event featureisempty', done => {
     const fetchResource = {
       'http://fakeiserver:8090/iserver/services/data-China400/rest/data/datasources/China/datasets/District_pt/fields?returnAll=true':
