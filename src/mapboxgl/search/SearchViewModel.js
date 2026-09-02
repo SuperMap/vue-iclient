@@ -20,16 +20,20 @@ import { getFeatureCenter } from 'vue-iclient/src/common/_utils/util';
  * @param {string} options.restMap.url - 地图服务地址。
  * @param {string} options.restMap.layerName - 搜索图层名。
  * @param {string} [options.restMap.name] - 搜索结果名称。
+ * @param {string} [options.restMap.dataAlias] - 搜索结果展示名称。
  * @param {Array.<string>} [options.restData] - iServer 数据服务搜索配置。
  * @param {string} options.restData.url - 数据服务地址。
  * @param {Array} options.restData.dataName - 搜索数据集名数组。
  * @param {string} [options.restData.name] - 搜索结果名称。
+ * @param {string} [options.restData.dataAlias] - 搜索结果展示名称。
  * @param {Array.<string>} [options.iportalData] - iPortal 数据搜索配置。
  * @param {string} options.iportalData.url - 数据地址。
  * @param {string} [options.iportalData.name] - 搜索结果名称。
+ * @param {string} [options.iportalData.dataAlias] - 搜索结果展示名称。
  * @param {Array.<string>} [options.addressMatch] - iServer 地址匹配服务搜索配置。
  * @param {string} options.addressMatch.url - 地址匹配服务地址。
  * @param {string} [options.addressMatch.name] - 搜索结果名称。
+ * @param {string} [options.addressMatch.dataAlias] - 搜索结果展示名称。
  * @param {Object} [options.onlineLocalSearch] - SuperMap Online 本地搜索配置。
  * @param {Boolean} [options.onlineLocalSearch.enable=true] - 是否开启 online 本地搜索。
  * @fires SearchViewModel#searchsucceeded
@@ -237,12 +241,12 @@ export default class SearchViewModel extends mapboxgl.Evented {
       (this.searchTaskId += 1);
   }
 
-  _searchFeaturesSucceed(resultFeature, sourceName) {
+  _searchFeaturesSucceed(resultFeature, sourceName, displaySource = sourceName) {
     if (this.errorSourceList[sourceName]) {
       delete this.errorSourceList[sourceName];
     }
     if (resultFeature.length > 0) {
-      let result = { source: sourceName, result: resultFeature };
+      let result = { source: sourceName, displaySource: displaySource || sourceName, result: resultFeature };
       this.searchResult[sourceName] = result;
     }
     let resultList = [];
@@ -303,12 +307,12 @@ export default class SearchViewModel extends mapboxgl.Evented {
           this._searchFeaturesFailed('', restMap.name || sourceName);
         },
         featureisempty: () => {
-          this._searchFeaturesSucceed([], restMap.name || sourceName);
+          this._searchFeaturesSucceed([], restMap.name || sourceName, restMap.dataAlias);
         },
         getdatasucceeded: e => {
           if (e.features) {
             let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, e.features);
-            this._searchFeaturesSucceed(resultFeatures, restMap.name || sourceName);
+            this._searchFeaturesSucceed(resultFeatures, restMap.name || sourceName, restMap.dataAlias);
           }
         }
       });
@@ -333,12 +337,12 @@ export default class SearchViewModel extends mapboxgl.Evented {
           this._searchFeaturesFailed('', restData.name || sourceName);
         },
         featureisempty: () => {
-          this._searchFeaturesSucceed([], restData.name || sourceName);
+          this._searchFeaturesSucceed([], restData.name || sourceName, restData.dataAlias);
         },
         getdatasucceeded: e => {
           if (e.features && e.features.length > 0) {
             let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, e.features);
-            this._searchFeaturesSucceed(resultFeatures, restData.name || sourceName);
+            this._searchFeaturesSucceed(resultFeatures, restData.name || sourceName, restData.dataAlias);
           }
         }
       });
@@ -358,7 +362,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
         .then(data => {
           if (data.features) {
             let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, data.features);
-            this._searchFeaturesSucceed(resultFeatures, iportal.name || sourceName);
+            this._searchFeaturesSucceed(resultFeatures, iportal.name || sourceName, iportal.dataAlias);
           }
         })
         .catch(() => {
@@ -385,7 +389,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
       let geoCodeParam = new SuperMap.GeoCodingParameter(parm);
       this.addressMatchService.code(geoCodeParam, e => {
         if (e.result) {
-          this._searchFeaturesSucceed(e.result, addressMatch.name || sourceName);
+          this._searchFeaturesSucceed(e.result, addressMatch.name || sourceName, addressMatch.dataAlias);
         } else {
           this._searchFeaturesFailed('', addressMatch.name || sourceName);
         }

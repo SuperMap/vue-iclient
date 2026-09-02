@@ -89,7 +89,12 @@ export default class QueryViewModel extends mapboxgl.Evented {
           this.fire('queryfailed', { message: geti18n().t('query.noResults') });
           return;
         }
-        this.queryResult = { name: queryParameter.name, result: res.features, fields: res.fields };
+        this.queryResult = {
+          name: queryParameter.name,
+          displayName: queryParameter.dataAlias || queryParameter.name,
+          result: res.features,
+          fields: res.fields
+        };
         this._addResultLayer(this.queryResult);
         this.fire('querysucceeded', { result: this.queryResult, layers: [this.layerID, this.strokeLayerID].filter(item => !!item) });
       } catch (error) {
