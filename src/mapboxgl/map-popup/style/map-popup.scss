@@ -8,6 +8,9 @@
   height: auto;
   padding: 10px;
   border-radius: 4px;
+  .title {
+    max-width: 400px;
+  }
   .switchDataText {
     display: inline-flex;
     align-items: center;
