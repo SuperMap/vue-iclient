@@ -58,7 +58,7 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    & > #{$query-prefix}__job-info-name,git
+    & > #{$query-prefix}__job-info-name,
     & > #{$query-prefix}__header-name {
       display: inline-block;
       overflow: hidden;
