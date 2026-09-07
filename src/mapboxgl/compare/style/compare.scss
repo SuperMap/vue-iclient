@@ -13,14 +13,20 @@
     width: 100%;
     height: 100%;
   }
+  // rtl:physical:start
   & > .mapboxgl-compare {
     z-index: 999;
     user-select: none;
     background-color: $compare-swiper-background;
+    // mapbox-gl-compare positions the control with left-based pixel transforms.
+    // Keep the control in the same physical coordinate system when the page is RTL.
+    left: 0;
+    right: auto;
+    direction: ltr;
     .compare-swiper-vertical,
     .compare-swiper-horizontal {
       box-shadow: inset 0 0 0 2px;
-      @include position-row(left, 50%, false, false);
+      left: 50% !important;
       margin: 0;
       box-shadow: none;
       border: 2px solid;
@@ -43,7 +49,8 @@
       transform: translate(-50%, -50%) rotate(90deg);
     }
     .compare-swiper-vertical {
-      @include transform-translate(-50%, -50%, false);
+      transform: translate(-50%, -50%);
     }
   }
+  // rtl:physical:end
 }
