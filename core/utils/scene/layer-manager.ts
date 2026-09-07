@@ -1764,14 +1764,19 @@ class ClusterForeManager {
             pixelSize: getDefaultPointPixelSize(config.pointSize),
             outlineColor: config.stroke || '#ffffff',
             outlineWidth: getPointOutlineWidth(config.outlineWidth),
-            labelText: labelConfig.field ? toSceneLabelText(props[labelConfig.field]) : '',
+            labelText:
+              labelConfig.enabled !== false && labelConfig.field
+                ? toSceneLabelText(props[labelConfig.field])
+                : '',
             labelAlign: 'top',
             labelFontFamily: 'Alibaba PuHuiTi',
             labelFontSize: labelConfig.fontSize,
             labelColor: labelConfig.color || '#fff',
             labelOutline: false,
-            labelOffsetX: labelConfig.field ? labelConfig.labelOffsetX || 0 : 0,
-            labelOffsetY: labelConfig.field ? labelConfig.labelOffsetY || 0 : 0,
+            labelOffsetX:
+              labelConfig.enabled !== false && labelConfig.field ? labelConfig.labelOffsetX || 0 : 0,
+            labelOffsetY:
+              labelConfig.enabled !== false && labelConfig.field ? labelConfig.labelOffsetY || 0 : 0,
             data: props,
             disableDepthTestDistance: config.disableDepthTest ? undefined : Number.POSITIVE_INFINITY,
             distanceDisplayCondition: visibleAltitudeRange,
@@ -2639,7 +2644,9 @@ class LayerManager {
     const fields = [
       idFiled,
       data.config?.heightField,
-      data.config?.label ? data.config.label.field : ''
+      data.config?.label?.enabled !== false && data.config?.label
+        ? data.config.label.field
+        : ''
     ]
       .concat(String(data.config?.initDataFields || '').trim().split(','))
       .filter(val => !!val && String(val).length > 0)
