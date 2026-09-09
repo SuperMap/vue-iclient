@@ -22,6 +22,7 @@
           <SmSelect
             v-model:value="selectedMode"
             class="sm-component-scene-split-screen__control"
+            :get-popup-container="getPopupContainer"
             @change="handleModeChange"
           >
             <SmSelectOption
@@ -162,6 +163,12 @@ function handleModeChange(mode: string) {
     return
   }
   refreshLayersInfo()
+}
+
+// 下拉面板默认挂载到 body，场景全屏后 body 不在全屏元素内会导致下拉框不显示，
+// 因此将下拉面板挂载到触发节点的父节点内。
+function getPopupContainer(triggerNode: HTMLElement) {
+  return triggerNode.parentNode as HTMLElement
 }
 
 function handleLayerViewportChange(id: string, values: SceneLayerMultiSelectValue[]) {

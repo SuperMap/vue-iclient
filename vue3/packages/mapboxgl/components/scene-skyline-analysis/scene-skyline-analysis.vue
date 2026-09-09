@@ -22,6 +22,7 @@
           <SmSelect
             v-model:value="state.skylineMode"
             class="sm-component-scene-skyline-analysis__control"
+            :get-popup-container="getPopupContainer"
           >
             <SmSelectOption value="LINE">
               {{ t('sceneSkylineAnalysis.lineDisplay') }}
@@ -155,6 +156,12 @@ const { textColorHeadingStyle } = useTheme(props)
 
 const rootEl = useTemplateRef('skylineRef')
 useSceneControl(() => rootEl.value?.$el)
+
+// 下拉面板默认挂载到 body，场景全屏后 body 不在全屏元素内会导致下拉框不显示，
+// 因此将下拉面板挂载到触发节点的父节点内。
+function getPopupContainer(triggerNode: HTMLElement) {
+  return triggerNode.parentNode as HTMLElement
+}
 
 const chartContainerId = UniqueId('sm-skyline-chart-')
 const showChart = ref(false)

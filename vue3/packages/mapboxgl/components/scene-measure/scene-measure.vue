@@ -22,6 +22,7 @@
             <sm-select
               v-model:value="state.measureMode"
               :style="{ width: '100%' }"
+              :get-popup-container="getPopupContainer"
               @change="update_mode"
             >
               <sm-select-option v-for="item in state.options" :key="item.value" :value="item.value">
@@ -117,6 +118,12 @@ useSceneGetter({
 
 const rootEl = useTemplateRef('measureRef')
 useSceneControl(() => rootEl.value?.$el)
+
+// 下拉面板默认挂载到 body，场景全屏后 body 不在全屏元素内会导致下拉框不显示，
+// 因此将下拉面板挂载到触发节点的父节点内。
+function getPopupContainer(triggerNode: HTMLElement) {
+  return triggerNode.parentNode as HTMLElement
+}
 
 onMounted(() => {
   checkReady();

@@ -24,12 +24,17 @@
             format="YYYY-MM-DD"
             :allow-clear="false"
             class="sm-component-scene-sunlight-analysis__control"
+            :get-popup-container="getPopupContainer"
           />
         </div>
 
         <div class="sm-component-scene-sunlight-analysis__item">
           <label>{{ t('sceneSunlightAnalysis.startTime') }}</label>
-          <SmSelect v-model:value="state.startTime" class="sm-component-scene-sunlight-analysis__control">
+          <SmSelect
+            v-model:value="state.startTime"
+            class="sm-component-scene-sunlight-analysis__control"
+            :get-popup-container="getPopupContainer"
+          >
             <SmSelectOption v-for="time in startTimeOptions" :key="time" :value="time">
               {{ time }}
             </SmSelectOption>
@@ -38,7 +43,11 @@
 
         <div class="sm-component-scene-sunlight-analysis__item">
           <label>{{ t('sceneSunlightAnalysis.endTime') }}</label>
-          <SmSelect v-model:value="state.endTime" class="sm-component-scene-sunlight-analysis__control">
+          <SmSelect
+            v-model:value="state.endTime"
+            class="sm-component-scene-sunlight-analysis__control"
+            :get-popup-container="getPopupContainer"
+          >
             <SmSelectOption v-for="time in endTimeOptions" :key="time" :value="time">
               {{ time }}
             </SmSelectOption>
@@ -134,6 +143,12 @@ const { textColorHeadingStyle } = useTheme(props)
 
 const rootEl = useTemplateRef('sunlightRef')
 useSceneControl(() => rootEl.value?.$el)
+
+// 下拉/日期面板默认挂载到 body，场景全屏后 body 不在全屏元素内会导致弹层不显示，
+// 因此将弹层挂载到触发节点的父节点内。
+function getPopupContainer(triggerNode: HTMLElement) {
+  return triggerNode.parentNode as HTMLElement
+}
 
 let viewer: any = null
 let sunlightAnalysis: SunlightAnalysis | null = null

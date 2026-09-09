@@ -42,7 +42,11 @@
             @click="changeIndex(rightArrowStep)"
           />
         </div>
-        <Dropdown v-if="showIdentifyFields" class="identify-fields">
+        <Dropdown
+          v-if="showIdentifyFields"
+          class="identify-fields"
+          :get-popup-container="getPopupContainer"
+        >
           <a class="ant-dropdown-link" @click.prevent>
             <MenuUnfoldOutlined />
           </a>
@@ -104,6 +108,12 @@ const interaction = computed(() => props.interaction)
 
 const popupContentRef = useTemplateRef('popupContentRef')
 const rootEl = useTemplateRef('popupRef')
+
+// Dropdown 菜单默认挂载到 body，场景全屏后 body 不在全屏元素内会导致菜单不显示，
+// 因此挂载到弹窗根节点内。
+function getPopupContainer() {
+  return rootEl.value ?? document.body
+}
 
 const currentIndex = ref(0)
 const currentLayerId = ref('')
