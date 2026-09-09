@@ -174,11 +174,14 @@ export default class EchartsDataService {
         sortMatchItem.yField,
         sortMatchItem.sort === 'ascending' ? 'asc' : 'desc'
       );
-      xBar && features.reverse();
     }
     const maxLen = +this.dataset.maxFeatures;
     if (maxLen && features.length > maxLen) {
       features.length = maxLen;
+    }
+    // 聚合排名先截取 Top-N，再转换横向展示方向，与非聚合路径保持一致。
+    if (sortMatchItem && xBar) {
+      features.reverse();
     }
     return features;
   }
@@ -445,8 +448,10 @@ export default class EchartsDataService {
       let featuresArr = [];
       fieldValueIndex.get(key).forEach(index => {
         // 清除字符串型的数字的逗号
-        let num = fieldValues[index] && clearNumberComma(fieldValues[index]);
-        valueArr.push(tonumber(num));
+        const value = fieldValues[index];
+        // 空值不参与数值聚合的分母，count 仍按原始记录数统计。
+        const numeric = typeof value === 'number' || (typeof value === 'string' && value.trim() !== '');
+        valueArr.push(numeric ? tonumber(clearNumberComma(value)) : NaN);
         featuresArr.push(features[index]);
       });
       let result = this._processValue(valueArr, statisticFunction, featuresArr);
@@ -469,7 +474,15 @@ export default class EchartsDataService {
     if(typeof (statisticFunction) === 'function') {
       result = statisticFunction(fieldValues, features);
     } else {
-      result = statisticFunctions[statisticFunction] ? statisticFunctions[statisticFunction](fieldValues) : statisticFunctions.sum(fieldValues);
+      const aggregate = statisticFunction === undefined ? 'sum' : statisticFunction;
+      const execute = Object.prototype.hasOwnProperty.call(statisticFunctions, aggregate)
+        ? statisticFunctions[aggregate] : undefined;
+      // 显式未知统计不能伪装成求和成功；缺省仍保持既有 sum 语义。
+      if (!execute) {
+        throw new Error(`Unsupported aggregate: ${aggregate}`);
+      }
+      const values = aggregate === 'count' ? fieldValues : fieldValues.filter(Number.isFinite);
+      result = values.length ? execute(values) : 0;
     }
     return result;
   }

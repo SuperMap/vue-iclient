@@ -9,6 +9,7 @@ import {
   chartThemeUtil,
   handleMultiGradient
 } from '@supermapgis/common/utils/theme/chart'
+import { fitChartAxisLayout } from '../utils/chart-axis-layout'
 import { applyArabicDigitsToChartOptions } from '../utils/chart-arabic-number'
 import EchartsDataService from 'vue-iclient-core/utils/EchartsDataService'
 import {
@@ -63,6 +64,8 @@ const EVENTS = [
 
 export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: { props: ChartProps, emit: any, viewModel: any, chartRef: any, mapNotLoadedTip: () => boolean }) {
   // 响应式数据
+  // 容器尺寸只作为坐标轴预算的输入；每次都从原始 options 重算，不在上次结果上累加。
+  const chartSize = ref({ width: 0, height: 0 })
   const chartTheme = ref({})
   const echartOptions = ref({})
   const datasetChange = ref(false)
@@ -671,7 +674,7 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
 
   const _chartOptions = computed(() => {
     const options = (_isRequestData.value && echartOptions.value) || parseOptions.value
-    return applyArabicDigitsToChartOptions(options)
+    return applyArabicDigitsToChartOptions(fitChartAxisLayout(options, chartSize.value))
   })
 
   const chartUpdateOptions = ref({
@@ -1771,6 +1774,11 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
    * @param {Object} [options] - options可缺省。有下面几个可选项：width, height, silent
    */
   const resize = (options?: { width?: number; height?: number; silent?: boolean }) => {
+    // 每次从输入 options 重新计算，容器缩小再放大时不会累积历史留白与限宽。
+    chartSize.value = {
+      width: options?.width ?? chartRef.value?.$el?.clientWidth ?? 0,
+      height: options?.height ?? chartRef.value?.$el?.clientHeight ?? 0
+    }
     _delegateMethod('resize', options)
   }
 
