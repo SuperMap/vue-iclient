@@ -43,11 +43,11 @@
             :options="viewportOptions"
             @change="handleLayerViewportChange"
           />
-          <div v-else class="sm-component-scene-split-screen__item">
-            <span class="sm-component-scene-split-screen__loading">
-              {{ t('sceneSplitScreen.loading') }}
-            </span>
-          </div>
+          <SmEmpty
+            v-else
+            class="sm-component-scene-split-screen__empty"
+            :description="t('sceneRollerShutter.noLayers')"
+          />
         </template>
       </div>
     </SmCard>
@@ -63,6 +63,7 @@ import { sceneSplitScreenPropsDefault } from './types'
 import { SplitScreen } from 'vue-iclient-core/utils/scene/split-screen'
 import SmCard from '@supermapgis/common/components/card/Card'
 import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'
+import SmEmpty from '@supermapgis/common/components/empty/Empty'
 import SmSelect, { SmSelectOption } from '@supermapgis/common/components/select/Select'
 import SceneLayerMultiSelectList from '@supermapgis/mapboxgl/components/scene-layer-list/scene-layer-multi-select-list.vue'
 import type {
