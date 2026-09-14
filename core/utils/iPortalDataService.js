@@ -2,7 +2,12 @@ import { FetchRequest } from '@supermapgis/iclient-common/util/FetchRequest';
 import { Util } from '@supermapgis/iclient-common/commontypes/Util';
 import iServerRestService, { vertifyEpsgCode, transformFeatures } from 'vue-iclient-core/utils/iServerRestService';
 import { isXField, isYField, handleWithCredentials, handleDataParentRes } from 'vue-iclient-core/utils/util';
+import { createAttributeFilterPredicate, ensureJsonSql, filterFeaturesByAttributeFilter } from 'vue-iclient-core/utils/json-sql-filter';
+import { toStructuredDataCqlFilter } from 'vue-iclient-core/utils/cql-filter';
 import { Events } from 'vue-iclient-core/types/event/Events';
+
+/** 结构化数据 OGC API Features 单次请求的要素数上限 */
+const STRUCTURED_DATA_PAGE_SIZE = 5000;
 
 /**
  * @class iPortalDataService
@@ -71,7 +76,7 @@ export default class iPortalDataService extends Events {
    */
   getData(queryInfo = {}, preferContent = false) {
     if (this.dataType === 'STRUCTUREDDATA') {
-      this._getStructureDatafromContent();
+      this._getStructureDatafromContent(queryInfo);
       return;
     }
 
@@ -101,7 +106,7 @@ export default class iPortalDataService extends Events {
           return;
         }
         if (data.type === 'STRUCTUREDDATA') {
-          this._getStructureDatafromContent();
+          this._getStructureDatafromContent(queryInfo);
           return;
         }
         const hasService = data.dataItemServices && data.dataItemServices.length > 0;
@@ -142,60 +147,101 @@ export default class iPortalDataService extends Events {
       });
   }
 
-  _getStructureDatafromContent() {
-    let featureResults = [];
+  /**
+   * 结构化数据（OGC API Features）查询。
+   * 同步自 vue-iclient-dev：过滤条件通过 CQL 下推服务端，服务端单页最多 5000 条，超出按 offset 分页。
+   * @param {Object} [queryInfo] - 查询参数，支持 maxFeatures / attributeFilter。
+   */
+  _getStructureDatafromContent(queryInfo = {}) {
     let url = this.url;
     if (url.includes('?')) {
       url = url.split('?')[0];
     }
-    let formatUrl = url + '/structureddata/ogc-features/collections/all/items.json';
-    let maxFeatures = 5000;
-    let allRequest = [];
-    this._getStructureData(formatUrl, maxFeatures, 0).then((data) => {
-      if (data) {
-        featureResults = data.features;
-        if (data.numberMatched < maxFeatures) {
-          this.iserverService._getFeaturesSucceed({
-            result: {
-              features: {
-                type: 'FeatureCollection',
-                features: featureResults
-              }
-            }
-          });
-          return;
-        }
+    const formatUrl = Util.urlPathAppend(url, '/structureddata/ogc-features/collections/all/items.json');
+    const maxFeatures = this._getStructureDataMaxFeatures(queryInfo);
+    const pageSize = STRUCTURED_DATA_PAGE_SIZE;
+    const firstCount = maxFeatures ? Math.min(pageSize, maxFeatures) : pageSize;
 
-        for (let i = maxFeatures; i < data.numberMatched;) {
-          allRequest.push(
-            this._getStructureData(formatUrl, maxFeatures, i)
-          );
-          i += maxFeatures;
-        }
-        // 所有请求结束
-        Promise.all(allRequest).then((results) => {
-          // 结果合并
-          results.forEach((result) => {
-            featureResults = featureResults.concat(result.features);
-          });
-          this.iserverService._getFeaturesSucceed({
-            result: {
-              features: {
-                type: 'FeatureCollection',
-                features: featureResults
-              }
-            }
-          });
-        });
+    this._getStructureData({ url: formatUrl, count: firstCount, offset: 0, queryInfo }).then(data => {
+      if (!data) {
+        return;
       }
+      let featureResults = Array.isArray(data.features) ? data.features : [];
+      const numberMatched = Number(data.numberMatched);
+      const totalMatched = Number.isFinite(numberMatched) && numberMatched >= 0 ? numberMatched : featureResults.length;
+      if (this._isStructureDataComplete(featureResults, totalMatched, maxFeatures)) {
+        this._publishStructureData(featureResults, maxFeatures);
+        return;
+      }
+
+      const allRequest = [];
+      for (let offset = featureResults.length; offset < totalMatched; ) {
+        const count = maxFeatures ? Math.min(pageSize, maxFeatures - offset) : pageSize;
+        if (count <= 0) {
+          break;
+        }
+        allRequest.push(this._getStructureData({ url: formatUrl, count, offset, queryInfo }));
+        offset += count;
+      }
+      if (!allRequest.length) {
+        this._publishStructureData(featureResults, maxFeatures);
+        return;
+      }
+
+      // 所有请求结束
+      Promise.all(allRequest).then(results => {
+        // 结果合并
+        results.forEach(result => {
+          if (result && Array.isArray(result.features)) {
+            featureResults = featureResults.concat(result.features);
+          }
+        });
+        this._publishStructureData(featureResults, maxFeatures);
+      });
     });
   }
 
-  _getStructureData(url, count, offset) {
-    url = `${url}?limit=${count}`;
-    if (offset) {
-      url = url + '&offset=' + offset;
+  _getStructureDataMaxFeatures(queryInfo = {}) {
+    const maxFeatures = Number(queryInfo.maxFeatures);
+    return Number.isFinite(maxFeatures) && maxFeatures > 0 ? maxFeatures : 0;
+  }
+
+  _isStructureDataComplete(featureResults, totalMatched, maxFeatures) {
+    if (!featureResults.length) {
+      return true;
     }
+    if (maxFeatures && featureResults.length >= maxFeatures) {
+      return true;
+    }
+    return featureResults.length >= totalMatched;
+  }
+
+  _publishStructureData(featureResults, maxFeatures) {
+    let features = this._transformContentFeatures(featureResults);
+    if (maxFeatures && features.length > maxFeatures) {
+      features = features.slice(0, maxFeatures);
+    }
+    const result = {
+      features: {
+        type: 'FeatureCollection',
+        features
+      }
+    };
+    this.vertified && (result.vertified = this.vertified);
+    this.iserverService._getFeaturesSucceed({ result });
+  }
+
+  _getStructureData({ url, count, offset, queryInfo = {} }) {
+    let queryParams = `limit=${count}`;
+    if (offset) {
+      queryParams += `&offset=${offset}`;
+    }
+    if (queryInfo.attributeFilter) {
+      // 结构化数据用 CQL：属性名双引号、字符串值单引号，详见 cql-filter
+      const filter = toStructuredDataCqlFilter(queryInfo.attributeFilter);
+      queryParams += `&filter=${encodeURIComponent(filter)}&filter-lang=cql-text`;
+    }
+    url = Util.urlAppend(url, queryParams);
     return FetchRequest.get(url, null, {
       withCredentials: this.withCredentials
     })
@@ -203,6 +249,10 @@ export default class iPortalDataService extends Events {
         return response.json();
       })
       .then(data => {
+        if (!data || (data.succeed === false && data.error)) {
+          const msg = data ? data.error.errorMsg : 'empty data';
+          throw msg;
+        }
         return data;
       })
       .catch(error => {
@@ -254,6 +304,13 @@ export default class iPortalDataService extends Events {
                 error
               });
             });
+        })
+        .catch(error => {
+          // 没有这个 catch，请求失败会让查询 promise 一直挂起（图层既不加载也不报错）
+          console.log(error);
+          this.triggerEvent('getdatafailed', {
+            error
+          });
         });
     } else {
       // 如果是地图服务
@@ -427,6 +484,10 @@ export default class iPortalDataService extends Events {
           return;
         }
         if (data.type) {
+          // content.json 不执行 attributeFilter，过滤在本地做，先确保 json-sql 就绪
+          if (queryInfo.attributeFilter) {
+            await ensureJsonSql();
+          }
           let features;
           let type = 'FeatureCollection';
           let contentCrs;
@@ -436,7 +497,7 @@ export default class iPortalDataService extends Events {
             if (!data.content?.features) {
               features = this._json2Feature(data.content);
             }
-            features = this._formatGeoJSON(features || data.content, queryInfo);
+            features = this._formatGeoJSON(features || data.content);
             type = data.content?.type || type;
             contentCrs = data.content?.crs;
           } else if (data.type === 'EXCEL' || data.type === 'CSV') {
@@ -447,6 +508,11 @@ export default class iPortalDataService extends Events {
             const layer = data.content?.layers?.[0];
             contentCrs = layer && layer.crs;
             features = this._formatGeoJSON(layer);
+          }
+          // content.json 不执行 attributeFilter：Excel/CSV 在构建要素时已按「过滤 → 截断」处理，
+          // 其余类型在这里补本地兜底过滤，再按 maxFeatures 截断
+          if (data.type !== 'EXCEL' && data.type !== 'CSV') {
+            features = this._filterContentFeatures(features, queryInfo);
           }
           features = this._transformContentFeatures(features, contentCrs);
           result.features = {
@@ -465,13 +531,25 @@ export default class iPortalDataService extends Events {
       });
   }
 
-  _formatGeoJSON(data, queryInfo) {
+  /**
+   * content.json 数据源的本地兜底过滤 + 最大返回数截断（服务端不执行 attributeFilter）。
+   * 条件不受支持时 filterFeaturesByAttributeFilter 会原样返回数据。
+   */
+  _filterContentFeatures(features, queryInfo = {}) {
+    if (!Array.isArray(features) || !features.length) {
+      return features;
+    }
+    const filtered = filterFeaturesByAttributeFilter(features, queryInfo.attributeFilter);
+    const maxFeatures = Number(queryInfo.maxFeatures);
+    return Number.isFinite(maxFeatures) && maxFeatures > 0 && filtered.length > maxFeatures
+      ? filtered.slice(0, maxFeatures)
+      : filtered;
+  }
+
+  _formatGeoJSON(data) {
     let features = data?.features;
     if (!Array.isArray(features)) {
       return [];
-    }
-    if (queryInfo && queryInfo.maxFeatures > 0) {
-      features = features.slice(0, queryInfo.maxFeatures);
     }
     features.forEach((row, index) => {
       row.properties = row.properties || {};
@@ -480,18 +558,17 @@ export default class iPortalDataService extends Events {
     return features;
   }
 
-  _excelData2Feature(dataContent, queryInfo, dataMetaInfo) {
+  _excelData2Feature(dataContent, queryInfo = {}, dataMetaInfo) {
     let fieldCaptions = dataContent.colTitles;
     const { xfieldIndex, yfieldIndex } = this._resolveExcelXYFieldIndexes(fieldCaptions, dataMetaInfo);
+    const predicate = createAttributeFilterPredicate(queryInfo.attributeFilter, fieldCaptions);
+    const maxFeatures = Number(queryInfo.maxFeatures);
+    const limit = Number.isFinite(maxFeatures) && maxFeatures > 0 ? maxFeatures : 0;
 
     // feature 构建后期支持坐标系 4326/3857
     let features = [];
 
-    let len = dataContent.rows.length;
-    if (queryInfo && queryInfo.maxFeatures > 0 && len > queryInfo.maxFeatures) {
-      len = queryInfo.maxFeatures;
-    }
-    for (let i = 0; i < len; i++) {
+    for (let i = 0; i < dataContent.rows.length; i++) {
       let row = dataContent.rows[i];
 
       let rawX = xfieldIndex !== -1 ? row[xfieldIndex] : undefined;
@@ -506,6 +583,10 @@ export default class iPortalDataService extends Events {
         let key = dataContent.colTitles[index];
         attributes[key] = dataContent.rows[i][index];
       }
+      // 过滤在前、截断在后，与 SQL 的 where -> limit 顺序一致
+      if (predicate && !predicate(attributes)) {
+        continue;
+      }
       let feature = {
         type: 'Feature',
         properties: attributes
@@ -519,6 +600,9 @@ export default class iPortalDataService extends Events {
       }
       // 目前csv 只支持处理点，所以先生成点类型的 geojson
       features.push(feature);
+      if (limit && features.length >= limit) {
+        break;
+      }
     }
     return features;
   }

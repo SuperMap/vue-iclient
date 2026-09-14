@@ -1,6 +1,7 @@
 import { FeatureService } from '@supermapgis/iclient-common/iServer/FeatureService'
 import { GetFeaturesBySQLParameters } from '@supermapgis/iclient-common/iServer/GetFeaturesBySQLParameters'
 import getFeatures from 'vue-iclient-core/utils/get-features'
+import { filterFeaturesByAttributeFilter, ensureJsonSql } from 'vue-iclient-core/utils/json-sql-filter'
 import { flyToCamera, getSuperMap3DCartesian3, type FlyToOptions, type ScenePosition } from './fly-to-camera'
 import { prepareSuperMap3DServiceAuth } from './supermap3d-credential'
 
@@ -2601,13 +2602,15 @@ class LayerManager {
 
   async _loadGeoJSONFeatures(data: LayerCheckData): Promise<LayerDataResult> {
     const config = data.config || {}
-    const featureCollection = applyMaxFeatures(
-      normalizeGeoJSONToFeatureCollection(config.geoJSON),
-      config.maxFeatures
-    )
+    const attributeFilter = config.filter || config.attributeFilter
+    if (attributeFilter) {
+      await ensureJsonSql()
+    }
+    const source = normalizeGeoJSONToFeatureCollection(config.geoJSON)
+    const filteredFeatures = filterFeaturesByAttributeFilter(source.features, attributeFilter)
     return {
-      featureCollection,
-      totalCount: featureCollection.features.length
+      featureCollection: applyMaxFeatures(getFeatureCollection(filteredFeatures), config.maxFeatures),
+      totalCount: filteredFeatures.length
     }
   }
 
@@ -2660,6 +2663,7 @@ class LayerManager {
         epsgCode: 4326
       },
       fromIndex: 0,
+      maxFeatures: config.maxFeatures,
       toIndex: this._getMaxFeaturesIndex(config)
     })
     const result = await this._getFeatureService(config.url, config).getFeaturesBySQL(params)
