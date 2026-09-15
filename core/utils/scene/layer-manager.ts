@@ -2,6 +2,7 @@ import { FeatureService } from '@supermapgis/iclient-common/iServer/FeatureServi
 import { GetFeaturesBySQLParameters } from '@supermapgis/iclient-common/iServer/GetFeaturesBySQLParameters'
 import getFeatures from 'vue-iclient-core/utils/get-features'
 import { filterFeaturesByAttributeFilter, ensureJsonSql } from 'vue-iclient-core/utils/json-sql-filter'
+import { toAttributeFilter } from 'vue-iclient-core/utils/attribute-filter'
 import { flyToCamera, getSuperMap3DCartesian3, type FlyToOptions, type ScenePosition } from './fly-to-camera'
 import { prepareSuperMap3DServiceAuth } from './supermap3d-credential'
 
@@ -2602,7 +2603,10 @@ class LayerManager {
 
   async _loadGeoJSONFeatures(data: LayerCheckData): Promise<LayerDataResult> {
     const config = data.config || {}
-    const attributeFilter = config.filter || config.attributeFilter
+    // 过滤条件可能是设置面板生成的 mapbox filter 表达式，先转成本地过滤用的 SQL 文本
+    const attributeFilter =
+      toAttributeFilter(config.filter, config.dataType) ||
+      toAttributeFilter(config.attributeFilter, config.dataType)
     if (attributeFilter) {
       await ensureJsonSql()
     }
@@ -2616,6 +2620,8 @@ class LayerManager {
 
   async _loadIPortalFeatures(data: LayerCheckData): Promise<LayerDataResult> {
     const config = data.config || {}
+    // 过滤条件原样交给 iPortalDataService：结构化数据要等数据源类型确定后再
+    // 换成表字段名并按 CQL 生成，非结构化数据由它转成普通 SQL
     const result = await getFeatures({
       type: 'iPortal',
       url: config.url,
@@ -2649,7 +2655,9 @@ class LayerManager {
 
     const queryParameter: Record<string, any> = {
       name: `${datasetName}@${datasourceName}`,
-      attributeFilter: config.filter || config.attributeFilter || ''
+      attributeFilter:
+        toAttributeFilter(config.filter, config.dataType) ||
+        toAttributeFilter(config.attributeFilter, config.dataType)
     }
     if (!config.returnAllFields && String(idFiled).toLowerCase() === 'smid') {
       queryParameter.fields = fields

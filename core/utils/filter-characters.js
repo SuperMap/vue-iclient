@@ -1,7 +1,8 @@
 /**
  * 过滤条件的公共字符处理：中文输入法常带出全角符号，先统一成 ASCII，
- * 否则本地 json-sql 与结构化数据的 CQL 都会生成无法解析的表达式。
- * 本地过滤（json-sql-filter）与结构化数据（cql-filter）共用这一份，互不依赖。
+ * 否则本地 json-sql 会生成无法解析的表达式。
+ * 目前只有本地过滤（json-sql-filter）在用；表达式条件由 mapboxFilterToQueryFilter
+ * 直接生成文本，不经过这里。
  */
 
 const FULL_WIDTH_CHARACTER_MAP = {

@@ -3,7 +3,8 @@ import { Util } from '@supermapgis/iclient-common/commontypes/Util';
 import iServerRestService, { vertifyEpsgCode, transformFeatures } from 'vue-iclient-core/utils/iServerRestService';
 import { isXField, isYField, handleWithCredentials, handleDataParentRes } from 'vue-iclient-core/utils/util';
 import { createAttributeFilterPredicate, ensureJsonSql, filterFeaturesByAttributeFilter } from 'vue-iclient-core/utils/json-sql-filter';
-import { toStructuredDataCqlFilter } from 'vue-iclient-core/utils/cql-filter';
+import { toAttributeFilter, mapFilterFieldNames } from 'vue-iclient-core/utils/attribute-filter';
+import { getStructuredDataFieldMap } from 'vue-iclient-core/utils/structured-data-field-map';
 import { Events } from 'vue-iclient-core/types/event/Events';
 
 /** 结构化数据 OGC API Features 单次请求的要素数上限 */
@@ -231,14 +232,26 @@ export default class iPortalDataService extends Events {
     this.iserverService._getFeaturesSucceed({ result });
   }
 
-  _getStructureData({ url, count, offset, queryInfo = {} }) {
+  /**
+   * 结构化数据（OGC API Features）单页查询。
+   * 过滤条件先按 structureddata.json 的 fieldNames → tableFieldNames 换成表字段名，
+   * 再转成 CQL（属性名双引号、字符串值单引号）。
+   */
+  async _getStructureData({ url, count, offset, queryInfo = {} }) {
     let queryParams = `limit=${count}`;
     if (offset) {
       queryParams += `&offset=${offset}`;
     }
     if (queryInfo.attributeFilter) {
-      // 结构化数据用 CQL：属性名双引号、字符串值单引号，详见 cql-filter
-      const filter = toStructuredDataCqlFilter(queryInfo.attributeFilter);
+      // 类型在这里判定最可靠——配置里没带 dataType 时，是请求回来才发现结构化的；
+      // 属性名要换成表中的字段名，否则显示名（fieldNames）过滤不生效
+      const fieldMap = await getStructuredDataFieldMap(this.url, {
+        withCredentials: this.withCredentials
+      });
+      const filter = toAttributeFilter(
+        mapFilterFieldNames(queryInfo.attributeFilter, fieldMap),
+        'STRUCTUREDDATA'
+      );
       queryParams += `&filter=${encodeURIComponent(filter)}&filter-lang=cql-text`;
     }
     url = Util.urlAppend(url, queryParams);
@@ -263,7 +276,18 @@ export default class iPortalDataService extends Events {
       });
   }
 
+  /**
+   * 非结构化数据（REST 服务 / content.json）用的过滤文本：
+   * 表达式转成普通 SQL，字段名不加引号；旧版字符串原样返回。
+   * 就地改写 queryInfo，下游按文本处理（iServer 查询、本地 json-sql）。
+   */
+  _normalizeAttributeFilter(queryInfo) {
+    queryInfo.attributeFilter = toAttributeFilter(queryInfo.attributeFilter, this.dataType);
+    return queryInfo;
+  }
+
   _getDatafromRest(serviceType, address, queryInfo) {
+    this._normalizeAttributeFilter(queryInfo);
     if (serviceType === 'RESTDATA') {
       let url = Util.urlPathAppend(address, 'data/datasources');
       let dataSourceName;
@@ -466,6 +490,7 @@ export default class iPortalDataService extends Events {
   }
 
   _getDatafromContent(datasetUrl, queryInfo, dataMetaInfo) {
+    this._normalizeAttributeFilter(queryInfo);
     let result = {};
     const contentUrl = Util.urlAppend(Util.urlPathAppend(datasetUrl, 'content.json'), 'pageSize=9999999&currentPage=1');
     // 获取图层数据
