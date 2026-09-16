@@ -13,7 +13,8 @@
 
   .sm-component-card,
   .sm-component-select,
-  .sm-component-select-selector {
+  .sm-component-select-selector,
+  .sm-component-empty {
     color: inherit;
     font-size: inherit;
     font-family: inherit;
@@ -62,10 +63,5 @@
 
   @include e(control) {
     width: 100%;
-  }
-
-  @include e(loading) {
-    /* stylelint-disable-next-line */
-    color: $icon-color-secondary;
   }
 }

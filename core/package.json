@@ -3,7 +3,7 @@
   "private": true,
   "license": "MIT",
   "peerDependencies": {
-    "@supermapgis/iclient-common": "^12.0.1-r",
+    "@supermapgis/iclient-common": "^12.1.0-r",
     "@turf/circle": ">=7.3.4",
     "@turf/center": ">=5.1.5",
     "lodash.clonedeep": ">=4.0.1",

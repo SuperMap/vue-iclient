@@ -5,12 +5,10 @@ import { timerProps, themeProps } from '@supermapgis/common/utils/index.common'
 
 export const indicatorProps = () => ({
   title: {
-    type: String,
-    default: () => 'indicator.title'
+    type: String
   },
   unit: {
-    type: String,
-    default: () => 'indicator.unit'
+    type: String
   },
   indicatorColor: String,
   textFontSize: {

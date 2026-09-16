@@ -43,6 +43,11 @@ function handleToggleFullscreen() {
   if (!sceneElement) {
     return
   }
-  toggleFullscreen(sceneElement);
+  // 低代码运行时中场景作为容器渲染时，场景内部的子组件并不挂在场景元素上，
+  // 而是与场景元素并列渲染在外层包裹容器中（见 DragContainer.vue 的
+  // web-scene-container / web-map-container 结构）。若只对场景元素全屏，
+  // 场景内的子组件不会显示，因此优先取包含场景和子组件的包裹容器作为全屏对象。
+  const containerElement = sceneElement.closest('.web-scene-container')
+  toggleFullscreen(containerElement ?? sceneElement);
 }
 </script>

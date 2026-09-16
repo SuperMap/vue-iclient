@@ -41,7 +41,7 @@
 import type { IndicatorProps, IndicatorEvents } from './types'
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { indicatorPropsDefault } from './types'
-import { useTimer, useTheme } from '@supermapgis/common/hooks/index.common'
+import { useLocale, useTimer, useTheme } from '@supermapgis/common/hooks/index.common'
 import RestService from 'vue-iclient-core/utils/RestService'
 import CountTo from './count-to.vue'
 
@@ -52,10 +52,11 @@ defineOptions({
 const props = withDefaults(defineProps<IndicatorProps>(), indicatorPropsDefault)
 const emit = defineEmits<IndicatorEvents>()
 
+const { t } = useLocale()
 const { textColorStyle, containerBgStyle, colorPrimary } = useTheme(props)
 
-const titleData = ref(props.title)
-const unitData = ref(props.unit)
+const titleData = ref(props.title ?? t('indicator.title'))
+const unitData = ref(props.unit ?? t('indicator.unit'))
 const numData = ref(0)
 const startData = ref(0)
 const indicatorNum = ref(0)
@@ -122,23 +123,23 @@ const partsOfPropsWatcher = () => {
       function (next) {
         switch (prop) {
           case 'title':
-            titleData.value = next
+            titleData.value = next ?? t('indicator.title')
             break
           case 'titleField':
             if (fetchProperties && Object.prototype.hasOwnProperty.call(fetchProperties, next)) {
               titleData.value = fetchProperties[props.titleField]
             } else {
-              titleData.value = props.title
+              titleData.value = props.title ?? t('indicator.title')
             }
             break
           case 'unit':
-            unitData.value = next
+            unitData.value = next ?? t('indicator.unit')
             break
           case 'unitField':
             if (fetchProperties && Object.prototype.hasOwnProperty.call(fetchProperties, next)) {
               unitData.value = fetchProperties[props.unitField]
             } else {
-              unitData.value = props.unit
+              unitData.value = props.unit ?? t('indicator.unit')
             }
             break
           case 'num':
@@ -168,13 +169,13 @@ const fetchData = ({ features }) => {
     fetchProperties = properties
     unitData.value = Object.prototype.hasOwnProperty.call(properties, props.unitField)
       ? properties[props.unitField]
-      : props.unit
+      : props.unit ?? t('indicator.unit')
     Object.prototype.hasOwnProperty.call(properties, props.numField)
       ? changeNumData(properties[props.numField])
       : changeNumData(props.num)
     titleData.value = Object.prototype.hasOwnProperty.call(properties, props.titleField)
       ? properties[props.titleField]
-      : props.title
+      : props.title ?? t('indicator.title')
   }
 }
 const getData = () => {
@@ -205,9 +206,9 @@ watch(
     if (val) {
       getData()
     } else {
-      unitData.value = props.unit
+      unitData.value = props.unit ?? t('indicator.unit')
       changeNumData(props.num)
-      titleData.value = props.title
+      titleData.value = props.title ?? t('indicator.title')
       fetchProperties = null
     }
   },

@@ -17,6 +17,7 @@
           mode="multiple"
           :value="item.selectedValues"
           :show-search="false"
+          :get-popup-container="getPopupContainer"
           :aria-label="item.name"
           @change="value => handleChange(item.id, value)"
         >
@@ -50,6 +51,12 @@ defineProps<{
 const emit = defineEmits<{
   change: [id: string, values: SceneLayerMultiSelectValue[]]
 }>()
+
+// 下拉面板默认挂载到 body，场景全屏后 body 不在全屏元素内会导致下拉框不显示，
+// 因此将下拉面板挂载到触发节点的父节点内。
+function getPopupContainer(triggerNode: HTMLElement) {
+  return triggerNode.parentNode as HTMLElement
+}
 
 function handleChange(id: string, value: unknown) {
   emit('change', id, Array.isArray(value) ? value : [])

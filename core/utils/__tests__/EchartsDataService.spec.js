@@ -1,4 +1,5 @@
 import EchartsDataService from '../EchartsDataService';
+import { statisticsFeatures } from '../statistics';
 
 describe('EchartsDataService', () => {
   let echartsDataService;
@@ -430,5 +431,50 @@ describe('EchartsDataService', () => {
     echartsDataService = new EchartsDataService(dataset, datasetOptions);
     await echartsDataService.getDataOption(dataset);
     expect(echartsDataService.serieDatas).toEqual([])
+  });
+});
+
+describe('EchartsDataService aggregated ranking', () => {
+  // 横向排行的展示方向必须在截断之后再转换：先 reverse 再截断，降序取 Top-N
+  // 留下的是最低的 N 条。
+  it.each([false, true])('takes the highest groups before display reversal (xBar=%s)', xBar => {
+    const data = statisticsFeatures([
+      { properties: { category: 'A', value: 30 } },
+      { properties: { category: 'B', value: 50 } },
+      { properties: { category: 'A', value: 40 } },
+      { properties: { category: 'C', value: 10 } }
+    ]);
+    const datasetOptions = [{
+      xField: 'category', yField: 'value', seriesType: 'bar',
+      isStastic: true, statisticFunction: 'sum', sort: 'descending'
+    }];
+    const service = new EchartsDataService({ type: 'geoJSON', maxFeatures: 2 }, datasetOptions);
+    const options = service.formatChartData(datasetOptions, xBar, data);
+    expect(options.series[0].data).toEqual(xBar ? [50, 70] : [70, 50]);
+    expect(data.features).toHaveLength(4);
+  });
+});
+
+describe('EchartsDataService aggregate values', () => {
+  // 空值不进数值聚合的分母；count 统计的是原始记录数，两者判据不同。
+  it.each([
+    ['mean', 20], ['sum', 40], ['count', 5]
+  ])('uses numeric values for %s and record count for count', (aggregate, expected) => {
+    const data = statisticsFeatures(
+      [10, '30', null, '', 'invalid'].map(value => ({ properties: { category: 'A', value } }))
+    );
+    const bindings = [{
+      xField: 'category', yField: 'value', seriesType: 'bar',
+      isStastic: true, statisticFunction: aggregate
+    }];
+    const service = new EchartsDataService({ type: 'geoJSON' }, bindings);
+    expect(service.formatChartData(bindings, false, data).series[0].data).toEqual([expected]);
+  });
+
+  // 显式传入的未知统计方式不能伪装成求和成功；不传时仍是既有的 sum 语义。
+  it('rejects an explicit unknown aggregate', () => {
+    const service = new EchartsDataService({ type: 'geoJSON' }, []);
+    expect(() => service._processValue([10, 30], 'unknown', [])).toThrow('Unsupported aggregate');
+    expect(service._processValue([10, 30], undefined, [])).toBe(40);
   });
 });

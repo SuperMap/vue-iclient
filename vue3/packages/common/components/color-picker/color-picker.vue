@@ -65,7 +65,16 @@ const colorValue = computed(() => {
   return `rgba(${r}, ${g}, ${b}, ${a})`
 })
 
-const getPopupContainer = () => document.body
+// 弹层默认挂到 body，场景全屏后 body 不在全屏元素内，颜色面板不会显示；
+// 折叠卡片的面板 body 又有 overflow 裁剪，因此优先挂到面板最外层
+// .sm-component-collapse-card__content（relative、不裁剪），使弹层既在全屏子树内又不被裁切；
+// 不在折叠卡片内时退回到触发节点的父节点。
+const getPopupContainer = (triggerNode: HTMLElement) => {
+  return (
+    (triggerNode.closest('.sm-component-collapse-card__content') as HTMLElement | null) ??
+    (triggerNode.parentNode as HTMLElement)
+  )
+}
 
 const handleOpenChange = (nextOpen: boolean) => {
   open.value = props.disabled ? false : nextOpen

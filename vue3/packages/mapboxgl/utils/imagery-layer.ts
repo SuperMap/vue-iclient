@@ -38,7 +38,7 @@ export function getImageryLayerName(
     return t('sceneLayerList.lnglatMap')
   }
 
-  if (imageUrl.includes('earth-skin2.jpg')) {
+  if (imageUrl.includes('earth-skin2.jpg') || imageUrl.includes('Assets/Textures/GlobalBkLayer.jpg')) {
     return t('sceneLayerList.defaultImage')
   }
 

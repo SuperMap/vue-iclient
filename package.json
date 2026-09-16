@@ -56,8 +56,8 @@
   },
   "license": "Apache-2.0",
   "peerDependencies": {
-    "@supermapgis/iclient-common": "^12.0.1-r",
-    "@supermapgis/iclient-mapboxgl": "^12.0.1-r"
+    "@supermapgis/iclient-common": "^12.1.0-r",
+    "@supermapgis/iclient-mapboxgl": "^12.1.0-r"
   },
   "devDependencies": {
     "@types/geojson": "^7946.0.16",

@@ -4,6 +4,7 @@
       v-model:value="selectedValue"
       class="sm-component-scene-sunlight-analysis__color-table-select"
       option-label-prop="label"
+      :get-popup-container="getPopupContainer"
       @change="handleChange"
     >
       <SmSelectOption
@@ -41,6 +42,12 @@ const emit = defineEmits<{
 }>()
 
 const selectedValue = ref(props.value)
+
+// 下拉面板默认挂载到 body，场景全屏后 body 不在全屏元素内会导致下拉框不显示，
+// 因此将下拉面板挂载到触发节点的父节点内。
+function getPopupContainer(triggerNode: HTMLElement) {
+  return triggerNode.parentNode as HTMLElement
+}
 
 watch(
   () => props.value,
