@@ -1365,13 +1365,22 @@ export default {
       if (this.sqlBuilderConditions.length === 1) {
         return;
       }
+      const firstDependentIndex = this.sqlBuilderConditions.findIndex(
+        (condition, conditionIndex) =>
+          conditionIndex > index && this.shouldUseSqlBuilderPrecedingExpression(conditionIndex)
+      );
       this.sqlBuilderConditions.splice(index, 1);
       if (index === 0) {
         this.sqlBuilderConnectors.splice(0, 1);
       } else {
         this.sqlBuilderConnectors.splice(index - 1, 1);
       }
-      this.resetSqlBuilderConditionsAfter(index - 1, jobInfo);
+      // 删除条件后，仅清空原本依赖该条件的后续值；独立的首个 OR 条件继续保留。
+      if (firstDependentIndex > -1) {
+        this.resetSqlBuilderConditionsFrom(firstDependentIndex - 1, jobInfo);
+        return;
+      }
+      this.syncSqlBuilderExpression(jobInfo);
     },
     confirmSqlBuilder(jobInfo) {
       this.syncSqlBuilderExpression(jobInfo);

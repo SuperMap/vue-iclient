@@ -718,7 +718,7 @@ describe('query', () => {
     });
   });
 
-  it('removes connector when deleting sql builder condition row', async () => {
+  it('removes connector and invalidates only dependent conditions when deleting a sql builder row', async () => {
     wrapper = mount(SmQuery, {
       localVue,
       propsData: {
@@ -740,6 +740,15 @@ describe('query', () => {
     wrapper.vm.sqlBuilderConditions[0] = { field: 'SmID', operator: '>', value: '10' };
     wrapper.vm.addSqlBuilderCondition();
     wrapper.vm.sqlBuilderConditions[1] = { field: 'Name', operator: '=', value: 'road' };
+    wrapper.vm.removeSqlBuilderCondition(0);
+    expect(wrapper.vm.sqlBuilderConditions).toEqual([{ field: 'Name', operator: '=', value: '' }]);
+    expect(wrapper.vm.sqlBuilderConnectors).toEqual([]);
+
+    wrapper.vm.sqlBuilderConditions = [
+      { field: 'SmID', operator: '>', value: '10' },
+      { field: 'Name', operator: '=', value: 'road' }
+    ];
+    wrapper.vm.sqlBuilderConnectors = ['OR'];
     wrapper.vm.removeSqlBuilderCondition(0);
     expect(wrapper.vm.sqlBuilderConditions).toEqual([{ field: 'Name', operator: '=', value: 'road' }]);
     expect(wrapper.vm.sqlBuilderConnectors).toEqual([]);
