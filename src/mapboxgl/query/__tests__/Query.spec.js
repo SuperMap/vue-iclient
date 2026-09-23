@@ -704,10 +704,18 @@ describe('query', () => {
     wrapper.vm.sqlBuilderConditions[0] = { field: 'SmID', operator: '>', value: '10' };
     wrapper.vm.addSqlBuilderCondition();
     wrapper.vm.sqlBuilderConnectors[0] = 'OR';
-    wrapper.vm.sqlBuilderConditions[1] = { field: 'Name', operator: 'LIKE', value: 'road' };
+    wrapper.vm.sqlBuilderConditions[1] = { field: 'Name', operator: 'LIKE', value: '广东省' };
     await wrapper.vm.$nextTick();
     wrapper.vm.confirmSqlBuilder(wrapper.vm.jobInfos[0]);
-    expect(wrapper.vm.jobInfos[0].queryParameter.attributeFilter).toBe("SmID > 10 OR Name LIKE '%road%'");
+    expect(wrapper.vm.jobInfos[0].queryParameter.attributeFilter).toBe("SmID > 10 OR Name LIKE '%广东省%'");
+
+    await wrapper.vm.openSqlBuilder(wrapper.vm.jobInfos[0], 0);
+
+    expect(wrapper.vm.sqlBuilderConditions[1]).toEqual({
+      field: 'Name',
+      operator: 'LIKE',
+      value: '广东省'
+    });
   });
 
   it('removes connector when deleting sql builder condition row', async () => {
@@ -1349,9 +1357,7 @@ describe('query', () => {
     const secondLoadPromise = wrapper.vm.handleSqlBuilderFieldValueLoad(0, jobInfo);
 
     expect(querySpy).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.isSqlBuilderFieldValueLoading(jobInfo, 'Name')).toBe(true);
     expect(wrapper.vm.isSqlBuilderFieldValueButtonLoading(0)).toBe(true);
-    await secondLoadPromise;
     resolveFeatures([
       {
         properties: {
@@ -1359,21 +1365,151 @@ describe('query', () => {
         }
       }
     ]);
-    await loadPromise;
+    await Promise.all([loadPromise, secondLoadPromise]);
 
-    expect(wrapper.vm.isSqlBuilderFieldValueLoading(jobInfo, 'Name')).toBe(false);
     expect(wrapper.vm.isSqlBuilderFieldValueButtonLoading(0)).toBe(false);
-    expect(wrapper.vm.isSqlBuilderFieldValueLoaded(jobInfo, 'Name')).toBe(true);
+    expect(
+      wrapper.vm.isSqlBuilderFieldValueLoaded(
+        jobInfo,
+        'Name',
+        wrapper.vm.getSqlBuilderFieldValueContext(jobInfo, 0, 'Name')
+      )
+    ).toBe(true);
     expect(wrapper.vm.getSqlBuilderValueButtonTitle(jobInfo, wrapper.vm.sqlBuilderConditions[0])).toBe(
-      wrapper.vm.$t('query.sqlBuilderValueLoaded')
+      wrapper.vm.$t('query.sqlBuilderValueRequest')
     );
     expect(wrapper.vm.getSqlBuilderValuePlaceholder(jobInfo, wrapper.vm.sqlBuilderConditions[0])).toBe(
       wrapper.vm.$t('query.sqlBuilderValueLimitPlaceholder')
     );
-    await expect(wrapper.vm.handleSqlBuilderFieldValueLoad(0, jobInfo)).resolves.toEqual([]);
+    wrapper.vm.sqlBuilderConditions[0].field = 'Code';
+    expect(wrapper.vm.getSqlBuilderFieldValueOptions(wrapper.vm.sqlBuilderConditions[0], 0)).toEqual([]);
+    wrapper.vm.sqlBuilderConditions[0].field = 'Name';
+    await expect(wrapper.vm.handleSqlBuilderFieldValueLoad(0, jobInfo)).resolves.toEqual(['Airport']);
+    expect(querySpy).toHaveBeenCalledTimes(2);
     expect(wrapper.vm.getSqlBuilderFieldValueOptions(wrapper.vm.sqlBuilderConditions[0], 0)).toEqual([
       { label: 'Airport', value: 'Airport' }
     ]);
+  });
+
+  it('loads sql builder field values with previous conditions and invalidates following values', async () => {
+    wrapper = mount(SmQuery, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        restData: [
+          {
+            type: 'iServer',
+            name: 'restData',
+            url: 'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data',
+            attributeFilter: '',
+            maxFeatures: 30,
+            dataName: ['World:Countries'],
+            queryMode: 'SQL'
+          }
+        ]
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    const jobInfo = wrapper.vm.jobInfos[0];
+    wrapper.vm.sqlBuilderVisibleIndex = 0;
+    wrapper.vm.$set(wrapper.vm.sqlBuilderFieldMap, wrapper.vm.getSqlBuilderJobCacheKey(jobInfo), [
+      { name: 'SmID', type: 'INT32' },
+      { name: 'Name', type: 'WTEXT' },
+      { name: 'Code', type: 'WTEXT' }
+    ]);
+    wrapper.vm.sqlBuilderConditions = [
+      { field: 'SmID', operator: '>', value: '10' },
+      { field: 'Name', operator: '=', value: 'Airport' },
+      { field: 'Code', operator: '=', value: 'A001' }
+    ];
+    wrapper.vm.sqlBuilderConnectors = ['OR', 'AND'];
+    const querySpy = jest.spyOn(wrapper.vm, 'querySqlBuilderValueFeatures').mockResolvedValue([
+      { properties: { SmID: 11, Name: 'Station', Code: 'B001' } }
+    ]);
+
+    wrapper.vm.sqlBuilderConditions = wrapper.vm.sqlBuilderConditions.concat([
+      { field: 'Name', operator: '=', value: 'Station' },
+      { field: 'Code', operator: '=', value: 'B001' }
+    ]);
+    wrapper.vm.sqlBuilderConnectors = ['OR', 'AND', 'OR', 'OR'];
+    expect(wrapper.vm.getSqlBuilderFieldValueContext(jobInfo, 1, 'Name').attributeFilter).toBe('');
+    expect(wrapper.vm.getSqlBuilderFieldValueContext(jobInfo, 2, 'Code').attributeFilter).toBe(
+      "SmID > 10 OR Name = 'Airport'"
+    );
+    expect(wrapper.vm.getSqlBuilderFieldValueContext(jobInfo, 3, 'Name').attributeFilter).toBe(
+      "SmID > 10 OR Name = 'Airport' AND Code = 'A001'"
+    );
+    expect(wrapper.vm.getSqlBuilderFieldValueContext(jobInfo, 4, 'Code').attributeFilter).toBe(
+      "SmID > 10 OR Name = 'Airport' AND Code = 'A001' OR Name = 'Station'"
+    );
+    wrapper.vm.sqlBuilderConditions.splice(3);
+    wrapper.vm.sqlBuilderConnectors = ['OR', 'AND'];
+
+    await wrapper.vm.handleSqlBuilderFieldValueLoad(2, jobInfo);
+
+    expect(querySpy).toHaveBeenCalledWith(jobInfo, {
+      attributeFilter: "SmID > 10 OR Name = 'Airport'"
+    });
+    expect(wrapper.vm.getSqlBuilderFieldValueOptions(wrapper.vm.sqlBuilderConditions[2], 2)).toEqual([
+      { label: 'B001', value: 'B001' }
+    ]);
+    expect(wrapper.vm.getSqlBuilderFieldValueContext(jobInfo, 1, 'Name')).toMatchObject({
+      ready: true,
+      attributeFilter: ''
+    });
+
+    wrapper.vm.sqlBuilderConditions[0].value = '20';
+    wrapper.vm.handleSqlBuilderValueChange(0, jobInfo);
+
+    expect(wrapper.vm.sqlBuilderConditions[1].value).toBe('Airport');
+    expect(wrapper.vm.sqlBuilderConditions[2].value).toBe('');
+
+    wrapper.vm.sqlBuilderConditions[1].value = '';
+    wrapper.vm.handleSqlBuilderValueChange(1, jobInfo);
+    expect(wrapper.vm.sqlBuilderConditions[2].value).toBe('');
+    const incompleteContext = wrapper.vm.getSqlBuilderFieldValueContext(jobInfo, 2, 'Code');
+    expect(incompleteContext).toMatchObject({
+      ready: false,
+      reason: 'PREVIOUS_CONDITION_INCOMPLETE'
+    });
+    expect(wrapper.vm.getSqlBuilderValueButtonTitle(jobInfo, wrapper.vm.sqlBuilderConditions[2], 2)).toBe(
+      wrapper.vm.$t('query.sqlBuilderValuePreviousConditionIncomplete')
+    );
+    await expect(wrapper.vm.handleSqlBuilderFieldValueLoad(2, jobInfo)).resolves.toEqual([]);
+    expect(querySpy).toHaveBeenCalledTimes(1);
+
+    wrapper.vm.sqlBuilderConnectors[0] = 'AND';
+    const stringNumberContext = wrapper.vm.getSqlBuilderFieldValueContext(jobInfo, 1, 'Name');
+    wrapper.vm.sqlBuilderConditions[0].value = 20;
+    const numberContext = wrapper.vm.getSqlBuilderFieldValueContext(jobInfo, 1, 'Name');
+    expect(numberContext.contextKey).toBe(stringNumberContext.contextKey);
+    wrapper.vm.sqlBuilderConditions[2].value = 'B001';
+    expect(wrapper.vm.buildSqlExpressionFromConditions(jobInfo)).toBe('SmID > 20');
+
+    for (let index = 0; index <= 50; index++) {
+      wrapper.vm.setSqlBuilderCachedFieldValues(`cache-${index}`, [index]);
+    }
+    expect(wrapper.vm.sqlBuilderFieldValueMap['cache-0']).toBeUndefined();
+    expect(wrapper.vm.sqlBuilderFieldValueMap['cache-50']).toEqual([50]);
+    const cacheOrder = wrapper.vm.sqlBuilderFieldValueCacheOrder.slice();
+    expect(wrapper.vm.getSqlBuilderCachedFieldValues('cache-50')).toEqual([50]);
+    expect(wrapper.vm.sqlBuilderFieldValueCacheOrder).toEqual(cacheOrder);
+
+    expect(wrapper.vm.getSqlBuilderFieldValueOptions(wrapper.vm.sqlBuilderConditions[2], 2)).toEqual([]);
+
+    wrapper.vm.sqlBuilderConditions[0] = { field: 'SmID', operator: '>', value: 20 };
+    wrapper.vm.sqlBuilderConditions[1].field = 'Name';
+    const currentContext = wrapper.vm.getSqlBuilderFieldValueContext(jobInfo, 1, 'Name');
+    wrapper.vm.$set(
+      wrapper.vm.sqlBuilderFieldValueButtonLoadingMap,
+      1,
+      currentContext.contextKey
+    );
+    expect(wrapper.vm.isSqlBuilderFieldValueButtonLoading(1, jobInfo)).toBe(true);
+    wrapper.vm.sqlBuilderConditions[1].field = 'Code';
+    expect(wrapper.vm.isSqlBuilderFieldValueButtonLoading(1, jobInfo)).toBe(false);
+    wrapper.vm.sqlBuilderConditions[0].value = 21;
+    expect(wrapper.vm.isSqlBuilderFieldValueButtonLoading(1, jobInfo)).toBe(false);
   });
 
   it('does not use configured fields for sql builder field options', async () => {

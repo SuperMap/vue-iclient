@@ -105,7 +105,7 @@
                               class="sm-component-query__sql-builder-logic"
                               :get-popup-container="getSqlBuilderSelectPopupContainer"
                               :style="getTextColorStyle"
-                              @change="syncSqlBuilderExpression(jobInfo)"
+                              @change="handleSqlBuilderConnectorChange(conditionIndex - 1, jobInfo)"
                             >
                               <sm-select-option value="AND">AND</sm-select-option>
                               <sm-select-option value="OR">OR</sm-select-option>
@@ -117,7 +117,7 @@
                               type="button"
                               class="sm-component-query__sql-builder-condition-close"
                               :title="$t('query.sqlBuilderDelete')"
-                              @click="removeSqlBuilderCondition(conditionIndex)"
+                              @click="removeSqlBuilderCondition(conditionIndex, jobInfo)"
                             >
                               <i class="sm-components-icon-close" />
                             </button>
@@ -155,7 +155,7 @@
                                 class="sm-component-query__sql-builder-control"
                                 :get-popup-container="getSqlBuilderSelectPopupContainer"
                                 :style="getTextColorStyle"
-                                @change="syncSqlBuilderExpression(jobInfo)"
+                                @change="handleSqlBuilderOperatorChange(conditionIndex, jobInfo)"
                               >
                                 <sm-select-option
                                   v-for="operator in getSqlBuilderOperators(condition, jobInfo)"
@@ -179,8 +179,8 @@
                                   class="sm-component-query__sql-builder-control"
                                   :get-popup-container="getSqlBuilderSelectPopupContainer"
                                   :style="getTextColorStyle"
-                                  :placeholder="getSqlBuilderValuePlaceholder(jobInfo, condition)"
-                                  :title="getSqlBuilderValuePlaceholder(jobInfo, condition)"
+                                  :placeholder="getSqlBuilderValuePlaceholder(jobInfo, condition, conditionIndex)"
+                                  :title="getSqlBuilderValuePlaceholder(jobInfo, condition, conditionIndex)"
                                   @focus="handleSqlBuilderValueFocus(conditionIndex)"
                                   @search="handleSqlBuilderValueSearch(conditionIndex, $event)"
                                   @change="handleSqlBuilderValueChange(conditionIndex, jobInfo)"
@@ -197,19 +197,22 @@
                                   v-if="!isSqlBuilderValueDisabled(condition.operator)"
                                   size="small"
                                   class="sm-component-query__sql-builder-value-button"
-                                  :title="getSqlBuilderValueButtonTitle(jobInfo, condition)"
+                                  :title="getSqlBuilderValueButtonTitle(jobInfo, condition, conditionIndex)"
                                   :disabled="
                                     !condition.field ||
-                                      isSqlBuilderFieldValueLoaded(jobInfo, condition.field) ||
-                                      isSqlBuilderFieldValueButtonLoading(conditionIndex) ||
-                                      isSqlBuilderFieldValueLoading(jobInfo, condition.field)
+                                      !isSqlBuilderFieldValueContextReady(conditionIndex, jobInfo) ||
+                                      isSqlBuilderFieldValueButtonLoading(conditionIndex, jobInfo)
                                   "
                                   @click="handleSqlBuilderFieldValueLoad(conditionIndex, jobInfo)"
                                 >
                                   <sm-icon
                                     :type="
-                                      isSqlBuilderFieldValueButtonLoading(conditionIndex) ||
-                                        isSqlBuilderFieldValueLoading(jobInfo, condition.field)
+                                      isSqlBuilderFieldValueButtonLoading(conditionIndex, jobInfo) ||
+                                      isSqlBuilderFieldValueLoading(
+                                        jobInfo,
+                                        condition.field,
+                                        getSqlBuilderConditionFilter(conditionIndex)
+                                      )
                                         ? 'loading'
                                         : 'more'
                                     "
@@ -341,6 +344,8 @@ import Popover from 'ant-design-vue/es/popover';
 import isEqual from 'lodash.isequal';
 import omit from 'omit.js';
 
+const SQL_BUILDER_FIELD_VALUE_CACHE_LIMIT = 50;
+
 export default {
   name: 'SmQuery',
   components: {
@@ -450,7 +455,8 @@ export default {
       sqlBuilderFieldValueJobPromiseMap: {},
       sqlBuilderFieldValueLoadingMap: {},
       sqlBuilderFieldValueButtonLoadingMap: {},
-      sqlBuilderFieldValueSearchMap: {}
+      sqlBuilderFieldValueSearchMap: {},
+      sqlBuilderFieldValueCacheOrder: []
     };
   },
   computed: {
@@ -710,7 +716,7 @@ export default {
         return null;
       }
       const operator = operators.find(item => item.toUpperCase() === match[2].toUpperCase()) || match[2].toUpperCase();
-      const value = this.isSqlBuilderValueDisabled(operator) ? '' : this.unformatSqlValue(match[3]);
+      const value = this.isSqlBuilderValueDisabled(operator) ? '' : this.unformatSqlValue(match[3], operator);
       return {
         field: match[1],
         operator,
@@ -720,12 +726,22 @@ export default {
     escapeRegExp(value) {
       return `${value}`.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     },
-    unformatSqlValue(value) {
+    unformatSqlValue(value, operator) {
       const text = `${value || ''}`.trim();
-      if (/^'.*'$/.test(text)) {
-        return text.slice(1, -1).replace(/''/g, "'");
+      const unformattedValue = /^'.*'$/.test(text)
+        ? text.slice(1, -1).replace(/''/g, "'")
+        : text;
+      // 构造器会把普通 LIKE 值序列化为 %value%，重新打开时去掉这一层通配符，保证表单值往返一致。
+      if (
+        operator === 'LIKE' &&
+        unformattedValue.length > 2 &&
+        unformattedValue.startsWith('%') &&
+        unformattedValue.endsWith('%') &&
+        !unformattedValue.slice(1, -1).includes('%')
+      ) {
+        return unformattedValue.slice(1, -1);
       }
-      return text;
+      return unformattedValue;
     },
     openSqlBuilder(jobInfo, index) {
       this.sqlBuilderVisibleIndex = index;
@@ -798,29 +814,171 @@ export default {
       }
       return `${field} ${operator} ${formattedValue}`;
     },
-    buildSqlExpressionFromConditions(jobInfo) {
-      return this.sqlBuilderConditions.reduce((expression, condition, index) => {
-        const conditionExpression = this.buildSqlCondition(condition, jobInfo);
+    isSqlBuilderConditionComplete(condition) {
+      if (!condition || !condition.field || !condition.operator) {
+        return false;
+      }
+      return (
+        this.isSqlBuilderValueDisabled(condition.operator) ||
+        (condition.value !== '' && condition.value !== null && condition.value !== undefined)
+      );
+    },
+    normalizeSqlBuilderCondition(condition, connectorToNext, jobInfo) {
+      const fieldInfo = this.getSqlBuilderFieldInfo(condition.field, jobInfo);
+      const isNumberField = this.isSqlBuilderNumberField(condition.field, jobInfo);
+      const textValue = `${condition.value}`.trim();
+      return {
+        field: (fieldInfo && fieldInfo.value) || condition.field,
+        operator: `${condition.operator}`.toUpperCase(),
+        value: this.isSqlBuilderValueDisabled(condition.operator)
+          ? null
+          : isNumberField && /^-?\d+(\.\d+)?$/.test(textValue)
+            ? Number(textValue)
+            : condition.value,
+        ...(connectorToNext ? { connectorToNext } : {})
+      };
+    },
+    shouldUseSqlBuilderPrecedingExpression(conditionIndex) {
+      if (conditionIndex <= 0) {
+        return false;
+      }
+      // 第二个条件通过 OR 与首个条件并列时不应被首个条件限制；形成复合表达式后，后续条件均依赖完整前置表达式。
+      return conditionIndex > 1 || `${this.sqlBuilderConnectors[conditionIndex - 1]}`.toUpperCase() !== 'OR';
+    },
+    getSqlBuilderFieldValueContext(jobInfo, conditionIndex, field) {
+      const usePrecedingExpression = this.shouldUseSqlBuilderPrecedingExpression(conditionIndex);
+      const precedingConditions = usePrecedingExpression
+        ? this.sqlBuilderConditions.slice(0, conditionIndex)
+        : [];
+      const precedingConnectors = usePrecedingExpression
+        ? this.sqlBuilderConnectors.slice(0, Math.max(conditionIndex - 1, 0))
+        : [];
+      const ready = precedingConditions.every(condition => this.isSqlBuilderConditionComplete(condition));
+      const normalizedConditions = ready
+        ? precedingConditions.map((condition, index) =>
+          this.normalizeSqlBuilderCondition(
+            condition,
+            index < precedingConditions.length - 1 ? precedingConnectors[index] : '',
+            jobInfo
+          )
+        )
+        : [];
+      const attributeFilter = ready
+        ? this.buildSqlExpressionFromConditions(jobInfo, precedingConditions, precedingConnectors)
+        : '';
+      const jobIdentity = this.getSqlBuilderJobIdentity(jobInfo);
+      const cacheIdentity = {
+        job: jobIdentity,
+        precedingConditions: normalizedConditions
+      };
+      return {
+        ready,
+        reason: ready ? '' : 'PREVIOUS_CONDITION_INCOMPLETE',
+        field,
+        attributeFilter,
+        cacheIdentity,
+        contextKey: JSON.stringify({
+          ...cacheIdentity,
+          field
+        })
+      };
+    },
+    getSqlBuilderJobIdentity(jobInfo) {
+      const queryParameter = (jobInfo && jobInfo.queryParameter) || {};
+      return {
+        url: queryParameter.url || '',
+        dataName: queryParameter.dataName || '',
+        layerName: queryParameter.layerName || ''
+      };
+    },
+    isSqlBuilderFieldValueContextReady(conditionIndex, jobInfo) {
+      const condition = this.sqlBuilderConditions[conditionIndex];
+      return !!condition && this.getSqlBuilderFieldValueContext(jobInfo, conditionIndex, condition.field).ready;
+    },
+    touchSqlBuilderFieldValueCache(contextKey) {
+      const currentIndex = this.sqlBuilderFieldValueCacheOrder.indexOf(contextKey);
+      if (currentIndex > -1) {
+        this.sqlBuilderFieldValueCacheOrder.splice(currentIndex, 1);
+      }
+      this.sqlBuilderFieldValueCacheOrder.push(contextKey);
+      while (this.sqlBuilderFieldValueCacheOrder.length > SQL_BUILDER_FIELD_VALUE_CACHE_LIMIT) {
+        this.$delete(this.sqlBuilderFieldValueMap, this.sqlBuilderFieldValueCacheOrder.shift());
+      }
+    },
+    getSqlBuilderCachedFieldValues(contextKey) {
+      // 此方法会在模板渲染期间调用，读取缓存时不能修改响应式状态，否则会触发循环更新。
+      return this.sqlBuilderFieldValueMap[contextKey];
+    },
+    setSqlBuilderCachedFieldValues(contextKey, values) {
+      this.$set(this.sqlBuilderFieldValueMap, contextKey, values);
+      this.touchSqlBuilderFieldValueCache(contextKey);
+    },
+
+    buildSqlExpressionFromConditions(
+      jobInfo,
+      conditions = this.sqlBuilderConditions,
+      connectors = this.sqlBuilderConnectors
+    ) {
+      let expression = '';
+      for (let index = 0; index < conditions.length; index++) {
+        const conditionExpression = this.buildSqlCondition(conditions[index], jobInfo);
         if (!conditionExpression) {
-          return expression;
+          break;
         }
-        if (!expression) {
-          return conditionExpression;
-        }
-        return `${expression} ${this.sqlBuilderConnectors[index - 1] || 'AND'} ${conditionExpression}`;
-      }, '');
+        expression = expression
+          ? `${expression} ${connectors[index - 1] || 'AND'} ${conditionExpression}`
+          : conditionExpression;
+      }
+      return expression;
+    },
+    getSqlBuilderConditionFilter(conditionIndex, jobInfo = this.jobInfos[this.sqlBuilderVisibleIndex]) {
+      const condition = this.sqlBuilderConditions[conditionIndex];
+      const context = this.getSqlBuilderFieldValueContext(jobInfo, conditionIndex, condition && condition.field);
+      return context.ready ? context.attributeFilter : '';
     },
     syncSqlBuilderExpression(jobInfo) {
       this.sqlBuilderDraft.expression = this.buildSqlExpressionFromConditions(jobInfo);
     },
+    resetSqlBuilderConditionsFrom(startIndex, jobInfo) {
+      this.sqlBuilderConditions.slice(startIndex).forEach((condition, offset) => {
+        const resetIndex = startIndex + offset;
+        this.$set(condition, 'value', '');
+        this.$set(this.sqlBuilderFieldValueSearchMap, resetIndex, '');
+        this.$delete(this.sqlBuilderFieldValueButtonLoadingMap, resetIndex);
+      });
+      this.syncSqlBuilderExpression(jobInfo);
+    },
+    resetSqlBuilderConditionsAfter(conditionIndex, jobInfo) {
+      let resetStartIndex = conditionIndex + 1;
+      if (
+        resetStartIndex === 1 &&
+        !this.shouldUseSqlBuilderPrecedingExpression(resetStartIndex)
+      ) {
+        resetStartIndex++;
+      }
+      // 只跳过不依赖 rule1 的首个 OR 条件；更后面的条件都依赖完整前置表达式，必须失效。
+      this.resetSqlBuilderConditionsFrom(resetStartIndex, jobInfo);
+    },
     handleSqlBuilderFieldChange(condition, jobInfo) {
+      const conditionIndex = this.sqlBuilderConditions.indexOf(condition);
       const operators = this.getSqlBuilderOperators(condition, jobInfo);
       if (!operators.includes(condition.operator)) {
         condition.operator = operators[0];
       }
       condition.value = '';
-      this.$set(this.sqlBuilderFieldValueSearchMap, this.sqlBuilderConditions.indexOf(condition), '');
-      this.syncSqlBuilderExpression(jobInfo);
+      this.$set(this.sqlBuilderFieldValueSearchMap, conditionIndex, '');
+      this.resetSqlBuilderConditionsAfter(conditionIndex, jobInfo);
+    },
+    handleSqlBuilderOperatorChange(conditionIndex, jobInfo) {
+      const condition = this.sqlBuilderConditions[conditionIndex];
+      if (condition && this.isSqlBuilderValueDisabled(condition.operator)) {
+        condition.value = '';
+      }
+      this.resetSqlBuilderConditionsAfter(conditionIndex, jobInfo);
+    },
+    handleSqlBuilderConnectorChange(connectorIndex, jobInfo) {
+      // 连接符变化会改变右侧条件及所有后续条件使用的前置表达式，相关值都需要重新选择。
+      this.resetSqlBuilderConditionsFrom(connectorIndex + 1, jobInfo);
     },
     handleSqlBuilderValueFocus(conditionIndex) {
       this.$set(this.sqlBuilderFieldValueSearchMap, conditionIndex, '');
@@ -833,14 +991,29 @@ export default {
       if (!condition || !condition.value) {
         this.$set(this.sqlBuilderFieldValueSearchMap, conditionIndex, '');
       }
-      this.syncSqlBuilderExpression(jobInfo);
+      this.resetSqlBuilderConditionsAfter(conditionIndex, jobInfo);
     },
     getSqlBuilderJobCacheKey(jobInfo) {
       const queryParameter = (jobInfo && jobInfo.queryParameter) || {};
       return `${queryParameter.url || ''}|${queryParameter.dataName || ''}|${queryParameter.layerName || ''}`;
     },
-    getSqlBuilderFieldValueCacheKey(jobInfo, field) {
-      return `${this.getSqlBuilderJobCacheKey(jobInfo)}|${field}`;
+    getSqlBuilderFieldValueCacheKey(jobInfo, field, attributeFilter = '') {
+      if (attributeFilter && typeof attributeFilter === 'object') {
+        return JSON.stringify({ ...attributeFilter.cacheIdentity, field });
+      }
+      if (!attributeFilter) {
+        return JSON.stringify({
+          job: this.getSqlBuilderJobIdentity(jobInfo),
+          precedingConditions: [],
+          field
+        });
+      }
+      const filterKey = attributeFilter ? `|filter:${attributeFilter}` : '';
+      return `${this.getSqlBuilderJobCacheKey(jobInfo)}|${field}${filterKey}`;
+    },
+    getSqlBuilderFieldValueRequestKey(jobInfo, attributeFilter = '') {
+      const filterKey = attributeFilter ? `|filter:${attributeFilter}` : '';
+      return `${this.getSqlBuilderJobCacheKey(jobInfo)}${filterKey}`;
     },
     getSqlBuilderRestDataFieldsUrl(jobInfo) {
       const queryParameter = (jobInfo && jobInfo.queryParameter) || {};
@@ -931,22 +1104,29 @@ export default {
       return promise;
     },
     getSqlBuilderFieldValueOptions(condition, conditionIndex) {
-      const values = this.sqlBuilderFieldValueMap[this.getSqlBuilderFieldValueCacheKey(this.jobInfos[this.sqlBuilderVisibleIndex], condition.field)] || [];
+      const jobInfo = this.jobInfos[this.sqlBuilderVisibleIndex];
+      const context = this.getSqlBuilderFieldValueContext(jobInfo, conditionIndex, condition.field);
+      const values = context.ready ? this.getSqlBuilderCachedFieldValues(context.contextKey) || [] : [];
       const searchValue = this.sqlBuilderFieldValueSearchMap[conditionIndex];
       const matchedValues = searchValue
         ? values.filter(value => `${value}`.indexOf(`${searchValue}`) !== -1)
         : values;
       return matchedValues.slice(0, 100).map(value => ({ label: value, value }));
     },
-    getSqlBuilderValuePlaceholder(jobInfo, condition) {
-      return this.isSqlBuilderFieldValueLoaded(jobInfo, condition && condition.field)
+    getSqlBuilderValuePlaceholder(jobInfo, condition, conditionIndex = this.sqlBuilderConditions.indexOf(condition)) {
+      return this.isSqlBuilderFieldValueLoaded(
+        jobInfo,
+        condition && condition.field,
+        this.getSqlBuilderFieldValueContext(jobInfo, conditionIndex, condition && condition.field)
+      )
         ? this.$t('query.sqlBuilderValueLimitPlaceholder')
         : this.$t('query.sqlBuilderValue');
     },
-    getSqlBuilderValueButtonTitle(jobInfo, condition) {
-      return this.isSqlBuilderFieldValueLoaded(jobInfo, condition && condition.field)
-        ? this.$t('query.sqlBuilderValueLoaded')
-        : this.$t('query.sqlBuilderValueRequest');
+    getSqlBuilderValueButtonTitle(jobInfo, condition, conditionIndex = this.sqlBuilderConditions.indexOf(condition)) {
+      if (!this.isSqlBuilderFieldValueContextReady(conditionIndex, jobInfo)) {
+        return this.$t('query.sqlBuilderValuePreviousConditionIncomplete');
+      }
+      return this.$t('query.sqlBuilderValueRequest');
     },
     getSqlBuilderResultFeatures(data) {
       if (Array.isArray(data)) {
@@ -958,7 +1138,7 @@ export default {
       const queryParameter = (jobInfo && jobInfo.queryParameter) || {};
       const featureQueryParameter = {
         ...queryParameter,
-        attributeFilter: '',
+        attributeFilter: options.attributeFilter || '',
         keyWord: '',
         returnFeaturesOnly: true
       };
@@ -994,10 +1174,14 @@ export default {
       });
       return data || { features: [] };
     },
-    cacheSqlBuilderFieldValueMap(jobInfo, features) {
+    cacheSqlBuilderFieldValueMap(jobInfo, features, attributeFilter = '', targetField = '') {
       const fieldValueMap = {};
       const fieldValueSetMap = {};
       this.cacheSqlBuilderFields(jobInfo, features);
+      this.getSqlBuilderFields(jobInfo).forEach(field => {
+        fieldValueMap[field.value] = [];
+        fieldValueSetMap[field.value] = new Set();
+      });
       features.forEach(feature => {
         const sqlBuilderFields = this.getSqlBuilderFields(jobInfo).map(field => field.value);
         const fieldNames = sqlBuilderFields.length
@@ -1025,57 +1209,98 @@ export default {
         });
       });
       Object.keys(fieldValueMap).forEach(field => {
-        this.$set(this.sqlBuilderFieldValueMap, this.getSqlBuilderFieldValueCacheKey(jobInfo, field), fieldValueMap[field]);
+        if (targetField && field !== targetField) {
+          return;
+        }
+        const cacheKey = this.getSqlBuilderFieldValueCacheKey(jobInfo, field, attributeFilter);
+        this.setSqlBuilderCachedFieldValues(cacheKey, fieldValueMap[field]);
       });
     },
-    isSqlBuilderFieldValueLoading(jobInfo, field) {
+    isSqlBuilderFieldValueLoading(jobInfo, field, attributeFilter = '') {
       if (!field) {
         return false;
       }
-      return !!this.sqlBuilderFieldValueLoadingMap[this.getSqlBuilderFieldValueCacheKey(jobInfo, field)];
+      return !!this.sqlBuilderFieldValueLoadingMap[
+        this.getSqlBuilderFieldValueCacheKey(jobInfo, field, attributeFilter)
+      ];
     },
-    isSqlBuilderFieldValueLoaded(jobInfo, field) {
+    isSqlBuilderFieldValueLoaded(jobInfo, field, attributeFilter = '') {
       if (!field) {
         return false;
       }
-      return Array.isArray(this.sqlBuilderFieldValueMap[this.getSqlBuilderFieldValueCacheKey(jobInfo, field)]);
+      return Array.isArray(
+        this.sqlBuilderFieldValueMap[this.getSqlBuilderFieldValueCacheKey(jobInfo, field, attributeFilter)]
+      );
     },
-    isSqlBuilderFieldValueButtonLoading(conditionIndex) {
-      return !!this.sqlBuilderFieldValueButtonLoadingMap[conditionIndex];
+    isSqlBuilderFieldValueButtonLoading(conditionIndex, jobInfo = this.jobInfos[this.sqlBuilderVisibleIndex]) {
+      const condition = this.sqlBuilderConditions[conditionIndex];
+      if (!condition || !condition.field) {
+        return false;
+      }
+      // 唯一值按“前置表达式 + 当前字段”请求，切换字段后不能复用其他字段的 loading 状态。
+      const context = this.getSqlBuilderFieldValueContext(jobInfo, conditionIndex, condition.field);
+      return this.sqlBuilderFieldValueButtonLoadingMap[conditionIndex] === context.contextKey;
     },
     handleSqlBuilderFieldValueLoad(conditionIndex, jobInfo) {
       const condition = this.sqlBuilderConditions[conditionIndex];
+      const context = this.getSqlBuilderFieldValueContext(jobInfo, conditionIndex, condition && condition.field);
+      const requestKey = context.contextKey;
       if (
         !condition ||
         !condition.field ||
-        this.isSqlBuilderFieldValueLoaded(jobInfo, condition.field) ||
-        this.isSqlBuilderFieldValueLoading(jobInfo, condition.field)
+        !context.ready
       ) {
         return Promise.resolve([]);
       }
-      this.$set(this.sqlBuilderFieldValueButtonLoadingMap, conditionIndex, true);
-      return this.loadSqlBuilderFieldValues(jobInfo, condition.field)
+      this.$set(this.sqlBuilderFieldValueButtonLoadingMap, conditionIndex, requestKey);
+      return this.loadSqlBuilderFieldValueContext(jobInfo, context)
         .then(values => {
-          this.$delete(this.sqlBuilderFieldValueButtonLoadingMap, conditionIndex);
-          this.refreshSqlBuilderPopoverAlign();
+          if (this.sqlBuilderFieldValueButtonLoadingMap[conditionIndex] === requestKey) {
+            this.$delete(this.sqlBuilderFieldValueButtonLoadingMap, conditionIndex);
+            this.refreshSqlBuilderPopoverAlign();
+          }
           return values;
         })
         .catch(error => {
-          this.$delete(this.sqlBuilderFieldValueButtonLoadingMap, conditionIndex);
+          if (this.sqlBuilderFieldValueButtonLoadingMap[conditionIndex] === requestKey) {
+            this.$delete(this.sqlBuilderFieldValueButtonLoadingMap, conditionIndex);
+          }
           throw error;
         });
     },
-    async loadSqlBuilderFieldValueCache(jobInfo) {
-      const jobCacheKey = this.getSqlBuilderJobCacheKey(jobInfo);
+    loadSqlBuilderFieldValueContext(jobInfo, context) {
+      const requestKey = context.contextKey;
+      if (this.sqlBuilderFieldValueJobPromiseMap[requestKey]) {
+        return this.sqlBuilderFieldValueJobPromiseMap[requestKey].then(
+          () => this.getSqlBuilderCachedFieldValues(context.contextKey) || []
+        );
+      }
+      const queryOptions = context.attributeFilter ? { attributeFilter: context.attributeFilter } : undefined;
+      const promise = this.querySqlBuilderValueFeatures(jobInfo, queryOptions)
+        .then(data => {
+          this.cacheSqlBuilderFieldValueMap(jobInfo, this.getSqlBuilderResultFeatures(data), context, context.field);
+          this.$delete(this.sqlBuilderFieldValueJobPromiseMap, requestKey);
+          return this.getSqlBuilderCachedFieldValues(context.contextKey) || [];
+        })
+        .catch(error => {
+          this.$delete(this.sqlBuilderFieldValueJobPromiseMap, requestKey);
+          throw error;
+        });
+      this.$set(this.sqlBuilderFieldValueJobPromiseMap, requestKey, promise);
+      return promise;
+    },
+    async loadSqlBuilderFieldValueCache(jobInfo, attributeFilter = '') {
+      const jobCacheKey = this.getSqlBuilderFieldValueRequestKey(jobInfo, attributeFilter);
       if (this.sqlBuilderFieldValueJobMap[jobCacheKey]) {
         return this.sqlBuilderFieldValueJobMap[jobCacheKey];
       }
       if (this.sqlBuilderFieldValueJobPromiseMap[jobCacheKey]) {
         return this.sqlBuilderFieldValueJobPromiseMap[jobCacheKey];
       }
-      const promise = this.querySqlBuilderValueFeatures(jobInfo)
+      const queryOptions = attributeFilter ? { attributeFilter } : undefined;
+      const promise = this.querySqlBuilderValueFeatures(jobInfo, queryOptions)
         .then(data => {
-          this.cacheSqlBuilderFieldValueMap(jobInfo, this.getSqlBuilderResultFeatures(data));
+          this.cacheSqlBuilderFieldValueMap(jobInfo, this.getSqlBuilderResultFeatures(data), attributeFilter);
           this.$set(this.sqlBuilderFieldValueJobMap, jobCacheKey, true);
           this.$delete(this.sqlBuilderFieldValueJobPromiseMap, jobCacheKey);
           return true;
@@ -1087,13 +1312,13 @@ export default {
       this.$set(this.sqlBuilderFieldValueJobPromiseMap, jobCacheKey, promise);
       return promise;
     },
-    async loadSqlBuilderFieldValues(jobInfo, field) {
-      const cacheKey = this.getSqlBuilderFieldValueCacheKey(jobInfo, field);
+    async loadSqlBuilderFieldValues(jobInfo, field, attributeFilter = '') {
+      const cacheKey = this.getSqlBuilderFieldValueCacheKey(jobInfo, field, attributeFilter);
       if (this.sqlBuilderFieldValueMap[cacheKey]) {
         return this.sqlBuilderFieldValueMap[cacheKey];
       }
       this.$set(this.sqlBuilderFieldValueLoadingMap, cacheKey, true);
-      return this.loadSqlBuilderFieldValueCache(jobInfo)
+      return this.loadSqlBuilderFieldValueCache(jobInfo, attributeFilter)
         .then(() => {
           this.$delete(this.sqlBuilderFieldValueLoadingMap, cacheKey);
           return this.sqlBuilderFieldValueMap[cacheKey] || [];
@@ -1136,7 +1361,7 @@ export default {
       this.sqlBuilderConnectors.push('AND');
       this.syncSqlBuilderExpression(jobInfo);
     },
-    removeSqlBuilderCondition(index) {
+    removeSqlBuilderCondition(index, jobInfo = this.jobInfos[this.sqlBuilderVisibleIndex]) {
       if (this.sqlBuilderConditions.length === 1) {
         return;
       }
@@ -1146,7 +1371,7 @@ export default {
       } else {
         this.sqlBuilderConnectors.splice(index - 1, 1);
       }
-      this.syncSqlBuilderExpression();
+      this.resetSqlBuilderConditionsAfter(index - 1, jobInfo);
     },
     confirmSqlBuilder(jobInfo) {
       this.syncSqlBuilderExpression(jobInfo);
