@@ -725,16 +725,21 @@ export default {
       while (canUnwrap && text.startsWith('(') && text.endsWith(')')) {
         let depth = 0;
         let quoted = false;
+        let index = 0;
         canUnwrap = false;
-        for (let index = 0; index < text.length; index++) {
+        while (index < text.length) {
           if (text[index] === "'") {
+            // SQL 用连续两个单引号表示字符串内的单引号，扫描时将它们作为一个整体跳过。
             if (quoted && text[index + 1] === "'") {
-              index++;
+              index += 2;
               continue;
             }
             quoted = !quoted;
+            index++;
+            continue;
           }
           if (quoted) {
+            index++;
             continue;
           }
           if (text[index] === '(') {
@@ -746,6 +751,7 @@ export default {
               break;
             }
           }
+          index++;
         }
         if (canUnwrap) {
           text = text.slice(1, -1).trim();
@@ -760,37 +766,45 @@ export default {
       let depth = 0;
       let quoted = false;
       let partStart = 0;
-      for (let index = 0; index < text.length; index++) {
+      let index = 0;
+      while (index < text.length) {
         if (text[index] === "'") {
+          // 保持字符串内转义单引号和 AND/OR 文本的原始含义，避免被拆成条件连接符。
           if (quoted && text[index + 1] === "'") {
-            index++;
+            index += 2;
             continue;
           }
           quoted = !quoted;
+          index++;
           continue;
         }
         if (quoted) {
+          index++;
           continue;
         }
         if (text[index] === '(') {
           depth++;
+          index++;
           continue;
         }
         if (text[index] === ')') {
           depth--;
+          index++;
           continue;
         }
         if (depth !== 0 || !/\s/.test(text[index])) {
+          index++;
           continue;
         }
         const connectorMatch = text.slice(index).match(/^\s+(AND|OR)\s+/i);
         if (!connectorMatch) {
+          index++;
           continue;
         }
         parts.push(text.slice(partStart, index).trim());
         connectors.push(connectorMatch[1].toUpperCase());
-        index += connectorMatch[0].length - 1;
-        partStart = index + 1;
+        index += connectorMatch[0].length;
+        partStart = index;
       }
       parts.push(text.slice(partStart).trim());
       return { parts, connectors };

@@ -791,21 +791,21 @@ describe('query', () => {
 
     wrapper.vm.sqlBuilderConditions = [
       { field: 'SmID', operator: '>', value: '10' },
-      { field: 'Name', operator: '=', value: 'A AND B' },
+      { field: 'Name', operator: '=', value: "O'Brien AND B" },
       { field: 'Name', operator: 'IS NULL', value: '' },
       { field: 'Name', operator: '=', value: 'D OR E' }
     ];
     wrapper.vm.sqlBuilderConnectors = ['OR', 'AND', 'OR'];
     wrapper.vm.confirmSqlBuilder(wrapper.vm.jobInfos[0]);
     expect(wrapper.vm.jobInfos[0].queryParameter.attributeFilter).toBe(
-      "((SmID > 10 OR Name = 'A AND B') AND Name IS NULL) OR Name = 'D OR E'"
+      "((SmID > 10 OR Name = 'O''Brien AND B') AND Name IS NULL) OR Name = 'D OR E'"
     );
 
     await wrapper.vm.openSqlBuilder(wrapper.vm.jobInfos[0], 0);
 
     expect(wrapper.vm.sqlBuilderConditions).toEqual([
       { field: 'SmID', operator: '>', value: '10' },
-      { field: 'Name', operator: '=', value: 'A AND B' },
+      { field: 'Name', operator: '=', value: "O'Brien AND B" },
       { field: 'Name', operator: 'IS NULL', value: '' },
       { field: 'Name', operator: '=', value: 'D OR E' }
     ]);
