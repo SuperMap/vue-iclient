@@ -12,34 +12,35 @@ import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLay
 import layerData from 'vue-iclient/test/unit/mocks/data/layerData';
 
 describe('Legend.vue', () => {
-  let wrapper, mapWrapper, imageOnload;
+  let wrapper, mapWrapper, imageOnload, canvasContext;
   const documentBak = document;
   const ImageBak = Image;
 
   beforeEach(function() {
+    canvasContext = {
+      arc: jest.fn(),
+      fill: jest.fn(),
+      fillRect: jest.fn(),
+      strokeRect: jest.fn(),
+      clearRect: jest.fn(),
+      beginPath: jest.fn(),
+      closePath: jest.fn(),
+      setLineDash: jest.fn(),
+      moveTo: jest.fn(),
+      lineTo: jest.fn(),
+      stroke: jest.fn(),
+      drawImage: jest.fn(),
+      createPattern: jest.fn(),
+      createLinearGradient: function() {
+        return {
+          addColorStop: jest.fn()
+        };
+      }
+    };
     document.getElementById = function() {
       return {
         getContext: function() {
-          return {
-            arc: jest.fn(),
-            fill: jest.fn(),
-            fillRect: jest.fn(),
-            strokeRect: jest.fn(),
-            clearRect: jest.fn(),
-            beginPath: jest.fn(),
-            closePath: jest.fn(),
-            setLineDash: jest.fn(),
-            moveTo: jest.fn(),
-            lineTo: jest.fn(),
-            stroke: jest.fn(),
-            drawImage: jest.fn(),
-            createPattern: jest.fn(),
-            createLinearGradient: function() {
-              return {
-                addColorStop: jest.fn()
-              };
-            }
-          };
+          return canvasContext;
         }
       };
     };
@@ -112,6 +113,54 @@ describe('Legend.vue', () => {
     expect(wrapper.find(StyleValue).exists()).toBeTruthy();
     jest.useRealTimers();
     done();
+  });
+
+  it('keeps the background transparent for non-SDF point images', () => {
+    wrapper = mount(ImageRenderer, {
+      propsData: {
+        styleData: {
+          style: {
+            type: 'image',
+            shape: 'POINT',
+            fontSize: 35,
+            color: '#EE4D5A',
+            opacity: 0.9,
+            url: 'sprite.png',
+            sprite: { sdf: false, width: 32, height: 32 }
+          }
+        }
+      }
+    });
+
+    wrapper.vm.drawImage({ width: 32, height: 32 });
+
+    expect(canvasContext.fillStyle).toBe('transparent');
+    expect(canvasContext.globalCompositeOperation).toBeUndefined();
+    expect(canvasContext.drawImage).toHaveBeenCalled();
+  });
+
+  it('uses the configured color as the mask source for SDF point images', () => {
+    wrapper = mount(ImageRenderer, {
+      propsData: {
+        styleData: {
+          style: {
+            type: 'image',
+            shape: 'POINT',
+            fontSize: 35,
+            color: '#EE4D5A',
+            opacity: 0.9,
+            url: 'sprite.png',
+            sprite: { sdf: true, width: 32, height: 32 }
+          }
+        }
+      }
+    });
+
+    wrapper.vm.drawImage({ width: 32, height: 32 });
+
+    expect(canvasContext.fillStyle).toBe('#EE4D5A');
+    expect(canvasContext.globalCompositeOperation).toBe('destination-in');
+    expect(canvasContext.drawImage).toHaveBeenCalled();
   });
 
   it('mapload', async done => {
@@ -243,4 +292,3 @@ describe('Legend.vue', () => {
     done();
   });
 });
-
