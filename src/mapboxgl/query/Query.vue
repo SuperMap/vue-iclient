@@ -690,27 +690,115 @@ export default {
       }
       const fields = this.getSqlBuilderFields(jobInfo).map(item => item.value);
       const operators = ['IS NOT NULL', 'IS NULL', '>=', '<=', '<>', 'LIKE', '=', '>', '<'];
-      const parts = text.split(/\s+(AND|OR)\s+/i);
-      const conditions = [];
-      const connectors = [];
-      for (let index = 0; index < parts.length; index += 2) {
-        const conditionText = parts[index].trim();
-        const connector = parts[index - 1];
+      return this.parseSqlBuilderExpressionNode(text, fields, operators);
+    },
+    parseSqlBuilderExpressionNode(expression, fields, operators) {
+      const text = this.unwrapSqlBuilderExpression(expression);
+      const { parts, connectors } = this.splitSqlBuilderExpression(text);
+      if (!connectors.length) {
+        const condition = this.parseSqlBuilderCondition(text, fields, operators);
+        return condition ? { conditions: [condition], connectors: [] } : null;
+      }
+      const parsedLeft = this.parseSqlBuilderExpressionNode(parts[0], fields, operators);
+      if (!parsedLeft) {
+        return null;
+      }
+      const conditions = parsedLeft.conditions.slice();
+      const parsedConnectors = parsedLeft.connectors.slice();
+      for (let index = 1; index < parts.length; index++) {
+        const conditionText = this.unwrapSqlBuilderExpression(parts[index]);
+        if (this.splitSqlBuilderExpression(conditionText).connectors.length) {
+          return null;
+        }
         const condition = this.parseSqlBuilderCondition(conditionText, fields, operators);
         if (!condition) {
           return null;
         }
+        parsedConnectors.push(connectors[index - 1]);
         conditions.push(condition);
-        if (connector) {
-          connectors.push(connector.toUpperCase());
+      }
+      return { conditions, connectors: parsedConnectors };
+    },
+    unwrapSqlBuilderExpression(expression) {
+      let text = `${expression || ''}`.trim();
+      let canUnwrap = true;
+      while (canUnwrap && text.startsWith('(') && text.endsWith(')')) {
+        let depth = 0;
+        let quoted = false;
+        canUnwrap = false;
+        for (let index = 0; index < text.length; index++) {
+          if (text[index] === "'") {
+            if (quoted && text[index + 1] === "'") {
+              index++;
+              continue;
+            }
+            quoted = !quoted;
+          }
+          if (quoted) {
+            continue;
+          }
+          if (text[index] === '(') {
+            depth++;
+          } else if (text[index] === ')') {
+            depth--;
+            if (depth === 0) {
+              canUnwrap = index === text.length - 1;
+              break;
+            }
+          }
+        }
+        if (canUnwrap) {
+          text = text.slice(1, -1).trim();
         }
       }
-      return conditions.length ? { conditions, connectors } : null;
+      return text;
+    },
+    splitSqlBuilderExpression(expression) {
+      const text = `${expression || ''}`.trim();
+      const parts = [];
+      const connectors = [];
+      let depth = 0;
+      let quoted = false;
+      let partStart = 0;
+      for (let index = 0; index < text.length; index++) {
+        if (text[index] === "'") {
+          if (quoted && text[index + 1] === "'") {
+            index++;
+            continue;
+          }
+          quoted = !quoted;
+          continue;
+        }
+        if (quoted) {
+          continue;
+        }
+        if (text[index] === '(') {
+          depth++;
+          continue;
+        }
+        if (text[index] === ')') {
+          depth--;
+          continue;
+        }
+        if (depth !== 0 || !/\s/.test(text[index])) {
+          continue;
+        }
+        const connectorMatch = text.slice(index).match(/^\s+(AND|OR)\s+/i);
+        if (!connectorMatch) {
+          continue;
+        }
+        parts.push(text.slice(partStart, index).trim());
+        connectors.push(connectorMatch[1].toUpperCase());
+        index += connectorMatch[0].length - 1;
+        partStart = index + 1;
+      }
+      parts.push(text.slice(partStart).trim());
+      return { parts, connectors };
     },
     parseSqlBuilderCondition(conditionText, fields, operators) {
       const fieldPattern = fields.length ? fields.map(this.escapeRegExp).join('|') : '[\\w.]+';
       const operatorPattern = operators.map(this.escapeRegExp).join('|');
-      const matcher = new RegExp(`^(${fieldPattern})\\s*(${operatorPattern})(?:\\s+(.+))?$`, 'i');
+      const matcher = new RegExp(`^(${fieldPattern})\\s*(${operatorPattern})(?:\\s*(.+))?$`, 'i');
       const match = conditionText.match(matcher);
       if (!match) {
         return null;
@@ -842,8 +930,8 @@ export default {
       if (conditionIndex <= 0) {
         return false;
       }
-      // 第二个条件通过 OR 与首个条件并列时不应被首个条件限制；形成复合表达式后，后续条件均依赖完整前置表达式。
-      return conditionIndex > 1 || `${this.sqlBuilderConnectors[conditionIndex - 1]}`.toUpperCase() !== 'OR';
+      // AND 用前置表达式收窄候选值；OR 开启备选分支，应提供当前字段的全部候选值。
+      return `${this.sqlBuilderConnectors[conditionIndex - 1]}`.toUpperCase() === 'AND';
     },
     getSqlBuilderFieldValueContext(jobInfo, conditionIndex, field) {
       const usePrecedingExpression = this.shouldUseSqlBuilderPrecedingExpression(conditionIndex);
@@ -919,17 +1007,28 @@ export default {
       conditions = this.sqlBuilderConditions,
       connectors = this.sqlBuilderConnectors
     ) {
-      let expression = '';
+      const conditionExpressions = [];
       for (let index = 0; index < conditions.length; index++) {
         const conditionExpression = this.buildSqlCondition(conditions[index], jobInfo);
         if (!conditionExpression) {
           break;
         }
-        expression = expression
-          ? `${expression} ${connectors[index - 1] || 'AND'} ${conditionExpression}`
-          : conditionExpression;
+        conditionExpressions.push(conditionExpression);
       }
-      return expression;
+      if (conditionExpressions.length < 2) {
+        return conditionExpressions[0] || '';
+      }
+      const expressionConnectors = conditionExpressions
+        .slice(1)
+        .map((condition, index) => `${connectors[index] || 'AND'}`.toUpperCase());
+      if (expressionConnectors.every(connector => connector === expressionConnectors[0])) {
+        return conditionExpressions.join(` ${expressionConnectors[0]} `);
+      }
+      // 混合连接符按配置顺序左结合；中间结果需要分组，但最终表达式不保留无意义的最外层括号。
+      return conditionExpressions.slice(1).reduce((expression, conditionExpression, index) => {
+        const combinedExpression = `${expression} ${expressionConnectors[index]} ${conditionExpression}`;
+        return index === conditionExpressions.length - 2 ? combinedExpression : `(${combinedExpression})`;
+      }, conditionExpressions[0]);
     },
     getSqlBuilderConditionFilter(conditionIndex, jobInfo = this.jobInfos[this.sqlBuilderVisibleIndex]) {
       const condition = this.sqlBuilderConditions[conditionIndex];
@@ -939,25 +1038,22 @@ export default {
     syncSqlBuilderExpression(jobInfo) {
       this.sqlBuilderDraft.expression = this.buildSqlExpressionFromConditions(jobInfo);
     },
-    resetSqlBuilderConditionsFrom(startIndex, jobInfo) {
-      this.sqlBuilderConditions.slice(startIndex).forEach((condition, offset) => {
-        const resetIndex = startIndex + offset;
-        this.$set(condition, 'value', '');
-        this.$set(this.sqlBuilderFieldValueSearchMap, resetIndex, '');
-        this.$delete(this.sqlBuilderFieldValueButtonLoadingMap, resetIndex);
-      });
-      this.syncSqlBuilderExpression(jobInfo);
+    resetSqlBuilderCondition(conditionIndex) {
+      const condition = this.sqlBuilderConditions[conditionIndex];
+      if (!condition) {
+        return;
+      }
+      this.$set(condition, 'value', '');
+      this.$set(this.sqlBuilderFieldValueSearchMap, conditionIndex, '');
+      this.$delete(this.sqlBuilderFieldValueButtonLoadingMap, conditionIndex);
     },
     resetSqlBuilderConditionsAfter(conditionIndex, jobInfo) {
-      let resetStartIndex = conditionIndex + 1;
-      if (
-        resetStartIndex === 1 &&
-        !this.shouldUseSqlBuilderPrecedingExpression(resetStartIndex)
-      ) {
-        resetStartIndex++;
+      for (let resetIndex = conditionIndex + 1; resetIndex < this.sqlBuilderConditions.length; resetIndex++) {
+        if (this.shouldUseSqlBuilderPrecedingExpression(resetIndex)) {
+          this.resetSqlBuilderCondition(resetIndex);
+        }
       }
-      // 只跳过不依赖 rule1 的首个 OR 条件；更后面的条件都依赖完整前置表达式，必须失效。
-      this.resetSqlBuilderConditionsFrom(resetStartIndex, jobInfo);
+      this.syncSqlBuilderExpression(jobInfo);
     },
     handleSqlBuilderFieldChange(condition, jobInfo) {
       const conditionIndex = this.sqlBuilderConditions.indexOf(condition);
@@ -977,8 +1073,13 @@ export default {
       this.resetSqlBuilderConditionsAfter(conditionIndex, jobInfo);
     },
     handleSqlBuilderConnectorChange(connectorIndex, jobInfo) {
-      // 连接符变化会改变右侧条件及所有后续条件使用的前置表达式，相关值都需要重新选择。
-      this.resetSqlBuilderConditionsFrom(connectorIndex + 1, jobInfo);
+      // 右侧条件的连接关系已变化；更后面的 AND 条件也依赖新的完整前置表达式。
+      for (let resetIndex = connectorIndex + 1; resetIndex < this.sqlBuilderConditions.length; resetIndex++) {
+        if (resetIndex === connectorIndex + 1 || this.shouldUseSqlBuilderPrecedingExpression(resetIndex)) {
+          this.resetSqlBuilderCondition(resetIndex);
+        }
+      }
+      this.syncSqlBuilderExpression(jobInfo);
     },
     handleSqlBuilderValueFocus(conditionIndex) {
       this.$set(this.sqlBuilderFieldValueSearchMap, conditionIndex, '');
@@ -1283,6 +1384,8 @@ export default {
           return this.getSqlBuilderCachedFieldValues(context.contextKey) || [];
         })
         .catch(error => {
+          // 刷新失败也代表本次缓存结果为空，不能继续展示上一次请求留下的旧值。
+          this.setSqlBuilderCachedFieldValues(context.contextKey, []);
           this.$delete(this.sqlBuilderFieldValueJobPromiseMap, requestKey);
           throw error;
         });
@@ -1365,21 +1468,25 @@ export default {
       if (this.sqlBuilderConditions.length === 1) {
         return;
       }
-      const firstDependentIndex = this.sqlBuilderConditions.findIndex(
-        (condition, conditionIndex) =>
-          conditionIndex > index && this.shouldUseSqlBuilderPrecedingExpression(conditionIndex)
-      );
+      const followingConditions = this.sqlBuilderConditions.slice(index + 1).map((condition, offset) => ({
+        condition,
+        usedPrecedingExpression: this.shouldUseSqlBuilderPrecedingExpression(index + offset + 1)
+      }));
       this.sqlBuilderConditions.splice(index, 1);
       if (index === 0) {
         this.sqlBuilderConnectors.splice(0, 1);
       } else {
         this.sqlBuilderConnectors.splice(index - 1, 1);
       }
-      // 删除条件后，仅清空原本依赖该条件的后续值；独立的首个 OR 条件继续保留。
-      if (firstDependentIndex > -1) {
-        this.resetSqlBuilderConditionsFrom(firstDependentIndex - 1, jobInfo);
-        return;
-      }
+      followingConditions.forEach(({ condition, usedPrecedingExpression }) => {
+        const conditionIndex = this.sqlBuilderConditions.indexOf(condition);
+        if (
+          conditionIndex > -1 &&
+          (usedPrecedingExpression || this.shouldUseSqlBuilderPrecedingExpression(conditionIndex))
+        ) {
+          this.resetSqlBuilderCondition(conditionIndex);
+        }
+      });
       this.syncSqlBuilderExpression(jobInfo);
     },
     confirmSqlBuilder(jobInfo) {

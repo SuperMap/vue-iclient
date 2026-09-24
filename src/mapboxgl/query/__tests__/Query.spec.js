@@ -682,6 +682,48 @@ describe('query', () => {
     expect(wrapper.vm.buildSqlCondition({ field: 'SmID', operator: '<>', value: '10' }, wrapper.vm.jobInfos[0])).toBe('SmID <> 10');
   });
 
+  it('keeps sql builder conditions consistent after restData resets the attribute filter', async () => {
+    wrapper = mount(SmQuery, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        restData: [
+          new RestDataParameter({
+            url: 'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data',
+            attributeFilter: "Name = 'old'",
+            maxFeatures: 30,
+            dataName: ['World:Countries'],
+            queryMode: 'SQL'
+          })
+        ]
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    await wrapper.setProps({
+      restData: [
+        new RestDataParameter({
+          url: 'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data',
+          attributeFilter: 'SmID>0',
+          maxFeatures: 30,
+          dataName: ['World:Countries'],
+          queryMode: 'SQL'
+        })
+      ]
+    });
+    await wrapper.vm.$nextTick();
+    const jobInfo = wrapper.vm.jobInfos[0];
+    wrapper.vm.$set(wrapper.vm.sqlBuilderFieldMap, wrapper.vm.getSqlBuilderJobCacheKey(jobInfo), [
+      { value: 'SmID', label: 'SmID', type: 'INT32' }
+    ]);
+    jest.spyOn(wrapper.vm, 'loadSqlBuilderFields').mockResolvedValue([]);
+
+    await wrapper.vm.openSqlBuilder(jobInfo, 0);
+
+    expect(jobInfo.queryParameter.attributeFilter).toBe('SmID>0');
+    expect(wrapper.vm.sqlBuilderDraft.expression).toBe('SmID>0');
+    expect(wrapper.vm.sqlBuilderConditions).toEqual([{ field: 'SmID', operator: '>', value: '0' }]);
+  });
+
   it('builds sql expression from multiple condition rows', async () => {
     wrapper = mount(SmQuery, {
       localVue,
@@ -716,6 +758,58 @@ describe('query', () => {
       operator: 'LIKE',
       value: '广东省'
     });
+
+    wrapper.vm.sqlBuilderConditions = [
+      { field: 'SmID', operator: '<=', value: '10' },
+      { field: 'Name', operator: '=', value: '重庆市' },
+      { field: 'Name', operator: '=', value: '上海市' }
+    ];
+    wrapper.vm.sqlBuilderConnectors = ['OR', 'AND'];
+    wrapper.vm.confirmSqlBuilder(wrapper.vm.jobInfos[0]);
+    expect(wrapper.vm.jobInfos[0].queryParameter.attributeFilter).toBe(
+      "(SmID <= 10 OR Name = '重庆市') AND Name = '上海市'"
+    );
+
+    await wrapper.vm.openSqlBuilder(wrapper.vm.jobInfos[0], 0);
+
+    expect(wrapper.vm.sqlBuilderConditions).toEqual([
+      { field: 'SmID', operator: '<=', value: '10' },
+      { field: 'Name', operator: '=', value: '重庆市' },
+      { field: 'Name', operator: '=', value: '上海市' }
+    ]);
+    expect(wrapper.vm.sqlBuilderConnectors).toEqual(['OR', 'AND']);
+
+    wrapper.vm.sqlBuilderConditions = [
+      { field: 'SmID', operator: '>', value: '10' },
+      { field: 'Name', operator: '=', value: 'Airport' },
+      { field: 'Name', operator: '=', value: 'Station' }
+    ];
+    wrapper.vm.sqlBuilderConnectors = ['AND', 'AND'];
+    expect(wrapper.vm.buildSqlExpressionFromConditions(wrapper.vm.jobInfos[0])).toBe(
+      "SmID > 10 AND Name = 'Airport' AND Name = 'Station'"
+    );
+
+    wrapper.vm.sqlBuilderConditions = [
+      { field: 'SmID', operator: '>', value: '10' },
+      { field: 'Name', operator: '=', value: 'A AND B' },
+      { field: 'Name', operator: 'IS NULL', value: '' },
+      { field: 'Name', operator: '=', value: 'D OR E' }
+    ];
+    wrapper.vm.sqlBuilderConnectors = ['OR', 'AND', 'OR'];
+    wrapper.vm.confirmSqlBuilder(wrapper.vm.jobInfos[0]);
+    expect(wrapper.vm.jobInfos[0].queryParameter.attributeFilter).toBe(
+      "((SmID > 10 OR Name = 'A AND B') AND Name IS NULL) OR Name = 'D OR E'"
+    );
+
+    await wrapper.vm.openSqlBuilder(wrapper.vm.jobInfos[0], 0);
+
+    expect(wrapper.vm.sqlBuilderConditions).toEqual([
+      { field: 'SmID', operator: '>', value: '10' },
+      { field: 'Name', operator: '=', value: 'A AND B' },
+      { field: 'Name', operator: 'IS NULL', value: '' },
+      { field: 'Name', operator: '=', value: 'D OR E' }
+    ]);
+    expect(wrapper.vm.sqlBuilderConnectors).toEqual(['OR', 'AND', 'OR']);
   });
 
   it('removes connector and invalidates only dependent conditions when deleting a sql builder row', async () => {
@@ -752,6 +846,39 @@ describe('query', () => {
     wrapper.vm.removeSqlBuilderCondition(0);
     expect(wrapper.vm.sqlBuilderConditions).toEqual([{ field: 'Name', operator: '=', value: 'road' }]);
     expect(wrapper.vm.sqlBuilderConnectors).toEqual([]);
+  });
+
+  it('invalidates the right condition and following AND-dependent conditions after connector changes', async () => {
+    wrapper = mount(SmQuery, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        restData: [
+          new RestDataParameter({
+            url: 'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data',
+            attributeFilter: '',
+            maxFeatures: 30,
+            dataName: ['World:Countries'],
+            queryMode: 'SQL'
+          })
+        ]
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    const jobInfo = wrapper.vm.jobInfos[0];
+    wrapper.vm.sqlBuilderConditions = [
+      { field: 'SmID', operator: '>', value: '10' },
+      { field: 'Name', operator: '=', value: 'Airport' },
+      { field: 'Code', operator: '=', value: 'A001' },
+      { field: 'Name', operator: '=', value: 'Station' }
+    ];
+    wrapper.vm.sqlBuilderConnectors = ['AND', 'AND', 'OR'];
+
+    wrapper.vm.sqlBuilderConnectors[0] = 'OR';
+    wrapper.vm.handleSqlBuilderConnectorChange(0, jobInfo);
+
+    expect(wrapper.vm.sqlBuilderConditions.map(condition => condition.value)).toEqual(['10', '', '', 'Station']);
+    expect(wrapper.vm.sqlBuilderDraft.expression).toBe('SmID > 10');
   });
 
   it('uses the sql builder condition close icon instead of a delete button', async () => {
@@ -1398,6 +1525,13 @@ describe('query', () => {
     expect(wrapper.vm.getSqlBuilderFieldValueOptions(wrapper.vm.sqlBuilderConditions[0], 0)).toEqual([
       { label: 'Airport', value: 'Airport' }
     ]);
+
+    querySpy.mockRejectedValueOnce(new Error('request failed'));
+    await expect(wrapper.vm.handleSqlBuilderFieldValueLoad(0, jobInfo)).rejects.toThrow('request failed');
+
+    expect(querySpy).toHaveBeenCalledTimes(3);
+    expect(wrapper.vm.isSqlBuilderFieldValueButtonLoading(0, jobInfo)).toBe(false);
+    expect(wrapper.vm.getSqlBuilderFieldValueOptions(wrapper.vm.sqlBuilderConditions[0], 0)).toEqual([]);
   });
 
   it('loads sql builder field values with previous conditions and invalidates following values', async () => {
@@ -1445,12 +1579,14 @@ describe('query', () => {
     expect(wrapper.vm.getSqlBuilderFieldValueContext(jobInfo, 2, 'Code').attributeFilter).toBe(
       "SmID > 10 OR Name = 'Airport'"
     );
-    expect(wrapper.vm.getSqlBuilderFieldValueContext(jobInfo, 3, 'Name').attributeFilter).toBe(
-      "SmID > 10 OR Name = 'Airport' AND Code = 'A001'"
-    );
-    expect(wrapper.vm.getSqlBuilderFieldValueContext(jobInfo, 4, 'Code').attributeFilter).toBe(
-      "SmID > 10 OR Name = 'Airport' AND Code = 'A001' OR Name = 'Station'"
-    );
+    expect(wrapper.vm.getSqlBuilderFieldValueContext(jobInfo, 3, 'Name').attributeFilter).toBe('');
+    expect(wrapper.vm.getSqlBuilderFieldValueContext(jobInfo, 4, 'Code').attributeFilter).toBe('');
+    wrapper.vm.sqlBuilderConditions[1].value = '';
+    expect(wrapper.vm.getSqlBuilderFieldValueContext(jobInfo, 3, 'Name')).toMatchObject({
+      ready: true,
+      attributeFilter: ''
+    });
+    wrapper.vm.sqlBuilderConditions[1].value = 'Airport';
     wrapper.vm.sqlBuilderConditions.splice(3);
     wrapper.vm.sqlBuilderConnectors = ['OR', 'AND'];
 
