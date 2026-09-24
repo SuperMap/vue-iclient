@@ -62,7 +62,8 @@ export default {
           const size = parseInt(fontSize);
           displayWidth = size;
           displayHeight = size;
-          fillColor = color;
+          // SDF 图片通过颜色底图和遮罩完成着色；普通图片保留自身颜色及透明背景。
+          fillColor = sdf ? color : 'transparent';
           break;
         }
         case 'animateline': {
