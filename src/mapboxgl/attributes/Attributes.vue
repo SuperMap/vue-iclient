@@ -335,7 +335,7 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
     }
     const visibleColumns = sourceColumns.filter(column => column.visible !== false);
     const configuredWidth = visibleColumns.reduce((total, column) => {
-      const width = typeof column.width === 'number' ? column.width : parseFloat(column.width);
+      const width = typeof column.width === 'number' ? column.width : Number.parseFloat(column.width);
       return total + (Number.isFinite(width) && width > 0 ? width : 128);
     }, 0);
     return configuredWidth + (this.tableOptions.showRowSelection ? 60 : 0);
