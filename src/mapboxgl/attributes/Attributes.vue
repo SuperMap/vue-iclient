@@ -209,8 +209,6 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
 
   fieldInfo: Array<Object> = [];
 
-  xScrollWidth: number = 0;
-
   tableOptions: TableParams = {
     showHeader: true,
     showBorder: true,
@@ -321,13 +319,6 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   @Watch('fieldConfigs', { immediate: true })
   fieldConfigsChanged(val) {
     if (!isequal(val, this.fieldInfo)) {
-      let total = 0;
-      val.forEach((item) => {
-        let width = item.width ? item.width : 128;
-        total += width;
-      });
-      // @ts-ignore
-      this.xScrollWidth = total;
       // @ts-ignore
       this.fieldInfo = val;
     }
@@ -335,6 +326,19 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
 
   get associateMap() {
     return this.associateWithMap.enabled;
+  }
+
+  get xScrollWidth() {
+    const sourceColumns: any = this.columns.length ? this.columns : this.fieldConfigs;
+    if (!sourceColumns || !sourceColumns.length) {
+      return 0;
+    }
+    const visibleColumns = sourceColumns.filter(column => column.visible !== false);
+    const configuredWidth = visibleColumns.reduce((total, column) => {
+      const width = typeof column.width === 'number' ? column.width : parseFloat(column.width);
+      return total + (Number.isFinite(width) && width > 0 ? width : 128);
+    }, 0);
+    return configuredWidth + (this.tableOptions.showRowSelection ? 60 : 0);
   }
 
   get allCount() {
