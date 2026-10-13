@@ -25,6 +25,16 @@
     font-family: inherit;
   }
 
+  /* antd 的 RadioGroup 用 font-size: 0 消除内联子项之间的空白间隙，
+     会把面板继承来的字号一并吃掉，导致面板内 font-size: inherit 失效；
+     这里用 flex 接管消间隙的职责，把字号还原为继承值。 */
+  .sm-component-radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: inherit;
+  }
+
   .sm-component-btn-primary {
     /* stylelint-disable-next-line */
     color: $tooltip-color;
