@@ -5,6 +5,8 @@
 <script>
 import omit from 'omit.js';
 import uniqueId from 'lodash.uniqueid';
+import { drawFillLegendOutline, getFillOutlineLayers, createOutlineTileFromSprite } from './fillOutline';
+import { loadSpriteImage, loadSpriteMeta } from './sprite';
 
 export default {
   props: {
@@ -25,21 +27,39 @@ export default {
       return this.styleRendererData.shape.toLowerCase();
     },
     cssStyle() {
-      return omit(this.styleRendererData, ['type', 'shape', 'sprite', 'url']);
+      return omit(this.styleRendererData, ['type', 'shape', 'sprite', 'url', 'outlineSprites']);
+    },
+    // 面轮廓线符号是否含图片图案层（line-pattern / icon-image）
+    hasImageOutline() {
+      if (this.shape !== 'rectangle') {
+        return false;
+      }
+      return getFillOutlineLayers(this.cssStyle.outlineSymbolsContent).some(layer => layer.kind === 'image');
     }
   },
   mounted() {
-    const img = new Image();
-    img.onload = () => {
-      this.drawImage(img);
-    };
-    img.src = this.styleRendererData.url;
+    // 雪碧图（sprite.png）加载完成后绘制；面轮廓含图片图案时优先用库随样式附带的雪碧图信息，
+    // 未附带时请求同名 sprite.json 定位图案，元数据加载失败则退化为不绘制图案层
+    loadSpriteImage(this.styleRendererData.url)
+      .then(img => {
+        if (!this.hasImageOutline) {
+          return this.drawImage(img);
+        }
+        const { outlineSprites } = this.styleRendererData;
+        if (outlineSprites && Object.keys(outlineSprites).length) {
+          return this.drawImage(img, outlineSprites);
+        }
+        return loadSpriteMeta(this.styleRendererData.url)
+          .then(meta => this.drawImage(img, meta))
+          .catch(() => this.drawImage(img));
+      })
+      .catch(() => {});
   },
   methods: {
-    drawImage(img) {
+    drawImage(img, spriteMeta = null) {
       const canvas = document.getElementById(this.canvasId);
       const ctx = canvas.getContext('2d');
-      const { opacity, outlineColor, outlineWidth = 0.5, outlineStyle = 'none' } = this.cssStyle;
+      const { opacity } = this.cssStyle;
       const {
         sprite: {
           sdf,
@@ -117,10 +137,16 @@ export default {
         // draw image
         ctx.drawImage(img, sx * pixelRatio, sy * pixelRatio, sWidth, sHeight, 0, 0, displayWidth, displayHeight);
       }
-      if (outlineStyle === 'solid') {
-        ctx.strokeStyle = outlineColor;
-        ctx.lineWidth = outlineWidth;
-        ctx.strokeRect(0, 0, displayWidth, displayHeight);
+      // 面（图片填充符号）的轮廓层：纯色 / 轮廓线符号，该画布按物理像素 1:1 绘制，dpr 传 1
+      if (this.shape === 'rectangle') {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.globalAlpha = 1;
+        let createTile;
+        if (spriteMeta) {
+          createTile = (imageId, targetHeight, dpr) =>
+            createOutlineTileFromSprite(img, spriteMeta, imageId, targetHeight, dpr);
+        }
+        drawFillLegendOutline(canvas, displayWidth, this.cssStyle, { dpr: 1, createTile });
       }
     }
   }

@@ -26,11 +26,17 @@ describe('Legend.vue', () => {
       beginPath: jest.fn(),
       closePath: jest.fn(),
       setLineDash: jest.fn(),
+      rect: jest.fn(),
+      setLineDash: jest.fn(),
+      setTransform: jest.fn(),
       moveTo: jest.fn(),
       lineTo: jest.fn(),
       stroke: jest.fn(),
       drawImage: jest.fn(),
       createPattern: jest.fn(),
+      createImageData: function(width, height) {
+        return { width, height, data: new Uint8ClampedArray(width * height * 4) };
+      },
       createLinearGradient: function() {
         return {
           addColorStop: jest.fn()
@@ -39,6 +45,7 @@ describe('Legend.vue', () => {
     };
     document.getElementById = function() {
       return {
+        style: {},
         getContext: function() {
           return canvasContext;
         }

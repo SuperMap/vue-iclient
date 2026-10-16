@@ -157,6 +157,8 @@ export default {
     width: 'Width',
     outlineColor: 'Outline Color',
     outlineWidth: 'Outline Width',
+    outlineSymbolsContent: 'Outline Line Symbol',
+    outlineOpacity: 'Outline Opacity',
     haloColor: 'Halo Color',
     label: 'Label',
     parentheses: '({tips})',
