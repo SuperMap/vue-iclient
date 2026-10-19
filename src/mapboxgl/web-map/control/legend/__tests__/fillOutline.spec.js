@@ -217,6 +217,61 @@ describe('fillOutline', () => {
       expect(weirdLayers[0].lineJoin).toBe('miter');
     });
 
+    it('传入轮廓色和轮廓宽时优先于符号自身的 line-color / line-width', () => {
+      const layers = getFillOutlineLayers(
+        {
+          symbolId: 'line-override',
+          style: {
+            paint: { 'line-width': 2, 'line-color': '#00FF00' }
+          }
+        },
+        'rgba(195,16,16,1)',
+        10
+      );
+      expect(layers[0].color).toBe('rgba(195,16,16,1)');
+      expect(layers[0].lineWidth).toBe(10);
+    });
+
+    it('轮廓宽同时覆盖图片图案层与图标点层；图标点不传轮廓宽时保持缺省线宽 0', () => {
+      const patternLayers = getFillOutlineLayers(
+        { symbolId: 'line-override-pattern', style: { paint: { 'line-pattern': 'texture-id' } } },
+        '#FF0000',
+        6
+      );
+      expect(patternLayers[0]).toEqual({
+        kind: 'image',
+        imageId: 'texture-id',
+        lineWidth: 6,
+        offset: 0,
+        opacity: 1,
+        spacing: null
+      });
+
+      const iconLayers = getFillOutlineLayers(
+        { symbolId: 'line-override-icon', style: { layout: { 'icon-image': 'icon-id' } } },
+        '#FF0000',
+        5
+      );
+      expect(iconLayers[0].lineWidth).toBe(5);
+
+      const iconNoWidth = getFillOutlineLayers(
+        { symbolId: 'line-override-icon-default', style: { layout: { 'icon-image': 'icon-id' } } },
+        '#FF0000'
+      );
+      expect(iconNoWidth[0].lineWidth).toBe(0);
+    });
+
+    it('轮廓宽覆盖时，原本会被忽略的非线图层也归一化为矢量层', () => {
+      const layers = getFillOutlineLayers(
+        { symbolId: 'line-override-non-line', style: { paint: { 'fill-color': '#0000FF' } } },
+        undefined,
+        2
+      );
+      expect(layers.length).toBe(1);
+      expect(layers[0].lineWidth).toBe(2);
+      expect(layers[0].color).toBe('#FFFFFF');
+    });
+
     it('非数字的 offset 和 opacity 使用默认值', () => {
       const layers = getFillOutlineLayers({
         symbolId: 'line-bad-offset',
@@ -643,6 +698,72 @@ describe('fillOutline', () => {
         { dpr: 1 }
       );
       expect(strokes2[0].globalAlpha).toBe(1);
+    });
+
+    it('轮廓线符号存在时，面板轮廓色与轮廓宽覆盖符号内部颜色（数字宽度）', () => {
+      const { canvas, strokes } = createCanvas();
+      drawFillLegendOutline(
+        canvas,
+        20,
+        {
+          outlineStyle: 'solid',
+          outlineColor: 'rgba(195,16,16,1)',
+          outlineWidth: 10,
+          outlineOpacity: 1,
+          outlineSymbolsContent: {
+            symbolId: 'line-0',
+            style: {
+              paint: {
+                'line-width': 10,
+                'line-offset': 0,
+                'line-opacity': 1,
+                'line-color': '#FFFFFF'
+              }
+            }
+          }
+        },
+        { dpr: 1 }
+      );
+      expect(strokes.length).toBe(1);
+      expect(strokes[0].strokeStyle).toBe('rgba(195,16,16,1)');
+      // 10px 在 20px 图例上按比例钳制为 4px
+      expect(strokes[0].lineWidth).toBe(4);
+    });
+
+    it('面板轮廓宽为像素字符串时解析为数字后覆盖', () => {
+      const { canvas, strokes } = createCanvas();
+      drawFillLegendOutline(
+        canvas,
+        20,
+        {
+          outlineColor: '#FF0000',
+          outlineWidth: '2px',
+          outlineSymbolsContent: {
+            symbolId: 'line-px-width',
+            style: { paint: { 'line-width': 8, 'line-color': '#00FF00' } }
+          }
+        },
+        { dpr: 1 }
+      );
+      expect(strokes[0].strokeStyle).toBe('#FF0000');
+      expect(strokes[0].lineWidth).toBe(2);
+    });
+
+    it('面板轮廓色、宽度缺省时仍使用符号自身的颜色与宽度', () => {
+      const { canvas, strokes } = createCanvas();
+      drawFillLegendOutline(
+        canvas,
+        20,
+        {
+          outlineSymbolsContent: {
+            symbolId: 'line-keep-symbol',
+            style: { paint: { 'line-width': 2, 'line-color': '#00FF00' } }
+          }
+        },
+        { dpr: 1 }
+      );
+      expect(strokes[0].strokeStyle).toBe('#00FF00');
+      expect(strokes[0].lineWidth).toBe(2);
     });
 
     it('轮廓线符号无 symbolId 时回退为纯色轮廓', () => {
