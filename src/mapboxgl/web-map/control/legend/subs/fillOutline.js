@@ -35,9 +35,11 @@ function isNumberArray(value) {
 /**
  * 将轮廓线符号归一化为可绘制图层（图片符号层 / 矢量符号层）
  * @param {Object} symbolState 轮廓线符号 { symbolId, style }
+ * @param {string} [overrideColor] 面板轮廓色，存在时覆盖各矢量子层的 line-color
+ * @param {number} [overrideWidth] 面板轮廓宽度，存在时覆盖各子层（含图片符号层）的 line-width
  * @returns {Array} 归一化后的轮廓图层
  */
-export function getFillOutlineLayers(symbolState) {
+export function getFillOutlineLayers(symbolState, overrideColor, overrideWidth) {
   const { style } = symbolState || {};
   if (!style) return [];
   const symbolStyles = Array.isArray(style) ? style : [style];
@@ -50,13 +52,15 @@ export function getFillOutlineLayers(symbolState) {
     const opacityValue = paint[OUTLINE_OPACITY_KEY];
     const offset = typeof offsetValue === 'number' ? offsetValue : 0;
     const opacity = typeof opacityValue === 'number' ? opacityValue : 1;
+    // 面板轮廓宽度优先于符号自身残留的 line-width
+    const resolvedWidth = overrideWidth ?? (typeof lineWidth === 'number' ? lineWidth : 1);
     const iconImage = layout[ICON_IMAGE_KEY];
     const linePattern = paint[OUTLINE_PATTERN_KEY];
     if (typeof iconImage === 'string') {
       layers.push({
         kind: 'image',
         imageId: iconImage,
-        lineWidth: typeof lineWidth === 'number' ? lineWidth : 0,
+        lineWidth: overrideWidth ?? (typeof lineWidth === 'number' ? lineWidth : 0),
         offset,
         opacity,
         // 图标点按间距铺设；未配置 symbol-spacing 时取图标自身宽度（连续）
@@ -68,7 +72,7 @@ export function getFillOutlineLayers(symbolState) {
       layers.push({
         kind: 'image',
         imageId: linePattern,
-        lineWidth: typeof lineWidth === 'number' ? lineWidth : 1,
+        lineWidth: resolvedWidth,
         offset,
         opacity,
         // 纹理连续铺设，不留间距
@@ -79,14 +83,15 @@ export function getFillOutlineLayers(symbolState) {
     const lineColor = paint[OUTLINE_COLOR_KEY];
     const lineDash = paint[OUTLINE_DASH_KEY];
     // 非线图层（仅含 fill-* 等其他 paint）忽略
-    if (lineWidth === undefined && lineColor === undefined) {
+    if (lineWidth === undefined && lineColor === undefined && overrideWidth === undefined) {
       return;
     }
     const lineJoin = layout[LINE_JOIN_KEY];
     layers.push({
       kind: 'vector',
-      lineWidth: typeof lineWidth === 'number' ? lineWidth : 1,
-      color: typeof lineColor === 'string' ? lineColor : '#FFFFFF',
+      lineWidth: resolvedWidth,
+      // 与线图层图例一致：面板轮廓色优先于符号自身的 line-color
+      color: overrideColor ?? (typeof lineColor === 'string' ? lineColor : '#FFFFFF'),
       dasharray: lineDash !== undefined && isNumberArray(lineDash) ? lineDash : [],
       offset,
       opacity,
@@ -322,9 +327,16 @@ export function drawFillLegendOutline(canvas, size, styleData, options = {}) {
   const outlineOpacity = clampOpacity(
     styleData && typeof styleData.outlineOpacity === 'number' ? styleData.outlineOpacity : 1
   );
+  // 面板轮廓配置（颜色 / 宽度）：存在时优先于轮廓线符号内部的 line-color / line-width
+  const overrideColor = styleData && typeof styleData.outlineColor === 'string' ? styleData.outlineColor : undefined;
+  let overrideWidth;
+  if (styleData && styleData.outlineWidth !== undefined && styleData.outlineWidth !== null) {
+    const parsedWidth = Number.parseFloat(styleData.outlineWidth);
+    overrideWidth = Number.isNaN(parsedWidth) ? undefined : parsedWidth;
+  }
   let layers = [];
   if (outlineSymbol && outlineSymbol.symbolId) {
-    layers = getFillOutlineLayers(outlineSymbol);
+    layers = getFillOutlineLayers(outlineSymbol, overrideColor, overrideWidth);
   } else if (styleData && styleData.outlineStyle === 'solid') {
     const defaultWidth = 0.5;
     const parsedWidth = Number.parseFloat(styleData.outlineWidth || '');
