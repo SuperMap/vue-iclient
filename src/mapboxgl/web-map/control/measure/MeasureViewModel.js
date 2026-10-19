@@ -356,6 +356,8 @@ class MeasureViewModel extends mapboxgl.Evented {
     this._resetEvent();
     this._removePopups();
     this._removeHoverPopup();
+    // 关闭量算后必须复位绘制状态，否则其它依赖绘制状态的逻辑（如点选拦截）会一直判定为绘制中
+    drawEvent.$options.setDrawingState(this.mapTarget, this.componentName, false);
   }
 
   removed() {
@@ -367,6 +369,7 @@ class MeasureViewModel extends mapboxgl.Evented {
     this._clearEvent();
     this._removePopups();
     this._removeHoverPopup();
+    drawEvent.$options.setDrawingState(this.mapTarget, this.componentName, false);
     this.draw = null;
   }
 

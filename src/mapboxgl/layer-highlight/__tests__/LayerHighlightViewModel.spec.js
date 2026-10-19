@@ -1,6 +1,7 @@
 import LayerHighlightViewModel from '../LayerHighlightViewModel';
 import Map from '@mocks/map';
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import drawEvent from 'vue-iclient/src/mapboxgl/_types/draw-event';
 
 jest.mock('fast-xml-parser', () => ({
   XMLParser: jest.fn().mockImplementation(() => ({
@@ -1306,5 +1307,337 @@ describe('LayerHighlightViewModel1', () => {
     const res = await viewModel.queryWFSFeatures(wfsLayers, e);
     expect(res.length).toBe(0);
     done();
+  });
+});
+
+describe('LayerHighlightViewModel drawing state', () => {
+  const highlightStyle = {
+    line: { paint: { 'line-width': 3, 'line-color': '#01ffff' } },
+    circle: { paint: { 'circle-color': '#01ffff' } },
+    fill: { paint: { 'fill-color': '#01ffff' } }
+  };
+  const drawingMapTarget = 'drawing-target';
+
+  let map;
+
+  beforeEach(() => {
+    map = new Map({
+      style: { center: [0, 0], zoom: 1, layers: [], sources: {} }
+    });
+    drawEvent.$options.drawList[drawingMapTarget] = { getMode: () => 'draw_line_string' };
+  });
+
+  afterEach(() => {
+    delete drawEvent.$options.drawList[drawingMapTarget];
+    jest.restoreAllMocks();
+  });
+
+  it('return false when map is not drawing', () => {
+    const viewModel = new LayerHighlightViewModel({ name: 'drawing', style: highlightStyle });
+    const webmap = { copyLayer: jest.fn(), getAppreciableLayers: jest.fn().mockReturnValue([]) };
+    viewModel.setMap({ map, webmap, mapTarget: 'none-drawing-target' });
+    expect(viewModel.isDrawing()).toBe(false);
+  });
+
+  it('skip query and selection when map is drawing', async () => {
+    const viewModel = new LayerHighlightViewModel({ name: 'drawing', style: highlightStyle });
+    const webmap = { copyLayer: jest.fn(), getAppreciableLayers: jest.fn().mockReturnValue([]) };
+    viewModel.setMap({ map, webmap, mapTarget: drawingMapTarget });
+    const querySpy = jest.spyOn(viewModel, 'queryLayerFeatures').mockResolvedValue([]);
+    const selectionSpy = jest.spyOn(viewModel, 'handleMapSelections').mockImplementation(() => {});
+
+    await viewModel.handleMapClickFn({ point: { x: 10, y: 10 }, lngLat: { lng: 1, lat: 1 } });
+
+    expect(querySpy).not.toHaveBeenCalled();
+    expect(selectionSpy).not.toHaveBeenCalled();
+  });
+
+  it('keep draw cursor when mouse enters layer during drawing', () => {
+    const viewModel = new LayerHighlightViewModel({ name: 'drawing', style: highlightStyle });
+    const webmap = { copyLayer: jest.fn(), getAppreciableLayers: jest.fn().mockReturnValue([]) };
+    viewModel.setMap({ map, webmap, mapTarget: drawingMapTarget });
+    const canvas = { style: { cursor: 'crosshair' } };
+    jest.spyOn(map, 'getCanvas').mockReturnValue(canvas);
+
+    viewModel.handleMapMouseEnter();
+
+    expect(canvas.style.cursor).toBe('crosshair');
+  });
+
+  it('sets pointer cursor when mouse enters layer without drawing', () => {
+    const viewModel = new LayerHighlightViewModel({ name: 'drawing', style: highlightStyle });
+    const webmap = { copyLayer: jest.fn(), getAppreciableLayers: jest.fn().mockReturnValue([]) };
+    viewModel.setMap({ map, webmap, mapTarget: 'none-drawing-target' });
+    const canvas = { style: { cursor: null } };
+    jest.spyOn(map, 'getCanvas').mockReturnValue(canvas);
+
+    viewModel.handleMapMouseEnter();
+
+    expect(canvas.style.cursor).toBe('pointer');
+  });
+});
+
+describe('LayerHighlightViewModel highlight styles', () => {
+  const highlightStyle = {
+    line: { paint: { 'line-width': 3, 'line-color': '#01ffff' } },
+    circle: { paint: { 'circle-color': '#01ffff', 'circle-radius': 8 } },
+    fill: { paint: { 'fill-color': '#01ffff', 'fill-opacity': 0.6 } }
+  };
+
+  let map;
+  let webmap;
+  let viewModel;
+
+  beforeEach(() => {
+    map = new Map({
+      style: { center: [0, 0], zoom: 1, layers: [{ id: 'test' }], sources: {} }
+    });
+    webmap = {
+      copyLayer: jest.fn(),
+      getAppreciableLayers: jest.fn().mockReturnValue([])
+    };
+    viewModel = new LayerHighlightViewModel({ name: 'Test', style: highlightStyle });
+    viewModel.setMap({ map, webmap });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('converts geojson geometry types to mapbox layer types', () => {
+    expect(viewModel.convertToMapboxType('Point')).toBe('circle');
+    expect(viewModel.convertToMapboxType('MultiPoint')).toBe('circle');
+    expect(viewModel.convertToMapboxType('LineString')).toBe('line');
+    expect(viewModel.convertToMapboxType('MultiLineString')).toBe('line');
+    expect(viewModel.convertToMapboxType('Polygon')).toBe('fill');
+    expect(viewModel.convertToMapboxType('MultiPolygon')).toBe('fill');
+    expect(viewModel.convertToMapboxType('GeometryCollection')).toBeNull();
+  });
+
+  it('highlights L7 layers with their matched highlight style type', () => {
+    jest.spyOn(map, 'getFilter').mockReturnValue(['all']);
+    jest.spyOn(map, 'setFilter').mockImplementation(() => map);
+    const features = [{ id: 1 }];
+    const l7Layers = [
+      { id: 'l7-line-extrusion', type: 'line-extrusion', paint: { 'line-width': 1 } },
+      { id: 'l7-radar', type: 'radar', paint: { 'radar-radius': 4 } },
+      { id: 'l7-point-extrusion', type: 'point-extrusion', paint: {} },
+      { id: 'l7-fill', type: 'fill', paint: { 'fill-color': '#ff0000' } },
+      { id: 'l7-custom', type: 'custom', paint: {} }
+    ];
+
+    l7Layers.forEach(layer => {
+      const setSelectedDatas = jest.fn();
+      viewModel.highlightL7Layer({ layer: { ...layer, setSelectedDatas }, features, filter: ['all'] });
+
+      expect(webmap.copyLayer).toHaveBeenCalledWith(
+        layer.id,
+        expect.objectContaining({ id: `${layer.id}-Test-SM-highlighted`, filter: ['all'] })
+      );
+      expect(setSelectedDatas).toHaveBeenCalledWith(features);
+    });
+
+    expect(map.setFilter).toHaveBeenCalledWith('l7-custom', ['all']);
+  });
+
+  it('creates highlight layers for WFS features', () => {
+    const addSourceSpy = jest.spyOn(map, 'addSource');
+    const addLayerSpy = jest.spyOn(map, 'addLayer');
+    jest.spyOn(map, 'getSource').mockReturnValue(undefined);
+    jest.spyOn(map, 'getLayer').mockReturnValue(undefined);
+    const layer = {
+      id: 'wfs-layer',
+      type: 'circle',
+      source: 'sm_hightlight_source_wfs',
+      paint: { 'circle-color': '#000000' }
+    };
+    const features = [
+      {
+        type: 'Feature',
+        properties: {},
+        geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]] }
+      }
+    ];
+
+    viewModel.addNormalHighlightLayers(layer, features, ['all']);
+
+    expect(addSourceSpy).toHaveBeenCalledWith('sm_hightlight_source_wfs', expect.objectContaining({ type: 'geojson' }));
+    expect(addLayerSpy).toHaveBeenCalledWith(expect.objectContaining({ type: 'fill', filter: ['all'] }));
+    expect(viewModel.highlightOptions.layerIds).toContain('wfs-layer');
+  });
+
+  it('renders stroke line layers as fill highlights with default paint', () => {
+    const addLayerSpy = jest.spyOn(map, 'addLayer');
+    jest.spyOn(map, 'getLayer').mockReturnValue(undefined);
+    const layer = {
+      id: 'countries-strokeLine',
+      type: 'line',
+      source: 'countries',
+      paint: { 'line-color': '#000000' }
+    };
+
+    viewModel.addNormalHighlightLayers(layer, [], ['all']);
+
+    expect(addLayerSpy).toHaveBeenCalledTimes(2);
+    expect(addLayerSpy).toHaveBeenCalledWith(expect.objectContaining({ type: 'fill', filter: ['all'] }));
+  });
+
+  it('toggles multiple selection mode through keyboard events', () => {
+    const handleMapSelectionsSpy = jest.spyOn(viewModel, 'handleMapSelections').mockImplementation(() => {});
+
+    viewModel.setMultiSelection(true);
+    expect(viewModel.highlightOptions.multiSelection).toBe(true);
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { ctrlKey: true }));
+
+    expect(viewModel.dataSelectorMode).toBe('MULTIPLE');
+    expect(handleMapSelectionsSpy).toHaveBeenCalledWith([]);
+
+    window.dispatchEvent(new KeyboardEvent('keyup', { key: 'Control' }));
+
+    expect(viewModel.dataSelectorMode).toBe('SINGLE');
+  });
+
+  it('normalizes highlight styles through setters', () => {
+    viewModel.setFeatureFieldsMap({ countries: ['name'] });
+    viewModel.setDisplayFieldsMap({ countries: [{ field: 'name', title: '名称' }] });
+    viewModel.setClickTolerance(12);
+
+    expect(viewModel.highlightOptions.featureFieldsMap).toEqual({ countries: ['name'] });
+    expect(viewModel.highlightOptions.displayFieldsMap).toEqual({ countries: [{ field: 'name', title: '名称' }] });
+    expect(viewModel.highlightOptions.clickTolerance).toBe(12);
+
+    // 兼容 strokeLine 的错误写法 stokeLine
+    viewModel.setHighlightStyle({ stokeLine: { paint: { 'line-color': '#ffffff' } } });
+    expect(viewModel.highlightOptions.style.strokeLine).toEqual({ paint: { 'line-color': '#ffffff' } });
+    expect(viewModel.highlightOptions.style.stokeLine).toBeUndefined();
+
+    // 空样式回退为空对象
+    viewModel.setHighlightStyle(undefined);
+    expect(viewModel.highlightOptions.style).toEqual({});
+  });
+
+  it('ignores map bindings before the map is ready', () => {
+    const emptyViewModel = new LayerHighlightViewModel({ name: 'Empty' });
+
+    expect(emptyViewModel.highlightOptions.style).toEqual({});
+    expect(() => emptyViewModel.registerMapClick()).not.toThrow();
+    expect(() => emptyViewModel.unregisterMapClick()).not.toThrow();
+    expect(() => emptyViewModel.registerLayerMouseEvents(['countries'])).not.toThrow();
+    expect(() => emptyViewModel.unregisterLayerMouseEvents()).not.toThrow();
+  });
+
+  it('inherits original paint properties when creating highlight styles', () => {
+    jest.spyOn(map, 'getLayer').mockReturnValue({ id: 'countries', type: 'circle' });
+    const getPaintPropertySpy = jest.spyOn(map, 'getPaintProperty').mockImplementation((id, prop) => `origin-${prop}`);
+
+    const styles = viewModel.createLayerHighlightStyle(['circle', 'strokeLine'], 'countries', false);
+
+    expect(getPaintPropertySpy).toHaveBeenCalledWith('countries', 'circle-stroke-width');
+    expect(styles.circle.paint['circle-stroke-width']).toBe('origin-circle-stroke-width');
+    expect(styles['fill-extrusion'].paint['fill-extrusion-color']).toBe(styles.fill.paint['fill-color']);
+    expect(styles['fill-extrusion'].paint['fill-extrusion-opacity']).toBe(styles.fill.paint['fill-opacity']);
+
+    // WFS 图层直接使用默认画笔，不再从原图层继承
+    getPaintPropertySpy.mockClear();
+    const wfsStyles = viewModel.createLayerHighlightStyle(['circle'], 'countries', true);
+
+    expect(getPaintPropertySpy).not.toHaveBeenCalled();
+    expect(wfsStyles.circle.paint['circle-stroke-width']).toBe(2);
+  });
+
+  it('removes highlight sources prefixed with the raster source id', () => {
+    const removeSourceSpy = jest.spyOn(map, 'removeSource').mockImplementation(() => map);
+    jest.spyOn(map, 'getLayer').mockReturnValue(undefined);
+    jest.spyOn(map, 'getStyle').mockReturnValue({
+      layers: [],
+      sources: { sm_hightlight_source_wfs: {}, countries: {} }
+    });
+    viewModel.highlightOptions.layerIds = ['countries'];
+
+    viewModel.removeHighlightLayers();
+
+    expect(removeSourceSpy).toHaveBeenCalledTimes(1);
+    expect(removeSourceSpy).toHaveBeenCalledWith('sm_hightlight_source_wfs');
+  });
+
+  it('keeps accumulated features when the same feature is clicked again', () => {
+    const geometry = { type: 'Point', coordinates: [10, 20] };
+    const clickedFeature = {
+      id: 'feature-1',
+      properties: { name: 'China' },
+      geometry,
+      layer: { id: 'countries' }
+    };
+    webmap.getAppreciableLayers.mockReturnValue([{ id: 'countries', dataSource: {}, visible: true, type: 'fill' }]);
+    jest.spyOn(map, 'getStyle').mockReturnValue({
+      layers: [{ id: 'countries', type: 'fill', source: 'countries' }],
+      sources: {}
+    });
+    jest.spyOn(map, 'getLayer').mockReturnValue(undefined);
+    viewModel.highlightOptions.layerIds = ['countries'];
+    viewModel.dataSelectorMode = 'MULTIPLE';
+    viewModel.resultFeatures = [{ id: 'feature-1', properties: { name: 'China' }, geometry }];
+
+    viewModel.handleMapSelections([clickedFeature]);
+
+    expect(viewModel.dataSelectorMode).toBe('MULTIPLE');
+    expect(viewModel.resultFeatures).toHaveLength(1);
+  });
+
+  it('queries WFS layers and builds highlight features', async () => {
+    const wfsLayer = {
+      id: 'wfs-layer',
+      visible: true,
+      dataSource: { type: 'WFS', url: 'http://localhost/wfs', datasetName: 'Country_R@Population_0.0' }
+    };
+    webmap.getAppreciableLayers.mockReturnValue([wfsLayer]);
+    viewModel.highlightOptions.layerIds = ['wfs-layer'];
+    jest.spyOn(map, 'getLayer').mockReturnValue(undefined);
+    map.queryRenderedFeatures = jest.fn().mockReturnValue([]);
+    map.unproject = jest.fn().mockReturnValue({ toArray: () => [100, 30] });
+    jest.spyOn(map, 'getFilter').mockReturnValue(['all']);
+    const getDatasetProjectionSpy = jest
+      .spyOn(viewModel, 'getDatasetProjection')
+      .mockResolvedValue({ 'Country_R@Population_0.0': 'EPSG:4326' });
+    const getWfsGeojsonSpy = jest.spyOn(viewModel, 'getWfsGeojson').mockResolvedValue({
+      features: [{ type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: [100, 30] } }]
+    });
+
+    const features = await viewModel.queryLayerFeatures({ target: map, point: { x: 10, y: 20 } });
+
+    expect(getDatasetProjectionSpy).toHaveBeenCalledWith(['Country_R@Population_0.0'], 'http://localhost/wfs');
+    expect(getWfsGeojsonSpy).toHaveBeenCalled();
+    expect(features).toHaveLength(1);
+    expect(features[0].layer).toEqual({
+      id: 'wfs-layer',
+      type: undefined,
+      metadata: {},
+      minzoom: 0,
+      maxzoom: 24,
+      paint: {},
+      layout: {},
+      source: expect.stringContaining('sm_hightlight_source_')
+    });
+  });
+
+  it('skips WFS layers without projection info', async () => {
+    const wfsLayer = {
+      id: 'wfs-layer',
+      visible: true,
+      dataSource: { type: 'WFS', url: 'http://localhost/wfs', datasetName: 'unknown' }
+    };
+    webmap.getAppreciableLayers.mockReturnValue([wfsLayer]);
+    viewModel.highlightOptions.layerIds = ['wfs-layer'];
+    jest.spyOn(map, 'getLayer').mockReturnValue(undefined);
+    map.queryRenderedFeatures = jest.fn().mockReturnValue([]);
+    map.unproject = jest.fn().mockReturnValue({ toArray: () => [100, 30] });
+    jest.spyOn(viewModel, 'getDatasetProjection').mockResolvedValue(null);
+    const getWfsGeojsonSpy = jest.spyOn(viewModel, 'getWfsGeojson');
+
+    const features = await viewModel.queryLayerFeatures({ target: map, point: { x: 10, y: 20 } });
+
+    expect(getWfsGeojsonSpy).not.toHaveBeenCalled();
+    expect(features).toHaveLength(0);
   });
 });

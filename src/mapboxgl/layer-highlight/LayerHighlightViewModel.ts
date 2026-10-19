@@ -11,6 +11,7 @@ import GeoJSON from 'ol/format/GeoJSON';
 import UniqueId from 'lodash.uniqueid';
 import { XMLParser } from 'fast-xml-parser';
 import { transformCoodinates } from 'vue-iclient/src/common/_utils/epsg-define';
+import drawEvent from 'vue-iclient/src/mapboxgl/_types/draw-event';
 
 interface SetMapParams {
   map: mapboxglTypes.Map;
@@ -196,6 +197,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
   highlightOptions: HighlightLayerOptions;
   map: mapboxglTypes.Map;
   webmap: InstanceType<typeof WebMapViewModel>;
+  mapTarget?: string;
   fire: (type: string, params?: any) => void;
   on: (type: string, callback: (params?: any) => void) => void;
   handleMapClick: any;
@@ -220,11 +222,20 @@ export default class HighlightLayer extends mapboxgl.Evented {
     };
   }
 
-  setMap({ map, webmap }: SetMapParams) {
+  setMap({ map, webmap, mapTarget }: SetMapParams) {
     this.map = map;
     this.webmap = webmap;
+    this.mapTarget = mapTarget;
     this.registerMapClick();
     this.setTargetLayers(this.highlightOptions.layerIds, this.highlightOptions.sourceLayers);
+  }
+
+  /**
+   * 是否处于绘制（量算、绘制等）状态，绘制过程中不应触发点选
+   */
+  isDrawing() {
+    // @ts-ignore
+    return drawEvent.$options.isMapDrawing(this.mapTarget);
   }
 
   setHighlightStyle(style: HighlightStyle) {
@@ -624,6 +635,10 @@ export default class HighlightLayer extends mapboxgl.Evented {
   }
 
   async handleMapClickFn(e: mapboxglTypes.MapLayerMouseEvent) {
+    // 量算、绘制等绘制状态下不响应点选，避免误触发要素查询与图层选择弹窗
+    if (this.isDrawing()) {
+      return;
+    }
     const features = await this.queryLayerFeatures(e as mapboxglTypes.MapLayerMouseEvent);
     if (this.dataSelectorMode !== DataSelectorMode.MULTIPLE) {
       this.dataSelectorMode = DataSelectorMode.SINGLE;
@@ -733,6 +748,10 @@ export default class HighlightLayer extends mapboxgl.Evented {
   }
 
   private handleMapMouseEnter() {
+    // 绘制状态下不覆盖绘制光标
+    if (this.isDrawing()) {
+      return;
+    }
     this.map.getCanvas().style.cursor = 'pointer';
   }
 

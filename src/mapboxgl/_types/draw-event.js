@@ -280,6 +280,22 @@ export default new Vue({
   getDrawingState: function (mapTarget, componentName) {
     return this.drawStates[mapTarget] && this.drawStates[mapTarget][componentName];
   },
+  /**
+   * 判断当前地图是否处于绘制（量算、绘制等）状态
+   * 使用 draw 实例的真实模式判断，不依赖 drawStates，避免组件销毁或关闭后状态残留
+   */
+  isMapDrawing: function (mapTarget) {
+    if (!mapTarget) {
+      return false;
+    }
+    const draw = this.drawList[mapTarget];
+    if (!draw || typeof draw.getMode !== 'function') {
+      return false;
+    }
+    const mode = draw.getMode();
+    // 绘制模式名以 draw_ 开头，如 draw_line_string、draw_polygon；simple_select、direct_select 不在绘制中
+    return typeof mode === 'string' && mode.indexOf('draw_') === 0;
+  },
   setDrawingState: function (mapTarget, componentName, drawing) {
     this.drawStates[mapTarget] = this.drawStates[mapTarget] || {};
     if (drawing) {

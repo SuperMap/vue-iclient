@@ -1,5 +1,6 @@
 import AttributePopupViewModel from '../AttributePopupViewModel';
 import { DataSelectorMode } from 'vue-iclient/src/mapboxgl/layer-highlight/LayerHighlightViewModel';
+import drawEvent from 'vue-iclient/src/mapboxgl/_types/draw-event';
 import Map from '@mocks/map';
 
 describe('AttributePopupViewModel', () => {
@@ -77,6 +78,28 @@ describe('AttributePopupViewModel', () => {
   });
 
   describe('handleMapClickCover', () => {
+    it('ignore click and not fire layerclick while map is drawing', async () => {
+      const mapTarget = 'drawing-attribute-popup-target';
+      drawEvent.$options.drawList[mapTarget] = { getMode: () => 'draw_polygon' };
+      viewModel = new AttributePopupViewModel({ name: 'test', style: highlightStyle });
+      const webmap = { getAppreciableLayers: jest.fn().mockReturnValue([]), copyLayer: jest.fn() };
+      viewModel.setMap({ map, webmap, mapTarget });
+
+      const layerClickHandler = jest.fn();
+      viewModel.on('layerclick', layerClickHandler);
+      const querySpy = jest.spyOn(viewModel, 'queryLayerFeatures').mockResolvedValue([]);
+
+      await viewModel.handleMapClickCover({
+        target: map,
+        point: { x: 100, y: 100 },
+        lngLat: { lng: 1, lat: 1 }
+      });
+
+      expect(querySpy).not.toHaveBeenCalled();
+      expect(layerClickHandler).not.toHaveBeenCalled();
+      delete drawEvent.$options.drawList[mapTarget];
+    });
+
     it('handles click event and fires layerclick event', async () => {
       viewModel = new AttributePopupViewModel({ name: 'test', style: highlightStyle });
       const webmap = { getAppreciableLayers: jest.fn().mockReturnValue([]), copyLayer: jest.fn() };

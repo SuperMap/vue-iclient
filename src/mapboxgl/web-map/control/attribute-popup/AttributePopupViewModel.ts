@@ -17,6 +17,10 @@ export default class AttributePopupViewModel extends LayerHighlightViewModel {
   }
 
   async handleMapClickCover(e: mapboxglTypes.MapLayerMouseEvent) {
+    // 量算、绘制等绘制状态下不响应点选，避免弹出“选择图层”列表
+    if (this.isDrawing()) {
+      return;
+    }
     this.activeTargetId = this.dataSelectorMode === DataSelectorMode.MULTIPLE ? this.activeTargetId : null;
     const layers = this.activeTargetId
       ? [this.activeTargetId]
