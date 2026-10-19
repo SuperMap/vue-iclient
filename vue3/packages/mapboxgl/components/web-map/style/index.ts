@@ -1,3 +1,4 @@
+import '@supermapgis/iclient-mapboxgl/css'
 import '@supermapgis/mapboxgl/theme-chalk/base.scss'
 import '@supermapgis/mapboxgl/theme-chalk/webmap.scss'
 import '@supermapgis/mapboxgl/theme-chalk/zoom.scss'

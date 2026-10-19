@@ -1,5 +1,6 @@
 @use '@supermapgis/common/theme-chalk/index.common' ;
 @use './base';
+@use '@supermapgis/iclient-common/css/webmapfont/iconfont.css';
 
 // component styles
 @use './animate-marker-layer';
@@ -10,6 +11,7 @@
 @use './graph-map';
 @use './identify';
 @use './layer-list';
+@use './legend';
 @use './measure';
 @use './mini-map';
 @use './pan';

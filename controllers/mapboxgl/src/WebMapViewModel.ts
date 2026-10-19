@@ -106,6 +106,7 @@ interface MapHandler {
   cleanLayers: () => void;
   getLayerCatalog: () => any[];
   getLegends: () => any[];
+  getLegendInfos: () => any[];
   getLayers: () => any[];
   getPopupInfos: () => any[];
   rectifyLayersOrder: (appreciableLayers: any[], topLayerBeforeId?: string) => void;
@@ -287,6 +288,10 @@ export default class WebMapViewModel extends Events {
 
   getLegendInfo() {
     return this._handler.getLegends();
+  }
+
+  getLegendInfos() {
+    return this._handler.getLegendInfos();
   }
 
   rectifyLayersOrder(appreciableLayers: any[], topLayerBeforeId?: string) {

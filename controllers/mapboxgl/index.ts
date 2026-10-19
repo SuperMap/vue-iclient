@@ -16,6 +16,7 @@ export { default as DrawViewModel } from './src/DrawViewModel';
 export { default as GraphMapViewModel } from './src/GraphMapViewModel';
 export { default as LayerHighlightViewModel } from './src/LayerHighlightViewModel';
 export { default as LayerListViewModel } from './src/LayerListViewModel';
+export { default as LegendViewModel } from './src/LegendViewModel';
 export { default as MapPopupViewModel } from './src/MapPopupViewModel';
 export { default as MeasureViewModel } from './src/MeasureViewModel';
 export { default as MiniMapViewModel } from './src/MiniMapViewModel';

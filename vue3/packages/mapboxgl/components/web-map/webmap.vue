@@ -23,6 +23,7 @@ import SmSearch from '@supermapgis/mapboxgl/components/search/search.vue'
 import SmScale from '@supermapgis/mapboxgl/components/scale/scale.vue'
 import SmMiniMap from '@supermapgis/mapboxgl/components/mini-map/mini-map.vue'
 import SmAttributePopup from '@supermapgis/mapboxgl/components/attribute-popup/attribute-popup.vue'
+import SmLegend from '@supermapgis/mapboxgl/components/legend/legend.vue'
 
 const viewModelProps = [
   'mapId',
@@ -65,7 +66,8 @@ const componentMap: Record<string, any> = {
   SmSearch,
   SmScale,
   SmMiniMap,
-  SmAttributePopup
+  SmAttributePopup,
+  SmLegend
 };
 
 const controlComponents = computed(() => {

@@ -1,0 +1,10 @@
+@use './mixins/mixins.scss' as *;
+@use './base/theme.scss' as *;
+
+@include b(collapse) {
+  background-color: $gis-control-bg-secondary;
+
+  @include e(borderless, '-') {
+    background-color: $gis-control-bg-secondary;
+  }
+}

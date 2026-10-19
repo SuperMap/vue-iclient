@@ -1,0 +1,261 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/mixins/rtl-mixin.scss' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+@use '@supermapgis/common/theme-chalk/collapse-card';
+@use '@supermapgis/common/theme-chalk/card';
+@use '@supermapgis/common/theme-chalk/collapse';
+
+@include b(legend) {
+  $legend-prefix: &;
+  $card-prefix: #{$ant-prefix}-card;
+  $collapse-prefix: #{$ant-prefix}-collapse;
+  $card-collapse-prefix: #{$ant-prefix}-collapse-card;
+
+  /* 滚动容器放在 __content 上：圆角白色面板即 __content，
+     若在根节点滚动，滚动条会落在面板外，与面板样式脱节 */
+  overflow: visible;
+  border: none;
+  min-width: 30px;
+  min-height: 30px;
+
+  .#{$card-collapse-prefix}__content {
+    box-shadow: none;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  /* 内容滚动时标题吸顶，避免“图例”标题随内容一起滚走 */
+  .#{$card-collapse-prefix}__header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+  .#{$card-prefix} {
+    height: 100%;
+    background: transparent;
+    color: inherit;
+    font-size: inherit;
+  }
+  .#{$card-prefix}-body {
+    padding: 0;
+    height: 100%;
+  }
+
+  @include e(table) {
+    border-top: none;
+
+    .#{$collapse-prefix}-item:not(.#{$collapse-prefix}-item-active) > .#{$collapse-prefix}-content {
+      display: block !important;
+      height: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      overflow: hidden;
+      visibility: hidden;
+    }
+  }
+
+  /* 简单模式（无折叠面板）不画任何下划线：分隔线语义只属于面板模式的标题栏 */
+  @include e(noBorder) {
+    max-width: none;
+
+    @include spacing-padding(15px, right, false);
+
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+
+    &:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    #{$legend-prefix}__title {
+      padding-bottom: 10px;
+    }
+  }
+
+  @include e(themefield) {
+    padding-bottom: 10px;
+  }
+
+  @include e(fieldvalue) {
+    @include spacing-margin(8px, left, false);
+  }
+
+  .is-not-header {
+    &.is-top-left,
+    &.is-bottom-left {
+      .#{$collapse-prefix} {
+        .#{$collapse-prefix}-item {
+          @include spacing-padding(30px, left, false);
+        }
+        .#{$collapse-prefix}-content {
+          @include spacing-margin(-30px, left, false);
+        }
+        .#{$collapse-prefix}-content-box {
+          @include spacing-padding(16px, left, false);
+        }
+      }
+    }
+
+    &.is-top-right,
+    &.is-bottom-right {
+      .#{$collapse-prefix} {
+        .#{$collapse-prefix}-item {
+          @include spacing-padding(30px, right, false);
+        }
+        .#{$collapse-prefix}-content {
+          @include spacing-margin(-30px, right, false);
+        }
+        .#{$collapse-prefix}-content-box {
+          @include spacing-padding(16px, right, false);
+        }
+      }
+    }
+  }
+
+  /* 面板模式但未显示图层名：不渲染折叠面板（无 header 节点），
+     这里补齐原 collapse-item / collapse-content 提供的内边距 */
+  @include e(panel-list) {
+    padding: 0 16px;
+  }
+
+  @include e(panel-item) {
+    padding: 7px 0;
+  }
+
+  .#{$collapse-prefix} {
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-size: inherit;
+    .#{$collapse-prefix}-item {
+      border-bottom: none;
+      padding: 0 16px;
+
+      &:last-child {
+        .#{$collapse-prefix}-header {
+          border-bottom: none;
+          border-radius: 0;
+        }
+        &.#{$collapse-prefix}-item-active {
+          .#{$collapse-prefix}-header {
+            border-bottom: 1px solid $border-color-split;
+          }
+        }
+      }
+      .#{$collapse-prefix}-header {
+        color: inherit;
+        border-bottom: 1px solid $border-color-split;
+        padding: 6px 0;
+        /* stylelint-disable-next-line */
+        line-height: 20px;
+
+        /* ant 在 collapsible="header" 下会把 header-text 设为 flex: none，
+           导致标题栏只占内容宽度、右侧留白；这里强制撑满整行 */
+        > .#{$collapse-prefix}-header-text {
+          flex: 1 1 auto;
+          min-width: 0;
+        }
+
+        .header-wrap {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          @include spacing-padding(8px, right, false);
+
+          /* 恢复标题的自然宽度（vue2 的标题没有被压缩：
+             这里不能使用 @include e()，它经 @at-root 提升为全局选择器，
+             会与内容区泄漏出来的 `width: 85%` 同级，无法稳定覆盖）。
+             标题宽度由自身内容决定：折叠时由标题撑开、展开时由内容撑开，两者取最大值 */
+          #{$legend-prefix}__title {
+            width: auto;
+            min-width: 0;
+
+            & + i {
+              font-size: inherit;
+            }
+          }
+        }
+      }
+    }
+  }
+  .#{$collapse-prefix}-content {
+    /* 每个图层的图例不再单独使用次级背景，避免出现「面板一种颜色、图层图例另一种颜色」 */
+    background: transparent;
+    margin: 0 -16px;
+    padding: 7px 16px;
+    border-top: none;
+    color: inherit;
+    .#{$collapse-prefix}-content-box {
+      padding: 0;
+
+      @include e(wrap) {
+        height: 100%;
+        min-width: 80px;
+      }
+
+      @include e(item) {
+        list-style: none;
+        display: flex;
+        align-items: center;
+        margin: 8px 0 16px;
+
+        > i {
+          /* stylelint-disable-next-line */
+          font-size: 14px;
+        }
+      }
+
+      /* 内容区并不渲染 __title（见 subs/*.vue），原先这里的 `@include e(title) { width: 85% }`
+         经 @at-root 被提升为全局 `.sm-component-legend__title`，
+         反而作用到面板标题上，把标题宽度压到 85% 后触发 add-ellipsis 省略号截断，故移除。 */
+    }
+  }
+
+  @include e(linearcolor) {
+    height: 10px;
+  }
+
+  @include e(colorstop colorfieldrange) {
+    position: relative;
+    height: 15px;
+  }
+
+  @include e(colorstop) {
+    .color-stop-holder {
+      position: absolute;
+      width: 10px;
+      cursor: not-allowed;
+      opacity: 0.25;
+    }
+
+    .color-arrow {
+      width: 0;
+      height: 0;
+
+      @include border-line-style(right, 5px, solid, transparent, false);
+
+      border-bottom: 4px solid #d9d9d9;
+
+      @include border-line-style(left, 5px, solid, transparent, false);
+    }
+
+    .color-value {
+      width: 10px;
+      height: 8px;
+      border: 1px solid #d9d9d9;
+    }
+  }
+
+  @include e(colorfieldrange) {
+    .color-field-holder {
+      position: absolute;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      max-width: 80px;
+
+      @include spacing-margin(2px, left, false);
+    }
+  }
+}

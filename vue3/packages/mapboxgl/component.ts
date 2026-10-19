@@ -47,6 +47,7 @@ import { SmSceneSunlightAnalysis } from '@supermapgis/mapboxgl/components/scene-
 import { SmFeatureTree } from '@supermapgis/mapboxgl/components/feature-tree'
 import { SmFeatureCascader } from '@supermapgis/mapboxgl/components/feature-cascader'
 import { SmDirectoryTree } from '@supermapgis/mapboxgl/components/directory-tree'
+import { SmLegend } from '@supermapgis/mapboxgl/components/legend'
 
 import type { Plugin } from 'vue'
 
@@ -98,5 +99,6 @@ export default [
   SmSceneMeasure,
   SmFeatureTree,
   SmFeatureCascader,
-  SmDirectoryTree
+  SmDirectoryTree,
+  SmLegend
 ] as Plugin[]
