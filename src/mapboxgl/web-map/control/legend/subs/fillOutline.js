@@ -18,9 +18,13 @@ const ICON_IMAGE_KEY = 'icon-image';
 const ICON_SPACING_KEY = 'symbol-spacing';
 const LINE_JOIN_KEY = 'line-join';
 
-// 图例轮廓几何宽度上限占图标边长的比例：线宽过大的符号会吞没整个填充区，
-// 按比例钳制成示意宽度，保证轮廓始终是“外围一圈”。
-const MAX_OUTLINE_WIDTH_RATIO = 0.2;
+// 未配置线宽的图标点（icon-image）按图片原始尺寸铺设，原始尺寸过大时按填充区边长
+// 的该比例钳制成示意尺寸，保证图标点始终落在填充区边缘
+const MAX_OUTLINE_ICON_RATIO = 0.2;
+
+// 轮廓宽度被单独提取成数据驱动分组时，其它分组（轮廓线符号/轮廓色/不透明度等）
+// 未挂宽度值，统一使用的默认轮廓宽度，与面默认 outlineWidth '0.5px' 保持一致
+export const DEFAULT_FILL_OUTLINE_WIDTH = 0.5;
 
 export function clampOpacity(opacity) {
   if (opacity < 0) return 0;
@@ -117,11 +121,28 @@ export function getPlainOutlineLayer(color, width) {
 }
 
 /**
- * 图例中轮廓层的实际绘制宽度（CSS px）：最小 1px，最大不超过图标边长的固定比例
+ * 图例中轮廓层的实际绘制宽度（CSS px）：按符号真实线宽 1:1 取整，最小 1px。
+ * 宽度分段主题各段宽度差异由此如实保留；粗线宽通过画布外扩 padding 容纳（见 getOutlinePadding）。
  */
-export function getOutlineDrawWidth(rawWidth, size) {
-  const rounded = rawWidth < 1 ? 1 : Math.round(rawWidth);
-  return Math.min(rounded, Math.max(1, Math.round(size * MAX_OUTLINE_WIDTH_RATIO)));
+export function getOutlineDrawWidth(rawWidth) {
+  return rawWidth < 1 ? 1 : Math.round(rawWidth);
+}
+
+/**
+ * 轮廓绘制在填充区外需要预留的出血位（CSS px）：取所有轮廓层半幅笔刷相对填充区边缘
+ * 外扩量的最大值（line-offset 约定正值向内，会减小外扩；负值向外，增大外扩）。
+ * 画布边长 = 填充区边长 + 2 × padding，粗轮廓按真实宽度绘制时也不会被画布裁切。
+ * @param {Array} layers 归一化后的轮廓图层
+ * @returns {number}
+ */
+export function getOutlinePadding(layers) {
+  if (!layers || !layers.length) {
+    return 0;
+  }
+  const bleeds = layers.map(
+    layer => getOutlineDrawWidth(layer.lineWidth) / 2 - roundOutlineOffset(layer.offset)
+  );
+  return Math.max(0, Math.round(Math.max(...bleeds)));
 }
 
 // line-offset 几何取整（与线图层 drawMultiLine 的 roundNumber 语义一致）
@@ -242,18 +263,29 @@ function strokeImageOutline(ctx, size, inset, bandWidth, tile, spacing, drawWidt
 /**
  * 在正方形 canvas 上沿线符号各图层描出矩形轮廓（调用方负责 DPR 与 transform）
  * @param {Object} canvas 画布
- * @param {number} size 图标 CSS 像素边长
+ * @param {number} size 图标总边长（含外出血，CSS px）
+ * @param {number} padding 填充区距画布边缘的出血位
  * @param {Array} layers 归一化后的轮廓图层
  * @param {Map} tiles 已就绪的图片符号图块（按 imageId 索引 OutlineTile）
  * @param {number} outlineOpacity 轮廓整体不透明度，与各图层自身 line-opacity 相乘
+ * @param {boolean} [needClear=true] 是否先清空画布（与填充共用画布时不能清空）
  */
-export function drawFillOutline(canvas, size, layers, tiles, outlineOpacity, needClear = true) {
+export function drawFillOutline(
+  canvas,
+  size,
+  padding,
+  layers,
+  tiles,
+  outlineOpacity,
+  needClear = true
+) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   // 轮廓独立成画布时需要先清空；与填充共用一个画布时（填充已画好）不能清空
   if (needClear) {
     ctx.clearRect(0, 0, size, size);
   }
+  const fillSize = size - 2 * padding;
 
   const drawables = [];
   layers.forEach(layer => {
@@ -262,22 +294,24 @@ export function drawFillOutline(canvas, size, layers, tiles, outlineOpacity, nee
       if (!tile) {
         return;
       }
-      // 图标点（lineWidth=0）保持图块原始尺寸；其余按符号线宽钳制。
-      // 图块原始高度大于图例比例上限时等比缩小，保证轮廓始终落在画布内
-      let bandWidth = layer.lineWidth > 0 ? getOutlineDrawWidth(layer.lineWidth, size) : tile.cssHeight;
+      // 纹理按符号真实线宽取图块；图标点（lineWidth=0）保持图块原始尺寸，
+      // 原始尺寸过大时按填充区比例钳制成示意尺寸，避免吞没整个填充区
+      let bandWidth = layer.lineWidth > 0 ? getOutlineDrawWidth(layer.lineWidth) : tile.cssHeight;
       let drawWidth = tile.cssWidth;
-      const maxBand = Math.max(1, Math.round(size * MAX_OUTLINE_WIDTH_RATIO));
-      if (bandWidth > maxBand) {
-        const scale = maxBand / bandWidth;
-        bandWidth = maxBand;
-        drawWidth = tile.cssWidth * scale;
+      if (layer.lineWidth <= 0) {
+        const maxBand = Math.max(1, Math.round(fillSize * MAX_OUTLINE_ICON_RATIO));
+        if (bandWidth > maxBand) {
+          const scale = maxBand / bandWidth;
+          bandWidth = maxBand;
+          drawWidth = tile.cssWidth * scale;
+        }
       }
       drawables.push({ layer, tile, bandWidth, drawWidth, offset: roundOutlineOffset(layer.offset) });
       return;
     }
     drawables.push({
       layer,
-      bandWidth: getOutlineDrawWidth(layer.lineWidth, size),
+      bandWidth: getOutlineDrawWidth(layer.lineWidth),
       offset: roundOutlineOffset(layer.offset)
     });
   });
@@ -285,13 +319,13 @@ export function drawFillOutline(canvas, size, layers, tiles, outlineOpacity, nee
     return;
   }
 
-  // line-offset 用矩形 inset 近似（inset 从画布边缘起算，约定正 offset 向内）；
-  // offset=0 的主体线贴合图标外围，再整体内移最外层描边的出血量，保证轮廓完整落在画布内
-  const minBound = Math.min(...drawables.map(d => d.offset - d.bandWidth / 2));
+  // line-offset 用矩形 inset 近似（约定正 offset 向内）；描边以填充区边缘为中心，
+  // 包裹层已外补 padding 容纳外侧半幅笔刷，再按取整残差整体内移，保证轮廓完整落在画布内
+  const minBound = Math.min(...drawables.map(d => padding + d.offset - d.bandWidth / 2));
   const shift = Math.max(0, -minBound);
 
   drawables.forEach(({ layer, tile, bandWidth, drawWidth, offset }) => {
-    const inset = offset + shift;
+    const inset = padding + offset + shift;
     if (inset < bandWidth / 2 || size - 2 * inset <= 0) {
       return;
     }
@@ -313,16 +347,15 @@ export function drawFillOutline(canvas, size, layers, tiles, outlineOpacity, nee
 }
 
 /**
- * 面图例轮廓绘制入口：根据图例样式数据选择轮廓来源并描边。
- * 调用方需已将 ctx 按 dpr 设置好 transform，并在绘制前填充完面底色。
- * @param {Object} options
- * @param {number} [options.dpr=1] 设备像素比
- * @param {Function} [options.createTile] 图块生成器 (imageId, targetHeight, dpr) => OutlineTile|undefined；
- *   不传时图片符号层自动跳过（如 style 类型图例无法获取图片）
- * @returns {Array<string>} 缺少图片的图片 id 列表（图片符号无取图方式或图片尚未加载时）
+ * 由图例样式数据解析轮廓来源，归一化为可绘制图层
+ * @param {Object} styleData 图例样式
+ * @param {boolean} [outlineWidthDriven=false] 轮廓宽度是否被单独提取成数据驱动分组。
+ *   为 true 时：宽度分组自身分段项的 overrideWidth 为分段值（含缺省值），其它分组无宽度，
+ *   符号各子层统一按默认轮廓宽度 DEFAULT_FILL_OUTLINE_WIDTH 绘制；
+ *   为 false 时符号子层保持自身宽度（多层线符号各子层宽度不能被压平）
+ * @returns {{ layers: Array, outlineOpacity: number }}
  */
-export function drawFillLegendOutline(canvas, size, styleData, options = {}) {
-  const { dpr = 1, createTile } = options;
+export function resolveFillOutlineLayers(styleData, outlineWidthDriven = false) {
   const outlineSymbol = styleData && styleData.outlineSymbolsContent;
   const outlineOpacity = clampOpacity(
     styleData && typeof styleData.outlineOpacity === 'number' ? styleData.outlineOpacity : 1
@@ -336,7 +369,15 @@ export function drawFillLegendOutline(canvas, size, styleData, options = {}) {
   }
   let layers = [];
   if (outlineSymbol && outlineSymbol.symbolId) {
-    layers = getFillOutlineLayers(outlineSymbol, overrideColor, overrideWidth);
+    // 宽度分组自身的分段项挂有分段宽度（overrideWidth）；其它分组未挂宽度：
+    // 宽度被单独提取时回退默认宽度，未单独提取时传 undefined 保持符号各子层自身宽度
+    const symbolOverrideWidth =
+      overrideWidth !== undefined
+        ? overrideWidth
+        : outlineWidthDriven
+          ? DEFAULT_FILL_OUTLINE_WIDTH
+          : undefined;
+    layers = getFillOutlineLayers(outlineSymbol, overrideColor, symbolOverrideWidth);
   } else if (styleData && styleData.outlineStyle === 'solid') {
     const defaultWidth = 0.5;
     const parsedWidth = Number.parseFloat(styleData.outlineWidth || '');
@@ -347,6 +388,37 @@ export function drawFillLegendOutline(canvas, size, styleData, options = {}) {
       )
     ];
   }
+  return { layers, outlineOpacity };
+}
+
+/**
+ * 面图例轮廓在填充区外需要的出血位：调用方据此把画布尺寸由填充区边长外扩为
+ * 边长 + 2 × padding，轮廓按真实线宽绘制也不会被裁切
+ * @param {Object} styleData 图例样式
+ * @returns {number}
+ */
+export function getFillLegendPadding(styleData, outlineWidthDriven = false) {
+  const { layers } = resolveFillOutlineLayers(styleData, outlineWidthDriven);
+  return getOutlinePadding(layers);
+}
+
+/**
+ * 面图例轮廓绘制入口：根据图例样式数据选择轮廓来源并描边。
+ * 调用方需已按 padding 外扩画布尺寸、将 ctx 按 dpr 设置好 transform，并在中心填充区填充完面底色。
+ * @param {Object} canvas 画布
+ * @param {number} size 图标总边长（含外出血，CSS px）
+ * @param {number} padding 填充区距画布边缘的出血位
+ * @param {Object} styleData 图例样式
+ * @param {Object} [options]
+ * @param {number} [options.dpr=1] 设备像素比
+ * @param {Function} [options.createTile] 图块生成器 (imageId, targetHeight, dpr) => OutlineTile|undefined；
+ *   不传时图片符号层自动跳过（如 style 类型图例无法获取图片）
+ * @param {boolean} [options.outlineWidthDriven=false] 轮廓宽度是否被单独提取成数据驱动分组
+ * @returns {Array<string>} 缺少图片的图片 id 列表（图片符号无取图方式或图片尚未加载时）
+ */
+export function drawFillLegendOutline(canvas, size, padding, styleData, options = {}) {
+  const { dpr = 1, createTile, outlineWidthDriven = false } = options;
+  const { layers, outlineOpacity } = resolveFillOutlineLayers(styleData, outlineWidthDriven);
   if (!layers.length) {
     return [];
   }
@@ -356,8 +428,8 @@ export function drawFillLegendOutline(canvas, size, styleData, options = {}) {
     if (layer.kind !== 'image') {
       return;
     }
-    // 图标点（lineWidth=0）不钳制高度，按原始尺寸取图块；纹理按符号线宽钳制
-    const targetHeight = layer.lineWidth > 0 ? getOutlineDrawWidth(layer.lineWidth, size) : undefined;
+    // 图标点（lineWidth=0）不指定目标高度，按原始尺寸取图块；纹理按符号真实线宽取图块
+    const targetHeight = layer.lineWidth > 0 ? getOutlineDrawWidth(layer.lineWidth) : undefined;
     const tile = typeof createTile === 'function' ? createTile(layer.imageId, targetHeight, dpr) : undefined;
     if (tile) {
       tiles.set(layer.imageId, tile);
@@ -366,6 +438,6 @@ export function drawFillLegendOutline(canvas, size, styleData, options = {}) {
     }
   });
   // 与面填充共用同一画布，填充底色已由调用方画好，不能清空
-  drawFillOutline(canvas, size, layers, tiles, outlineOpacity, false);
+  drawFillOutline(canvas, size, padding, layers, tiles, outlineOpacity, false);
   return missingTiles;
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="sm-component-legend__item">
-    <ImageRenderer v-if="styleType === 'image'" :style-data="styleData" />
-    <StyleRenderer v-else :style-data="styleData" />
+    <ImageRenderer v-if="styleType === 'image'" :style-data="styleData" :outline-width-driven="outlineWidthDriven" />
+    <StyleRenderer v-else :style-data="styleData" :outline-width-driven="outlineWidthDriven" />
     <StyleValue v-if="showStyleField" :style-data="styleData" />
   </div>
 </template>
@@ -21,6 +21,11 @@ export default {
     styleData: {
       type: Object,
       default: () => ({})
+    },
+    // 轮廓宽度是否被单独提取成数据驱动分组
+    outlineWidthDriven: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
