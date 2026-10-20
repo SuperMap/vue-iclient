@@ -120,7 +120,7 @@ describe('fillOutline', () => {
       expect(getFillLegendPadding({ outlineStyle: 'none', outlineColor: '#000000' })).toBe(0);
     });
 
-    it('轮廓线符号按覆盖后的分段宽度计算出血位', () => {
+    it('固定场景下面板轮廓宽度不压过符号：出血位按符号自身宽度 2 → 1', () => {
       const styleData = {
         outlineWidth: 12,
         outlineSymbolsContent: {
@@ -128,7 +128,21 @@ describe('fillOutline', () => {
           style: { paint: { 'line-width': 2, 'line-color': '#000000' } }
         }
       };
-      expect(getFillLegendPadding(styleData)).toBe(6);
+      expect(getFillLegendPadding(styleData, false)).toBe(1);
+    });
+
+    it('固定场景数据带默认轮廓宽 0.5px 时，粗线符号仍按自身宽度计算出血位', () => {
+      const styleData = {
+        outlineStyle: 'solid',
+        outlineColor: '#FFE400',
+        outlineWidth: '0.5px',
+        outlineSymbolsContent: {
+          symbolId: 'line-thick-default-width',
+          style: { paint: { 'line-width': 10, 'line-color': '#FFE400' } }
+        }
+      };
+      // 符号宽 10 → 半幅笔刷 5，不被默认 0.5px 压成 1px
+      expect(getFillLegendPadding(styleData, false)).toBe(5);
     });
 
     it('宽度被单独提取时，其它分组未挂宽度：符号按默认宽度 0.5 → padding 1', () => {
@@ -829,7 +843,7 @@ describe('fillOutline', () => {
       expect(strokes2[0].globalAlpha).toBe(1);
     });
 
-    it('轮廓线符号存在时，面板轮廓色与轮廓宽覆盖符号内部颜色（真实线宽绘制）', () => {
+    it('轮廓线符号存在时，面板轮廓色覆盖符号颜色，宽度保持符号自身真实线宽', () => {
       const { canvas, strokes } = createCanvas();
       const styleData = {
         outlineStyle: 'solid',
@@ -848,7 +862,7 @@ describe('fillOutline', () => {
           }
         }
       };
-      // 半幅笔刷 5 → padding 5、总边长 30
+      // 符号宽 10：半幅笔刷 5 → padding 5、总边长 30（面板宽度同值，结果一致）
       const padding = getFillLegendPadding(styleData);
       expect(padding).toBe(5);
       drawFillLegendOutline(canvas, 20 + 2 * padding, padding, styleData, { dpr: 1 });
@@ -858,7 +872,7 @@ describe('fillOutline', () => {
       expect(strokes[0].lineWidth).toBe(10);
     });
 
-    it('面板轮廓宽为像素字符串时解析为数字后覆盖', () => {
+    it('固定场景下面板轮廓宽不压过线符号：像素字符串宽度被忽略，符号保持自身宽度与颜色覆盖', () => {
       const { canvas, strokes } = createCanvas();
       const styleData = {
         outlineColor: '#FF0000',
@@ -868,10 +882,29 @@ describe('fillOutline', () => {
           style: { paint: { 'line-width': 8, 'line-color': '#00FF00' } }
         }
       };
+      // 固定场景：宽度按符号自身 8（出血位 4），面板轮廓色仍覆盖符号颜色
       const padding = getFillLegendPadding(styleData);
+      expect(padding).toBe(4);
       drawFillLegendOutline(canvas, 20 + 2 * padding, padding, styleData, { dpr: 1 });
       expect(strokes[0].strokeStyle).toBe('#FF0000');
-      expect(strokes[0].lineWidth).toBe(2);
+      expect(strokes[0].lineWidth).toBe(8);
+    });
+
+    it('固定场景数据带默认 0.5px 面板宽度时，粗轮廓线符号按真实宽度描边（回归：轮廓被压成 1px）', () => {
+      const { canvas, strokes } = createCanvas();
+      const styleData = {
+        outlineStyle: 'solid',
+        outlineColor: '#FFE400',
+        outlineWidth: '0.5px',
+        outlineSymbolsContent: {
+          symbolId: 'line-thick-default-width-draw',
+          style: { paint: { 'line-width': 10, 'line-color': '#FFE400' } }
+        }
+      };
+      const padding = getFillLegendPadding(styleData);
+      expect(padding).toBe(5);
+      drawFillLegendOutline(canvas, 20 + 2 * padding, padding, styleData, { dpr: 1 });
+      expect(strokes[0].lineWidth).toBe(10);
     });
 
     it('面板轮廓色、宽度缺省时仍使用符号自身的颜色与宽度', () => {

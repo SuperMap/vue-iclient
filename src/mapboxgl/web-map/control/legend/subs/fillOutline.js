@@ -369,14 +369,14 @@ export function resolveFillOutlineLayers(styleData, outlineWidthDriven = false) 
   }
   let layers = [];
   if (outlineSymbol && outlineSymbol.symbolId) {
-    // 宽度分组自身的分段项挂有分段宽度（overrideWidth）；其它分组未挂宽度：
-    // 宽度被单独提取时回退默认宽度，未单独提取时传 undefined 保持符号各子层自身宽度
-    const symbolOverrideWidth =
-      overrideWidth !== undefined
-        ? overrideWidth
-        : outlineWidthDriven
-          ? DEFAULT_FILL_OUTLINE_WIDTH
-          : undefined;
+    // 与 MS LegendUtil 保持一致：固定场景下面板轮廓宽度（图例数据通常带默认值 '0.5px'，
+    // 即使轮廓使用线符号也会存在）不能压过线符号各子层自身的 line-width，否则粗线符号
+    // 会被压成 1px；只有轮廓宽度被单独提取成数据驱动分组时，宽度分组自身分段项挂的
+    // 分段值才生效，其它分组未挂宽度时回退默认宽度
+    let symbolOverrideWidth;
+    if (outlineWidthDriven) {
+      symbolOverrideWidth = overrideWidth !== undefined ? overrideWidth : DEFAULT_FILL_OUTLINE_WIDTH;
+    }
     layers = getFillOutlineLayers(outlineSymbol, overrideColor, symbolOverrideWidth);
   } else if (styleData && styleData.outlineStyle === 'solid') {
     const defaultWidth = 0.5;
