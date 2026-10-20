@@ -5,13 +5,23 @@
 <script>
 import omit from 'omit.js';
 import uniqueId from 'lodash.uniqueid';
-import { drawFillLegendOutline, getFillOutlineLayers, createOutlineTileFromSprite } from './fillOutline';
+import {
+  drawFillLegendOutline,
+  getFillOutlineLayers,
+  getFillLegendPadding,
+  createOutlineTileFromSprite
+} from './fillOutline';
 import { loadSpriteImage, loadSpriteMeta } from './sprite';
 
 export default {
   props: {
     styleData: {
       type: Object
+    },
+    // 轮廓宽度是否被单独提取成数据驱动分组：其它分组符号按默认宽度 0.5 描边
+    outlineWidthDriven: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -76,6 +86,11 @@ export default {
       let repeatPattern = false;
       let displayIconWidth = 0;
       let displayIconHeight = 0;
+      // 内容（底色 / 主图片）实际落位，默认铺满整个画布
+      let contentX = 0;
+      let contentY = 0;
+      let contentWidth;
+      let contentHeight;
       switch (this.shape) {
         case 'point': {
           const { fontSize, color } = this.cssStyle;
@@ -98,17 +113,26 @@ export default {
         }
         case 'rectangle': {
           const { width, height, backgroundColor } = this.cssStyle;
-          displayWidth = parseInt(width);
-          displayHeight = parseInt(height);
+          const fillSize = parseInt(width) || parseInt(height);
+          // 轮廓按真实线宽 1:1 绘制，画布在填充区外补半幅笔刷出血位，底色与主图片落在中心填充区
+          const padding = getFillLegendPadding(this.cssStyle, this.outlineWidthDriven);
+          contentX = padding;
+          contentY = padding;
+          contentWidth = fillSize;
+          contentHeight = fillSize;
+          displayWidth = fillSize + 2 * padding;
+          displayHeight = displayWidth;
           fillColor = backgroundColor;
           break;
         }
       }
+      contentWidth = contentWidth ?? displayWidth;
+      contentHeight = contentHeight ?? displayHeight;
       canvas.width = displayWidth;
       canvas.height = displayHeight;
       ctx.globalAlpha = opacity;
       ctx.fillStyle = fillColor;
-      ctx.fillRect(0, 0, displayWidth, displayHeight);
+      ctx.fillRect(contentX, contentY, contentWidth, contentHeight);
       if (repeatPattern) {
         const patternCanvas = document.createElement('canvas');
         const patternContext = patternCanvas.getContext('2d');
@@ -135,10 +159,21 @@ export default {
       }
       if (!repeatPattern) {
         // draw image
-        ctx.drawImage(img, sx * pixelRatio, sy * pixelRatio, sWidth, sHeight, 0, 0, displayWidth, displayHeight);
+        ctx.drawImage(
+          img,
+          sx * pixelRatio,
+          sy * pixelRatio,
+          sWidth,
+          sHeight,
+          contentX,
+          contentY,
+          contentWidth,
+          contentHeight
+        );
       }
       // 面（图片填充符号）的轮廓层：纯色 / 轮廓线符号，该画布按物理像素 1:1 绘制，dpr 传 1
       if (this.shape === 'rectangle') {
+        const padding = contentX;
         ctx.globalCompositeOperation = 'source-over';
         ctx.globalAlpha = 1;
         let createTile;
@@ -146,7 +181,11 @@ export default {
           createTile = (imageId, targetHeight, dpr) =>
             createOutlineTileFromSprite(img, spriteMeta, imageId, targetHeight, dpr);
         }
-        drawFillLegendOutline(canvas, displayWidth, this.cssStyle, { dpr: 1, createTile });
+        drawFillLegendOutline(canvas, displayWidth, padding, this.cssStyle, {
+          dpr: 1,
+          createTile,
+          outlineWidthDriven: this.outlineWidthDriven
+        });
       }
     }
   }

@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 import flushPromises from 'flush-promises';
 import StyleRenderer from '../subs/StyleRenderer.vue';
 import ImageRenderer from '../subs/ImageRenderer.vue';
+import StyleItem from '../subs/StyleItem.vue';
 import StyleField from '../subs/StyleField.vue';
 import { loadSpriteImage, loadSpriteMeta } from '../subs/sprite';
 
@@ -88,16 +89,132 @@ describe('legend fill components', () => {
           }
         }
       });
-      expect(canvas.width).toBe(20);
-      expect(canvas.height).toBe(20);
-      expect(canvas.style.width).toBe('20px');
+      // 线宽 2 → padding 1，画布外扩为 22，底色落在中心 20x20 填充区
+      expect(canvas.width).toBe(22);
+      expect(canvas.height).toBe(22);
+      expect(canvas.style.width).toBe('22px');
       expect(ctx.setTransform).toHaveBeenCalledWith(1, 0, 0, 1, 0, 0);
-      expect(ctx.fillRect).toHaveBeenCalledWith(0, 0, 20, 20);
+      expect(ctx.fillRect).toHaveBeenCalledWith(1, 1, 20, 20);
       expect(strokes.length).toBe(1);
       expect(strokes[0].strokeStyle).toBe('#00FF00');
       expect(strokes[0].lineWidth).toBe(2);
       // 轮廓不透明度独立于填充 opacity：纯色层自身 opacity 1、无整体 outlineOpacity → 1
       expect(strokes[0].globalAlpha).toBe(1);
+    });
+
+    it('宽度被单独提取时，其它分组未挂宽度：符号按默认宽度绘制 1px，画布外扩为 22', () => {
+      const { canvas, strokes } = createMockCanvas();
+      document.getElementById = jest.fn(() => canvas);
+      wrapper = mount(StyleRenderer, {
+        propsData: {
+          styleData: {
+            style: {
+              type: 'fill',
+              shape: 'rectangle',
+              width: '20',
+              height: '20',
+              color: '#FF0000',
+              outlineSymbolsContent: {
+                symbolId: 'line-driven-sym',
+                style: { paint: { 'line-width': 8, 'line-color': '#000000' } }
+              }
+            }
+          },
+          outlineWidthDriven: true
+        }
+      });
+      // 默认宽度 0.5 → padding 1、画布 22，底色在中心填充区
+      expect(canvas.width).toBe(22);
+      expect(canvas.style.width).toBe('22px');
+      expect(strokes.length).toBe(1);
+      expect(strokes[0].lineWidth).toBe(1);
+    });
+
+    it('宽度未单独提取时符号保持自身宽度（线宽 8 → 画布 28、描边 8px）', () => {
+      const { canvas, strokes } = createMockCanvas();
+      document.getElementById = jest.fn(() => canvas);
+      wrapper = mount(StyleRenderer, {
+        propsData: {
+          styleData: {
+            style: {
+              type: 'fill',
+              shape: 'rectangle',
+              width: '20',
+              height: '20',
+              color: '#FF0000',
+              outlineSymbolsContent: {
+                symbolId: 'line-not-driven-sym',
+                style: { paint: { 'line-width': 8, 'line-color': '#000000' } }
+              }
+            }
+          },
+          outlineWidthDriven: false
+        }
+      });
+      expect(canvas.width).toBe(28);
+      expect(strokes[0].lineWidth).toBe(8);
+    });
+
+    it('宽度被单独提取时，宽度分组自身分段项挂有分段宽度，仍按真实宽度绘制', () => {
+      const { canvas, strokes } = createMockCanvas();
+      document.getElementById = jest.fn(() => canvas);
+      wrapper = mount(StyleRenderer, {
+        propsData: {
+          styleData: {
+            style: {
+              type: 'fill',
+              shape: 'rectangle',
+              width: '20',
+              height: '20',
+              color: '#FF0000',
+              outlineStyle: 'solid',
+              outlineColor: '#000000',
+              outlineWidth: 12,
+              outlineSymbolsContent: {
+                symbolId: 'line-driven-width-sym',
+                style: { paint: { 'line-width': 2, 'line-color': '#FF0000' } }
+              }
+            }
+          },
+          outlineWidthDriven: true
+        }
+      });
+      // 半幅笔刷 6 → 画布 32，描边 12px
+      expect(canvas.width).toBe(32);
+      expect(strokes[0].lineWidth).toBe(12);
+    });
+
+    it('outlineWidthDriven 为 true 时雪碧图重绘按默认宽度取图块（带宽 1px，每边 10 个）', async () => {
+      const { canvas, imageDraws } = createMockCanvas();
+      document.getElementById = jest.fn(() => canvas);
+      const outlineSprites = { 'tex-id': { x: 0, y: 0, width: 8, height: 4, pixelRatio: 1 } };
+      const spriteCanvas = document.createElement('canvas');
+      spriteCanvas.width = 100;
+      spriteCanvas.height = 100;
+      loadSpriteImage.mockResolvedValue(spriteCanvas);
+      wrapper = mount(StyleRenderer, {
+        propsData: {
+          styleData: {
+            style: {
+              type: 'fill',
+              shape: 'rectangle',
+              width: '20',
+              height: '20',
+              color: '#FF0000',
+              url: 'sprite.png',
+              outlineSprites,
+              outlineSymbolsContent: {
+                symbolId: 'line-driven-pattern',
+                style: { paint: { 'line-width': 4, 'line-pattern': 'tex-id' } }
+              }
+            }
+          },
+          outlineWidthDriven: true
+        }
+      });
+      await flushPromises();
+      // 默认宽度 0.5 → 绘制带宽 1，8x4 图块等比为 2x1，边长 20 每边 10 个共 40 次 drawImage
+      expect(imageDraws.length).toBe(40);
     });
 
     it('无轮廓时只填充底色不描边', () => {
@@ -185,7 +302,7 @@ describe('legend fill components', () => {
       expect(imageDraws.length).toBe(0);
       await flushPromises();
       expect(ctx.clearRect).toHaveBeenCalled();
-      // 重绘后：图案 8x4 按带宽 4 等比取宽 8，inset=2、边长 16，每边 2 个共 8 次 drawImage
+      // 重绘后：图案 8x4 按带宽 4 等比取宽 8，inset=2、描边边长 20，每边 2 个共 8 次 drawImage
       expect(imageDraws.length).toBe(8);
     });
 
@@ -343,7 +460,7 @@ describe('legend fill components', () => {
           }
         }
       });
-      wrapper.vm.paintFillBase(ctx, 20, '#123456', 0.5);
+      wrapper.vm.paintFillBase(ctx, 20, 0, '#123456', 0.5);
       expect(ctx.fillStyle).toBe('#123456');
       expect(ctx.fillRect).toHaveBeenCalledWith(0, 0, 20, 20);
       expect(ctx.globalAlpha).toBe(1);
@@ -520,6 +637,37 @@ describe('legend fill components', () => {
       expect(strokes[0].lineWidth).toBe(2);
     });
 
+    it('drawImage：outlineWidthDriven 为 true 且未挂宽度时，符号按默认宽度 1px 绘制', () => {
+      const { canvas, strokes, imageDraws } = createMockCanvas();
+      document.getElementById = jest.fn(() => canvas);
+      wrapper = mount(ImageRenderer, {
+        propsData: {
+          styleData: {
+            style: {
+              type: 'image',
+              shape: 'rectangle',
+              width: 20,
+              height: 20,
+              url: 'sprite.png',
+              sprite: { x: 0, y: 0, width: 8, height: 4 },
+              backgroundColor: '#FF0000',
+              outlineSymbolsContent: {
+                symbolId: 'line-driven-img-sym',
+                style: { paint: { 'line-width': 8, 'line-color': '#000000' } }
+              }
+            }
+          },
+          outlineWidthDriven: true
+        }
+      });
+      wrapper.vm.drawImage({ width: 100, height: 100 });
+      // 默认宽度 0.5 → padding 1、画布 22，主图片落在中心填充区
+      expect(canvas.width).toBe(22);
+      expect(imageDraws.length).toBe(1);
+      expect(imageDraws[0].slice(-4)).toEqual([1, 1, 20, 20]);
+      expect(strokes[0].lineWidth).toBe(1);
+    });
+
     it('drawImage：非 rectangle 形状不绘制轮廓', () => {
       const { canvas, strokes } = createMockCanvas();
       document.getElementById = jest.fn(() => canvas);
@@ -578,6 +726,38 @@ describe('legend fill components', () => {
       expect(imageVm.hasImageOutline).toBe(true);
       // outlineSprites 不进入 cssStyle
       expect(imageVm.cssStyle.outlineSprites).toBeUndefined();
+    });
+  });
+
+  describe('StyleItem', () => {
+    it('默认 outlineWidthDriven 为 false', () => {
+      const { canvas } = createMockCanvas();
+      document.getElementById = jest.fn(() => canvas);
+      const styleData = {
+        style: { type: 'fill', shape: 'rectangle', width: '20', height: '20', color: '#FF0000' }
+      };
+      wrapper = mount(StyleItem, { propsData: { styleData } });
+      expect(wrapper.find(StyleRenderer).props('outlineWidthDriven')).toBe(false);
+    });
+
+    it('outlineWidthDriven 透传给 StyleRenderer', () => {
+      const { canvas } = createMockCanvas();
+      document.getElementById = jest.fn(() => canvas);
+      const styleData = {
+        style: { type: 'fill', shape: 'rectangle', width: '20', height: '20', color: '#FF0000' }
+      };
+      wrapper = mount(StyleItem, { propsData: { styleData, outlineWidthDriven: true } });
+      expect(wrapper.find(StyleRenderer).props('outlineWidthDriven')).toBe(true);
+    });
+
+    it('outlineWidthDriven 透传给 ImageRenderer', () => {
+      const { canvas } = createMockCanvas();
+      document.getElementById = jest.fn(() => canvas);
+      const styleData = {
+        style: { type: 'image', shape: 'POINT', fontSize: 10, url: 'sprite.png', sprite: { width: 10, height: 10 } }
+      };
+      wrapper = mount(StyleItem, { propsData: { styleData, outlineWidthDriven: true } });
+      expect(wrapper.find(ImageRenderer).props('outlineWidthDriven')).toBe(true);
     });
   });
 

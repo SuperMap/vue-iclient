@@ -35,6 +35,7 @@ import { hexToRgba, formatFontSize } from 'vue-iclient/src/common/_utils/util';
 import {
   drawFillLegendOutline,
   getFillOutlineLayers,
+  getFillLegendPadding,
   createOutlineTileFromSprite
 } from './fillOutline';
 import { loadSpriteImage, loadSpriteMeta } from './sprite';
@@ -43,6 +44,11 @@ export default {
   props: {
     styleData: {
       type: Object
+    },
+    // 轮廓宽度是否被单独提取成数据驱动分组：其它分组符号按默认宽度 0.5 描边
+    outlineWidthDriven: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -244,7 +250,11 @@ export default {
     drawFillRect(canvas, backgroundColor) {
       const ctx = canvas.getContext('2d');
       const { opacity = 1, width, height, url, outlineSprites } = this.styleRendererData;
-      const size = parseInt(width) || parseInt(height);
+      const fillSize = parseInt(width) || parseInt(height);
+      // 轮廓按真实线宽 1:1 绘制，画布在填充区外补半幅笔刷出血位，粗轮廓不被裁切，
+      // 宽度分段主题各段宽度差异如实保留
+      const padding = getFillLegendPadding(this.styleRendererData, this.outlineWidthDriven);
+      const size = fillSize + 2 * padding;
       const dpr = window.devicePixelRatio || 1;
       canvas.width = Math.round(size * dpr);
       canvas.height = Math.round(size * dpr);
@@ -252,8 +262,11 @@ export default {
       canvas.style.height = `${size}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       // 先同步绘制底色与轮廓（无取图方式时图片轮廓层自动跳过，矢量轮廓立即可见）
-      this.paintFillBase(ctx, size, backgroundColor, opacity);
-      drawFillLegendOutline(canvas, size, this.styleRendererData, { dpr });
+      this.paintFillBase(ctx, fillSize, padding, backgroundColor, opacity);
+      drawFillLegendOutline(canvas, size, padding, this.styleRendererData, {
+        dpr,
+        outlineWidthDriven: this.outlineWidthDriven
+      });
       // 轮廓含图片符号（line-pattern 连续纹理 / icon-image 图标点）时，
       // 加载雪碧图后用轮廓图块整体重绘；优先使用库附带的 outlineSprites 元数据，未附带时请求 sprite.json
       const hasImageOutline = getFillOutlineLayers(this.styleRendererData.outlineSymbolsContent).some(
@@ -266,13 +279,13 @@ export default {
               return;
             }
             if (outlineSprites && Object.keys(outlineSprites).length) {
-              this.redrawFillOutline(canvas, size, dpr, backgroundColor, opacity, img, outlineSprites);
+              this.redrawFillOutline(canvas, fillSize, dpr, backgroundColor, opacity, img, outlineSprites);
               return;
             }
             loadSpriteMeta(url)
               .then(meta => {
                 if (!this._isDestroyed) {
-                  this.redrawFillOutline(canvas, size, dpr, backgroundColor, opacity, img, meta);
+                  this.redrawFillOutline(canvas, fillSize, dpr, backgroundColor, opacity, img, meta);
                 }
               })
               .catch(() => {});
@@ -280,22 +293,28 @@ export default {
           .catch(() => {});
       }
     },
-    // 填充面底色
-    paintFillBase(ctx, size, backgroundColor, opacity) {
+    // 填充中心填充区底色（填充区距画布边缘 padding）
+    paintFillBase(ctx, fillSize, padding, backgroundColor, opacity) {
       ctx.globalAlpha = opacity;
       ctx.fillStyle = backgroundColor;
-      ctx.fillRect(0, 0, size, size);
+      ctx.fillRect(padding, padding, fillSize, fillSize);
       ctx.globalAlpha = 1;
     },
     // 雪碧图就绪后清空重绘：底色 + 全部轮廓层（含图片符号）
-    redrawFillOutline(canvas, size, dpr, backgroundColor, opacity, spriteImage, spriteMeta) {
+    redrawFillOutline(canvas, fillSize, dpr, backgroundColor, opacity, spriteImage, spriteMeta) {
       const ctx = canvas.getContext('2d');
+      const padding = getFillLegendPadding(this.styleRendererData, this.outlineWidthDriven);
+      const size = fillSize + 2 * padding;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, size, size);
-      this.paintFillBase(ctx, size, backgroundColor, opacity);
+      this.paintFillBase(ctx, fillSize, padding, backgroundColor, opacity);
       const createTile = (imageId, targetHeight, pixelRatio) =>
         createOutlineTileFromSprite(spriteImage, spriteMeta, imageId, targetHeight, pixelRatio);
-      drawFillLegendOutline(canvas, size, this.styleRendererData, { dpr, createTile });
+      drawFillLegendOutline(canvas, size, padding, this.styleRendererData, {
+        dpr,
+        createTile,
+        outlineWidthDriven: this.outlineWidthDriven
+      });
     },
     drawLines(canvas, ctx) {
       if (this.styleRendererData.lineStyles) {
