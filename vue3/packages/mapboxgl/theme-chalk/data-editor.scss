@@ -1,0 +1,167 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/mixins/rtl-mixin.scss' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+@use '@supermapgis/common/theme-chalk/collapse-card';
+@use '@supermapgis/common/theme-chalk/card';
+
+@include b(data-editor) {
+  overflow: visible;
+
+  /* 没有标题时控件图标停靠在卡片内角（32px），会压住内容，这里为内容让出图标区域 */
+  .sm-component-collapse-card__content.is-not-header {
+    /* 图标停靠角为物理方向，与 iconPosition API 一致，不随 RTL 翻转 */
+
+    /* rtl:physical:start */
+    &.is-top-left > .sm-component-collapse-card__body,
+    &.is-bottom-left > .sm-component-collapse-card__body {
+      padding-left: 32px;
+    }
+
+    &.is-top-right > .sm-component-collapse-card__body,
+    &.is-bottom-right > .sm-component-collapse-card__body {
+      padding-right: 32px;
+    }
+
+    /* rtl:physical:end */
+  }
+
+  @include e(card) {
+    width: 100%;
+    background: transparent;
+    border: 0;
+
+    .#{$ant-prefix}-card-body {
+      padding: 5px;
+    }
+  }
+
+  @include e(content) {
+    min-width: 180px;
+    max-height: 260px;
+    padding: 8px;
+    overflow-y: auto;
+  }
+
+  @include e(item) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 28px;
+    gap: 8px;
+  }
+
+  @include e(name) {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  @include e(edit) {
+    flex: 0 0 auto;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    color: inherit;
+    /* stylelint-disable-next-line */
+    line-height: 24px;
+    cursor: pointer;
+    background-color: transparent;
+    border: 0;
+    border-radius: 2px;
+
+    &--disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+  }
+
+  @include e(empty) {
+    /* stylelint-disable-next-line */
+    font-size: 12px;
+    opacity: 0.65;
+  }
+}
+
+/* 数据编辑弹窗铺满全屏，弹窗内是一张独立的地图 */
+@include b(data-editor-dialog) {
+  padding: 0;
+  overflow: hidden;
+
+  /* 弹窗内部类名由 ant-design-vue 生成，仓库内统一使用 .ant-modal-* 选择器 */
+  .ant-modal {
+    top: 0;
+    width: 100% !important;
+    max-width: 100%;
+    margin: 0;
+    padding-bottom: 0;
+  }
+
+  .ant-modal-content {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 0;
+  }
+
+  .ant-modal-header {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 12px 48px 12px 16px;
+  }
+
+  .ant-modal-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .ant-modal-close {
+    top: 10px;
+  }
+
+  @include e(body) {
+    position: relative;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  @include e(map) {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    min-height: 200px;
+  }
+
+  /* 图层缺少可编辑数据源时的覆盖提示 */
+  @include e(empty) {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* stylelint-disable-next-line */
+    font-size: 13px;
+    /* stylelint-disable-next-line */
+    color: #fff;
+    pointer-events: none;
+    background-color: rgb(0 0 0 / 45%);
+  }
+
+  @include e(tips) {
+    flex: 0 0 auto;
+    padding: 8px 12px;
+    /* stylelint-disable-next-line */
+    font-size: 12px;
+    /* stylelint-disable-next-line */
+    line-height: 20px;
+  }
+}

@@ -1,11 +1,20 @@
-export function statisticsFeatures(features, fields, fieldCaptions, fieldTypes, originalFields) {
+export function statisticsFeatures(
+  features,
+  fields,
+  fieldCaptions,
+  fieldTypes,
+  originalFields,
+  isSystemFields
+) {
   const data = {
     features,
     fields: fields || [],
     originalFields: originalFields || [],
     fieldCaptions: fieldCaptions || [],
     fieldValues: [],
-    fieldTypes
+    fieldTypes,
+    // REST 数据的系统字段标记，与 originalFields 一一对应（对齐 vue-iclient-dev）
+    isSystemFields: isSystemFields || []
   };
   if (features && !!features.length && (!fields || !fieldCaptions)) {
     const properties = Object.assign({}, features[0].properties, features[features.length - 1].properties);

@@ -8,6 +8,7 @@ import type {
 import type { ShortEmits } from '@supermapgis/common/utils/index.common'
 import type { DefaultPopupProps } from '@supermapgis/mapboxgl/components/attribute-popup/types'
 import type { BaseLayerSwitcherProps } from '@supermapgis/mapboxgl/components/base-layer-switcher/types'
+import type { DataEditorLayer, DataEditorTheme } from '@supermapgis/mapboxgl/components/data-editor/types'
 import { getPropsDefaults } from '@supermapgis/common/utils/index.common'
 
 export type { MapEventHandler }
@@ -77,6 +78,21 @@ export interface LayerManageParam {
 }
 
 export type BaseLayerSwitcherParam = BaseLayerSwitcherProps & { show?: boolean }
+/** 数据编辑控件参数，与 SmDataEditor 组件属性保持一致 */
+export interface DataEditorControlParam {
+  show: boolean
+  position?: string
+  collapsed?: boolean
+  headerName?: string
+  layers?: DataEditorLayer[]
+  iconClass?: string
+  rootUrl?: string
+  theme?: DataEditorTheme
+  dialogWidth?: string | number
+  textColor?: string
+  background?: string
+  extraStyle?: Record<string, unknown>
+}
 
 export interface Control {
   panControl?: CommonControlParam
@@ -91,6 +107,7 @@ export interface Control {
   identifyControl?: IdentifyParam
   layerManagerControl?: LayerManageParam
   baseLayerSwitcherControl?: BaseLayerSwitcherParam
+  dataEditorControl?: DataEditorControlParam
 }
 
 export const webMapProps = () => ({
@@ -299,6 +316,18 @@ export const webMapProps = () => ({
       }
     }
   },
+  dataEditorControl: {
+    type: Object,
+    default: (): DataEditorControlParam => {
+      return {
+        show: false,
+        position: 'bottom-left',
+        collapsed: false,
+        headerName: '',
+        layers: []
+      }
+    }
+  },
   tileTransformRequest: {
     type: Function as PropType<(url: string, request: any) => string>,
     default: undefined
@@ -341,6 +370,7 @@ export type WebMapProps = {
   attributePopupControl?: PopupParam
   layerManagerControl?: LayerManageParam
   baseLayerSwitcherControl?: BaseLayerSwitcherParam
+  dataEditorControl?: DataEditorControlParam
   tileTransformRequest?: (url: string) => Object
 }
 
