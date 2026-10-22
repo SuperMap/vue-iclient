@@ -154,6 +154,8 @@ export default class WebMapViewModel extends Events {
 
   mapOptions: MapOptions;
 
+  mapData: { mapOptions: Partial<mapboxglTypes.MapboxOptions> };
+
   options: any;
 
   mapId: string | number | Object;
@@ -552,11 +554,20 @@ export default class WebMapViewModel extends Events {
   }
 
   private _mapCreateSucceededHandlerHandler(params: AddlayerssucceededParams) {
-    const { mapparams, layers } = params;
+    const { mapparams, layers, map } = params;
     this.mapParams = mapparams;
     this._cacheCleanLayers = layers;
     this._cacheLayerCatalogIds = getLayerCatalogIds(this.getLayerList());
-    this.triggerEvent('addlayerssucceeded', params);
+    // Keep the loaded camera separate from props that editors update while the map moves.
+    this.mapData = {
+      mapOptions: {
+        center: map.getCenter().toArray().map(item => +item.toFixed(4)) as [number, number],
+        zoom: +map.getZoom().toFixed(2),
+        bearing: +map.getBearing().toFixed(2),
+        pitch: +map.getPitch().toFixed(2)
+      }
+    };
+    this.triggerEvent('addlayerssucceeded', { ...params, mapData: this.mapData });
   }
 
   private _layerUpdateChangedHandler(params: LayerUpdateChangedParams) {

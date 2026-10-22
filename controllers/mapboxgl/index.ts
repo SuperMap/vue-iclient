@@ -24,6 +24,7 @@ export { default as MiniMapViewModel } from './src/MiniMapViewModel';
 export { default as PanViewModel } from './src/PanViewModel';
 export { default as PopupViewModel } from './src/PopupViewModel';
 export { default as QueryViewModel } from './src/QueryViewModel';
+export { default as ResetViewModel } from './src/ResetViewModel';
 export { default as SearchViewModel } from './src/SearchViewModel';
 export { default as ScaleViewModel } from './src/ScaleViewModel';
 export { default as ZoomViewModel } from './src/ZoomViewModel';

@@ -187,6 +187,9 @@ export default {
     reset: '重置'
   },
   miniMap: {},
+  resetView: {
+    title: '视角重置'
+  },
   pan: {},
   scale: {},
   webmap: {

@@ -22,6 +22,7 @@ import { SmMeasure } from '@supermapgis/mapboxgl/components/measure'
 import { SmQuery } from '@supermapgis/mapboxgl/components/query'
 import { SmSearch } from '@supermapgis/mapboxgl/components/search'
 import { SmZoom } from '@supermapgis/mapboxgl/components/zoom'
+import { SmResetView } from '@supermapgis/mapboxgl/components/reset-view'
 import { SmDraw } from '@supermapgis/mapboxgl/components/draw'
 import { SmCompass } from '@supermapgis/mapboxgl/components/compass'
 import { SmMiniMap } from '@supermapgis/mapboxgl/components/mini-map'
@@ -72,6 +73,7 @@ export default [
   SmIndicator,
   SmText,
   SmZoom,
+  SmResetView,
   SmDraw,
   SmCompass,
   SmMiniMap,

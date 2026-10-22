@@ -12,6 +12,7 @@ import { message } from 'ant-design-vue'
 import SmSpin from '@supermapgis/common/components/spin/Spin'
 import { webMapPropsDefault } from './types'
 import SmZoom from '@supermapgis/mapboxgl/components/zoom/zoom.vue'
+import SmResetView from '@supermapgis/mapboxgl/components/reset-view/reset-view.vue'
 import SmCompass from '@supermapgis/mapboxgl/components/compass/compass.vue'
 import SmDraw from '@supermapgis/mapboxgl/components/draw/draw.vue'
 import SmIdentify from '@supermapgis/mapboxgl/components/identify/identify.vue'
@@ -58,6 +59,7 @@ const spinning = ref(props.defaultLoading)
 
 const componentMap: Record<string, any> = {
   SmZoom,
+  SmResetView,
   SmCompass,
   SmDraw,
   SmIdentify,

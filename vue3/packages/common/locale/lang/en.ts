@@ -131,6 +131,9 @@ export default {
     reset: 'Reset'
   },
   miniMap: {},
+  resetView: {
+    title: 'Reset view'
+  },
   pan: {},
   scale: {},
   webmap: {

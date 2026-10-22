@@ -29,6 +29,10 @@ export interface ZoomParam extends CommonControlParam {
   showZoomSlider?: boolean
 }
 
+export interface ResetViewParam extends CommonControlParam {
+  duration?: number
+}
+
 export interface MeasureParam extends CardCommonParam {
   showUnitSelect: boolean
   distanceDefaultUnit: string
@@ -98,6 +102,7 @@ export interface Control {
   panControl?: CommonControlParam
   scaleControl?: CommonControlParam
   zoomControl?: ZoomParam
+  resetViewControl?: ResetViewParam
   miniMapControl?: CardCommonParam
   layerListControl?: CardCommonParam
   measureControl?: MeasureParam
@@ -211,6 +216,12 @@ export const webMapProps = () => ({
     type: Object,
     default: (): ZoomParam => {
       return { show: false, position: 'top-left' }
+    }
+  },
+  resetViewControl: {
+    type: Object,
+    default: (): ResetViewParam => {
+      return { show: false, position: 'top-left', duration: 1000 }
     }
   },
   miniMapControl: {
@@ -360,6 +371,7 @@ export type WebMapProps = {
   panControl?: CommonControlParam
   scaleControl?: CommonControlParam
   zoomControl?: ZoomParam
+  resetViewControl?: ResetViewParam
   miniMapControl?: CardCommonParam
   layerListControl?: CardCommonParam
   measureControl?: MeasureParam
