@@ -7,6 +7,7 @@ import type {
 } from 'vue-iclient-controllers-mapboxgl/src/utils/MapEvents'
 import type { ShortEmits } from '@supermapgis/common/utils/index.common'
 import type { DefaultPopupProps } from '@supermapgis/mapboxgl/components/attribute-popup/types'
+import type { BaseLayerSwitcherProps } from '@supermapgis/mapboxgl/components/base-layer-switcher/types'
 import { getPropsDefaults } from '@supermapgis/common/utils/index.common'
 
 export type { MapEventHandler }
@@ -75,6 +76,8 @@ export interface LayerManageParam {
   layers: Array<Object>
 }
 
+export type BaseLayerSwitcherParam = BaseLayerSwitcherProps & { show?: boolean }
+
 export interface Control {
   panControl?: CommonControlParam
   scaleControl?: CommonControlParam
@@ -87,6 +90,7 @@ export interface Control {
   searchControl?: SearchParam
   identifyControl?: IdentifyParam
   layerManagerControl?: LayerManageParam
+  baseLayerSwitcherControl?: BaseLayerSwitcherParam
 }
 
 export const webMapProps = () => ({
@@ -203,6 +207,20 @@ export const webMapProps = () => ({
     default: (): CardCommonParam => {
       return { show: false, position: 'top-right' }
     }
+  },
+  baseLayerSwitcherControl: {
+    type: Object,
+    default: (): BaseLayerSwitcherParam => ({
+      show: false,
+      position: 'top-right',
+      collapsed: false,
+      layers: [],
+      baseLayerInfo: {
+        show: true,
+        title: '',
+        thumbnail: ''
+      }
+    })
   },
   measureControl: {
     type: Object,
@@ -322,6 +340,7 @@ export type WebMapProps = {
   identifyControl?: IdentifyParam
   attributePopupControl?: PopupParam
   layerManagerControl?: LayerManageParam
+  baseLayerSwitcherControl?: BaseLayerSwitcherParam
   tileTransformRequest?: (url: string) => Object
 }
 

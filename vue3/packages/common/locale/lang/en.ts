@@ -97,6 +97,9 @@ export default {
     zoomToLayer: 'Zoom to layer',
     opacity: 'Opacity'
   },
+  baseLayerSwitcher: {
+    title: 'Basemap Switcher'
+  },
   slideshow: {
     title: 'Slideshow'
   },

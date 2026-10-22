@@ -132,6 +132,7 @@ interface MapHandler {
   setMaxZoom: (minZoom: number) => void;
   setProxy: (proxy: string) => void;
   setWithCredentials: (withCredentials: boolean) => void;
+  changeBaseLayer: (layer: Record<string, any>) => any;
   on: (type: string, callback: () => void) => void;
 }
 
@@ -278,6 +279,11 @@ export default class WebMapViewModel extends Events {
   setMapId(mapId: string | number): void {
     this._handler.setMapId(mapId);
   }
+
+  changeBaseLayer(layer: Record<string, any>) {
+    return this._handler.changeBaseLayer(layer);
+  }
+
   getPopupInfos() {
     return this._handler.getPopupInfos();
   }

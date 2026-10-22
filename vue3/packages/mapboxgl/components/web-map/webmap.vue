@@ -24,6 +24,7 @@ import SmScale from '@supermapgis/mapboxgl/components/scale/scale.vue'
 import SmMiniMap from '@supermapgis/mapboxgl/components/mini-map/mini-map.vue'
 import SmAttributePopup from '@supermapgis/mapboxgl/components/attribute-popup/attribute-popup.vue'
 import SmLegend from '@supermapgis/mapboxgl/components/legend/legend.vue'
+import SmBaseLayerSwitcher from '@supermapgis/mapboxgl/components/base-layer-switcher/base-layer-switcher.vue'
 
 const viewModelProps = [
   'mapId',
@@ -67,7 +68,8 @@ const componentMap: Record<string, any> = {
   SmScale,
   SmMiniMap,
   SmAttributePopup,
-  SmLegend
+  SmLegend,
+  SmBaseLayerSwitcher
 };
 
 const controlComponents = computed(() => {

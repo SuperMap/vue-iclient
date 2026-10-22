@@ -17,6 +17,7 @@ import { SmCompare } from '@supermapgis/mapboxgl/components/compare'
 import { SmAnimateMarkerLayers } from '@supermapgis/mapboxgl/components/animate-marker-layer'
 import { SmIdentify } from '@supermapgis/mapboxgl/components/identify'
 import { SmLayerList } from '@supermapgis/mapboxgl/components/layer-list'
+import { SmBaseLayerSwitcher } from '@supermapgis/mapboxgl/components/base-layer-switcher'
 import { SmMeasure } from '@supermapgis/mapboxgl/components/measure'
 import { SmQuery } from '@supermapgis/mapboxgl/components/query'
 import { SmSearch } from '@supermapgis/mapboxgl/components/search'
@@ -63,6 +64,7 @@ export default [
   SmAnimateMarkerLayers,
   SmIdentify,
   SmLayerList,
+  SmBaseLayerSwitcher,
   SmMeasure,
   SmQuery,
   SmSearch,

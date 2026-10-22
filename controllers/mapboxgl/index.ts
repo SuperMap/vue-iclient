@@ -8,6 +8,7 @@ export { getDefaultLayerStyle } from './src/types';
 export { default as MapEvents } from './src/utils/MapEvents';
 
 export { default as AnimateMarkerLayerViewModel } from './src/AnimateMarkerLayerViewModel';
+export { default as BaseLayerSwitcherViewModel } from './src/BaseLayerSwitcherViewModel';
 export { default as AttributesViewModel } from './src/AttributesViewModel';
 export { default as ChartViewModel } from './src/ChartViewModel';
 export { default as CompareViewModel } from './src/CompareViewModel';

@@ -118,6 +118,9 @@ export default {
     zoomToLayer: '缩放至图层',
     opacity: '不透明度'
   },
+  baseLayerSwitcher: {
+    title: '底图切换'
+  },
   sceneLayerList: {
     title: '图层',
     s3mLayer: 'S3M图层',
