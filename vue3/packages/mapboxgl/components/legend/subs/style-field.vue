@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-legend__themefield add-ellipsis" :style="secondaryTextColorStyle" :title="themFieldText">
+  <div class="sm-component-legend__themefield add-ellipsis" :style="secondaryTextColorStyle">
     {{ themFieldText }}
   </div>
 </template>
@@ -38,6 +38,8 @@ const themFieldLabel = computed(() => {
     width: t('legend.width'),
     outlineColor: t('legend.outlineColor'),
     outlineWidth: t('legend.outlineWidth'),
+    outlineSymbolsContent: t('legend.outlineSymbolsContent'),
+    outlineOpacity: t('legend.outlineOpacity'),
     textSize: t('legend.label') + '-' + t('legend.size'),
     textOpacity: t('legend.label') + '-' + t('legend.opacity'),
     textColor: t('legend.label') + '-' + t('legend.color'),

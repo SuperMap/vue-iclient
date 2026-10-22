@@ -29,28 +29,32 @@
 import { computed, onBeforeUnmount, onMounted } from 'vue'
 import uniqueId from 'lodash.uniqueid'
 import omit from 'omit.js'
-import { formatFontSize, getDerivedColorsByTextColor, hexToRgba } from 'vue-iclient-core/utils/util'
-import { useLocale, useTheme } from '@supermapgis/common/hooks/index.common'
+import { formatFontSize, hexToRgba } from 'vue-iclient-core/utils/util'
+import { useLocale } from '@supermapgis/common/hooks/index.common'
 import type { LegendStyleGroupItem } from '../types'
+import {
+  createOutlineTileFromSprite,
+  drawFillLegendOutline,
+  getFillLegendPadding,
+  getFillOutlineLayers
+} from './fill-outline'
+import { loadSpriteImage, loadSpriteMeta, getLoadedSpriteImage, getLoadedSpriteMeta } from './sprite'
+import type { SpriteMeta } from './sprite'
 
 const props = withDefaults(
   defineProps<{
     styleData?: LegendStyleGroupItem
+    // 轮廓宽度是否被单独提取成数据驱动分组：其它分组符号按默认宽度 0.5 描边
+    outlineWidthDriven?: boolean
   }>(),
-  { styleData: () => ({}) }
+  { styleData: () => ({}), outlineWidthDriven: false }
 )
 
 const { t } = useLocale()
-const { textColorStyle } = useTheme({})
-
-// 基础图层的 style 为数组时（道路、铁路等双线要素），旧版 iClient 生成的图例数据里没有线颜色，
-// 此时回退为主题文字色，避免落到默认的白色线条而在浅色图例背景下不可见
-const fallbackLineColor = computed(() =>
-  getDerivedColorsByTextColor(textColorStyle.value.color as string, 0.65)
-)
 
 const linearWidth = 214
 let animateTimer: number | null = null
+let isDestroyed = false
 
 const canvasId = computed(() => {
   const { icon, colors, type } = styleRendererData.value
@@ -136,9 +140,8 @@ function drawShape() {
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
   const { opacity = 1, fontSize, width, height } = styleRendererData.value
   if ('width' in styleRendererData.value) {
-    // 部分样式（如线）只有 width 没有 height，直接赋值 NaN 会让 canvas 变成 0 高度
-    canvas.width = parseInt(width) || 20
-    canvas.height = parseInt(height) || 8
+    canvas.width = parseInt(width)
+    canvas.height = parseInt(height)
   } else {
     const size = parseInt(fontSize)
     canvas.width = size
@@ -164,26 +167,15 @@ function drawShape() {
     }
     case 'line':
     case 'animateline': {
-      canvas.height = Number(height) > 0 ? Math.max(1, Number(height)) : 8
+      canvas.height = height && height < 1 ? 1 : height
       drawLines(canvas, ctx)
       break
     }
     case 'fill':
     case 'rectangle': {
-      const {
-        color,
-        backgroundColor = color,
-        outlineColor = backgroundColor,
-        outlineWidth = 0.5,
-        outlineStyle = 'none'
-      } = styleRendererData.value
-      ctx.fillStyle = backgroundColor
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-      if (outlineStyle === 'solid') {
-        ctx.strokeStyle = outlineColor
-        ctx.lineWidth = outlineWidth
-      }
-      ctx.strokeRect(0, 0, canvas.width, canvas.height)
+      // 底色缺失时用图例色值兜底，避免画布保持空白（表现为「没有显示面的图例」）
+      const { color, backgroundColor = color } = styleRendererData.value
+      drawFillRect(canvas, backgroundColor || color)
       break
     }
     case 'triangle': {
@@ -251,13 +243,129 @@ function drawLines(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
   drawDashedLine(canvas, ctx)
 }
 
+// 面图例：填充底色 + 轮廓（纯色轮廓 / 轮廓线符号），支持 DPR 适配与轮廓不透明度
+function drawFillRect(canvas: HTMLCanvasElement, backgroundColor?: string) {
+  const ctx = canvas.getContext('2d')
+  if (!ctx) {
+    return
+  }
+  const { opacity = 1, width, height, url } = styleRendererData.value
+  const fillSize = parseInt(width) || parseInt(height)
+  // 轮廓按真实线宽 1:1 绘制，画布在填充区外补半幅笔刷出血位，粗轮廓不被裁切，
+  // 宽度分段主题各段宽度差异如实保留
+  const padding = getFillLegendPadding(styleRendererData.value, props.outlineWidthDriven, fillSize)
+  const size = fillSize + 2 * padding
+  const dpr = window.devicePixelRatio || 1
+  canvas.width = Math.round(size * dpr)
+  canvas.height = Math.round(size * dpr)
+  canvas.style.width = `${size}px`
+  canvas.style.height = `${size}px`
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+  // 先同步绘制底色与轮廓（无取图方式时图片轮廓层自动跳过，矢量轮廓立即可见）
+  paintFillBase(ctx, fillSize, padding, backgroundColor, opacity)
+  drawFillLegendOutline(canvas, size, padding, styleRendererData.value, {
+    dpr,
+    outlineWidthDriven: props.outlineWidthDriven
+  })
+  // 轮廓含图片符号（line-pattern 连续纹理 / icon-image 图标点）时，
+  // 加载雪碧图后用轮廓图块整体重绘；优先使用库附带的 outlineSprites 元数据，未附带时请求 sprite.json
+  const hasImageOutline = getFillOutlineLayers(styleRendererData.value.outlineSymbolsContent).some(
+    layer => layer.kind === 'image'
+  )
+  if (!url || !hasImageOutline) {
+    return
+  }
+  const attachedMeta = getAttachedSpriteMeta(styleRendererData.value.outlineSprites)
+  // 雪碧图与元数据均已就绪（同一张雪碧图被多个图例项共用时很常见）就直接同步重绘，
+  // 避免首帧只有底色、图片轮廓要等异步回调才补上
+  const cachedImage = getLoadedSpriteImage(url)
+  const cachedMeta = attachedMeta || getLoadedSpriteMeta(url)
+  if (cachedImage && cachedMeta) {
+    redrawFillOutline(canvas, fillSize, dpr, backgroundColor, opacity, cachedImage, cachedMeta)
+    return
+  }
+  loadSpriteImage(url)
+    .then(img => {
+      if (isDestroyed) {
+        return
+      }
+      const meta = attachedMeta || getLoadedSpriteMeta(url)
+      if (meta) {
+        redrawFillOutline(canvas, fillSize, dpr, backgroundColor, opacity, img, meta)
+        return
+      }
+      loadSpriteMeta(url)
+        .then(spriteMeta => {
+          if (!isDestroyed) {
+            redrawFillOutline(canvas, fillSize, dpr, backgroundColor, opacity, img, spriteMeta)
+          }
+        })
+        .catch(() => {})
+    })
+    .catch(() => {})
+}
+
+// 样式里随库附带的雪碧图元数据（按图片 id 索引）
+function getAttachedSpriteMeta(value: unknown): SpriteMeta | undefined {
+  if (value && typeof value === 'object' && Object.keys(value as object).length) {
+    return value as SpriteMeta
+  }
+  return undefined
+}
+
+// 填充中心填充区底色（填充区距画布边缘 padding）
+function paintFillBase(
+  ctx: CanvasRenderingContext2D,
+  fillSize: number,
+  padding: number,
+  backgroundColor: string | undefined,
+  opacity: number
+) {
+  // 没有有效底色时不绘制，避免 fillStyle 保持默认黑色
+  if (!backgroundColor) {
+    return
+  }
+  ctx.globalAlpha = opacity
+  ctx.fillStyle = backgroundColor
+  ctx.fillRect(padding, padding, fillSize, fillSize)
+  ctx.globalAlpha = 1
+}
+
+// 雪碧图就绪后清空重绘：底色 + 全部轮廓层（含图片符号）
+function redrawFillOutline(
+  canvas: HTMLCanvasElement,
+  fillSize: number,
+  dpr: number,
+  backgroundColor: string | undefined,
+  opacity: number,
+  spriteImage: HTMLImageElement,
+  spriteMeta: SpriteMeta
+) {
+  const ctx = canvas.getContext('2d')
+  if (!ctx) {
+    return
+  }
+  const padding = getFillLegendPadding(styleRendererData.value, props.outlineWidthDriven, fillSize)
+  const size = fillSize + 2 * padding
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+  ctx.clearRect(0, 0, size, size)
+  paintFillBase(ctx, fillSize, padding, backgroundColor, opacity)
+  const createTile = (imageId: string, targetHeight?: number, pixelRatio?: number) =>
+    createOutlineTileFromSprite(spriteImage, spriteMeta, imageId, targetHeight, pixelRatio)
+  drawFillLegendOutline(canvas, size, padding, styleRendererData.value, {
+    dpr,
+    createTile,
+    outlineWidthDriven: props.outlineWidthDriven
+  })
+}
+
 function drawDashedLine(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
   const LEGEND_LINE_WIDTH = 100
   const LINE_DASH_WIDTH = 1
   const {
     lineDasharray: pattern = [],
     lineWidth = LINE_DASH_WIDTH,
-    color = fallbackLineColor.value,
+    color = '#FFF',
     width = LEGEND_LINE_WIDTH,
     lineHeight
   } = styleRendererData.value
@@ -286,7 +394,7 @@ function drawMultiLine(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D)
   const startY = getStartY(newLines)
   newLines.forEach(v => {
     ctx.beginPath()
-    const { lineWidth, color = fallbackLineColor.value, lineDash } = v
+    const { lineWidth, color = '#FFF', lineDash } = v
     const y = getY(v, canvasHeight, startY)
     ctx.lineWidth = lineWidth
     ctx.strokeStyle = color
@@ -501,6 +609,9 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  animateTimer && window.clearInterval(animateTimer)
+  isDestroyed = true
+  if (animateTimer) {
+    window.clearInterval(animateTimer)
+  }
 })
 </script>

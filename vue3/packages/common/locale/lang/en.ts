@@ -171,10 +171,37 @@ export default {
     width: 'Width',
     outlineColor: 'Outline Color',
     outlineWidth: 'Outline Width',
+    outlineSymbolsContent: 'Outline Line Symbol',
+    outlineOpacity: 'Outline Opacity',
     haloColor: 'Halo Color',
     label: 'Label',
     parentheses: '({tips})',
     colon: ':'
+  },
+  dataEditor: {
+    title: 'Data Editor',
+    edit: 'Edit',
+    editNoPermission: 'No editing permission',
+    checking: 'Checking editing permission...',
+    empty: 'No editable vector layers',
+    dialogTitle: 'Edit Data',
+    selectedData: 'Selected Data',
+    multiSelectTip: 'Hold Ctrl and left-click to select multiple features',
+    exitDrawingTip: 'Press ESC to exit drawing mode',
+    closeConfirmTitle: 'Have you saved your changes?',
+    closeConfirmContent: 'Please confirm the changes have been saved before closing. Unsaved changes will be lost.',
+    unsupportedData: 'The current layer has no data source that supports editing. Only data services (rest/data) and structured data are supported.',
+    confirm: 'OK',
+    cancel: 'Cancel',
+    mapEditorLang: {
+      addButton: 'Add',
+      deleteButton: 'Delete',
+      saveButton: 'Save',
+      popupTitle: 'Tip',
+      popupConfirm: 'OK',
+      popupCancel: 'Cancel',
+      requiredField: 'Required Field'
+    }
   },
   measure: {
     mapMeasure: 'Measure',

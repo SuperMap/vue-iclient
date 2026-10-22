@@ -1,5 +1,5 @@
 <template>
-  <span class="sm-component-legend__fieldvalue add-ellipsis" :style="textStyle" :title="fieldLabel">
+  <span class="sm-component-legend__fieldvalue add-ellipsis" :style="textStyle">
     {{ fieldLabel }}
   </span>
 </template>

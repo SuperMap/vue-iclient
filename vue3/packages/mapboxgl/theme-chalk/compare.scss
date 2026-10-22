@@ -17,23 +17,37 @@
   }
 
   & > .mapboxgl-compare {
+    position: absolute;
+    top: 0;
     z-index: 999;
     user-select: none;
     background-color: $compare-swiper-background;
     width: 2px !important;
     height: 100% !important;
+    cursor: ew-resize;
+
+    /* 横向卷帘的分隔条沿水平方向铺满，不能沿用纵向的宽度和高度 */
+    &.mapboxgl-compare-horizontal {
+      width: 100% !important;
+      height: 2px !important;
+      cursor: ns-resize;
+    }
 
     .compare-swiper-vertical,
     .compare-swiper-horizontal {
+      position: absolute;
+      top: 50%;
+
       @include position-row(left, 50%, false, false);
 
       margin: 0;
       box-shadow: none;
       border: 2px solid;
+      border-radius: 50%;
       /* stylelint-disable-next-line */
       color: $compare-swiper-color;
       background-color: $primary-color;
-      box-sizing: content-box;
+      box-sizing: border-box;
       background-size: contain;
       background-image: none;
 
@@ -52,12 +66,15 @@
       }
     }
 
-    .compare-swiper-horizontal {
-      transform: translate(-50%, -50%) rotate(90deg);
-    }
-
     .compare-swiper-vertical {
       @include transform-translate(-50%, -50%, false);
+
+      cursor: ew-resize;
+    }
+
+    .compare-swiper-horizontal {
+      transform: translate(-50%, -50%) rotate(90deg);
+      cursor: ns-resize;
     }
   }
 }

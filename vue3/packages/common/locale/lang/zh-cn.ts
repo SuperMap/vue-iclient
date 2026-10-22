@@ -226,10 +226,37 @@ export default {
     width: '宽度',
     outlineColor: '轮廓色',
     outlineWidth: '轮廓宽度',
+    outlineSymbolsContent: '轮廓符号',
+    outlineOpacity: '轮廓不透明度',
     haloColor: '晕轮颜色',
     label: '标签',
     parentheses: '（{tips}）',
     colon: '：'
+  },
+  dataEditor: {
+    title: '数据编辑',
+    edit: '编辑',
+    editNoPermission: '没有编辑权限',
+    checking: '正在检查编辑权限...',
+    empty: '暂无可编辑矢量图层',
+    dialogTitle: '编辑数据',
+    selectedData: '选中数据',
+    multiSelectTip: '长按 Ctrl + 左键 多选要素',
+    exitDrawingTip: '按 ESC 退出绘制状态',
+    closeConfirmTitle: '是否已经保存修改？',
+    closeConfirmContent: '关闭前请确认修改已经保存，未保存的修改会丢失。',
+    unsupportedData: '当前图层没有支持编辑的数据源，仅支持数据服务（rest/data）和结构化数据。',
+    confirm: '确定',
+    cancel: '取消',
+    mapEditorLang: {
+      addButton: '添加',
+      deleteButton: '删除',
+      saveButton: '保存',
+      popupTitle: '提示',
+      popupConfirm: '确定',
+      popupCancel: '取消',
+      requiredField: '必填字段'
+    }
   },
   measure: {
     mapMeasure: '量算',

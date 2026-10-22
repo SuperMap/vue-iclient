@@ -13,6 +13,7 @@ import { cardProps, controlProps } from '@supermapgis/mapboxgl/utils'
 export type LegendMode = 'simple' | 'panel'
 
 export interface LegendStyleGroupItem {
+  /** 样式对象，图例项的默认值为空对象，渲染前由图层样式补齐 */
   style?: Record<string, any>
   fieldValue?: string
   start?: number

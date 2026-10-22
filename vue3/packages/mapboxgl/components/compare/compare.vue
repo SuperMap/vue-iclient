@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-compare" :id="target">
+  <div :id="target" class="sm-component-compare">
     <template v-if="isRenderWebMap">
       <SmWebMap v-bind="beforeMapOptions" @load="setBeforeMap"></SmWebMap>
       <SmWebMap v-bind="afterMapOptions" @load="setAfterMap"></SmWebMap>
@@ -34,6 +34,16 @@ interface SwipeStyle {
   width?: string
   height?: string
   borderWidth?: string
+  position?: string
+  top?: string
+  left?: string
+  right?: string
+  bottom?: string
+  margin?: string
+  boxSizing?: string
+  borderRadius?: string
+  transform?: string
+  [key: string]: string | undefined
 }
 const slots = useSlots()
 // 定义 props
@@ -57,14 +67,20 @@ const additionalOptions = computed(() => ({
 }))
 
 const compareSwipeLineStyle = computed(() => {
+  const isHorizontal = props.orientation === 'horizontal'
+  // 分隔条尺寸必须随方向切换：横向卷帘横向铺满、纵向卷帘纵向铺满。这里同时写成内联样式，
+  // 避免样式表未加载或仍是旧产物里的固定 width:2px / height:100% 时，横向分隔条按竖向尺寸计算，
+  // 而滑块又是相对分隔条做 left/top:50% 定位，结果滑块被算到容器左下角，看起来没有居中。
   const style: SwipeStyle = {
-    backgroundColor: textColorStyle.value.color // 这里需要根据实际情况处理 textColor
+    backgroundColor: textColorStyle.value.color, // 这里需要根据实际情况处理 textColor
+    position: 'absolute',
+    top: '0',
+    left: '0',
+    width: isHorizontal ? '100%' : `${props.lineSize}px`,
+    height: isHorizontal ? `${props.lineSize}px` : '100%',
+    // 分隔条本身也要提示可拖动方向，避免样式表未生效时只显示默认光标
+    cursor: isHorizontal ? 'ns-resize' : 'ew-resize'
   }
-  let sizeFieldName = 'width'
-  if (props.orientation === 'horizontal') {
-    sizeFieldName = 'height'
-  }
-  style[sizeFieldName] = `${props.lineSize}px`
   return style
 })
 
@@ -73,13 +89,29 @@ const compareSwipeSlideStyle = computed(() => ({
   color: textColorStyle.value.color, // 这里需要根据实际情况处理 textColor
   width: `${props.slideSize}px`,
   height: `${props.slideSize}px`,
-  borderWidth: `${props.lineSize}px`
+  borderWidth: `${props.lineSize}px`,
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  // 主题里 RTL 会把 left 换成 right，这里把 right/bottom 归零，保证两个方向都按 left/top 定位
+  right: 'auto',
+  bottom: 'auto',
+  // 插件自带样式里给竖向滑块留了负 margin（margin: -30px 1px 0），会额外顶偏圆心
+  margin: '0',
+  boxSizing: 'border-box',
+  borderRadius: '50%',
+  // 滑块悬停显示左右（纵向卷帘）/上下（横向卷帘）箭头，内联兜底不依赖样式表
+  cursor: props.orientation === 'horizontal' ? 'ns-resize' : 'ew-resize',
+  transform:
+    props.orientation === 'horizontal'
+      ? 'translate(-50%, -50%) rotate(90deg)'
+      : 'translate(-50%, -50%)'
 }))
 
 // 定义方法
 const diffStyle = (nextStyle: SwipeStyle, prevStyle: SwipeStyle): SwipeStyle => {
-  let diff: SwipeStyle = {}
-  for (let key in nextStyle) {
+  const diff: SwipeStyle = {}
+  for (const key in nextStyle) {
     if (nextStyle[key] !== prevStyle[key]) {
       diff[key] = nextStyle[key]
     }
@@ -87,22 +119,32 @@ const diffStyle = (nextStyle: SwipeStyle, prevStyle: SwipeStyle): SwipeStyle => 
   return diff
 }
 
+// JS 驼峰样式名转 CSS 属性名，便于用 setProperty 指定 important
+const hyphenateStyleName = (key: string) =>
+  key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)
+
 const setSwipeStyle = (style: SwipeStyle = compareSwipeSlideStyle.value) => {
   const swipeDom = document.querySelector<HTMLElement>(`#${props.target} > .mapboxgl-compare > div`)
   if (swipeDom) {
-    for (let key in style) {
+    for (const key in style) {
       const value = style[key]
-      swipeDom.style[key] = value
+      if (value !== undefined) {
+        swipeDom.style.setProperty(hyphenateStyleName(key), value)
+      }
     }
   }
 }
 
-const setSwipeLineStyle = (style: SwipeStyle = compareSwipeSlideStyle.value) => {
+const setSwipeLineStyle = (style: SwipeStyle = compareSwipeLineStyle.value) => {
   const swipeLineDom = document.querySelector<HTMLElement>(`#${props.target} > .mapboxgl-compare`)
   if (swipeLineDom) {
-    for (let key in style) {
+    for (const key in style) {
       const value = style[key]
-      swipeLineDom.style[key] = value
+      // 只有宽高需要 important，其它属性（如插件写入的 transform）保持普通优先级，避免互相覆盖
+      const priority = key === 'width' || key === 'height' ? 'important' : ''
+      if (value !== undefined) {
+        swipeLineDom.style.setProperty(hyphenateStyleName(key), value, priority)
+      }
     }
   }
 }
@@ -166,7 +208,7 @@ watch(additionalOptions, () => {
 watch(compareSwipeLineStyle, (next, prev) => {
   const style = diffStyle(next, prev)
   if (style) {
-    setSwipeLineStyle()
+    setSwipeLineStyle(style)
   }
 })
 
