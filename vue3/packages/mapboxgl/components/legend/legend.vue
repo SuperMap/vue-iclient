@@ -13,17 +13,19 @@
   >
     <SmCard :bordered="false" :style="mode !== 'simple' ? collapseCardBackgroundStyle : undefined">
       <template v-if="Object.keys(legendList).length > 0">
-        <SmCollapse v-if="mode === 'panel'" v-model:active-key="activeLegend" class="sm-component-legend__table">
+        <!-- 有图层名才使用折叠面板：没有图层名时无法折叠，也就不应该生成 collapse-header 节点 -->
+        <SmCollapse v-if="useCollapse" v-model:active-key="activeLegend" class="sm-component-legend__table">
           <SmCollapsePanel
             v-for="(layerStyles, layerName) in legendList"
             :key="layerName"
-            :collapsible="isShowTitle ? 'header' : 'disabled'"
             :show-arrow="false"
-            :class="[isShowTitle ? '' : 'sm-component-legend__panel']"
           >
             <template #header>
-              <div v-if="isShowTitle" class="header-wrap" :style="textColorHeadingStyle">
-                <div class="sm-component-legend__title add-ellipsis">{{ layerStyles[0].layerTitle }}</div>
+              <div class="header-wrap" :style="textColorHeadingStyle">
+                <!-- 宽度不足时单行省略，title 保留完整图层名供 hover 查看 -->
+                <div class="sm-component-legend__title add-ellipsis" :title="layerStyles[0].layerTitle">
+                  {{ layerStyles[0].layerTitle }}
+                </div>
                 <i
                   :class="
                     activeLegend.includes(layerName)
@@ -33,43 +35,26 @@
                 />
               </div>
             </template>
-            <template v-for="(style, index) in layerStyles" :key="`style_${index}`">
-              <StyleField
-                v-if="isShowField"
-                :theme-field="style.themeField"
-                :style-field="style.styleField"
-              />
-              <div class="sm-component-legend__wrap">
-                <StyleItem
-                  v-for="(item, j) in style.styleGroup"
-                  :key="`style_${index}_${j}`"
-                  :style-data="item"
-                  :outline-width-driven="isOutlineWidthDriven(layerStyles)"
-                />
-              </div>
-            </template>
+            <LayerContent :layer-styles="layerStyles" :is-show-field="isShowField" />
           </SmCollapsePanel>
         </SmCollapse>
+        <!-- 面板模式但未开启图层名：无标题、无折叠，直接平铺展示 -->
+        <div v-else-if="mode === 'panel'" class="sm-component-legend__panel-list">
+          <div v-for="(layerStyles, layerName) in legendList" :key="layerName" class="sm-component-legend__panel-item">
+            <LayerContent :layer-styles="layerStyles" :is-show-field="isShowField" />
+          </div>
+        </div>
         <template v-else>
           <div v-for="(layerStyles, layerName) in legendList" :key="layerName" class="sm-component-legend__noBorder">
-            <div v-if="isShowTitle" class="sm-component-legend__title add-ellipsis" :style="textColorHeadingStyle">
+            <div
+              v-if="isShowTitle"
+              class="sm-component-legend__title add-ellipsis"
+              :style="textColorHeadingStyle"
+              :title="String(layerName)"
+            >
               {{ layerName }}
             </div>
-            <template v-for="(style, index) in layerStyles" :key="`style_${index}`">
-              <StyleField
-                v-if="isShowField"
-                :theme-field="style.themeField"
-                :style-field="style.styleField"
-              />
-              <div class="sm-component-legend__wrap">
-                <StyleItem
-                  v-for="(item, j) in style.styleGroup"
-                  :key="`style_${index}_${j}`"
-                  :style-data="item"
-                  :outline-width-driven="isOutlineWidthDriven(layerStyles)"
-                />
-              </div>
-            </template>
+            <LayerContent :layer-styles="layerStyles" :is-show-field="isShowField" />
           </div>
         </template>
       </template>
@@ -88,8 +73,7 @@ import SmCollapseCard from '@supermapgis/common/components/collapse-card/collaps
 import SmCard from '@supermapgis/common/components/card/Card'
 import { SmCollapse, SmCollapsePanel } from '@supermapgis/common/components/collapse/Collapse'
 import LegendViewModel from 'vue-iclient-controllers-mapboxgl/src/LegendViewModel'
-import StyleField from './subs/style-field.vue'
-import StyleItem from './subs/style-item.vue'
+import LayerContent from './subs/layer-content.vue'
 import { legendPropsDefault } from './types'
 
 defineOptions({
@@ -115,6 +99,9 @@ const isMapLoaded = ref(false)
 // Computed
 const headerNameValue = computed(() => props.headerName ?? t('legend.title'))
 
+// 面板模式 + 未开启图层名时没有可折叠的标题，直接平铺，不渲染 collapse（避免多出一条 header 下划线）
+const useCollapse = computed(() => props.mode === 'panel' && props.isShowTitle)
+
 const collapseCardBackgroundStyle = computed(() => {
   return props.background ? { background: props.background } : gisControlBgStyle.value
 })
@@ -137,12 +124,6 @@ onBeforeUnmount(() => {
   webMapViewModel = null
   viewModel?.off('layersupdated', initLegendListFn)
 })
-
-// 轮廓宽度被单独提取成分组（存在 styleField 为 outlineWidth 的部分）时：
-// 宽度分段只在该分组按真实宽度展示，其它分组的轮廓符号统一按默认宽度绘制
-function isOutlineWidthDriven(layerStyles: LegendLayerStyle[]) {
-  return (layerStyles || []).some(style => style.styleField === 'outlineWidth')
-}
 
 function initLegendList() {
   legendList.value = {}

@@ -24,6 +24,25 @@
     overflow-y: auto;
   }
 
+  /* builderx 会给设计器里的低代码控件强制设置
+     `.sm-component-collapse-card__content { height: 100% }` 以及
+     `.__header + .__body { height: calc(100% - 32px) }`，把图例内容压成一条很窄的
+     滚动区域（vue-iclient-dev / vue2 里没有这个限制，面板按内容自适应高度）。
+     这里用 `.mapboxgl-ctrl` 提升一级权重盖掉该限制，超过 max-height 时才滚动 */
+  &.mapboxgl-ctrl {
+    .#{$card-collapse-prefix}__content,
+    .#{$card-collapse-prefix}__content
+      .#{$card-collapse-prefix}__header
+      + .#{$card-collapse-prefix}__body {
+      height: auto;
+    }
+
+    /* 同上：builderx 还给这两个控件的内容区加了 max-height: 250px */
+    .#{$card-collapse-prefix}__content .#{$card-collapse-prefix}__body {
+      max-height: none;
+    }
+  }
+
   /* 内容滚动时标题吸顶，避免“图例”标题随内容一起滚走 */
   .#{$card-collapse-prefix}__header {
     position: sticky;
@@ -72,12 +91,35 @@
     }
   }
 
-  @include e(themefield) {
-    padding-bottom: 10px;
+  /* 标题必须单行省略：builderx 只引入了编译产物 legend.css，没有 base.scss 里的
+     `.add-ellipsis`，长图层名会换行把标题栏撑成两行、把内容区挤得很窄 */
+  #{$legend-prefix}__title {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
+  @include e(themefield) {
+    padding-bottom: 10px;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* 图例项文本（图层名 / 分段值）：builderx 只引入编译产物 legend.css，没有 base.scss 里的
+     `.add-ellipsis`，因此这里内联省略规则；min-width: 0 才能让 flex 子项在图例变窄时收缩，
+     否则文本会把控件撑宽而不是出现省略号 */
   @include e(fieldvalue) {
     @include spacing-margin(8px, left, false);
+
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   .is-not-header {
@@ -143,6 +185,8 @@
         }
       }
       .#{$collapse-prefix}-header {
+        display: flex;
+        align-items: center;
         color: inherit;
         border-bottom: 1px solid $border-color-split;
         padding: 6px 0;
@@ -168,10 +212,13 @@
              会与内容区泄漏出来的 `width: 85%` 同级，无法稳定覆盖）。
              标题宽度由自身内容决定：折叠时由标题撑开、展开时由内容撑开，两者取最大值 */
           #{$legend-prefix}__title {
+            flex: 0 1 auto;
             width: auto;
             min-width: 0;
 
             & + i {
+              flex: none;
+              /* stylelint-disable-next-line */
               font-size: inherit;
             }
           }
@@ -199,6 +246,12 @@
         display: flex;
         align-items: center;
         margin: 8px 0 16px;
+
+        /* 符号画布不参与 flex 收缩：否则图例变窄时会先压扁符号，
+           文字永远等不到可压缩的空间，也就出不来省略号 */
+        > canvas {
+          flex: none;
+        }
 
         > i {
           /* stylelint-disable-next-line */

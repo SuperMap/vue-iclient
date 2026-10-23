@@ -1,5 +1,6 @@
 <template>
-  <span class="sm-component-legend__fieldvalue add-ellipsis" :style="textStyle">
+  <!-- 图例项文本（可能是图层名或分段值）：宽度不足时单行省略，title 保留完整内容 -->
+  <span class="sm-component-legend__fieldvalue add-ellipsis" :style="textStyle" :title="fieldLabel">
     {{ fieldLabel }}
   </span>
 </template>

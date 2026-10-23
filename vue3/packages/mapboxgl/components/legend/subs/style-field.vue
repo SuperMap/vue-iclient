@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-legend__themefield add-ellipsis" :style="secondaryTextColorStyle">
+  <div class="sm-component-legend__themefield add-ellipsis" :style="secondaryTextColorStyle" :title="themFieldText">
     {{ themFieldText }}
   </div>
 </template>
