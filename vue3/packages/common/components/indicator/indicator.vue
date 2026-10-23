@@ -66,7 +66,14 @@ let fetchProperties: Record<string, any>
 let restService: RestService
 
 const unit_titleStyle = computed(() => ({
-  fontSize: props.textFontSize || parseFloat(props.fontSize as any) * 0.66 + fontUnit.value,
+  // textFontSize 以 Number 下发（setter/描述合同），直接写进 style 会变成
+  // 无单位字号（font-size: 10）被浏览器忽略——必须补上单位才能生效；
+  // 字符串形式（带单位）原样透传。缺省时回退数值字号的 0.66 倍。
+  fontSize:
+    (typeof props.textFontSize === 'number'
+      ? `${props.textFontSize}${fontUnit.value}`
+      : props.textFontSize)
+    || parseFloat(props.fontSize as any) * 0.66 + fontUnit.value,
   fontWeight: props.fontWeight
 }))
 
