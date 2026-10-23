@@ -24,6 +24,36 @@ import json from '@rollup/plugin-json';
 import type { TaskFunction } from 'gulp'
 import type { Plugin } from 'rollup'
 
+/**
+ * @supermapgis/data-edit 以源码形式发布，内部存在 `import '../css/DrawButtonControl.css'` 这类副作用引入。
+ * rollup 在没有 CSS 插件的情况下会把它当 JS 解析，报 `Expression expected`（你需要插件来导入非 JS 文件）。
+ * 这里统一把 css 模块转成「运行时注入 <style>」的模块，既保留样式又不引入额外的 postcss 工具链。
+ */
+function injectCssPlugin(): Plugin {
+  return {
+    name: 'sm-inject-css',
+    transform(css, id) {
+      const filePath = id.split('?')[0]
+      if (!filePath.endsWith('.css')) {
+        return null
+      }
+      const styleKey = filePath.split(/[\\/]/).pop() || filePath
+      const code = [
+        `const css = ${JSON.stringify(css)};`,
+        `const styleKey = ${JSON.stringify(styleKey)};`,
+        `if (css && typeof document !== 'undefined' && !document.querySelector('style[data-sm-css="' + styleKey + '"]')) {`,
+        `  const style = document.createElement('style');`,
+        `  style.setAttribute('data-sm-css', styleKey);`,
+        `  style.textContent = css;`,
+        `  document.head.appendChild(style);`,
+        `}`,
+        `export default css;`
+      ].join('\n')
+      return { code, map: null }
+    }
+  }
+}
+
 async function buildFullEntry(minify: boolean, banner: string) {
   const pkgName = getPkgByCommand(process.argv)
   const epOutput = getEpOutput(pkgName)
@@ -33,6 +63,7 @@ async function buildFullEntry(minify: boolean, banner: string) {
 
   const plugins: Plugin[] = [
     Alias(),
+    injectCssPlugin(),
     // visualizer({
     //   filename: 'bundle-analysis.html',
     //   open: true,
@@ -65,6 +96,13 @@ async function buildFullEntry(minify: boolean, banner: string) {
     }),
     esbuild({
       exclude: [],
+      // rollup-plugin-esbuild 会按被处理文件的位置向上查找 tsconfig.json。
+      // full bundle 需要转译 node_modules 依赖（exclude: []），而部分三方包自带的 tsconfig
+      // 继承了自己并未随包发布的配置（例如 @ljharb/tsconfig），会让构建直接失败：
+      // Error: File '@ljharb/tsconfig' not found.
+      // 这里关闭 tsconfig 查找，并显式给出与 tsconfig.base.json 一致的 jsx 配置。
+      tsconfig: false,
+      jsx: 'preserve',
       sourceMap: minify,
       target,
       loaders: {
