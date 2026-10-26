@@ -106,6 +106,14 @@ export const dataEditorProps = () => ({
   dialogWidth: {
     type: [String, Number] as PropType<string | number>,
     default: '100vw'
+  },
+  /**
+   * 编辑弹窗地图的显示级别范围 [最小级别, 最大级别]。
+   * 未配置（或长度不为 2）时沿用主地图的最小/最大缩放级别。
+   */
+  displayLevelRange: {
+    type: Array as PropType<number[]>,
+    default: () => []
   }
 })
 
@@ -117,6 +125,7 @@ export interface DataEditorProps extends CardProps, ControlProps, ThemeProps, Ma
   rootUrl?: string
   theme?: DataEditorTheme
   dialogWidth?: string | number
+  displayLevelRange?: number[]
 }
 
 export const dataEditorPropsDefault = getPropsDefaults<DataEditorProps>(
@@ -148,6 +157,8 @@ export interface DataEditorDialogProps {
   theme?: DataEditorTheme
   /** 弹窗宽度 */
   width?: string | number
+  /** 弹窗地图的显示级别范围 [最小级别, 最大级别]，未配置时取主地图的级别范围 */
+  displayLevelRange?: number[]
 }
 
 export type DataEditorDialogEvents = {

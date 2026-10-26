@@ -41,7 +41,8 @@ const props = withDefaults(defineProps<DataEditorDialogProps>(), {
   webmap: null,
   rootUrl: '',
   theme: 'dark',
-  width: '100vw'
+  width: '100vw',
+  displayLevelRange: () => []
 })
 
 const emit = defineEmits<{
@@ -144,6 +145,21 @@ function createDataEditor(map: any) {
   dataEditor.value = new MapEditor(map, options)
 }
 
+/**
+ * 编辑弹窗地图的缩放级别范围：
+ * 配置了 displayLevelRange 就用配置值，否则沿用主地图的级别范围
+ */
+function getDialogZoomRange(mainMap: any) {
+  const configured = Array.isArray(props.displayLevelRange) ? props.displayLevelRange : []
+  if (configured.length === 2) {
+    return { minZoom: Number(configured[0]), maxZoom: Number(configured[1]) }
+  }
+  return {
+    minZoom: typeof mainMap.getMinZoom === 'function' ? mainMap.getMinZoom() : Number.NaN,
+    maxZoom: typeof mainMap.getMaxZoom === 'function' ? mainMap.getMaxZoom() : Number.NaN
+  }
+}
+
 function createDialogMap() {
   const mainMap = props.map
   const container = mapHolder.value
@@ -162,6 +178,13 @@ function createDialogMap() {
     zoom: mainMap.getZoom(),
     bearing: mainMap.getBearing(),
     pitch: mainMap.getPitch()
+  }
+  const { minZoom, maxZoom } = getDialogZoomRange(mainMap)
+  if (Number.isFinite(minZoom)) {
+    options.minZoom = minZoom
+  }
+  if (Number.isFinite(maxZoom)) {
+    options.maxZoom = maxZoom
   }
   if (typeof mainMap.getCRS === 'function') {
     options.crs = mainMap.getCRS()

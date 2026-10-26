@@ -93,6 +93,8 @@ export interface DataEditorControlParam {
   rootUrl?: string
   theme?: DataEditorTheme
   dialogWidth?: string | number
+  /** 编辑弹窗地图的显示级别范围 [最小级别, 最大级别] */
+  displayLevelRange?: number[]
   textColor?: string
   background?: string
   extraStyle?: Record<string, unknown>

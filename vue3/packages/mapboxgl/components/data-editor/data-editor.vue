@@ -53,6 +53,7 @@
       :root-url="rootUrl"
       :theme="editorTheme"
       :width="dialogWidth"
+      :display-level-range="displayLevelRange"
       @saved="handleSaved"
       @close="closeDialog"
     />

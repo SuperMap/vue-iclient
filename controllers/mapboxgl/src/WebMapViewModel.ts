@@ -176,6 +176,17 @@ export default class WebMapViewModel extends Events {
 
   private _handler: MapHandler;
 
+  /** 属性声明的期望视角，地图重建后据此恢复。 */
+  private _desiredView: {
+    center?: [number, number];
+    zoom?: number;
+    bearing?: number;
+    pitch?: number;
+  } = {};
+
+  /** 重建期间是否通过属性更新过视角，只有为 true 时才在重建完成后恢复，保证首次创建行为不变。 */
+  private _viewRestorePending = false;
+
   triggerEvent: (name: string, ...rest: any) => any;
   on: (data: Record<string, (...rest: any) => void>) => void;
   un: (data: Record<string, (...rest: any) => void>) => void;
@@ -207,6 +218,7 @@ export default class WebMapViewModel extends Events {
     };
     this.serverUrl = this.options.server;
     this.mapOptions = mapOptions;
+    this._initDesiredView(mapOptions);
     this.webMapEventTypes = [
       'mapinitialized',
       'mapcreatesucceeded',
@@ -237,6 +249,11 @@ export default class WebMapViewModel extends Events {
   }
 
   setCenter(center: [number, number]): void {
+    const nextCenter = this._toCenter(center);
+    if (nextCenter) {
+      this._desiredView.center = nextCenter;
+      this._viewRestorePending = true;
+    }
     this._handler.setCenter(center);
   }
 
@@ -245,10 +262,18 @@ export default class WebMapViewModel extends Events {
   }
 
   setBearing(bearing: number): void {
+    if (typeof bearing === 'number') {
+      this._desiredView.bearing = bearing;
+      this._viewRestorePending = true;
+    }
     this._handler.setBearing(bearing);
   }
 
   setPitch(pitch: number): void {
+    if (typeof pitch === 'number') {
+      this._desiredView.pitch = pitch;
+      this._viewRestorePending = true;
+    }
     this._handler.setPitch(pitch);
   }
 
@@ -261,6 +286,10 @@ export default class WebMapViewModel extends Events {
   }
 
   setZoom(zoom: number) {
+    if (typeof zoom === 'number') {
+      this._desiredView.zoom = zoom;
+      this._viewRestorePending = true;
+    }
     this._handler.setZoom(zoom);
   }
 
@@ -279,6 +308,7 @@ export default class WebMapViewModel extends Events {
   }
 
   setMapId(mapId: string | number): void {
+    this.mapId = mapId;
     this._handler.setMapId(mapId);
   }
 
@@ -555,6 +585,8 @@ export default class WebMapViewModel extends Events {
 
   private _mapCreateSucceededHandlerHandler(params: AddlayerssucceededParams) {
     const { mapparams, layers, map } = params;
+    // 地图重建会丢弃重建期间通过属性写入的视角，这里在通知外部之前先恢复，保证 mapData 与对外事件拿到正确视角
+    this._restoreDesiredView();
     this.mapParams = mapparams;
     this._cacheCleanLayers = layers;
     this._cacheLayerCatalogIds = getLayerCatalogIds(this.getLayerList());
@@ -598,6 +630,67 @@ export default class WebMapViewModel extends Events {
   private _mapBeforeRemoveHandler() {
     this.triggerEvent('mapbeforeremove');
     this.map = null;
+  }
+
+  /** 记录构造时的视角作为初始期望值；此时不标记待恢复，保证首次创建行为与原来一致。 */
+  private _initDesiredView(mapOptions: MapOptions) {
+    this._desiredView = {
+      center: this._toCenter(mapOptions?.center),
+      zoom: typeof mapOptions?.zoom === 'number' ? mapOptions.zoom : undefined,
+      bearing: typeof mapOptions?.bearing === 'number' ? mapOptions.bearing : undefined,
+      pitch: typeof mapOptions?.pitch === 'number' ? mapOptions.pitch : undefined
+    };
+    this._viewRestorePending = false;
+  }
+
+  private _toCenter(center?: MapOptions['center']): [number, number] | undefined {
+    if (Array.isArray(center) && center.length >= 2) {
+      const lng = Number(center[0]);
+      const lat = Number(center[1]);
+      return isNaN(lng) || isNaN(lat) ? undefined : [lng, lat];
+    }
+    const lng = (center as any)?.lng ?? (center as any)?.lon;
+    const lat = (center as any)?.lat;
+    if (typeof lng === 'number' && typeof lat === 'number') {
+      return [lng, lat];
+    }
+    return undefined;
+  }
+
+  /**
+   * 地图重建后恢复属性声明的视角。
+   * 仅在重建期间通过属性更新过视角时生效；由地图资源（iPortal/Online 地图）自身决定视角的场景保持原行为。
+   * 只调用 setCenter/setZoom/setBearing/setPitch，不会触发新的重建。
+   */
+  private _restoreDesiredView() {
+    // 没有任何属性驱动的视角写入时直接跳过，保证首次创建的行为和原来完全一致
+    if (!this._viewRestorePending) {
+      return;
+    }
+    // 地图资源（iPortal/Online 地图）的视角由资源自身决定，保持原有行为
+    if (this.mapId) {
+      this._viewRestorePending = false;
+      return;
+    }
+    const handler = this._handler as any;
+    // 内部地图尚未就绪时保留待恢复标记，等下一次创建成功再恢复
+    if (!handler || !handler.map) {
+      return;
+    }
+    const { center, zoom, bearing, pitch } = this._desiredView;
+    if (center) {
+      this._handler.setCenter([center[0], center[1]]);
+    }
+    if (typeof zoom === 'number') {
+      this._handler.setZoom(zoom);
+    }
+    if (typeof bearing === 'number') {
+      this._handler.setBearing(bearing);
+    }
+    if (typeof pitch === 'number') {
+      this._handler.setPitch(pitch);
+    }
+    this._viewRestorePending = false;
   }
 
   _handleServerUrl(serverUrl: string) {
