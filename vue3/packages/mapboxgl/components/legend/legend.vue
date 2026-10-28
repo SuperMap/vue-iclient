@@ -13,20 +13,28 @@
   >
     <SmCard :bordered="false" :style="mode !== 'simple' ? collapseCardBackgroundStyle : undefined">
       <template v-if="Object.keys(legendList).length > 0">
-        <!-- 有图层名才使用折叠面板：没有图层名时无法折叠，也就不应该生成 collapse-header 节点 -->
-        <SmCollapse v-if="useCollapse" v-model:active-key="activeLegend" class="sm-component-legend__table">
+        <SmCollapse v-model:active-key="activeLegend" class="sm-component-legend__table">
           <SmCollapsePanel
             v-for="(layerStyles, layerName) in legendList"
             :key="layerName"
+            :collapsible="isCollapsible ? undefined : 'disabled'"
             :show-arrow="false"
+            :class="[
+              isShowTitle ? '' : 'sm-component-legend__panel',
+              mode === 'simple' ? 'sm-component-legend__simple' : ''
+            ]"
           >
             <template #header>
-              <div class="header-wrap" :style="textColorHeadingStyle">
+              <div v-if="isShowTitle" class="header-wrap" :style="textColorHeadingStyle">
                 <!-- 宽度不足时单行省略，title 保留完整图层名供 hover 查看 -->
-                <div class="sm-component-legend__title add-ellipsis" :title="layerStyles[0].layerTitle">
-                  {{ layerStyles[0].layerTitle }}
+                <div
+                  class="sm-component-legend__title add-ellipsis"
+                  :title="layerStyles[0].layerTitle || String(layerName)"
+                >
+                  {{ layerStyles[0].layerTitle || layerName }}
                 </div>
                 <i
+                  v-if="isCollapsible"
                   :class="
                     activeLegend.includes(layerName)
                       ? 'sm-components-icon-solid-triangle-down'
@@ -38,25 +46,6 @@
             <LayerContent :layer-styles="layerStyles" :is-show-field="isShowField" />
           </SmCollapsePanel>
         </SmCollapse>
-        <!-- 面板模式但未开启图层名：无标题、无折叠，直接平铺展示 -->
-        <div v-else-if="mode === 'panel'" class="sm-component-legend__panel-list">
-          <div v-for="(layerStyles, layerName) in legendList" :key="layerName" class="sm-component-legend__panel-item">
-            <LayerContent :layer-styles="layerStyles" :is-show-field="isShowField" />
-          </div>
-        </div>
-        <template v-else>
-          <div v-for="(layerStyles, layerName) in legendList" :key="layerName" class="sm-component-legend__noBorder">
-            <div
-              v-if="isShowTitle"
-              class="sm-component-legend__title add-ellipsis"
-              :style="textColorHeadingStyle"
-              :title="String(layerName)"
-            >
-              {{ layerName }}
-            </div>
-            <LayerContent :layer-styles="layerStyles" :is-show-field="isShowField" />
-          </div>
-        </template>
       </template>
     </SmCard>
   </sm-collapse-card>
@@ -99,8 +88,7 @@ const isMapLoaded = ref(false)
 // Computed
 const headerNameValue = computed(() => props.headerName ?? t('legend.title'))
 
-// 面板模式 + 未开启图层名时没有可折叠的标题，直接平铺，不渲染 collapse（避免多出一条 header 下划线）
-const useCollapse = computed(() => props.mode === 'panel' && props.isShowTitle)
+const isCollapsible = computed(() => props.mode === 'panel' && props.isShowTitle)
 
 const collapseCardBackgroundStyle = computed(() => {
   return props.background ? { background: props.background } : gisControlBgStyle.value
@@ -110,6 +98,11 @@ const layerNamesValue = computed(() => getLayerNames())
 
 watch(layerNamesValue, () => {
   initLegendList()
+})
+
+watch(isCollapsible, (collapsible) => {
+  const keys = Object.keys(legendList.value)
+  activeLegend.value = collapsible ? keys.slice(0, 1) : keys
 })
 
 const initLegendListFn = debounce(initLegendList, 300)
@@ -139,7 +132,7 @@ function initLegendList() {
       }
       return list
     }, {})
-    activeLegend.value = props.isShowTitle ? defaultChoosenLayers : Object.keys(legendList.value)
+    activeLegend.value = isCollapsible.value ? defaultChoosenLayers : Object.keys(legendList.value)
   }
 }
 

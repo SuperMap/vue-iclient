@@ -19,35 +19,39 @@
   min-height: 30px;
 
   .#{$card-collapse-prefix}__content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: 100%;
     box-shadow: none;
-    max-height: 400px;
     overflow-y: auto;
   }
 
-  /* builderx 会给设计器里的低代码控件强制设置
-     `.sm-component-collapse-card__content { height: 100% }` 以及
-     `.__header + .__body { height: calc(100% - 32px) }`，把图例内容压成一条很窄的
-     滚动区域（vue-iclient-dev / vue2 里没有这个限制，面板按内容自适应高度）。
-     这里用 `.mapboxgl-ctrl` 提升一级权重盖掉该限制，超过 max-height 时才滚动 */
-  &.mapboxgl-ctrl {
-    .#{$card-collapse-prefix}__content,
-    .#{$card-collapse-prefix}__content
-      .#{$card-collapse-prefix}__header
-      + .#{$card-collapse-prefix}__body {
-      height: auto;
-    }
-
-    /* 同上：builderx 还给这两个控件的内容区加了 max-height: 250px */
-    .#{$card-collapse-prefix}__content .#{$card-collapse-prefix}__body {
-      max-height: none;
-    }
-  }
-
-  /* 内容滚动时标题吸顶，避免“图例”标题随内容一起滚走 */
   .#{$card-collapse-prefix}__header {
+    flex: 0 0 auto;
+
+    /* 内容滚动时标题吸顶，避免“图例”标题随内容一起滚走 */
     position: sticky;
     top: 0;
     z-index: 1;
+  }
+
+  /* 标题高度固定 32px，正文吃掉剩余高度并作为滚动容器 */
+  .#{$card-collapse-prefix}__header + .#{$card-collapse-prefix}__body {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  &.mapboxgl-ctrl {
+    .#{$card-collapse-prefix}__content {
+      max-height: 400px;
+    }
+
+    .#{$card-collapse-prefix}__content .#{$card-collapse-prefix}__body {
+      max-height: none;
+    }
   }
   .#{$card-prefix} {
     height: 100%;
@@ -70,24 +74,6 @@
       padding-bottom: 0;
       overflow: hidden;
       visibility: hidden;
-    }
-  }
-
-  /* 简单模式（无折叠面板）不画任何下划线：分隔线语义只属于面板模式的标题栏 */
-  @include e(noBorder) {
-    max-width: none;
-
-    @include spacing-padding(15px, right, false);
-
-    margin-bottom: 5px;
-    padding-bottom: 5px;
-
-    &:last-child {
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-    #{$legend-prefix}__title {
-      padding-bottom: 10px;
     }
   }
 
@@ -154,16 +140,6 @@
     }
   }
 
-  /* 面板模式但未显示图层名：不渲染折叠面板（无 header 节点），
-     这里补齐原 collapse-item / collapse-content 提供的内边距 */
-  @include e(panel-list) {
-    padding: 0 16px;
-  }
-
-  @include e(panel-item) {
-    padding: 7px 0;
-  }
-
   .#{$collapse-prefix} {
     border: 0;
     background: transparent;
@@ -224,11 +200,18 @@
           }
         }
       }
+      &.#{$ant-prefix}-legend__panel > .#{$collapse-prefix}-header {
+        display: none;
+      }
+
+      &.#{$ant-prefix}-legend__simple > .#{$collapse-prefix}-header,
+      &.#{$ant-prefix}-legend__simple.#{$collapse-prefix}-item-active > .#{$collapse-prefix}-header {
+        border-bottom: none;
+      }
     }
   }
   .#{$collapse-prefix}-content {
-    /* 每个图层的图例不再单独使用次级背景，避免出现「面板一种颜色、图层图例另一种颜色」 */
-    background: transparent;
+    background: $gis-control-bg-secondary;
     margin: 0 -16px;
     padding: 7px 16px;
     border-top: none;

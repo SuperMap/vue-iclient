@@ -7,6 +7,29 @@
 @include b(data-editor) {
   overflow: visible;
 
+  /* 面板铺满组件容器：设计器/看板里组件根节点带 height:100%，面板随之拉伸，
+     内容超出时在面板内滚动；不再用固定 max-height 截断，否则拖高组件后下方留空。
+     根节点高度不确定时（挂在普通容器里）百分比会自然失效，面板仍按内容自适应 */
+  .sm-component-collapse-card__content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: 100%;
+  }
+
+  .sm-component-collapse-card__header {
+    flex: 0 0 auto;
+  }
+
+  /* 标题高度固定 32px，卡片吃掉剩余高度，列表再占满卡片 */
+  .sm-component-collapse-card__header + .sm-component-collapse-card__body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+  }
+
   /* 没有标题时控件图标停靠在卡片内角（32px），会压住内容，这里为内容让出图标区域 */
   .sm-component-collapse-card__content.is-not-header {
     /* 图标停靠角为物理方向，与 iconPosition API 一致，不随 RTL 翻转 */
@@ -26,18 +49,28 @@
   }
 
   @include e(card) {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
     width: 100%;
+    min-height: 0;
     background: transparent;
     border: 0;
 
     .#{$ant-prefix}-card-body {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      min-height: 0;
       padding: 5px;
     }
   }
 
   @include e(content) {
+    flex: 1 1 auto;
     min-width: 180px;
-    max-height: 260px;
+    min-height: 0;
+    max-height: 100%;
     padding: 8px;
     overflow-y: auto;
   }
