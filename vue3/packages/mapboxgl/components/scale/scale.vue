@@ -26,8 +26,6 @@ const {
   textColorStyle,
   gisControlBgStyle
 } = useTheme(props)
-useMapGetter<Map>({viewModel})
-useMapControl()
 
 const scaleUpdatedFn = (e) => {
   content.value = e.containerContent;
@@ -45,6 +43,10 @@ watch(() => props.maxWidth, (newVal) => {
 onMounted(() => {
   viewModel.on('scaleupdated', scaleUpdatedFn);
 });
+
+// Register the listener before useMapGetter can synchronously bind an existing map.
+useMapGetter<Map>({viewModel})
+useMapControl()
 
 onBeforeUnmount(() => {
   viewModel.off('scaleupdated', scaleUpdatedFn);
