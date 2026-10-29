@@ -31,7 +31,7 @@
 <script>
 import uniqueId from 'lodash.uniqueid';
 import omit from 'omit.js';
-import { hexToRgba, formatFontSize } from 'vue-iclient/src/common/_utils/util';
+import { hexToRgba, formatFontSize, getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
 import {
   drawFillLegendOutline,
   getFillOutlineLayers,
@@ -545,7 +545,7 @@ export default {
           grd = ctx.createLinearGradient(2 * radius, 0.5 * radius, 0, 0.5 * radius);
         }
 
-        grd.addColorStop(0, hexToRgba(color, 0));
+        grd.addColorStop(0, getColorWithOpacity(color, 0));
         grd.addColorStop(1, color);
 
         ctx.fillStyle = grd;
