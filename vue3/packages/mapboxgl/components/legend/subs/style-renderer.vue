@@ -29,7 +29,7 @@
 import { computed, onBeforeUnmount, onMounted } from 'vue'
 import uniqueId from 'lodash.uniqueid'
 import omit from 'omit.js'
-import { formatFontSize, hexToRgba } from 'vue-iclient-core/utils/util'
+import { formatFontSize, hexToRgba, getColorWithOpacity } from 'vue-iclient-core/utils/util'
 import { useLocale } from '@supermapgis/common/hooks/index.common'
 import type { LegendStyleGroupItem } from '../types'
 import {
@@ -584,7 +584,7 @@ function initRadar() {
       grd = ctx.createLinearGradient(2 * radius, 0.5 * radius, 0, 0.5 * radius)
     }
 
-    grd.addColorStop(0, hexToRgba(color, 0))
+    grd.addColorStop(0, getColorWithOpacity(color, 0))
     grd.addColorStop(1, color)
 
     ctx.fillStyle = grd
