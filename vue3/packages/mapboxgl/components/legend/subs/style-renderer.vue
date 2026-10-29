@@ -370,6 +370,8 @@ function drawDashedLine(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D
     lineHeight
   } = styleRendererData.value
   ctx.clearRect(0, 0, canvas.width, canvas.height)
+  // 进入 drawShape 后 canvas 尺寸被重新赋值会重置上下文状态，globalAlpha 需要在这里重新设置
+  ctx.globalAlpha = styleRendererData.value.opacity ?? 1
 
   ctx.lineWidth = lineHeight || lineWidth
   ctx.strokeStyle = color
@@ -394,8 +396,11 @@ function drawMultiLine(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D)
   const startY = getStartY(newLines)
   newLines.forEach(v => {
     ctx.beginPath()
-    const { lineWidth, color = '#FFF', lineDash } = v
+    // 多线符号每层带各自的 line-opacity，canvas 重设宽高后上下文状态被重置，需逐层设置；
+    // 缺省时回退到图例整体不透明度
+    const { lineWidth, color = '#FFF', lineDash, opacity } = v
     const y = getY(v, canvasHeight, startY)
+    ctx.globalAlpha = opacity ?? styleRendererData.value.opacity ?? 1
     ctx.lineWidth = lineWidth
     ctx.strokeStyle = color
     ctx.moveTo(0, y)
