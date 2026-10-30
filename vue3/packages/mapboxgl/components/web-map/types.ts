@@ -100,12 +100,17 @@ export interface DataEditorControlParam {
   extraStyle?: Record<string, unknown>
 }
 
+export interface CompassControlParam extends CommonControlParam {
+  visualizePitch?: boolean
+}
+
 export interface Control {
   panControl?: CommonControlParam
   scaleControl?: CommonControlParam
   zoomControl?: ZoomParam
   resetViewControl?: ResetViewParam
   miniMapControl?: CardCommonParam
+  compassControl?: CompassControlParam
   layerListControl?: CardCommonParam
   measureControl?: MeasureParam
   legendControl?: LegendParam
@@ -230,6 +235,12 @@ export const webMapProps = () => ({
     type: Object,
     default: (): CardCommonParam => {
       return { show: false, position: 'bottom-right' }
+    }
+  },
+  compassControl: {
+    type: Object,
+    default: (): CompassControlParam => {
+      return { show: false, position: 'top-left', visualizePitch: false }
     }
   },
   layerListControl: {
@@ -375,6 +386,7 @@ export type WebMapProps = {
   zoomControl?: ZoomParam
   resetViewControl?: ResetViewParam
   miniMapControl?: CardCommonParam
+  compassControl?: CompassControlParam
   layerListControl?: CardCommonParam
   measureControl?: MeasureParam
   legendControl?: LegendParam
