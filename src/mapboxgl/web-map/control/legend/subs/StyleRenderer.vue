@@ -83,9 +83,10 @@ export default {
       }
       const colors = this.styleRendererData.colors;
       const lastIndex = colors.length ? colors.length - 1 : 0;
+      const isColumnGradient = colors.length === 2 && colors[0].key === 'sourceColor' && colors[1].key === 'targetColor';
       return {
-        min: colors[0]?.key ?? this.$t('legend.bottom'),
-        max: colors[lastIndex]?.key ?? this.$t('legend.top')
+        min: isColumnGradient ? this.$t('legend.sourceColor') : (colors[0]?.key ?? this.$t('legend.bottom')),
+        max: isColumnGradient ? this.$t('legend.targetColor') : (colors[lastIndex]?.key ?? this.$t('legend.top'))
       };
     },
     colors() {
@@ -140,10 +141,16 @@ export default {
         return [];
       }
       const { max, min } = this.range;
-      return colors.map(({ key, value }) => {
+      const minValue = parseFloat(`${min}`);
+      const maxValue = parseFloat(`${max}`);
+      const hasNumericRange = Number.isFinite(minValue) && Number.isFinite(maxValue) && maxValue !== minValue;
+      return colors.map(({ key, value }, index) => {
+        const keyValue = parseFloat(`${key}`);
         return {
           color: value,
-          offset: ((parseFloat(`${key}`) - min) / (max - min)).toFixed(2)
+          offset: hasNumericRange && Number.isFinite(keyValue)
+            ? ((keyValue - minValue) / (maxValue - minValue)).toFixed(2)
+            : (colors.length > 1 ? index / (colors.length - 1) : 0).toFixed(2)
         };
       });
     },
@@ -249,8 +256,9 @@ export default {
     // 面图例：填充底色 + 轮廓（纯色轮廓 / 轮廓线符号），支持 DPR 适配与轮廓不透明度
     drawFillRect(canvas, backgroundColor) {
       const ctx = canvas.getContext('2d');
-      const { opacity = 1, width, height, url, outlineSprites } = this.styleRendererData;
-      const fillSize = parseInt(width) || parseInt(height);
+      const { opacity = 1, width, height, fontSize, url, outlineSprites } = this.styleRendererData;
+      // 格网热力图等内置符号的图例样式只带符号尺寸 fontSize，没有 width/height
+      const fillSize = parseInt(width) || parseInt(height) || parseInt(fontSize);
       // 轮廓按真实线宽 1:1 绘制，画布在填充区外补半幅笔刷出血位，粗轮廓不被裁切，
       // 宽度分段主题各段宽度差异如实保留
       const padding = getFillLegendPadding(this.styleRendererData, this.outlineWidthDriven);

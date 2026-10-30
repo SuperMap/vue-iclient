@@ -147,6 +147,8 @@ export default {
     title: 'Legend',
     top: 'Highest',
     bottom: 'Lowest',
+    sourceColor: 'Bottom Color',
+    targetColor: 'Top Color',
     noMatchLayer: 'No matching layer',
     themeDefault: 'Default',
     outOfRange: 'Out of range',

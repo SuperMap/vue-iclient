@@ -5,6 +5,8 @@ import ImageRenderer from '../subs/ImageRenderer.vue';
 import StyleItem from '../subs/StyleItem.vue';
 import StyleField from '../subs/StyleField.vue';
 import { loadSpriteImage, loadSpriteMeta } from '../subs/sprite';
+import zhLocale from 'vue-iclient/src/common/_lang/zh';
+import enLocale from 'vue-iclient/src/common/_lang/en';
 
 // 雪碧图加载与 DOM/网络耦合，统一 mock 为可控 Promise
 jest.mock('../subs/sprite', () => ({
@@ -66,6 +68,52 @@ describe('legend fill components', () => {
       wrapper.destroy();
       wrapper = null;
     }
+  });
+
+  it('uses ordered stops when a color gradient has named endpoints', () => {
+    wrapper = mount(StyleRenderer, {
+      propsData: {
+        styleData: {
+          style: {
+            type: 'style',
+            shape: 'point',
+            colors: [
+              { key: 'sourceColor', value: '#D53E4F' },
+              { key: 'targetColor', value: '#3288BD' }
+            ]
+          },
+          styleField: 'color'
+        }
+      }
+    });
+
+    expect(wrapper.vm.palette).toEqual([
+      { color: '#D53E4F', offset: '0.00' },
+      { color: '#3288BD', offset: '1.00' }
+    ]);
+    // Test setup returns i18n keys; the production locale resolves them to translated labels.
+    expect(wrapper.vm.range).toEqual({ min: 'legend.sourceColor', max: 'legend.targetColor' });
+    expect([zhLocale.legend.sourceColor, zhLocale.legend.targetColor]).toEqual(['底部颜色', '顶部颜色']);
+    expect([enLocale.legend.sourceColor, enLocale.legend.targetColor]).toEqual(['Bottom Color', 'Top Color']);
+    expect(wrapper.vm.linearColorStyle.backgroundImage).toBe('linear-gradient(90deg, #D53E4F,#3288BD)');
+  });
+
+  it('preserves numeric and ordinary named gradient endpoints', async () => {
+    wrapper = mount(StyleRenderer, {
+      propsData: {
+        styleData: {
+          style: { type: 'style', shape: 'point', colors: [{ key: 0, value: '#000' }, { key: 100, value: '#fff' }] },
+          styleField: 'color'
+        }
+      }
+    });
+    expect(wrapper.vm.range).toEqual({ min: 0, max: 100 });
+    expect(wrapper.vm.palette.map(stop => stop.offset)).toEqual(['0.00', '1.00']);
+    await wrapper.setProps({ styleData: {
+      style: { type: 'style', shape: 'point', colors: [{ key: 'sourceColor', value: '#000' }, { key: 'other', value: '#fff' }] },
+      styleField: 'color'
+    } });
+    expect(wrapper.vm.range).toEqual({ min: 'sourceColor', max: 'other' });
   });
 
   describe('StyleRenderer.drawFillRect', () => {
