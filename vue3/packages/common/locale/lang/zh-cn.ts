@@ -219,6 +219,8 @@ export default {
     title: '图例',
     top: '最高',
     bottom: '最低',
+    sourceColor: '底部颜色',
+    targetColor: '顶部颜色',
     noMatchLayer: '没有匹配的图层',
     themeDefault: '缺省风格',
     outOfRange: '范围以外的值',

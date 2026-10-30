@@ -79,9 +79,10 @@ const range = computed(() => {
   }
   const colors = styleRendererData.value.colors || []
   const lastIndex = colors.length ? colors.length - 1 : 0
+  const isColumnGradient = colors.length === 2 && colors[0].key === 'sourceColor' && colors[1].key === 'targetColor'
   return {
-    min: colors[0]?.key ?? t('legend.bottom'),
-    max: colors[lastIndex]?.key ?? t('legend.top')
+    min: isColumnGradient ? t('legend.sourceColor') : (colors[0]?.key ?? t('legend.bottom')),
+    max: isColumnGradient ? t('legend.targetColor') : (colors[lastIndex]?.key ?? t('legend.top'))
   }
 })
 
@@ -127,10 +128,16 @@ function colorsToPalatte(colorStops) {
     return []
   }
   const { max, min } = range.value
-  return colorStops.map(({ key, value }) => {
+  const minValue = parseFloat(`${min}`)
+  const maxValue = parseFloat(`${max}`)
+  const hasNumericRange = Number.isFinite(minValue) && Number.isFinite(maxValue) && maxValue !== minValue
+  return colorStops.map(({ key, value }, index) => {
+    const keyValue = parseFloat(`${key}`)
     return {
       color: value,
-      offset: ((parseFloat(`${key}`) - min) / (max - min)).toFixed(2)
+      offset: hasNumericRange && Number.isFinite(keyValue)
+        ? ((keyValue - minValue) / (maxValue - minValue)).toFixed(2)
+        : (colorStops.length > 1 ? index / (colorStops.length - 1) : 0).toFixed(2)
     }
   })
 }
@@ -249,8 +256,9 @@ function drawFillRect(canvas: HTMLCanvasElement, backgroundColor?: string) {
   if (!ctx) {
     return
   }
-  const { opacity = 1, width, height, url } = styleRendererData.value
-  const fillSize = parseInt(width) || parseInt(height)
+  const { opacity = 1, width, height, fontSize, url } = styleRendererData.value
+  // 格网热力图等内置符号的图例样式只带符号尺寸 fontSize，没有 width/height
+  const fillSize = parseInt(width) || parseInt(height) || parseInt(fontSize)
   // 轮廓按真实线宽 1:1 绘制，画布在填充区外补半幅笔刷出血位，粗轮廓不被裁切，
   // 宽度分段主题各段宽度差异如实保留
   const padding = getFillLegendPadding(styleRendererData.value, props.outlineWidthDriven, fillSize)
