@@ -68,7 +68,6 @@
 
   @include e(content) {
     flex: 1 1 auto;
-    min-width: 180px;
     min-height: 0;
     max-height: 100%;
     padding: 8px;
