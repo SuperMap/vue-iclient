@@ -1,4 +1,5 @@
 import { cloneDeep } from 'lodash-es'
+import { FetchRequest } from '@supermapgis/iclient-common/util/FetchRequest'
 import type {
   DataEditorField,
   DataEditorLayer,
@@ -85,6 +86,109 @@ export function getDatasetUrl(dataInfo: DataEditorLayerDataInfo = {}): string {
     return url
   }
   return `${url.replace(/\/$/, '')}/datasources/${names[0]}/datasets/${names[1]}`
+}
+
+/** 数据集信息请求地址：补 .json 后缀并追加数据令牌 */
+export function getDatasetRequestUrl(dataInfo: DataEditorLayerDataInfo = {}): string {
+  const datasetUrl = getDatasetUrl(dataInfo)
+  // 数据集信息只能从数据服务地址取，iPortal 数据详情地址（/web/datas/{id}）返回的内容不含 datasetInfo
+  if (!datasetUrl || (!dataInfo.datasetUrl && !datasetUrl.includes('/rest/data'))) {
+    return ''
+  }
+  const [path, query = ''] = datasetUrl.split('?')
+  const jsonPath = path.endsWith('.json') ? path : `${path.replace(/\/$/, '')}.json`
+  let requestUrl = query ? `${jsonPath}?${query}` : jsonPath
+  if (dataInfo.token && !/[?&]token=/.test(requestUrl)) {
+    requestUrl += `${requestUrl.includes('?') ? '&' : '?'}token=${encodeURIComponent(dataInfo.token)}`
+  }
+  return requestUrl
+}
+
+/** 以 / 开头的地址按当前站点补全，与数据编辑弹窗的 rootUrl 处理保持一致 */
+function toAbsoluteUrl(url = ''): string {
+  if (url.startsWith('/') && typeof window !== 'undefined') {
+    return `${window.location.origin}${url}`
+  }
+  return url
+}
+
+async function getJson<T>(url: string, withCredentials: boolean): Promise<T> {
+  const response = await FetchRequest.get(url, null, {
+    withCredentials,
+    withoutFormatSuffix: true
+  })
+  return response.json()
+}
+
+/** REST 数据以数据集信息中的 isReadOnly 判定，查询失败按不可编辑处理 */
+async function checkRestDataEditable(dataInfo: DataEditorLayerDataInfo): Promise<boolean> {
+  const url = getDatasetRequestUrl(dataInfo)
+  if (!url) {
+    return false
+  }
+  const data = await getJson<{ datasetInfo?: { isReadOnly?: boolean } }>(url, false)
+  const datasetInfo = data && data.datasetInfo
+  return !!datasetInfo && datasetInfo.isReadOnly !== true
+}
+
+/** 内置数据的导入账号，这类数据不允许编辑 */
+const BUILT_IN_DATA_OWNER = 'supermap_cloud'
+
+/** 结构化数据资源所有者校验：内置账号导入的数据不允许编辑，查询失败时按有权限处理 */
+async function checkStructuredDataOwner(
+  requestId: string | number,
+  baseUrl: string
+): Promise<boolean> {
+  const url = `${baseUrl}/gateway/catalog/resource/search.json?pageSize=9999&resourceType=DATA&searchType=PUBLIC&resourceIds=[${requestId}]`
+  try {
+    const data = await getJson<{ content?: Array<{ userName?: string }> }>(url, true)
+    return data?.content?.[0]?.userName !== BUILT_IN_DATA_OWNER
+  } catch {
+    return true
+  }
+}
+
+/** 结构化数据以 iPortal 数据资源的最高权限判定，只有 DELETE 才允许编辑 */
+async function checkStructuredDataEditable(
+  layer: DataEditorLayer,
+  rootUrl: string
+): Promise<boolean> {
+  const dataInfo = layer.dataInfo || {}
+  const resourceId = `${dataInfo.id ?? layer.id ?? ''}`.trim()
+  if (!resourceId) {
+    return false
+  }
+  const requestId = /^\d+$/.test(resourceId) ? Number(resourceId) : resourceId
+  const baseUrl = toAbsoluteUrl(rootUrl).replace(/\/+$/, '')
+  if (!(await checkStructuredDataOwner(requestId, baseUrl))) {
+    return false
+  }
+  const url = `${baseUrl}/web/permissions/highestpermission.json?resourceType=DATA&resourceIds=${encodeURIComponent(
+    JSON.stringify([requestId])
+  )}`
+  const data = await getJson<Record<string, string>>(url, true)
+  return !!data && data[resourceId] === 'DELETE'
+}
+
+/**
+ * 判断图层是否可编辑：REST 数据看数据集是否只读，结构化数据看 iPortal 数据资源权限，
+ * 其余数据不参与权限校验。判定与 MapDashboard-V2 的 dataEditorEditableState 保持一致。
+ */
+export async function checkLayerEditable(
+  layer: DataEditorLayer = {} as DataEditorLayer,
+  rootUrl = ''
+): Promise<boolean> {
+  if (!isRestDataLayer(layer) && !isStructuredDataLayer(layer)) {
+    return true
+  }
+  try {
+    if (isStructuredDataLayer(layer)) {
+      return await checkStructuredDataEditable(layer, rootUrl)
+    }
+    return await checkRestDataEditable(layer.dataInfo || {})
+  } catch {
+    return false
+  }
 }
 
 /** 归一化属性字段，字段名与 @supermapgis/data-edit 保持一致 */

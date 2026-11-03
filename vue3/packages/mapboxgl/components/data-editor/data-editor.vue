@@ -80,7 +80,7 @@ import { useMapControl } from '@supermapgis/mapboxgl/hooks'
 import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'
 import SmCard from '@supermapgis/common/components/card/Card'
 import DataEditorDialog from './data-editor-dialog.vue'
-import { getLayerTitle } from './utils'
+import { getLayerTitle, checkLayerEditable } from './utils'
 import { dataEditorPropsDefault } from './types'
 
 defineOptions({
@@ -113,15 +113,16 @@ async function resolveEditable(layer: DataEditorLayer): Promise<boolean> {
   if (typeof layer.editable === 'boolean') {
     return layer.editable
   }
-  if (!props.checkEditable) {
-    return true
+  if (props.checkEditable) {
+    try {
+      const result = await props.checkEditable(layer)
+      return result !== false
+    } catch {
+      return false
+    }
   }
-  try {
-    const result = await props.checkEditable(layer)
-    return result !== false
-  } catch {
-    return false
-  }
+  // 未指定时由组件内置校验：REST 数据按数据集是否只读、结构化数据按 iPortal 数据资源权限
+  return checkLayerEditable(layer, props.rootUrl)
 }
 
 async function refreshEditableState() {
