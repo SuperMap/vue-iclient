@@ -84,6 +84,8 @@ export default {
       let displayHeight = sHeight;
       let fillColor = 'transparent';
       let repeatPattern = false;
+      // 图片线符号：按缩放后的图幅逐个绘制，只画能完整显示的个数（createPattern 会画出被裁切的半幅）
+      let repeatWholeIcon = false;
       let displayIconWidth = 0;
       let displayIconHeight = 0;
       // 内容（底色 / 主图片）实际落位，默认铺满整个画布
@@ -99,6 +101,18 @@ export default {
           displayHeight = size;
           // SDF 图片通过颜色底图和遮罩完成着色；普通图片保留自身颜色及透明背景。
           fillColor = sdf ? color : 'transparent';
+          break;
+        }
+        case 'line': {
+          const { width, height } = this.cssStyle;
+          const lineLength = parseInt(width);
+          const lineHeight = parseInt(height);
+          displayWidth = Number.isNaN(lineLength) ? sWidth : lineLength;
+          displayHeight = lineHeight;
+          displayIconHeight = lineHeight;
+          // 图案按传入高度等比缩放，图幅宽度按原始宽高比换算
+          displayIconWidth = (sWidth * lineHeight) / sHeight;
+          repeatWholeIcon = true;
           break;
         }
         case 'animateline': {
@@ -157,7 +171,26 @@ export default {
         // set composite mode
         ctx.globalCompositeOperation = 'destination-in';
       }
-      if (!repeatPattern) {
+      if (repeatWholeIcon) {
+        // 只绘制能完整落在 width 内的图幅：若第 n 幅会超出 width（显示一半），则只画 n-1 幅；
+        // 但缩放后单幅就比 width 宽（如 100×9 的图案缩放到高 10 后宽约 111）时至少画 1 幅，
+        // 超出部分由画布边缘裁切，否则图例一片空白
+        const iconCount = Math.max(1, Math.floor(displayWidth / displayIconWidth + 1e-6));
+        for (let i = 0; i < iconCount; i++) {
+          ctx.drawImage(
+            img,
+            sx * pixelRatio,
+            sy * pixelRatio,
+            sWidth,
+            sHeight,
+            i * displayIconWidth,
+            0,
+            displayIconWidth,
+            displayIconHeight
+          );
+        }
+      }
+      if (!repeatPattern && !repeatWholeIcon) {
         // draw image
         ctx.drawImage(
           img,
