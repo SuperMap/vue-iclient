@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../../common/_utils/style/theme/theme.scss';
 @import '../../../../../common/tree/style/tree.scss';
@@ -35,7 +36,7 @@
       background-color: $primary-color;
     }
     &-switcher {
-      float: right;
+      @include float-row(right, false);
     }
     li {
       span.#{$prefix}-iconEle {
@@ -126,12 +127,12 @@
   .is-not-header {
     &.is-top-left, &.is-bottom-left {
       .sm-component-card-body {
-        padding-left: 30px;
+        @include spacing-padding(30px, left, false);
       }
     }
     &.is-top-right, &.is-bottom-right {
       .sm-component-card-body {
-        padding-right: 30px;
+        @include spacing-padding(30px, right, false);
       }
     }
   }

@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../_utils/style/mixins/mixins.scss';
 @import '../../_utils/style/theme/theme.scss';
 
@@ -13,7 +14,7 @@
 
     @at-root {
       .#{$iconfont-css-prefix}#{&}-icon {
-        margin-left: 0;
+        @include spacing-margin(0, left, false);
         &-warning {
           color: $warning-color;
         }
@@ -32,7 +33,7 @@
 
     &-with-icon {
       #{$notice-prefix}-message, #{$notice-prefix}-description {
-        margin-left: 36px;
+        @include spacing-margin(36px, left, false);
       }
     }
   }

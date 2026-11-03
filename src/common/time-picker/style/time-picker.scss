@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../_utils/style/mixins/mixins.scss';
 @import '../../_utils/style/theme/theme.scss';
 
@@ -54,7 +55,7 @@
       border-color: $border-color-secondary;
     }
     &-select li {
-      padding: 0 0 0 16px;
+      @include spacing-complate-padding(0 0 0 16px, false);
       &:not(#{$panel}-select-option-selected):hover{
         background-color: $time-picker-item-hover-bg;
       }

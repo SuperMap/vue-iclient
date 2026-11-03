@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../../common/_utils/style/theme/theme.scss';
 @import '../../../../../common/card/style/card.scss';
@@ -16,7 +17,7 @@
     font-size: 12px;
   }
   @include e(layer) {
-    margin: 12px 0px 12px 0px;
+    @include spacing-complate-margin(12px 0px 12px 0px, false);
     display: flex;
     align-items: center;
     > span {
@@ -36,7 +37,7 @@
     background-color: $disabled-bg;
     border-radius: 4px;
     position: absolute;
-    right: 16px;
+    @include position-row(right, 16px, false, false);
     top: 18px;
     cursor: pointer;
     .sm-component-icon {
@@ -50,11 +51,11 @@
     }
   }
   @include e(color-picker) {
-    margin: 12px 0px 12px 0px;
+    @include spacing-complate-margin(12px 0px 12px 0px, false);
     display: flex;
     align-items: center;
     > span {
-      margin-right: 12px;
+      @include spacing-margin(12px, right, false);
       width: 50px;
       display: inline-block;
     }
@@ -64,7 +65,7 @@
     }
   }
   @include e(btn-group) {
-    margin: 0px 0px 16px 62px;
+    @include spacing-complate-margin(0px 0px 16px 62px, false);
   }
   @include e(a-card) {
     padding-top: 4px;
@@ -75,6 +76,6 @@
     }
   }
   .select-margin {
-    margin-right: 36px;
+    @include spacing-margin(36px, right, false);
   }
 }

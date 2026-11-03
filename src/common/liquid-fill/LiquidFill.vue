@@ -10,6 +10,13 @@ import ThirdService from 'vue-iclient/src/common/_mixin/ThirdService';
 import { addListener, removeListener } from 'resize-detector';
 import debounce from 'lodash.debounce';
 import { strip } from '../_utils/util';
+import { shouldTransformArabicNumbers } from '../_utils/arabic-number';
+import { wrapChartFormatter } from '../_utils/chart-arabic-number';
+
+function formatDefaultLabel({ value } = {}) {
+  const percentage = Number(value) * 100;
+  return Number.isFinite(percentage) ? `${percentage.toFixed(0)}%` : '';
+}
 
 export default {
   name: 'SmLiquidFill',
@@ -197,7 +204,9 @@ export default {
         ]
       };
       if (this.formatter) {
-        options.series[0].label.formatter = this.formatter;
+        options.series[0].label.formatter = wrapChartFormatter(this.formatter);
+      } else if (shouldTransformArabicNumbers()) {
+        options.series[0].label.formatter = wrapChartFormatter(formatDefaultLabel);
       }
       this.chart && this.chart.setOption(options);
     },

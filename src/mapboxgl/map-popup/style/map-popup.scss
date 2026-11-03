@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../common/_utils/style/theme/theme.scss';
 @import '../../../common/attribute-panel/style/attribute-panel.scss';
@@ -7,6 +8,9 @@
   height: auto;
   padding: 10px;
   border-radius: 4px;
+  .title {
+    max-width: 400px;
+  }
   .switchDataText {
     display: inline-flex;
     align-items: center;
@@ -16,10 +20,10 @@
       font-size: 16px;
     }
     .left-icon {
-      padding-right: 5px;
+      @include spacing-padding(5px, right, false);
     }
     .right-icon {
-      padding-left: 5px;
+      @include spacing-padding(5px, left, false);
     }
     .disabled {
       color: $disabled-color;

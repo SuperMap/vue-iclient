@@ -488,4 +488,100 @@ describe('Attributes.vue', () => {
     expect(wrapper.vm.selectedRowLength).toBe(2);
     done();
   });
+
+  describe('xScrollWidth', () => {
+    const scrollTestData = {
+      type: 'geoJSON',
+      geoJSON: {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [122.36, 53.47] },
+            properties: { index: 1, 站台: '漠河', 省份: '黑龙江', 海拔: '296' }
+          },
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [124.72, 52.32] },
+            properties: { index: 2, 站台: '塔河', 省份: '黑龙江', 海拔: '357' }
+          }
+        ]
+      }
+    };
+
+    const emptyTestData = {
+      type: 'geoJSON',
+      geoJSON: { type: 'FeatureCollection', features: [] }
+    };
+
+    const mountAttributes = async propsData => {
+      wrapper = mount(SmAttributes, { propsData });
+      await wrapper.vm.$nextTick();
+      await wrapper.vm.$nextTick();
+      return wrapper;
+    };
+
+    it('列未配置宽度时按 128 计算，并计入选择列的 60', async () => {
+      await mountAttributes({ dataset: scrollTestData });
+      expect(wrapper.vm.columns.length).toBe(5);
+      expect(wrapper.vm.xScrollWidth).toBe(5 * 128 + 60);
+      const tableStyle = wrapper
+        .findAll('table')
+        .wrappers.map(item => item.attributes('style') || '')
+        .join(' ');
+      expect(tableStyle).toContain(`${5 * 128 + 60}px`);
+    });
+
+    it('隐藏某列后不再计入该列宽度', async () => {
+      await mountAttributes({ dataset: scrollTestData });
+      wrapper.vm.handleColumnVisible(wrapper.vm.columns[0]);
+      await wrapper.vm.$nextTick();
+      expect(wrapper.vm.columns.filter(column => column.visible).length).toBe(4);
+      expect(wrapper.vm.xScrollWidth).toBe(4 * 128 + 60);
+    });
+
+    it('支持数字宽度、数字字符串宽度，非法或非正数按 128 兜底', async () => {
+      await mountAttributes({
+        dataset: scrollTestData,
+        fieldConfigs: [
+          { value: '站台', visible: true, width: 100 },
+          { value: '省份', visible: true, width: '200' },
+          { value: '海拔', visible: true, width: 'auto' },
+          { value: 'index', visible: true, width: 0 }
+        ]
+      });
+      expect(wrapper.vm.columns.length).toBe(4);
+      expect(wrapper.vm.xScrollWidth).toBe(100 + 200 + 128 + 128 + 60);
+    });
+
+    it('关闭行选择时不额外计入 60', async () => {
+      await mountAttributes({
+        dataset: scrollTestData,
+        table: { showRowSelection: false }
+      });
+      expect(wrapper.vm.xScrollWidth).toBe(5 * 128);
+    });
+
+    it('数据未渲染时用 fieldConfigs 估算，且跳过不可见列', async () => {
+      await mountAttributes({
+        fieldConfigs: [
+          { value: '站台', visible: true },
+          { value: '省份', visible: false },
+          { value: '海拔', visible: true, width: 200 }
+        ]
+      });
+      expect(wrapper.vm.columns.length).toBe(0);
+      expect(wrapper.vm.xScrollWidth).toBe(128 + 200 + 60);
+    });
+
+    it('没有列也没有 fieldConfigs 时返回 0', async () => {
+      await mountAttributes({ dataset: emptyTestData });
+      expect(wrapper.vm.xScrollWidth).toBe(0);
+    });
+
+    it('fieldConfigs 显式传 null 时返回 0', async () => {
+      await mountAttributes({ dataset: emptyTestData, fieldConfigs: null });
+      expect(wrapper.vm.xScrollWidth).toBe(0);
+    });
+  });
 });

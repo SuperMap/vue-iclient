@@ -41,7 +41,12 @@
                 :style-field="style.styleField"
               />
               <div :key="`style_${index}`" class="sm-component-legend__wrap">
-                <StyleItem v-for="(item, j) in style.styleGroup" :key="`style_${index}_${j}`" :style-data="item" />
+                <StyleItem
+                  v-for="(item, j) in style.styleGroup"
+                  :key="`style_${index}_${j}`"
+                  :style-data="item"
+                  :outline-width-driven="isOutlineWidthDriven(layerStyles)"
+                />
               </div>
             </template>
           </sm-collapse-panel>
@@ -59,7 +64,12 @@
                 :style-field="style.styleField"
               />
               <div :key="`style_${index}`" class="sm-component-legend__wrap">
-                <StyleItem v-for="(item, j) in style.styleGroup" :key="`style_${index}_${j}`" :style-data="item" />
+                <StyleItem
+                  v-for="(item, j) in style.styleGroup"
+                  :key="`style_${index}_${j}`"
+                  :style-data="item"
+                  :outline-width-driven="isOutlineWidthDriven(layerStyles)"
+                />
               </div>
             </template>
           </div>
@@ -151,6 +161,11 @@ export default {
     }
   },
   methods: {
+    // 轮廓宽度被单独提取成分组（存在 styleField 为 outlineWidth 的部分）时：
+    // 宽度分段只在该分组按真实宽度展示，其它分组的轮廓符号统一按默认宽度绘制
+    isOutlineWidthDriven(layerStyles) {
+      return (layerStyles || []).some(style => style.styleField === 'outlineWidth');
+    },
     initLegendList() {
       this.legendList = {};
       let defaultChoosenLayers = [];

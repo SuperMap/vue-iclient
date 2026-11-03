@@ -1,10 +1,11 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../common/_utils/style/theme/theme.scss';
 
 @include b(tdtPointsResults) {
   padding-top: 10px;
   .title{
-    padding-left: 16px;
+    @include spacing-padding(16px, left, false);
   }
   .buoy-icon {
     background-image: url("#{$--tdt-assets-path}/sprite.png");
@@ -99,7 +100,7 @@
       }
       .route-info {
         width: 65%;
-        margin-left: 5px;
+        @include spacing-margin(5px, left, false);
         span {
           display: block;
           overflow: hidden;
@@ -111,7 +112,7 @@
       .set-start-point {
         flex: 1;
         display: none;
-        text-align: right;
+        @include text-align-transform(right, false);
         line-height: 20px;
         overflow: hidden;
         text-overflow: ellipsis;

@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../_utils/style/mixins/mixins.scss';
 @import '../../_utils/style/theme/theme.scss';
 
@@ -21,7 +22,7 @@
     }
     .delete-icon {
       position: absolute;
-      right: 0;
+      @include position-row(right, 0, false, false);
       top: 0;
       color: $text-color-secondary;
       &:hover {

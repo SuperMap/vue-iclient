@@ -644,24 +644,36 @@ export default class HighlightLayer extends mapboxgl.Evented {
   handleMapSelections(features: LayerClickedFeature[]) {
     this.removeHighlightLayers();
     let popupDatas: PopupFeatureInfo[] = [];
-    let topLayerIndex = 0;
-    // 获取所有图层 L7+ 普通图层
-    const layers = this.webmap?.getAppreciableLayers();
+    // 获取所有图层 L7+ 普通图层；Query 临时结果层等可能不在其中
+    const layers = this.webmap?.getAppreciableLayers() ?? [];
+    let topLayerIndex = -1;
     features.forEach((f) => {
       const idx = layers.findIndex(l => l.id === f.layer.id);
-      idx > topLayerIndex && (topLayerIndex = idx);
+      if (idx > topLayerIndex) {
+        topLayerIndex = idx;
+      }
     });
-    const topLayerId = layers?.[topLayerIndex]?.id;
+    // 点选要素不在 appreciable 图层中时（如 Query 的 *-SM-query-result），回退到首个要素图层
+    const topLayerId = topLayerIndex >= 0 ? layers[topLayerIndex]?.id : features[0]?.layer?.id;
     const matchTargetFeature = features.find(f => f.layer?.id === topLayerId) ?? features[0];
     const layerId = matchTargetFeature?.layer.id;
     const highlightLayerIds = this.getMoreHighlightLayerIds(layerId);
-    // 获取mapboxgl上图的原生layer
+    // 获取 mapboxgl 上图的原生 layer
     const mapLayers = this.map?.getStyle().layers;
-    let activeTargetLayers = layers.filter(layer => highlightLayerIds.includes(layer.id))?.map(item => {
-      const findLayer = mapLayers?.find(layer => layer.id === item.id);
-      return findLayer ?? this.map.getLayer(item.id);
-    });
-    if (activeTargetLayers && matchTargetFeature) {
+    let activeTargetLayers = layers
+      .filter(layer => highlightLayerIds.includes(layer.id))
+      .map(item => {
+        const findLayer = mapLayers?.find(layer => layer.id === item.id);
+        return findLayer ?? this.map.getLayer(item.id);
+      })
+      .filter(Boolean);
+    // 临时结果层不在 getAppreciableLayers 中时，直接按 map 图层回退，否则 popupDatas/lnglats 为空导致弹窗打不开
+    if (!activeTargetLayers.length && highlightLayerIds?.length) {
+      activeTargetLayers = highlightLayerIds
+        .map(id => mapLayers?.find(layer => layer.id === id) ?? this.map?.getLayer(id))
+        .filter(Boolean);
+    }
+    if (activeTargetLayers.length && matchTargetFeature) {
       switch (this.dataSelectorMode) {
         case DataSelectorMode.ALL:
           this.resultFeatures = features;

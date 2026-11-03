@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../../common/_utils/style/theme/theme.scss';
 @import "../../../../../common/collapse-card/style/collapse-card.scss";
@@ -17,7 +18,7 @@
     display: flex;
   }
   @include e(modeWrap) {
-    text-align: left;
+    @include text-align-transform(left, false);
     font-size: 0;
     padding: 10px 0;
   }
@@ -26,19 +27,19 @@
     width: 40px;
     height: 28px;
     line-height: 25px;
-    text-align: center;
+    @include text-align-transform(center, false);
     font-size: 22px;
     &:hover {
       color: $hover-color;
       cursor: pointer;
     }
     &:first-child {
-      border-radius: 4px 0px 0px 4px;
-      margin-right: 1px;
+      @include spacing-complate-radius(4px 0px 0px 4px, false);
+      @include spacing-margin(1px, right, false);
     }
     &:nth-child(2) {
-      border-radius: 0px 4px 4px 0px;
-      margin-right: 1px;
+      @include spacing-complate-radius(0px 4px 4px 0px, false);
+      @include spacing-margin(1px, right, false);
     }
     @include when(active) {
       background: $primary-color !important;
@@ -53,7 +54,7 @@
   @include e(unit) {
     flex: 1;
     position: relative;
-    margin-left: 8px;
+    @include spacing-margin(8px, left, false);
     &,
     .#{$ant-prefix}-select-selection--single {
       height: 28px;

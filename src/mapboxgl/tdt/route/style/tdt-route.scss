@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../common/_utils/style/theme/theme.scss';
 @import '../../../../common/button/style/button.scss';
@@ -22,8 +23,8 @@
         width: 50%;
         font-size: 16px;
         cursor: pointer;
-        float: left;
-        text-align: center;
+        @include float-row(left, false);
+        @include text-align-transform(center, false);
         padding-bottom: 6px;
         &.active {
           border-bottom: 2px solid $primary-color;
@@ -33,7 +34,7 @@
       .clear-route {
         flex: 1;
         cursor: pointer;
-        text-align: right;
+        @include text-align-transform(right, false);
         position: relative;
         padding-bottom: 6px;
         &::before {
@@ -41,10 +42,10 @@
           display: block;
           position: absolute;
           top: 40%;
-          left: 0;
+          @include position-row(left, 0, false, false);
           height: 58%;
           transform: translateY(-50%);
-          border-left: 1px solid $border-color-split;
+          @include border-line-style(left, 1px, solid, $border-color-split, false);
         }
       }
     }
@@ -55,7 +56,7 @@
       flex-direction: column;
       width: 100%;
       margin-top: 10px;
-      text-align: center;
+      @include text-align-transform(center, false);
       .#{$ant-prefix}-input {
         height: 28px;
         background-color: transparent;
@@ -102,14 +103,14 @@
       .switch-route {
         position: absolute;
         top: 20%;
-        left: -3px;
-        text-align: left;
+        @include position-row(left, -3px, false, false);
+        @include text-align-transform(left, false);
       }
     }
 
     .search-btn {
       margin-top: 12px;
-      margin-left: 20px;
+      @include spacing-margin(20px, left, false);
       > * {
         width: 100%;
       }
@@ -127,7 +128,7 @@
         & > .title {
           display: flex;
           align-items: center;
-          padding-left: 16px;
+          @include spacing-padding(16px, left, false);
           padding-bottom: 4px;
           i,
           span {
@@ -145,7 +146,7 @@
             white-space: nowrap;
             font-size: 12px;
             cursor: pointer;
-            margin-left: 5px;
+            @include spacing-margin(5px, left, false);
           }
         }
 

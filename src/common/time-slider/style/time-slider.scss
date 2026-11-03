@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../common/_utils/style/mixins/mixins.scss';
 @import '../../_utils/style/theme/theme.scss';
 @import './mixin.scss';
@@ -18,7 +19,7 @@
     width: 24px;
     height: 24px;
     line-height: 24px;
-    text-align: center;
+    @include text-align-transform(center, false);
     text-shadow: none;
     border: none;
     outline: none;
@@ -32,7 +33,7 @@
   .sm-progress-control-wrapper {
     position: relative;
     width: calc(100% - 36px);
-    margin-left: 12px;
+    @include spacing-margin(12px, left, false);
   }
   .sm-progress-control {
     @include flex(auto);
@@ -65,7 +66,7 @@
     @include flex(auto);
     @include transition(all 0.2s);
     position: absolute;
-    left: 0;
+    @include position-row(left, 0, false, false);
     width: 100%;
     height: 100%;
     outline: none;
@@ -73,7 +74,7 @@
   }
   .sm-load-progress {
     position: absolute;
-    left: 0;
+    @include position-row(left, 0, false, false);
     width: 100%;
     border-radius: 3px;
     outline: none;
@@ -101,11 +102,11 @@
     user-select: none;
     .sm-start-node {
       position: absolute;
-      left: 0;
+      @include position-row(left, 0, false, false);
     }
     .sm-end-node {
       position: absolute;
-      right: 0;
+      @include position-row(right, 0, false, false);
     }
   }
   .sm-mouse-display {
@@ -121,7 +122,7 @@
   }
   .sm-time-tooltip {
     position: relative;
-    left: -50%;
+    @include position-row(left, -50%, false, false);
     top: -50px;
     display: flex;
     justify-content: center;

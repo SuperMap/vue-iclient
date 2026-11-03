@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../_utils/style/mixins/mixins.scss';
 @import '../../_utils/style/theme/theme.scss';
 
@@ -20,7 +21,7 @@
   @include e(preview) {
     .sm-component-modal-content {
       .sm-component-modal-close {
-        margin-left: -64px;
+        @include spacing-margin(-64px, left, false);
         .sm-component-modal-close-x {
           font-size: 40px;
         }
@@ -40,7 +41,7 @@
         display: none;
       }
       .sm-component-modal-close {
-        margin-left: -64px;
+        @include spacing-margin(-64px, left, false);
         .sm-component-modal-close-x {
           font-size: 40px;
         }

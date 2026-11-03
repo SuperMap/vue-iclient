@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../../common/_utils/style/theme/theme.scss';
 @import '../../../../../common/collapse-card/style/collapse-card.scss';
@@ -15,17 +16,17 @@
       width: 40px;
       height: 28px;
       line-height: 28px;
-      text-align: center;
+      @include text-align-transform(center, false);
       background-color: $collapse-card-header-bg;
       cursor: pointer;
       &:first-child {
-        border-radius: 4px 0 0 4px;
+        @include spacing-complate-radius(4px 0 0 4px, false);
       }
       &:nth-child(2) {
         margin: 0 1px;
       }
       &:last-child {
-        border-radius: 0 4px 4px 0;
+        @include spacing-complate-radius(0 4px 4px 0, false);
       }
       &:hover {
         color: $hover-color;
@@ -40,13 +41,13 @@
     &.is-top-right, &.is-bottom-right {
       #{$flyToPrefix}__content {
         &:last-child {
-          padding-right: 32px;
+          @include spacing-padding(32px, right, false);
         }
       }
     }
     &.is-top-left, &.is-bottom-left {
       #{$flyToPrefix}__content {
-        padding-left: 32px;
+        @include spacing-padding(32px, left, false);
       }
     }
   }

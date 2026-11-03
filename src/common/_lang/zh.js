@@ -162,6 +162,8 @@ export default {
     width: '宽度',
     outlineColor: '轮廓色',
     outlineWidth: '轮廓宽度',
+    outlineSymbolsContent: '轮廓符号',
+    outlineOpacity: '轮廓不透明度',
     haloColor: '晕轮颜色',
     label: '标签',
     parentheses: '（{tips}）',
@@ -206,7 +208,19 @@ export default {
     queryFailed: '查询失败!',
     seviceNotSupport: '此服务不支持查询！',
     keyQueryPlaceholder: '请输入关查询键字',
-    sqlQueryPlaceholder: '请输入SQL表达式'
+    sqlQueryPlaceholder: '请输入SQL表达式',
+    sqlBuilderTitle: 'SQL表达式',
+    sqlBuilderField: '字段',
+    sqlBuilderOperator: '条件',
+    sqlBuilderValue: '值',
+    sqlBuilderValueRequest: '获取字段唯一值',
+    sqlBuilderValuePreviousConditionIncomplete: '请先完善前置条件后获取字段唯一值',
+    sqlBuilderValueLoaded: '字段唯一值已成功缓存',
+    sqlBuilderValueLimitPlaceholder: '下拉框最多显示前100条数据',
+    sqlBuilderAddCondition: '添加条件',
+    sqlBuilderDelete: '删除',
+    sqlBuilderClear: '清空',
+    sqlBuilderCancel: '取消'
   },
   cascader: {
     placeholder: '请选择'
@@ -360,9 +374,13 @@ export default {
   animateMarkerlayer: {
     unsupportedData: '当前图层不支持该数据，请重新传入数据！'
   },
-  months: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
-  weekdays: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
-  monthsShort: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-  weekdaysShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
-  weekdaysMin: ['日', '一', '二', '三', '四', '五', '六']
+  DatePicker: {
+    lang: {
+      months: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+      weekdays: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+      monthsShort: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+      weekdaysShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+      weekdaysMin: ['日', '一', '二', '三', '四', '五', '六']
+    }
+  }
 };

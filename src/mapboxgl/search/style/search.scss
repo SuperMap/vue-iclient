@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../common/_utils/style/theme/theme.scss';
 @import '../../../common/input/style/input.scss';
@@ -14,7 +15,7 @@
     line-height: 32px;
     border-radius: 4px;
     font-size: 16px;
-    text-align: center;
+    @include text-align-transform(center, false);
     display: inline-block;
     box-shadow: 0 3px 13px 0px $shadow-color;
     &:hover {
@@ -22,7 +23,7 @@
     }
   }
   @include e(search-icon arrow-icon) {
-    float: left;
+    @include float-row(left, false);
     height: 32px;
     font-size: 16px;
     display: flex;
@@ -82,35 +83,35 @@
     }
     &[aria-orientation="left"] {
       #{$search-prefix}__a-input {
-        margin-left: 32px;
-        margin-right: 16px;
+        @include spacing-margin(32px, left, false);
+        @include spacing-margin(16px, right, false);
         &.toolBar-input {
-          margin-right: 0;
+          @include spacing-margin(0, right, false);
         }
       }
       #{$search-prefix}__search-icon {
         &::after {
-          right: 0;
-          border-right: 1px solid $border-color-base;
+          @include position-row(right, 0, false, false);
+          @include border-line-style(right, 1px, solid, $border-color-base, false);
         }
       }
       #{$search-prefix}__arrow-icon {
-        float: right;
+        @include float-row(right, false);
       }
     }
     &[aria-orientation="right"] {
       #{$search-prefix}__a-input {
-        margin-left: 16px;
-        margin-right: 32px;
+        @include spacing-margin(16px, left, false);
+        @include spacing-margin(32px, right, false);
         &.toolBar-input {
-          margin-left: 0;
+          @include spacing-margin(0, left, false);
         }
       }
       #{$search-prefix}__search-icon {
-        float: right;
+        @include float-row(right, false);
         &::after {
-          left: 0;
-          border-left: 1px solid $border-color-base;
+          @include position-row(left, 0, false, false);
+          @include border-line-style(left, 1px, solid, $border-color-base, false);
         }
       }
     }
@@ -123,7 +124,7 @@
   @include e(a-input) {
     &.#{$input-prefix}-affix-wrapper {
       width: auto;
-      padding-right: 25px;
+      @include spacing-padding(25px, right, false);
       color: inherit;
       display: block;
       &:hover {
@@ -155,7 +156,7 @@
       padding: 4px 0;
       margin: 0;
       & > li {
-        padding: 6px 16px 6px 24px;
+        @include spacing-complate-padding(6px 16px 6px 24px, false);
         display: block;
         cursor: pointer;
         &:hover {
@@ -180,7 +181,7 @@
       color: $primary-color;
     }
     > i {
-      margin-right: 3px;
+      @include spacing-margin(3px, right, false);
     }
     > span {
       display: block;

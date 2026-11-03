@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../common/_utils/style/theme/theme.scss';
 @import '../../../../common/empty/style/empty.scss';
@@ -25,8 +26,8 @@
     padding: 0;
     width: 33%;
     height: 28px;
-    text-align: center;
-    margin-right: 0;
+    @include text-align-transform(center, false);
+    @include spacing-margin(0, right, false);
     line-height: 26px;
     font-size: 12px;
     border-radius: 0;
@@ -36,19 +37,19 @@
     white-space: nowrap;
     &.#{$tabs-prefix}-tab-active {
       border-color: $primary-color;
-      border-right-color: $primary-color;
+      @include border-line-color(right, $primary-color, false);
     }
     &:not(.#{$tabs-prefix}-tab-active) {
       border-style: dashed;
     }
     &:not(:last-child):not(.#{$tabs-prefix}-tab-active) {
-      border-right-color: transparent;
+      @include border-line-color(right, transparent, false);
     }
     &:first-child {
-      border-radius: 4px 0 0 4px;
+      @include spacing-complate-radius(4px 0 0 4px, false);
     }
     &:last-child {
-      border-radius: 0 4px 4px 0;
+      @include spacing-complate-radius(0 4px 4px 0, false);
     }
   }
   &.#{$tabs-prefix} .#{$tabs-prefix}-small-bar .#{$tabs-prefix}-tab {
@@ -88,8 +89,8 @@
       position: absolute;
       top: 16px;
       bottom: 15px;
-      left: 8px;
-      border-left: 1px dashed $border-color-split;
+      @include position-row(left, 8px, false, false);
+      @include border-line-style(left, 1px, dashed, $border-color-split, false);
     }
     .level-2 {
       margin-top: 16px;
@@ -114,7 +115,7 @@
     span {
       padding: 0 8px;
       &:first-child {
-        padding-left: 0;
+        @include spacing-padding(0, left, false);
       }
       &:nth-of-type(2) {
         border: 1px solid $border-color-split;
@@ -129,7 +130,7 @@
       display: inline-flex;
       align-items: center;
       > i {
-        margin-right: 9px;
+        @include spacing-margin(9px, right, false);
       }
     }
   }
@@ -138,10 +139,10 @@
     font-weight: 700;
   }
   .icon-holder {
-    margin-right: 8px;
+    @include spacing-margin(8px, right, false);
     width: 16px;
     height: 16px;
-    text-align: center;
+    @include text-align-transform(center, false);
     .icon {
       display: inline-block;
     }
@@ -176,7 +177,7 @@
   .start-position-title, .dest-position-title {
     i {
       display: block;
-      margin-right: 8px;
+      @include spacing-margin(8px, right, false);
     }
   }
   .start-position-title {
@@ -216,10 +217,10 @@
             overflow: hidden;
             > * {
               &:not(.station-count) {
-                float: left;
+                @include float-row(left, false);
               }
               &.station-count {
-                float: right;
+                @include float-row(right, false);
               }
             }
           }
@@ -228,7 +229,7 @@
       &.car-info {
         .level-2 {
           li {
-            padding-left: 13px;
+            @include spacing-padding(13px, left, false);
             padding-bottom: 8px;
             &:last-of-type {
               padding-bottom: 0;
@@ -239,7 +240,7 @@
             &::before {
               content: '';
               position: absolute;
-              left: 0;
+              @include position-row(left, 0, false, false);
               top: 6px;
               width: 5px;
               height: 5px;
@@ -251,8 +252,8 @@
               position: absolute;
               top: 11px;
               bottom: -5px;
-              left: 2px;
-              border-left: 1px dashed $border-color-split;
+              @include position-row(left, 2px, false, false);
+              @include border-line-style(left, 1px, dashed, $border-color-split, false);
             }
           }
         }
@@ -288,7 +289,7 @@
     }
   }
   .loading-and-tip-holder {
-    text-align: center;
+    @include text-align-transform(center, false);
     padding: 6px 0;
   }
   .#{$ant-prefix}-empty {

@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../common/_utils/style/theme/theme.scss';
 @import '../../../../common/input/style/input.scss';
@@ -12,7 +13,7 @@
       }
       .address {
         font-size: 12px;
-        margin-left: 5px;
+        @include spacing-margin(5px, left, false);
         color: $text-color-secondary;
       }
     }
@@ -33,7 +34,7 @@
     .title {
       height: 36px;
       line-height: 36px;
-      padding-left: 20px;
+      @include spacing-padding(20px, left, false);
       .region,
       .total-num {
         color: #fe1d1d;
@@ -54,7 +55,7 @@
     .title {
       background: $collapse-card-header-bg;
       color: $heading-color;
-      padding: 4px 0 4px 16px;
+      @include spacing-complate-padding(4px 0 4px 16px, false);
       border-bottom: 1px solid $collapse-card-split-line;
       height: 28px;
       overflow: hidden;
@@ -66,8 +67,8 @@
     .address {
       background: $collapse-card-bg;
       color: $text-color;
-      padding: 6px 0 6px 16px;
-      border-radius: 0 0 4px 4px;
+      @include spacing-complate-padding(6px 0 6px 16px, false);
+      @include spacing-complate-radius(0 0 4px 4px, false);
     }
     .operate-group {
       .start-item,
@@ -80,13 +81,13 @@
 
         span {
           display: block;
-          padding-left: 20px;
+          @include spacing-padding(20px, left, false);
           color: #0078a8;
           position: relative;
           &::before {
             content: '';
             position: absolute;
-            left: 0;
+            @include position-row(left, 0, false, false);
             top: 0;
             background-image: url('#{$--tdt-assets-path}/sprite.png');
             background-repeat: no-repeat;
@@ -97,7 +98,7 @@
       }
 
       .end-item {
-        border-left-color: transparent;
+        @include border-line-color(left, transparent, false);
         span {
           &::before {
             background-position: -165px -152px;

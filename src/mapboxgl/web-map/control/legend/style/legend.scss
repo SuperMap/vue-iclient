@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../../common/_utils/style/theme/theme.scss';
 @import '../../../../../common/collapse-card/style/collapse-card.scss';
@@ -37,7 +38,7 @@
   @include e(noBorder) {
     max-width: none;
     height: 100%;
-    padding-right: 15px;
+    @include spacing-padding(15px, right, false);
     border-bottom: 1px solid $border-color-split;
     margin-bottom: 5px;
     padding-bottom: 5px;
@@ -56,7 +57,7 @@
   }
 
   @include e(fieldvalue) {
-    margin-left: 8px;
+    @include spacing-margin(8px, left, false);
   }
 
   .is-not-header {
@@ -64,13 +65,13 @@
     &.is-bottom-left {
       .#{$collapse-prefix} {
         .#{$collapse-prefix}-item {
-          padding-left: 30px;
+          @include spacing-padding(30px, left, false);
         }
         .#{$collapse-prefix}-content {
-          margin-left: -30px;
+          @include spacing-margin(-30px, left, false);
         }
         .#{$collapse-prefix}-content-box {
-          padding-left: 16px;
+          @include spacing-padding(16px, left, false);
         }
       }
     }
@@ -78,13 +79,13 @@
     &.is-bottom-right {
       .#{$collapse-prefix} {
         .#{$collapse-prefix}-item {
-          padding-right: 30px;
+          @include spacing-padding(30px, right, false);
         }
         .#{$collapse-prefix}-content {
-          margin-right: -30px;
+          @include spacing-margin(-30px, right, false);
         }
         .#{$collapse-prefix}-content-box {
-          padding-right: 16px;
+          @include spacing-padding(16px, right, false);
         }
       }
     }
@@ -124,7 +125,7 @@
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding-right: 8px;
+          @include spacing-padding(8px, right, false);
         }
       }
     }
@@ -180,9 +181,9 @@
     .color-arrow {
       width: 0;
       height: 0;
-      border-right: 5px solid transparent;
+      @include border-line-style(right, 5px, solid, transparent, false);
       border-bottom: 4px solid #d9d9d9;
-      border-left: 5px solid transparent;
+      @include border-line-style(left, 5px, solid, transparent, false);
     }
     .color-value {
       width: 10px;
@@ -198,7 +199,7 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       max-width: 80px;
-      margin-left: 2px;
+      @include spacing-margin(2px, left, false);
     }
   }
 }

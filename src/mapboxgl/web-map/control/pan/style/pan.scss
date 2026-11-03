@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../../common/_utils/style/theme/theme.scss';
 
@@ -13,13 +14,13 @@
   background: $collapse-card-header-bg;
   box-shadow: 0px 3px 13px 0px $shadow-color;
   &.mapboxgl-ctrl {
-    margin: 10px 0 0 0px !important;
+    @include spacing-complate-margin(10px 0 0 0px, true);
   }
   #{$pan-prefix}__center, .#{$iconfont-class-prefix}-fullscreen {
     position: absolute;
-    left: 50%;
+    @include position-row(left, 50%, false, false);
     top: 50%;
-    transform: translate(-50%, -50%);
+    @include transform-translate(-50%, -50%, false);
     z-index: 10;
   }
   @include e(center icon) {
@@ -67,19 +68,19 @@
       position: absolute;
       font-size: 12px;
       line-height: 1;
-      transform: translate(-50%, -50%);
+      @include transform-translate(-50%, -50%, false);
     }
     &-left, &-right {
       top: 50%;
     }
     &-up, &-down {
-      left: 50%;
+      @include position-row(left, 50%, false, false);
     }
     &-left {
-      left: 13%;
+      @include position-row(left, 13%, false, false);
     }
     &-right {
-      left: 86%;
+      @include position-row(left, 86%, false, false);
     }
     &-up {
       top: 13%;

@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../common/_utils/style/theme/theme.scss';
 
@@ -35,7 +36,7 @@
         }
         .name {
           line-height: 88px;
-          text-align: center;
+          @include text-align-transform(center, false);
           max-width: 20%;
           min-width: 50px;
           overflow: hidden;
@@ -54,7 +55,7 @@
           .description {
             font-size: 14px;
             line-height: 20px;
-            margin-left: 4px;
+            @include spacing-margin(4px, left, false);
             > div {
               &:first-child {
                 margin-bottom: 4px;
@@ -62,7 +63,7 @@
             }
           }
           .time {
-            padding-left: 24px;
+            @include spacing-padding(24px, left, false);
           }
         }
         p {

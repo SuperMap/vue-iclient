@@ -17,6 +17,7 @@ const getOriginArgs = require('./get-origin-args');
 let origin = getOriginArgs();
 
 let type = 'mapboxgl';
+const projectRoot = path.resolve(__dirname, '..');
 const engineArg = origin.find(arg => ['-mapboxgl', '-leaflet'].includes(arg));
 if (engineArg) {
   type = engineArg.replace('-', '');
@@ -45,7 +46,14 @@ function compileSass(done) {
   }
   return gulp
     .src(gulpFile)
-    .pipe(cssimport({}))
+    .pipe(
+      cssimport({
+        includePaths: [projectRoot],
+        transform(importPath) {
+          return importPath.replace(/^vue-iclient[\/\\]/, '');
+        }
+      })
+    )
     .pipe(sass({ style: 'expanded' }))
     .pipe(cssnano())
     .pipe(autoprefixer('last 3 version', 'safari 5', 'ie 8', 'ie 9'))

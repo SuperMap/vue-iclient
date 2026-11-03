@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../_utils/style/mixins/mixins.scss';
 @import '../../_utils/style/theme/theme.scss';
 @import '../../input/style/mixin.scss';
@@ -28,6 +29,8 @@
     }
     &#{$table-prefix}-column-has-actions {
       &#{$table-prefix}-column-has-filters {
+        @include spacing-padding(30px, right, true);
+        @include spacing-padding(6px, left, true);
         .#{$iconfont-css-prefix}-filter,
         #{$table-prefix}-filter-icon {
           &#{$table-prefix}-filter-open {
@@ -122,7 +125,7 @@
       content: "";
       position: absolute;
       top: 50%;
-      right: 0;
+      @include position-row(right, 0, false, false);
       width: 1px;
       height: 14px;
       background-color: $border-color-secondary;
@@ -133,6 +136,7 @@
   &-thead > tr > th,
   &-tbody > tr > td {
     padding: 13px 24px;
+    @include text-align-transform(left, true);
   }
 
   &-middle {

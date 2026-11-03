@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../common/spin/style/spin.scss';
 
@@ -10,7 +11,7 @@
   & > .#{$ant-prefix}-spin {
     position: absolute;
     top: 0;
-    left: 0;
+    @include position-row(left, 0, false, false);
     width: 100%;
     height: 100%;
     display: flex;
@@ -40,7 +41,7 @@
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
-        padding-right: 5px;
+        @include spacing-padding(5px, right, false);
       }
       .arrow-wrap {
         display: inline-block;
@@ -55,7 +56,7 @@
           height: 0;
           border: 5px solid transparent;
           position: absolute;
-          left: 0px;
+          @include position-row(left, 0px, false, false);
           border-bottom-color: #fff;
           top: 5px;
         }
@@ -64,7 +65,7 @@
           height: 0;
           border: 5px solid transparent;
           position: absolute;
-          left: 0px;
+          @include position-row(left, 0px, false, false);
           border-top-color: #fff;
           bottom: 6px;
         }
@@ -85,7 +86,7 @@
     width: 100%;
     display: flex;
     & > div {
-      text-align: center;
+      @include text-align-transform(center, false);
       flex: 1;
       display: block;
       justify-content: center;

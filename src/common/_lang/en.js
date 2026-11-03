@@ -157,6 +157,8 @@ export default {
     width: 'Width',
     outlineColor: 'Outline Color',
     outlineWidth: 'Outline Width',
+    outlineSymbolsContent: 'Outline Line Symbol',
+    outlineOpacity: 'Outline Opacity',
     haloColor: 'Halo Color',
     label: 'Label',
     parentheses: '({tips})',
@@ -201,7 +203,19 @@ export default {
     queryFailed: 'Query failed!',
     seviceNotSupport: 'This service does not support queries!',
     keyQueryPlaceholder: 'Please enter the search keyword',
-    sqlQueryPlaceholder: 'Please enter the SQL expression'
+    sqlQueryPlaceholder: 'Please enter the SQL expression',
+    sqlBuilderTitle: 'SQL Expression',
+    sqlBuilderField: 'Field',
+    sqlBuilderOperator: 'Condition',
+    sqlBuilderValue: 'Value',
+    sqlBuilderValueRequest: 'Get field unique values',
+    sqlBuilderValuePreviousConditionIncomplete: 'Complete the previous conditions before getting field unique values',
+    sqlBuilderValueLoaded: 'Field unique values cached',
+    sqlBuilderValueLimitPlaceholder: 'Dropdown shows up to the first 100 records',
+    sqlBuilderAddCondition: 'Add condition',
+    sqlBuilderDelete: 'Delete',
+    sqlBuilderClear: 'Clear',
+    sqlBuilderCancel: 'Cancel'
   },
   cascader: {
     placeholder: 'Please select'

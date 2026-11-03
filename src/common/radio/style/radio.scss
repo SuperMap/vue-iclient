@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../_utils/style/mixins/mixins.scss';
 @import '../../_utils/style/theme/theme.scss';
 
@@ -90,7 +91,7 @@
         border-color: $disabled-border-color;
       }
       &:first-child {
-        border-left-color: $disabled-border-color;
+        @include border-line-color(left, $disabled-border-color, false);
       }
       &#{$prefix-button-wrapper}-checked {
         color: $disabled-color;

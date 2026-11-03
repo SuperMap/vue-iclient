@@ -12,34 +12,42 @@ import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLay
 import layerData from 'vue-iclient/test/unit/mocks/data/layerData';
 
 describe('Legend.vue', () => {
-  let wrapper, mapWrapper, imageOnload;
+  let wrapper, mapWrapper, imageOnload, canvasContext;
   const documentBak = document;
   const ImageBak = Image;
 
   beforeEach(function() {
+    canvasContext = {
+      arc: jest.fn(),
+      fill: jest.fn(),
+      fillRect: jest.fn(),
+      strokeRect: jest.fn(),
+      clearRect: jest.fn(),
+      beginPath: jest.fn(),
+      closePath: jest.fn(),
+      setLineDash: jest.fn(),
+      rect: jest.fn(),
+      setLineDash: jest.fn(),
+      setTransform: jest.fn(),
+      moveTo: jest.fn(),
+      lineTo: jest.fn(),
+      stroke: jest.fn(),
+      drawImage: jest.fn(),
+      createPattern: jest.fn(),
+      createImageData: function(width, height) {
+        return { width, height, data: new Uint8ClampedArray(width * height * 4) };
+      },
+      createLinearGradient: function() {
+        return {
+          addColorStop: jest.fn()
+        };
+      }
+    };
     document.getElementById = function() {
       return {
+        style: {},
         getContext: function() {
-          return {
-            arc: jest.fn(),
-            fill: jest.fn(),
-            fillRect: jest.fn(),
-            strokeRect: jest.fn(),
-            clearRect: jest.fn(),
-            beginPath: jest.fn(),
-            closePath: jest.fn(),
-            setLineDash: jest.fn(),
-            moveTo: jest.fn(),
-            lineTo: jest.fn(),
-            stroke: jest.fn(),
-            drawImage: jest.fn(),
-            createPattern: jest.fn(),
-            createLinearGradient: function() {
-              return {
-                addColorStop: jest.fn()
-              };
-            }
-          };
+          return canvasContext;
         }
       };
     };
@@ -112,6 +120,54 @@ describe('Legend.vue', () => {
     expect(wrapper.find(StyleValue).exists()).toBeTruthy();
     jest.useRealTimers();
     done();
+  });
+
+  it('keeps the background transparent for non-SDF point images', () => {
+    wrapper = mount(ImageRenderer, {
+      propsData: {
+        styleData: {
+          style: {
+            type: 'image',
+            shape: 'POINT',
+            fontSize: 35,
+            color: '#EE4D5A',
+            opacity: 0.9,
+            url: 'sprite.png',
+            sprite: { sdf: false, width: 32, height: 32 }
+          }
+        }
+      }
+    });
+
+    wrapper.vm.drawImage({ width: 32, height: 32 });
+
+    expect(canvasContext.fillStyle).toBe('transparent');
+    expect(canvasContext.globalCompositeOperation).toBeUndefined();
+    expect(canvasContext.drawImage).toHaveBeenCalled();
+  });
+
+  it('uses the configured color as the mask source for SDF point images', () => {
+    wrapper = mount(ImageRenderer, {
+      propsData: {
+        styleData: {
+          style: {
+            type: 'image',
+            shape: 'POINT',
+            fontSize: 35,
+            color: '#EE4D5A',
+            opacity: 0.9,
+            url: 'sprite.png',
+            sprite: { sdf: true, width: 32, height: 32 }
+          }
+        }
+      }
+    });
+
+    wrapper.vm.drawImage({ width: 32, height: 32 });
+
+    expect(canvasContext.fillStyle).toBe('#EE4D5A');
+    expect(canvasContext.globalCompositeOperation).toBe('destination-in');
+    expect(canvasContext.drawImage).toHaveBeenCalled();
   });
 
   it('mapload', async done => {
@@ -214,6 +270,106 @@ describe('Legend.vue', () => {
     done();
   });
 
+  it('isOutlineWidthDriven：存在 outlineWidth 分组时为 true，否则为 false', () => {
+    wrapper = mount(SmLegend, { propsData: { mode: 'panel' } });
+    const isDriven = wrapper.vm.isOutlineWidthDriven;
+    expect(isDriven([{ styleField: 'color' }, { styleField: 'outlineWidth' }])).toBe(true);
+    expect(isDriven([{ styleField: 'color' }])).toBe(false);
+    expect(isDriven([])).toBe(false);
+  });
+
+  it('宽度被单独提取时，宽度分组与其它分组的 StyleRenderer 均收到 driven=true', async () => {
+    wrapper = mount(SmLegend, { propsData: { mode: 'panel' } });
+    // 折叠面板内容懒渲染，将面板 key 加入 activeLegend 后内容才挂载
+    wrapper.setData({
+      activeLegend: ['图层A'],
+      legendList: {
+        图层A: [
+          {
+            styleField: 'outlineWidth',
+            themeField: 'widthField',
+            styleGroup: [
+              {
+                start: 0,
+                end: 5,
+                style: {
+                  type: 'style',
+                  shape: 'rectangle',
+                  width: '20px',
+                  height: '20px',
+                  outlineStyle: 'solid',
+                  outlineColor: '#000000',
+                  outlineWidth: 12
+                }
+              }
+            ]
+          },
+          {
+            styleField: 'outlineSymbolsContent',
+            themeField: 'symField',
+            styleGroup: [
+              {
+                start: 0,
+                end: 5,
+                style: {
+                  type: 'style',
+                  shape: 'rectangle',
+                  width: '20px',
+                  height: '20px',
+                  outlineSymbolsContent: {
+                    symbolId: 'line-legend-driven',
+                    style: { paint: { 'line-width': 8, 'line-color': '#000000' } }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    });
+    await wrapper.vm.$nextTick();
+    const renderers = wrapper.findAll(StyleRenderer);
+    expect(renderers.length).toBe(2);
+    renderers.wrappers.forEach(renderer => expect(renderer.props('outlineWidthDriven')).toBe(true));
+    // 宽度分段项按真实宽度 12 绘制，其它分组按默认宽度绘制 1px
+    expect(renderers.wrappers[0].vm.styleRendererData.outlineWidth).toBe(12);
+  });
+
+  it('宽度未被单独提取时，各分组 StyleRenderer 收到 driven=false，符号保持自身宽度', async () => {
+    wrapper = mount(SmLegend, { propsData: { mode: 'panel' } });
+    wrapper.setData({
+      activeLegend: ['图层B'],
+      legendList: {
+        图层B: [
+          {
+            styleField: 'outlineSymbolsContent',
+            themeField: 'symField',
+            styleGroup: [
+              {
+                start: 0,
+                end: 5,
+                style: {
+                  type: 'style',
+                  shape: 'rectangle',
+                  width: '20px',
+                  height: '20px',
+                  outlineSymbolsContent: {
+                    symbolId: 'line-legend-not-driven',
+                    style: { paint: { 'line-width': 8, 'line-color': '#000000' } }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    });
+    await wrapper.vm.$nextTick();
+    const renderers = wrapper.findAll(StyleRenderer);
+    expect(renderers.length).toBe(1);
+    expect(renderers.wrappers[0].props('outlineWidthDriven')).toBe(false);
+  });
+
   it('layerNamesValue updates when useMapLegend changes', async done => {
     jest.useFakeTimers();
     wrapper = mount(SmLegend, {
@@ -243,4 +399,3 @@ describe('Legend.vue', () => {
     done();
   });
 });
-

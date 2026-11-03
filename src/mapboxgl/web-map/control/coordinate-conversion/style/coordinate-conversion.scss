@@ -1,3 +1,4 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../../common/_utils/style/theme/theme.scss';
 @import '../../../../../common/card/style/card.scss';
@@ -52,19 +53,19 @@
   .is-bottom-right,
   .is-top-right {
     .sm-component-coordinate-conversion__auto-width {
-      margin-left: 9px;
+      @include spacing-margin(9px, left, false);
     }
     .sm-component-collapse-card__body {
-      padding-right: 36px;
+      @include spacing-padding(36px, right, false);
     }
   }
   .is-bottom-left,
   .is-top-left {
     .sm-component-coordinate-conversion__icons {
-      padding-right: 9px;
+      @include spacing-padding(9px, right, false);
     }
     .sm-component-collapse-card__body {
-      padding-left: 36px;
+      @include spacing-padding(36px, left, false);
     }
   }
   .sm-component-card-bordered {
@@ -91,7 +92,7 @@
   }
   .sm-component-select-sm .sm-component-select-selection__rendered {
     font-size: 12px;
-    margin-left: 7px;
+    @include spacing-margin(7px, left, false);
     line-height: 24px;
   }
   .sm-component-select-sm .sm-component-select-selection--single {
@@ -112,16 +113,16 @@
     padding: 1px 7px;
   }
   .sm-component-input-affix-wrapper .sm-component-input:not(:last-child) {
-    padding-right: 30px;
+    @include spacing-padding(30px, right, false);
   }
   .sm-component-input-affix-wrapper .sm-component-input-suffix {
-    right: 12px;
+    @include position-row(right, 12px, false, false);
   }
   @include e(a-input) {
     width: 78%;
     height: 24px;
-    margin-left: 4px;
-    margin-right: 8px;
+    @include spacing-margin(4px, left, false);
+    @include spacing-margin(8px, right, false);
     color: inherit;
     background: $component-background;
     .sm-component-input-suffix {
@@ -167,21 +168,21 @@
       line-height: 24px;
       position: absolute;
       top: 0;
-      left: 0;
-      text-align: center;
+      @include position-row(left, 0, false, false);
+      @include text-align-transform(center, false);
     }
     div:nth-child(1) {
-      border-top-left-radius: 4px;
-      border-bottom-left-radius: 4px;
-      margin-left: 1px;
+      @include border-corner-radius(top, left, 4px, false);
+      @include border-corner-radius(bottom, left, 4px, false);
+      @include spacing-margin(1px, left, false);
     }
     div:nth-child(2) {
-      border-top-right-radius: 4px;
-      border-bottom-right-radius: 4px;
-      margin-left: 1px;
+      @include border-corner-radius(top, right, 4px, false);
+      @include border-corner-radius(bottom, right, 4px, false);
+      @include spacing-margin(1px, left, false);
     }
     div:nth-child(3) {
-      margin-left: 4px;
+      @include spacing-margin(4px, left, false);
       border-radius: 4px;
     }
     .sm-component-coordinate-conversion__captured {

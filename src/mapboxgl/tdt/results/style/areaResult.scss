@@ -1,22 +1,23 @@
+@import "vue-iclient/src/common/_utils/style/mixins/rtl-mixin.scss";
 @import '../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../common/_utils/style/theme/theme.scss';
 
 @include b(tdtAreaResults) {
   padding: 20px 0;
   .title {
-    text-align: center;
+    @include text-align-transform(center, false);
   }
   i {
     display: inline-block;
     background: url("#{$--tdt-assets-path}/sprite.png") -485px -152px no-repeat;
     width: 18px;
     height: 18px;
-    margin-right: 8px;
+    @include spacing-margin(8px, right, false);
     vertical-align: top;
   }
   .name {
     color: $primary-color;
     font-weight: 700;
-    margin-left: 2px;
+    @include spacing-margin(2px, left, false);
   }
 }

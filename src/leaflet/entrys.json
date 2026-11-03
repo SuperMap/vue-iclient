@@ -84,6 +84,8 @@
   "_types/event/Pixel": "vue-iclient/src/common/_types/event/Pixel.js",
   "_types/event/Util": "vue-iclient/src/common/_types/event/Util.js",
   "_utils/EchartsDataService": "vue-iclient/src/common/_utils/EchartsDataService.js",
+  "_utils/arabic-number": "vue-iclient/src/common/_utils/arabic-number.js",
+  "_utils/chart-arabic-number": "vue-iclient/src/common/_utils/chart-arabic-number.js",
   "_utils/epsg-define": "vue-iclient/src/common/_utils/epsg-define.js",
   "_utils/get-features": "vue-iclient/src/common/_utils/get-features.js",
   "_utils/global-event": "vue-iclient/src/common/_utils/global-event.js",

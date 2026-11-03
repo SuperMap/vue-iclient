@@ -7,6 +7,7 @@ export default class iPortalDataParameter {
     this.attributeFilter = options.attributeFilter || null;
     this.maxFeatures = options.maxFeatures || 20;
     this.name = options.name || geti18n().t('commontypes.iportalData');
+    this.dataAlias = options.dataAlias;
     this.withCredentials = options.withCredentials || false;
     this.queryMode = options.queryMode || 'SQL';
   }
