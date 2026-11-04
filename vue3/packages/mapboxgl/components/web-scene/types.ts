@@ -56,6 +56,9 @@ export const webSceneProps = () => ({
   sceneFlyToControl: {
     type: Object,
   },
+  sceneFlyRouteControl: {
+    type: Object,
+  },
   sceneFullscreenControl: {
     type: Object,
   },
@@ -101,6 +104,7 @@ export type WebSceneProps = {
   sceneLayerListControl?: Object
   sceneLayerManagerControl?: object
   sceneFlyToControl?: Object
+  sceneFlyRouteControl?: object
   sceneFullscreenControl?: Object
   sceneMeasureControl?: Object
   sceneViewModeSwitcherControl?: Object

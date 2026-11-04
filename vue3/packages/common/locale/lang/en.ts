@@ -460,6 +460,19 @@ export default {
   flyTo: {
     title: 'Fly To'
   },
+  sceneFlyRoute: {
+    title: 'Flight Roam',
+    play: 'Play',
+    pause: 'Pause',
+    stop: 'Stop and exit roaming',
+    stopLabel: 'Flight stop',
+    stopPlaceholder: 'Select a stop',
+    speed: 'Flight speed: {rate}x',
+    loading: 'Loading flight route…',
+    showLine: 'Show flight route',
+    showStop: 'Show flight stops',
+    emptyTip: 'Configure an FPF flight file URL'
+  },
   sceneFullscreen: {
     title: 'Fullscreen'
   },

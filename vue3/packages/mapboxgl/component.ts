@@ -31,6 +31,7 @@ import { SmScale } from '@supermapgis/mapboxgl/components/scale'
 import { SmSceneLayerList } from '@supermapgis/mapboxgl/components/scene-layer-list'
 import { SmSceneLayerManager } from '@supermapgis/mapboxgl/components/scene-layer-manager'
 import { SmSceneFlyTo } from '@supermapgis/mapboxgl/components/scene-fly-to'
+import { SmSceneFlyRoute } from '@supermapgis/mapboxgl/components/scene-fly-route'
 import { SmSceneFullscreen } from '@supermapgis/mapboxgl/components/scene-fullscreen'
 import { SmSceneViewModeSwitcher } from '@supermapgis/mapboxgl/components/scene-view-mode-switcher'
 import { SmSceneZoom } from '@supermapgis/mapboxgl/components/scene-zoom'
@@ -82,6 +83,7 @@ export default [
   SmSceneLayerList,
   SmSceneLayerManager,
   SmSceneFlyTo,
+  SmSceneFlyRoute,
   SmSceneFullscreen,
   SmSceneViewModeSwitcher,
   SmSceneZoom,

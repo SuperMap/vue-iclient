@@ -356,6 +356,19 @@ export default {
   flyTo: {
     title: '飞行定位'
   },
+  sceneFlyRoute: {
+    title: '飞行漫游',
+    play: '播放',
+    pause: '暂停',
+    stop: '停止并退出漫游',
+    stopLabel: '飞行站点',
+    stopPlaceholder: '请选择站点',
+    speed: '飞行速度：{rate}x',
+    loading: '飞行路线加载中…',
+    showLine: '显示飞行路线',
+    showStop: '显示飞行站点',
+    emptyTip: '请配置 FPF 飞行文件地址'
+  },
   sceneFullscreen: {
     title: '全屏'
   },

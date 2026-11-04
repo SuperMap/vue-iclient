@@ -26,6 +26,7 @@ import SmMessage from '@supermapgis/common/components/message/Message'
 import SmSceneLayerList from '@supermapgis/mapboxgl/components/scene-layer-list/scene-layer-list.vue'
 import SmSceneLayerManager from '@supermapgis/mapboxgl/components/scene-layer-manager/scene-layer-manager.vue'
 import SmSceneFlyTo from '@supermapgis/mapboxgl/components/scene-fly-to/scene-fly-to.vue'
+import SmSceneFlyRoute from '@supermapgis/mapboxgl/components/scene-fly-route/scene-fly-route.vue'
 import SmSceneFullscreen from '@supermapgis/mapboxgl/components/scene-fullscreen/scene-fullscreen.vue'
 import SmSceneMeasure from '@supermapgis/mapboxgl/components/scene-measure/scene-measure.vue'
 import SmSceneViewModeSwitcher from '@supermapgis/mapboxgl/components/scene-view-mode-switcher/scene-view-mode-switcher.vue'
@@ -49,6 +50,7 @@ const componentMap: Record<string, any> = {
   SmSceneLayerList,
   SmSceneLayerManager,
   SmSceneFlyTo,
+  SmSceneFlyRoute,
   SmSceneFullscreen,
   SmSceneMeasure,
   SmSceneViewModeSwitcher,
@@ -259,11 +261,11 @@ watch(
   { deep: true }
 );
 
-watch(() => props.options.scanEffect, (scanEffect) => {
+watch(() => props.options?.scanEffect, (scanEffect) => {
   webSceneViewModel?.setScanEffect(scanEffect);
 });
 
-watch(() => props.options.position, (newVal, oldVal) => {
+watch(() => props.options?.position, (newVal, oldVal) => {
   if (webSceneViewModel) {
     let position = null;
     if (webSceneViewModel.viewer) {
@@ -277,7 +279,7 @@ watch(() => props.options.position, (newVal, oldVal) => {
   }
 });
 
-watch(() => props.options.tiandituOptions, (newVal, oldVal) => {
+watch(() => props.options?.tiandituOptions, (newVal, oldVal) => {
   if (!isEqual(newVal, oldVal)) {
     webSceneViewModel?.setTiandituOption(newVal);
   }
