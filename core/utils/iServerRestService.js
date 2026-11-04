@@ -122,12 +122,15 @@ export async function checkAndRectifyFeatures({ features, epsgCode, projectionUr
  * @class iServerRestService
  * @classdesc iServer 数据请求类。
  * @category  BaseTypes Util
- * @param {string} url - iServer 数据服务或地图服务地址。
  * @fires iServerRestService#getdatasucceeded
  * @fires iServerRestService#getdatafailed
  * @fires iServerRestService#featureisempty
  */
 export default class iServerRestService extends Events {
+  /**
+   * @param {string} url - iServer 数据服务或地图服务地址。
+   * @param {*} [options] - 可选请求配置；未传入时使用默认配置。
+   */
   constructor(url, options) {
     super();
     this.url = url;
@@ -204,6 +207,9 @@ export default class iServerRestService extends Events {
    * @param {Object} [queryInfo.maxFeatures] - 最多可返回的要素数量。
    * @param {Object} [queryInfo.attributeFilter] - 属性过滤条件。
    * @param {Object} [queryInfo.keyWord] - 筛选关键字。
+   * @param {string} [queryInfo.name] - 内部生成的查询图层名。
+   * @param {string[]} [queryInfo.datasetNames] - 内部生成的数据集名列表。
+   * @param {boolean} [queryInfo.withCredentials] - 是否携带凭据。
    */
   getDataFeatures(datasetInfo, queryInfo) {
     let { datasetName, dataSourceName, dataUrl } = datasetInfo;
@@ -276,11 +282,12 @@ export default class iServerRestService extends Events {
    * @param {string} datasetInfo.dataSourceName - 数据源名。
    * @param {string} datasetInfo.datasetName - 数据集名。
    * @param {Object} queryInfo - 查询参数。
-   * @param {Object} queryInfo.geometry - 查询几何对象。
+   * @param {Object} [queryInfo.geometry] - 查询几何对象；缺失时由方法统一抛出参数错误。
    * @param {string} [queryInfo.spatialQueryMode='INTERSECT'] - 空间查询模式。
    * @param {string} [queryInfo.attributeFilter] - 属性过滤条件。
    * @param {number} [queryInfo.maxFeatures] - 最多返回要素数。
    * @param {boolean} [queryInfo.withCredentials] - 是否携带凭据。
+   * @param {string} [queryInfo.orderBy] - 排序字段。
    * @returns {Promise} 返回 GeoJSON FeatureCollection（serviceResult.result.features）。
    * @example
    *   const service = new iServerRestService(dataUrl);
@@ -445,6 +452,7 @@ export default class iServerRestService extends Events {
 
   async _getFeaturesSucceed(results) {
     let features;
+    /** @type {Record<string, any>} 事件数据会在统计结果上附加 REST 返回的元信息。 */
     let data;
     if (results.result && results.result.recordsets) {
       // 数据来自restmap

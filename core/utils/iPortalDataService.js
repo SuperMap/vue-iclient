@@ -236,6 +236,12 @@ export default class iPortalDataService extends Events {
    * 结构化数据（OGC API Features）单页查询。
    * 过滤条件先按 structureddata.json 的 fieldNames → tableFieldNames 换成表字段名，
    * 再转成 CQL（属性名双引号、字符串值单引号）。
+   * @param {Object} params
+   * @param {string} params.url
+   * @param {number} params.count
+   * @param {number} params.offset
+   * @param {Object} [params.queryInfo]
+   * @param {Array|string} [params.queryInfo.attributeFilter]
    */
   async _getStructureData({ url, count, offset, queryInfo = {} }) {
     let queryParams = `limit=${count}`;

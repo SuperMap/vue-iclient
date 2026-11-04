@@ -301,7 +301,8 @@ export function loadSecureScript(url) {
 
   // 4. 沙箱化加载（现代浏览器）
   if ('sandbox' in HTMLScriptElement.prototype) {
-    $script.sandbox = 'allow-scripts'
+    const sandboxScript = /** @type {HTMLScriptElement & { sandbox: string }} */ ($script)
+    sandboxScript.sandbox = 'allow-scripts'
   }
 
   document.head.appendChild($script)

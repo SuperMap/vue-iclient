@@ -1,3 +1,12 @@
+/**
+ * 字段信息参数可省略；缺省时由要素属性推导字段，保持轻量调用与完整 REST 元数据调用都可用。
+ * @param {*} features
+ * @param {*} [fields]
+ * @param {*} [fieldCaptions]
+ * @param {*} [fieldTypes]
+ * @param {*} [originalFields]
+ * @param {*} [isSystemFields]
+ */
 export function statisticsFeatures(
   features,
   fields,

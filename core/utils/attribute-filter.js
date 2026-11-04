@@ -11,7 +11,7 @@ import { mapboxFilterToQueryFilter } from '@supermapgis/iclient-common/util/Filt
  * 表达式形状与 MapStudio 图层过滤面板、MapDashboard 的 DataFilterConditions 一致：
  * `['all' | 'any' | 'none', ['==', '字段', 值], ['in', '字段', 值1, 值2], ...]`。
  *
- * @param {Array|string} filter - mapbox filter 表达式或旧版文本条件。
+ * @param {Array|string|undefined} filter - mapbox filter 表达式、旧版文本条件或未设置的条件。
  * @param {string} [dataType] - 数据源类型，'STRUCTUREDDATA' 时按结构化数据 CQL 生成。
  * @returns {string} attributeFilter / CQL filter 文本；没有条件时返回空串。
  */
@@ -43,9 +43,9 @@ function toTableFieldName(field, fieldMap) {
  * `FilterUtil.replaceFilterFieldNames` 一致：递归处理 all / any / none，
  * 映射里没有的名字（含本来就是表字段名的情况）原样保留。
  *
- * @param {Array} filter - mapbox filter 表达式。
+ * @param {Array|string|undefined} filter - mapbox 表达式、旧版文本条件或未设置的条件。
  * @param {{toTableField?: Object, toTableFieldLower?: Object}|null} fieldMap - 字段名映射。
- * @returns {Array} 替换后的表达式；没有表达式或没有映射时原样返回。
+ * @returns {Array|string|undefined} 替换后的表达式；文本条件、未设置条件或没有映射时原样返回。
  */
 export function mapFilterFieldNames(filter, fieldMap) {
   if (!fieldMap || !Array.isArray(filter)) {
