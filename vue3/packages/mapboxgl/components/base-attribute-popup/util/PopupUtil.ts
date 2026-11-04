@@ -1,11 +1,10 @@
-import { isString } from 'lodash-es';
 import { default as CalcExpression, ExperssionTypes, AttributeTypes } from './CalcExpression';
 
 export function formatValue2String(v?: boolean | string | number): string {
     if (v === undefined) {
         return ''
     }
-    if (isString(v)) {
+    if (typeof v === 'string') {
         return v
     }
     return v + ''

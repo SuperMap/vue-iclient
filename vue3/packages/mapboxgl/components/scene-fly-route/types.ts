@@ -2,10 +2,10 @@ import type { PropType } from 'vue'
 import type { ShortEmits, SceneGetterProps, ThemeProps } from '@supermapgis/common/utils/index.common'
 import type { CardProps, ControlProps } from '@supermapgis/mapboxgl/utils'
 import type {
-  SceneFlyOptions,
-  SceneFlyStatus,
-  SceneFlyStop
-} from 'vue-iclient-controllers-mapboxgl/src/SceneFlyViewModel'
+  SceneFlyRouteOptions,
+  SceneFlyRouteStatus,
+  SceneFlyRouteStop
+} from '@supermapgis/iclient-components-core/mapboxgl/src/SceneFlyRouteViewModel'
 import {
   getPropsDefaults,
   sceneGetterProps,
@@ -27,7 +27,7 @@ export interface SceneFlyRouteProps
   /** 是否显示飞行站点，默认 true */
   isStopVisible?: boolean
   /** 兼容整体配置的写法 */
-  options?: Partial<SceneFlyOptions>
+  options?: Partial<SceneFlyRouteOptions>
 }
 
 export const sceneFlyRouteProps = () => ({
@@ -48,7 +48,7 @@ export const sceneFlyRouteProps = () => ({
     default: true
   },
   options: {
-    type: Object as PropType<Partial<SceneFlyOptions>>,
+    type: Object as PropType<Partial<SceneFlyRouteOptions>>,
     default: () => ({})
   }
 })
@@ -64,9 +64,9 @@ export const sceneFlyRoutePropsDefault = getPropsDefaults<SceneFlyRouteProps>(
 )
 
 export interface SceneFlyRouteEvents {
-  ready: (payload: { stops: SceneFlyStop[] }) => void
-  statusChange: (payload: { status: SceneFlyStatus }) => void
-  stopArrived: (payload: { index: number; stop: SceneFlyStop }) => void
+  ready: (payload: { stops: SceneFlyRouteStop[] }) => void
+  statusChange: (payload: { status: SceneFlyRouteStatus }) => void
+  stopArrived: (payload: { index: number; stop: SceneFlyRouteStop }) => void
   error: (payload: { error: unknown }) => void
 }
 

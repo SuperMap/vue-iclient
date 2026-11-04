@@ -3,6 +3,7 @@
   "compilerOptions": {
     "composite": true,
     "jsx": "preserve",
+    "moduleResolution": "bundler",
     "lib": ["ES2018", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
     "paths": {
