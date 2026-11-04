@@ -121,19 +121,19 @@ const position = computed(() => props.iconPosition)
 
 const rotateDeg = computed(() => {
   return {
-    'top-right': ['rotate(-45deg)', 'rotate(135deg)'],
-    'top-left': ['rotate(-135deg)', 'rotate(45deg)'],
-    'bottom-left': ['rotate(135deg)', 'rotate(-45deg)'],
-    'bottom-right': ['rotate(45deg)', 'rotate(-135deg)']
+    'top-right': ['rotate(135deg)', 'rotate(-45deg)'],
+    'top-left': ['rotate(45deg)', 'rotate(-135deg)'],
+    'bottom-left': ['rotate(-45deg)', 'rotate(135deg)'],
+    'bottom-right': ['rotate(-135deg)', 'rotate(45deg)']
   }
 })
 
 const hasHeaderRotateDeg = computed(() => {
   return {
-    'top-right': ['rotate(-45deg)', 'rotate(135deg)'],
-    'top-left': ['rotate(-135deg)', 'rotate(45deg)'],
-    'bottom-left': ['rotate(-135deg)', 'rotate(45deg)'],
-    'bottom-right': ['rotate(-45deg)', 'rotate(135deg)']
+    'top-right': ['rotate(135deg)', 'rotate(-45deg)'],
+    'top-left': ['rotate(45deg)', 'rotate(-135deg)'],
+    'bottom-left': ['rotate(-45deg)', 'rotate(135deg)'],
+    'bottom-right': ['rotate(-135deg)', 'rotate(45deg)']
   }
 })
 
