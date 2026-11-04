@@ -1,7 +1,7 @@
 import type { PropType } from 'vue'
 import type { SceneGetterProps, ThemeProps } from '@supermapgis/common/utils/index.common'
 import type { CardProps, ControlProps } from '@supermapgis/mapboxgl/utils'
-import type { OpennessAnalysisOptions } from 'vue-iclient-core/utils/scene/openness-analysis'
+import type { OpennessAnalysisOptions } from '@supermapgis/iclient-components-core/core/utils/scene/openness-analysis'
 import { getPropsDefaults, sceneGetterProps, themeProps } from '@supermapgis/common/utils/index.common'
 import { cardProps, controlProps } from '@supermapgis/mapboxgl/utils'
 

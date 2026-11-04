@@ -1,6 +1,6 @@
-import CircleStyle from 'vue-iclient-controllers-mapboxgl/src/types/CircleStyle';
-import LineStyle from 'vue-iclient-controllers-mapboxgl/src/types/LineStyle';
-import FillStyle from 'vue-iclient-controllers-mapboxgl/src/types/FillStyle';
+import CircleStyle from '@supermapgis/iclient-components-core/mapboxgl/src/types/CircleStyle';
+import LineStyle from '@supermapgis/iclient-components-core/mapboxgl/src/types/LineStyle';
+import FillStyle from '@supermapgis/iclient-components-core/mapboxgl/src/types/FillStyle';
 
 /**
  * 点选/查询/属性表等高亮图层的默认样式。

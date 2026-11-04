@@ -225,15 +225,9 @@ importers:
       vitest-sonar-reporter:
         specifier: ^2.0.0
         version: 2.0.4(vitest@3.2.4(@types/node@22.17.1)(jiti@2.5.1)(jsdom@25.0.1)(sass@1.90.0))
-      vue-iclient-controllers-mapboxgl:
+      '@supermapgis/iclient-components-core':
         specifier: workspace:*
         version: link:../controllers/mapboxgl
-      vue-iclient-core:
-        specifier: workspace:*
-        version: link:../core
-      vue-iclient-static:
-        specifier: workspace:*
-        version: link:../static
       vue-tsc:
         specifier: ^2.2.2
         version: 2.2.12(typescript@5.6.3)
@@ -312,28 +306,9 @@ importers:
       proj4:
         specifier: '>=2.15.0'
         version: 2.19.10
-    devDependencies:
-      '@types/lodash':
-        specifier: ^4.17.15
-        version: 4.17.20
-      '@types/mapbox-gl':
-        specifier: ^1.12.1
-        version: 1.13.10
-
-  ../core:
-    dependencies:
-      '@supermapgis/iclient-common':
-        specifier: ^12.1.0-r
-        version: 12.1.0-r(ol@6.15.1)
-      '@turf/center':
-        specifier: '>=5.1.5'
-        version: 7.3.4
       '@turf/circle':
         specifier: '>=7.3.4'
         version: 7.3.4
-      lodash.clonedeep:
-        specifier: '>=4.0.1'
-        version: 4.5.0
       lodash.max:
         specifier: '>=4.0.1'
         version: 4.0.1
@@ -346,9 +321,6 @@ importers:
       omit.js:
         specifier: '>=2.0.2'
         version: 2.0.2
-      proj4:
-        specifier: '>=2.15.0'
-        version: 2.19.10
       simple-statistics:
         specifier: '>=7.8.3'
         version: 7.8.8
@@ -356,12 +328,103 @@ importers:
         specifier: '>=1.6.0'
         version: 1.6.0
     devDependencies:
+      '@rollup/plugin-commonjs':
+        specifier: ^22.0.1
+        version: 22.0.2(rollup@4.34.6)
+      '@rollup/plugin-json':
+        specifier: ^6.1.0
+        version: 6.1.0(rollup@4.34.6)
+      '@rollup/plugin-node-resolve':
+        specifier: ^13.3.0
+        version: 13.3.0(rollup@4.34.6)
+      '@types/geojson':
+        specifier: ^7946.0.16
+        version: 7946.0.16
       '@types/lodash':
         specifier: ^4.17.15
-        version: 4.17.20
+        version: 4.17.23
       '@types/mapbox-gl':
         specifier: ^1.12.1
         version: 1.13.10
+      fast-glob:
+        specifier: ^3.2.11
+        version: 3.3.3
+      rollup:
+        specifier: 4.34.6
+        version: 4.34.6
+      rollup-plugin-esbuild:
+        specifier: ^6.1.1
+        version: 6.1.1(esbuild@0.19.12)(rollup@4.34.6)
+      typescript:
+        specifier: ~5.6.3
+        version: 5.6.3
+
+  ../core:
+    dependencies:
+      '@supermapgis/iclient-common':
+        specifier: ^12.1.0-r
+        version: 12.1.0-r(ol@6.15.1)
+      '@turf/center':
+        specifier: ^7.2.0
+        version: 7.3.4
+      '@turf/circle':
+        specifier: ^7.3.4
+        version: 7.3.4
+      lodash.clonedeep:
+        specifier: ^4.5.0
+        version: 4.5.0
+      lodash.max:
+        specifier: ^4.0.3
+        version: 4.0.1
+      lodash.orderby:
+        specifier: ^4.6.0
+        version: 4.6.0
+      lodash.tonumber:
+        specifier: ^4.0.3
+        version: 4.0.3
+      omit.js:
+        specifier: ^2.0.2
+        version: 2.0.2
+      proj4:
+        specifier: ^2.15.0
+        version: 2.19.10
+      simple-statistics:
+        specifier: ^7.8.7
+        version: 7.8.8
+      tinycolor2:
+        specifier: ^1.6.0
+        version: 1.6.0
+    devDependencies:
+      '@rollup/plugin-alias':
+        specifier: ^5.1.1
+        version: 5.1.1(rollup@4.34.6)
+      '@rollup/plugin-commonjs':
+        specifier: ^22.0.1
+        version: 22.0.2(rollup@4.34.6)
+      '@rollup/plugin-json':
+        specifier: ^6.1.0
+        version: 6.1.0(rollup@4.34.6)
+      '@rollup/plugin-node-resolve':
+        specifier: ^13.3.0
+        version: 13.3.0(rollup@4.34.6)
+      '@types/geojson':
+        specifier: ^7946.0.16
+        version: 7946.0.16
+      '@types/lodash':
+        specifier: ^4.17.15
+        version: 4.17.20
+      fast-glob:
+        specifier: ^3.2.11
+        version: 3.3.3
+      rollup:
+        specifier: 4.34.6
+        version: 4.34.6
+      rollup-plugin-esbuild:
+        specifier: ^6.1.1
+        version: 6.1.1(esbuild@0.19.12)(rollup@4.34.6)
+      typescript:
+        specifier: ~5.6.3
+        version: 5.6.3
 
   ../static: {}
 

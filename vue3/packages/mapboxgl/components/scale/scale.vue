@@ -17,7 +17,7 @@ import type { Map } from 'mapbox-gl'
 import type { ScaleProps, ScaleEvents } from './types'
 import { useMapGetter, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useMapControl } from '@supermapgis/mapboxgl/hooks'
-import ScaleViewModel from 'vue-iclient-controllers-mapboxgl/src/ScaleViewModel'
+import ScaleViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/ScaleViewModel'
 import { scalePropsDefault } from './types'
 
 const props = withDefaults(defineProps<ScaleProps>(), scalePropsDefault)

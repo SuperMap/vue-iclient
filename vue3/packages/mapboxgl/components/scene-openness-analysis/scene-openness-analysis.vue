@@ -78,7 +78,7 @@
 import { onBeforeUnmount, reactive, watch, useTemplateRef } from 'vue'
 import { useLocale, useSceneGetter, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useSceneControl } from '@supermapgis/mapboxgl/hooks'
-import { OpennessAnalysis } from 'vue-iclient-core/utils/scene/openness-analysis'
+import { OpennessAnalysis } from '@supermapgis/iclient-components-core/core/utils/scene/openness-analysis'
 import SmCard from '@supermapgis/common/components/card/Card'
 import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'
 import SmSlider from '@supermapgis/common/components/slider/Slider'

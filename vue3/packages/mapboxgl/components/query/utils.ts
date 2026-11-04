@@ -1,4 +1,4 @@
-import type { QueryParameter } from 'vue-iclient-controllers-mapboxgl/src/QueryViewModel'
+import type { QueryParameter } from '@supermapgis/iclient-components-core/mapboxgl/src/QueryViewModel'
 
 export type QueryParameterWithDefaults = QueryParameter & {
   sqlDefault?: string

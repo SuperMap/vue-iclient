@@ -1,5 +1,6 @@
-import 'vue-iclient-static/libs/json-sql/jsonsql';
-import { normalizeFullWidthCharacters } from 'vue-iclient-core/utils/filter-characters';
+// 通过聚合包的 static 子路径复用运行时资源，避免 core 构建再生成一份副本。
+import '@supermapgis/iclient-components-core/static/libs/json-sql/jsonsql';
+import { normalizeFullWidthCharacters } from '@supermapgis/iclient-components-core/core/utils/filter-characters';
 
 /**
  * 用 json-sql（static/libs/json-sql/jsonsql）在客户端执行 attributeFilter。
@@ -42,7 +43,7 @@ export async function ensureJsonSql() {
     return true;
   }
   if (!jsonSqlLoadPromise) {
-    jsonSqlLoadPromise = import('vue-iclient-static/libs/json-sql/jsonsql').catch(() => null);
+    jsonSqlLoadPromise = import('@supermapgis/iclient-components-core/static/libs/json-sql/jsonsql').catch(() => null);
   }
   await jsonSqlLoadPromise;
   return Boolean(getJsonSql());

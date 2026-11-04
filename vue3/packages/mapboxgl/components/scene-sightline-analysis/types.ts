@@ -1,7 +1,7 @@
 import type { PropType } from 'vue'
 import type { SceneGetterProps, ThemeProps } from '@supermapgis/common/utils/index.common'
 import type { CardProps, ControlProps } from '@supermapgis/mapboxgl/utils'
-import type { SightlineAnalysisOptions } from 'vue-iclient-core/utils/scene/sightline-analysis'
+import type { SightlineAnalysisOptions } from '@supermapgis/iclient-components-core/core/utils/scene/sightline-analysis'
 import { getPropsDefaults, sceneGetterProps, themeProps } from '@supermapgis/common/utils/index.common'
 import { cardProps, controlProps } from '@supermapgis/mapboxgl/utils'
 

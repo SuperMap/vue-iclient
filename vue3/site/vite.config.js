@@ -16,12 +16,17 @@ export default defineConfig({
     alias: {
       '@supermapgis/mapboxgl': fileURLToPath(new URL('../packages/mapboxgl', import.meta.url)),
       '@supermapgis/common': fileURLToPath(new URL('../packages/common', import.meta.url)),
-      'vue-iclient-core': fileURLToPath(new URL('../../core', import.meta.url)),
-      'vue-iclient-static': fileURLToPath(new URL('../../static', import.meta.url)),
-      'vue-iclient-controllers-mapboxgl': fileURLToPath(new URL('../../controllers/mapboxgl', import.meta.url)),
+      '@supermapgis/iclient-components-core/mapboxgl': fileURLToPath(new URL('../../controllers/mapboxgl', import.meta.url)),
+      '@supermapgis/iclient-components-core/core': fileURLToPath(new URL('../../core', import.meta.url)),
+      '@supermapgis/iclient-components-core/static': fileURLToPath(
+        new URL('../../static', import.meta.url)
+      ),
+      '@supermapgis/iclient-components-core': fileURLToPath(new URL('../../core', import.meta.url)),
       // static/libs/EchartsLayer.js  require('echarts) 找不到echarts
       'echarts': fileURLToPath(new URL('../node_modules/echarts', import.meta.url)),
-      'mapbox-gl': fileURLToPath(new URL('../../static/libs/mapboxgl/mapbox-gl-enhance', import.meta.url)),
+      'mapbox-gl': fileURLToPath(
+        new URL('../../static/libs/mapboxgl/mapbox-gl-enhance', import.meta.url)
+      ),
       // node_modules: fileURLToPath(new URL('../node_modules', import.meta.url))
     }
   },
@@ -60,17 +65,16 @@ export default defineConfig({
   optimizeDeps: {
     include: [
       'mapbox-gl',
-      'vue-iclient-static/libs/echarts-layer/EchartsLayer',
-      'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw',
-      'mapbox-gl'
+      '@supermapgis/iclient-components-core/static/libs/echarts-layer/EchartsLayer',
+      '@supermapgis/iclient-components-core/static/libs/mapbox-gl-draw/mapbox-gl-draw'
     ]
   },
   build: {
     commonjsOptions: {
       include: [
         'mapbox-gl',
-        'vue-iclient-static/libs/echarts-layer/EchartsLayer',
-        'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw'
+        '@supermapgis/iclient-components-core/static/libs/echarts-layer/EchartsLayer',
+        '@supermapgis/iclient-components-core/static/libs/mapbox-gl-draw/mapbox-gl-draw'
       ]
     },
     rollupOptions: {

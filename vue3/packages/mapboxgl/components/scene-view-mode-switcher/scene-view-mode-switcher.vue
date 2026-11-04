@@ -12,13 +12,13 @@
 </template>
 
 <script setup lang="ts">
-import type { ViewMode, ViewModeSwitcherChangeEvent } from 'vue-iclient-core/utils/scene'
+import type { ViewMode, ViewModeSwitcherChangeEvent } from '@supermapgis/iclient-components-core/core/utils/scene'
 import type { SceneViewModeSwitcherProps } from './types'
 import { computed, ref, onBeforeUnmount } from 'vue'
 import { useLocale, useSceneGetter, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useSceneControl } from '@supermapgis/mapboxgl/hooks'
 import { sceneViewModeSwitcherPropsDefault } from './types'
-import { ViewModeSwitcher } from 'vue-iclient-core/utils/scene'
+import { ViewModeSwitcher } from '@supermapgis/iclient-components-core/core/utils/scene'
 import SmButton from '@supermapgis/common/components/button/Button'
 
 defineOptions({

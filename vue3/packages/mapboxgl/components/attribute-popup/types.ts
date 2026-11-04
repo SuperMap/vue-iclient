@@ -1,13 +1,13 @@
 import type { PropType } from 'vue'
 import type { MapGetterProps, ThemeProps } from '@supermapgis/common/utils/index.common'
-import type { HighlightStyle } from 'vue-iclient-controllers-mapboxgl/src/LayerHighlightViewModel'
+import type { HighlightStyle } from '@supermapgis/iclient-components-core/mapboxgl/src/LayerHighlightViewModel'
 import type { PopupConfig, PopupInfo } from '@supermapgis/mapboxgl/components/base-attribute-popup/types'
 import {
   getPropsDefaults,
   mapGetterProps,
   themeProps
 } from '@supermapgis/common/utils/index.common'
-import { getDefaultLayerStyle } from 'vue-iclient-controllers-mapboxgl/src/types'
+import { getDefaultLayerStyle } from '@supermapgis/iclient-components-core/mapboxgl/src/types'
 
 export type {
   videoOptions,

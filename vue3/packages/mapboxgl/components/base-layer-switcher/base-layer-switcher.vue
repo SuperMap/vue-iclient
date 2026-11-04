@@ -47,7 +47,7 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { isEqual, cloneDeep } from 'lodash-es'
 import { useLocale, useMapGetter, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useMapControl } from '@supermapgis/mapboxgl/hooks'
-import BaseLayerSwitcherViewModel from 'vue-iclient-controllers-mapboxgl/src/BaseLayerSwitcherViewModel'
+import BaseLayerSwitcherViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/BaseLayerSwitcherViewModel'
 import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'
 import { baseLayerSwitcherPropsDefault } from './types'
 

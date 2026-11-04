@@ -13,7 +13,7 @@
 
 <script>
 import { CountTo } from 'vue3-count-to';
-import { isTransparent } from 'vue-iclient-core/utils/util';
+import { isTransparent } from '@supermapgis/iclient-components-core/core/utils/util';
 
 export default {
   name: 'SmCountTo',

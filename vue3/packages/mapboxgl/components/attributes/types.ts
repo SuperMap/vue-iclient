@@ -2,10 +2,10 @@ import type { PropType } from 'vue'
 import type { TableProps } from 'ant-design-vue'
 import type { MapGetterProps, MapGetterEvents, ShortEmits, ThemeProps } from '@supermapgis/common/utils/index.common'
 import { getPropsDefaults, mapGetterProps, themeProps } from '@supermapgis/common/utils/index.common'
-import { getDefaultLayerStyle } from 'vue-iclient-controllers-mapboxgl/src/types'
-import type CircleStyle from 'vue-iclient-controllers-mapboxgl/src/types/CircleStyle'
-import type FillStyle from 'vue-iclient-controllers-mapboxgl/src/types/FillStyle'
-import type LineStyle from 'vue-iclient-controllers-mapboxgl/src/types/LineStyle'
+import { getDefaultLayerStyle } from '@supermapgis/iclient-components-core/mapboxgl/src/types'
+import type CircleStyle from '@supermapgis/iclient-components-core/mapboxgl/src/types/CircleStyle'
+import type FillStyle from '@supermapgis/iclient-components-core/mapboxgl/src/types/FillStyle'
+import type LineStyle from '@supermapgis/iclient-components-core/mapboxgl/src/types/LineStyle'
 
 export interface PaginationParams {
   defaultCurrent?: number

@@ -102,9 +102,9 @@ import { textListPropsDefault } from './types'
 import { ref, computed, watch, onMounted, onBeforeUnmount, onBeforeMount, nextTick } from 'vue';
 import { addListener, removeListener } from 'resize-detector';
 import { debounce, merge, isEqual, cloneDeep } from 'lodash-es'
-import getFeatures from 'vue-iclient-core/utils/get-features';
+import getFeatures from '@supermapgis/iclient-components-core/core/utils/get-features';
 import { useTimer, useTheme, useLocale } from '@supermapgis/common/hooks/index.common'
-import { getColorWithOpacity } from 'vue-iclient-core/utils/util';
+import { getColorWithOpacity } from '@supermapgis/iclient-components-core/core/utils/util';
 import SmSpin from '@supermapgis/common/components/spin/Spin';
 
 const { t } = useLocale()

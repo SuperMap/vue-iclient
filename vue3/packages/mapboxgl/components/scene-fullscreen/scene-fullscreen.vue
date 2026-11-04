@@ -18,7 +18,7 @@ import { sceneFullscreenPropsDefault } from './types'
 import { useLocale, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useSceneControl } from '@supermapgis/mapboxgl/hooks'
 import SmButton from '@supermapgis/common/components/button/Button'
-import { toggleFullscreen } from 'vue-iclient-core/utils/scene'
+import { toggleFullscreen } from '@supermapgis/iclient-components-core/core/utils/scene'
 
 defineOptions({
   name: 'SmSceneFullscreen'

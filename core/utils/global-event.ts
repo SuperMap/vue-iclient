@@ -1,4 +1,4 @@
-import { Events } from 'vue-iclient-core/types/event/Events';
+import { Events } from '@supermapgis/iclient-components-core/core/types/event/Events';
 
 export default class GlobalEvent<T = Record<string, any>> extends Events {
   _theme: T;

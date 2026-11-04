@@ -31,14 +31,23 @@
       "@supermapgis/mapboxgl/": [
         "packages/mapboxgl/"
       ],
-      "vue-iclient-core/": [
-        "../core/"
+      "@supermapgis/iclient-components-core": [
+        "../core/index.ts"
       ],
-      "vue-iclient-static/": [
-        "../static/"
+      "@supermapgis/iclient-components-core/core": [
+        "../core/index.ts"
       ],
-      "vue-iclient-controllers-mapboxgl/": [
-        "../controllers/mapboxgl/"
+      "@supermapgis/iclient-components-core/core/*": [
+        "../core/*"
+      ],
+      "@supermapgis/iclient-components-core/mapboxgl": [
+        "../controllers/mapboxgl/index.ts"
+      ],
+      "@supermapgis/iclient-components-core/mapboxgl/*": [
+        "../controllers/mapboxgl/*"
+      ],
+      "@supermapgis/iclient-components-core/static/*": [
+        "../static/*"
       ]
     },
     "types": [

@@ -1,4 +1,4 @@
-import { FunctionExt } from 'vue-iclient-core/types/event/BaseTypes';
+import { FunctionExt } from '@supermapgis/iclient-components-core/core/types/event/BaseTypes';
 
 describe('BaseTypes', () => {
   const fnc = function () {

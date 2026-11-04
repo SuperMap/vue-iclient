@@ -10,7 +10,6 @@
     "dist",
     "lib",
     "es",
-    "static",
     "global.d.ts",
     "theme-chalk"
   ],
@@ -22,6 +21,7 @@
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",
     "@supermapgis/data-edit": "^1.0.150",
+    "@supermapgis/iclient-components-core": "workspace:^",
     "@turf/area": "^7.2.0",
     "@turf/bbox": "^7.2.0",
     "@turf/center": "^7.2.0",

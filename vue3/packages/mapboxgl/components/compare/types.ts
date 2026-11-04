@@ -1,4 +1,4 @@
-import { orientationTypes } from 'vue-iclient-controllers-mapboxgl/src/CompareViewModel'
+import { orientationTypes } from '@supermapgis/iclient-components-core/mapboxgl/src/CompareViewModel'
 import { getPropsDefaults } from '@supermapgis/common/utils/index.common'
 import type { ThemeProps } from '@supermapgis/common/utils/index.common'
 

@@ -1,10 +1,10 @@
 import type { PropType } from 'vue'
 import type { Map } from 'mapbox-gl'
-import type { MapOptions } from 'vue-iclient-controllers-mapboxgl/src/WebMapViewModel'
+import type { MapOptions } from '@supermapgis/iclient-components-core/mapboxgl/src/WebMapViewModel'
 import type {
   MapEventName,
   MapEventHandler
-} from 'vue-iclient-controllers-mapboxgl/src/utils/MapEvents'
+} from '@supermapgis/iclient-components-core/mapboxgl/src/utils/MapEvents'
 import type { ShortEmits } from '@supermapgis/common/utils/index.common'
 import type { DefaultPopupProps } from '@supermapgis/mapboxgl/components/attribute-popup/types'
 import type { BaseLayerSwitcherProps } from '@supermapgis/mapboxgl/components/base-layer-switcher/types'

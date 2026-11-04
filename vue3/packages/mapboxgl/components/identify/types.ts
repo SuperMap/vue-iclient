@@ -3,9 +3,9 @@ import type { MapGetterProps, MapGetterEvents, ShortEmits, ThemeProps } from '@s
 import type {
   HighlightStyle,
   MapSelectionChangedEmit
-} from 'vue-iclient-controllers-mapboxgl/src/LayerHighlightViewModel'
+} from '@supermapgis/iclient-components-core/mapboxgl/src/LayerHighlightViewModel'
 import { getPropsDefaults, mapGetterProps, themeProps } from '@supermapgis/common/utils/index.common'
-import { getDefaultLayerStyle } from 'vue-iclient-controllers-mapboxgl/src/types'
+import { getDefaultLayerStyle } from '@supermapgis/iclient-components-core/mapboxgl/src/types'
 
 export type { MapSelectionChangedEmit }
 

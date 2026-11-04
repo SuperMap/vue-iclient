@@ -103,7 +103,7 @@ import {
   SightlineAnalysis,
   SightNetworkAnalysis,
   ViewShedAnalysis
-} from 'vue-iclient-core/utils/scene/sightline-analysis'
+} from '@supermapgis/iclient-components-core/core/utils/scene/sightline-analysis'
 import SmCard from '@supermapgis/common/components/card/Card'
 import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'
 import SmSlider from '@supermapgis/common/components/slider/Slider'

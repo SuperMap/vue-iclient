@@ -5,7 +5,7 @@ import type {
   ThemeProps
 } from '@supermapgis/common/utils/index.common'
 import type { CardProps, ControlProps } from '@supermapgis/mapboxgl/utils'
-import type { BaseMapLayer, Terrain, Annotation } from 'vue-iclient-core/utils/scene/map-switch'
+import type { BaseMapLayer, Terrain, Annotation } from '@supermapgis/iclient-components-core/core/utils/scene/map-switch'
 import {
   getPropsDefaults,
   sceneGetterProps,

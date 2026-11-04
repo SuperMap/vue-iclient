@@ -1,7 +1,7 @@
 import type { PropType } from 'vue'
 import type { ShortEmits, SceneGetterProps, ThemeProps } from '@supermapgis/common/utils/index.common'
 import type { CardProps, ControlProps } from '@supermapgis/mapboxgl/utils'
-import type { SkylineAnalysisOptions } from 'vue-iclient-core/utils/scene/skyline-analysis'
+import type { SkylineAnalysisOptions } from '@supermapgis/iclient-components-core/core/utils/scene/skyline-analysis'
 import {
   getPropsDefaults,
   sceneGetterProps,

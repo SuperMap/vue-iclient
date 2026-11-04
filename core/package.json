@@ -2,6 +2,9 @@
   "name": "vue-iclient-core",
   "private": true,
   "license": "MIT",
+  "scripts": {
+    "build": "node ./scripts/build.mjs"
+  },
   "peerDependencies": {
     "@supermapgis/iclient-common": "^12.1.0-r",
     "@turf/circle": ">=7.3.4",
@@ -16,7 +19,13 @@
     "tinycolor2": ">=1.6.0"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^22.0.1",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "@types/geojson": "^7946.0.16",
     "@types/lodash": "^4.17.15",
-    "@types/mapbox-gl": "^1.12.1"
+    "fast-glob": "^3.2.11",
+    "rollup": "4.34.6",
+    "typescript": "~5.6.3"
   }
 }

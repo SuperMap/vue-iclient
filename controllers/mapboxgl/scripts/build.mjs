@@ -1,0 +1,136 @@
+import commonjs from '@rollup/plugin-commonjs'
+import json from '@rollup/plugin-json'
+import { nodeResolve } from '@rollup/plugin-node-resolve'
+import { execFileSync } from 'node:child_process'
+import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import path from 'node:path'
+import { createRequire } from 'node:module'
+import { fileURLToPath } from 'node:url'
+import glob from 'fast-glob'
+import { rollup } from 'rollup'
+
+const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const require = createRequire(import.meta.url)
+const ts = require('typescript')
+const manifest = JSON.parse(await readFile(path.join(packageRoot, 'package.json'), 'utf8'))
+const publishedPackageName = manifest.name
+const distRoot = path.join(packageRoot, 'dist')
+const mapboxOutputRoot = path.join(distRoot, 'mapboxgl')
+const staticOutputRoot = path.join(distRoot, 'static')
+const staticRoot = path.resolve(packageRoot, '../../static')
+
+const generatedPaths = [distRoot, ...['controllers', 'mixin', 'types', 'utils', 'index.js', 'core', 'mapboxgl', 'static'].map(name => path.join(packageRoot, name))]
+for (const generatedPath of generatedPaths) {
+  const relativePath = path.relative(packageRoot, generatedPath)
+  if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
+    throw new Error(`Refusing to clean a path outside the package: ${generatedPath}`)
+  }
+}
+// 清理上一次构建的 dist 和旧版包根输出，避免发布物同时残留两套目录结构。
+await Promise.all(generatedPaths.map(generatedPath => rm(generatedPath, { recursive: true, force: true })))
+
+const coreBuildScript = path.resolve(packageRoot, '../../core/scripts/build.mjs')
+execFileSync(process.execPath, [coreBuildScript], {
+  cwd: path.dirname(path.dirname(coreBuildScript)),
+  stdio: 'inherit'
+})
+
+const tsc = require.resolve('typescript/bin/tsc', { paths: [packageRoot] })
+execFileSync(process.execPath, [tsc, '-p', path.join(packageRoot, 'tsconfig.package.json')], {
+  cwd: packageRoot,
+  stdio: 'inherit'
+})
+
+const input = await glob(
+  ['index.ts', 'src/**/*.{js,ts}', '!**/*.d.ts', '!**/__tests__/**', '!node_modules/**', '!dist/**'],
+  {
+    cwd: packageRoot,
+    absolute: true,
+    onlyFiles: true
+  }
+)
+if (input.length === 0) {
+  throw new Error('No MapboxGL controller source files were found for the package build.')
+}
+
+const externalPackages = [
+  ...Object.keys(manifest.dependencies || {}),
+  ...Object.keys(manifest.peerDependencies || {})
+]
+const external = id =>
+  id === publishedPackageName ||
+  id.startsWith(`${publishedPackageName}/`) ||
+  externalPackages.some(name => id === name || id.startsWith(`${name}/`))
+// 用 TypeScript 编译 API 转换源码，避免依赖需要额外启动子进程的转译服务。
+const transpileSource = {
+  name: 'typescript-source-transpiler',
+  transform(code, id) {
+    if (!/\.[jt]s$/.test(id) || id.endsWith('.d.ts')) {
+      return null
+    }
+    const result = ts.transpileModule(code, {
+      fileName: id,
+      compilerOptions: {
+        allowJs: true,
+        experimentalDecorators: true,
+        module: ts.ModuleKind.ESNext,
+        target: ts.ScriptTarget.ES2018
+      }
+    })
+    return { code: result.outputText, map: null }
+  }
+}
+const bundle = await rollup({
+  input,
+  external,
+  treeshake: false,
+  plugins: [
+    transpileSource,
+    nodeResolve({ extensions: ['.mjs', '.js', '.json', '.ts'] }),
+    commonjs(),
+    json()
+  ]
+})
+
+await bundle.write({
+  dir: mapboxOutputRoot,
+  format: 'es',
+  preserveModules: true,
+  preserveModulesRoot: packageRoot,
+  entryFileNames: '[name].js',
+  sourcemap: false
+})
+await bundle.close()
+
+await writeFile(path.join(mapboxOutputRoot, 'src', 'index.js'), "export * from '../index.js';\n")
+await mkdir(staticOutputRoot, { recursive: true })
+for (const directory of ['assets', 'libs']) {
+  await cp(path.join(staticRoot, directory), path.join(staticOutputRoot, directory), { recursive: true })
+}
+
+const publishedManifest = JSON.parse(JSON.stringify(manifest))
+const rewritePublishedPaths = value => {
+  if (Array.isArray(value)) {
+    return value.map(rewritePublishedPaths)
+  }
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([key, child]) => [key, rewritePublishedPaths(child)]))
+  }
+  if (typeof value === 'string') {
+    return value.replace(/^\.\/dist\//, './').replace(/^dist\//, '')
+  }
+  return value
+}
+// 工作区清单从仓库根解析 dist；发布清单位于 dist 根，因此其入口要改成包内相对路径。
+publishedManifest.main = rewritePublishedPaths(publishedManifest.main)
+publishedManifest.module = rewritePublishedPaths(publishedManifest.module)
+publishedManifest.types = rewritePublishedPaths(publishedManifest.types)
+publishedManifest.exports = rewritePublishedPaths(publishedManifest.exports)
+publishedManifest.typesVersions = rewritePublishedPaths(publishedManifest.typesVersions)
+publishedManifest.files = ['mapboxgl', 'core', 'static', 'README.md']
+delete publishedManifest.scripts
+delete publishedManifest.devDependencies
+await cp(path.join(packageRoot, 'README.md'), path.join(distRoot, 'README.md'))
+await writeFile(path.join(distRoot, 'package.json'), `${JSON.stringify(publishedManifest, null, 2)}\n`)
+
+console.log(`Built ${manifest.name}@${manifest.version} in ${path.relative(packageRoot, distRoot)}.`)

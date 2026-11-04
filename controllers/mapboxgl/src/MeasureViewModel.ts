@@ -1,13 +1,13 @@
 import type { LngLat, LngLatLike, Map, Popup } from 'mapbox-gl';
 import type { AreaUnits, Units as LengthUnits } from '@turf/helpers';
-import type { Draw } from 'vue-iclient-controllers-mapboxgl/src/types/DrawEvent';
+import type { Draw } from '@supermapgis/iclient-components-core/mapboxgl/src/types/DrawEvent';
 import mapboxgl from 'mapbox-gl';
 import length from '@turf/length';
 import area from '@turf/area';
 import center from '@turf/center';
 import { convertLength, convertArea } from '@turf/helpers';
-import { reservedDecimal } from 'vue-iclient-core/utils/util';
-import drawEvent from 'vue-iclient-controllers-mapboxgl/src/types/DrawEvent';
+import { reservedDecimal } from '@supermapgis/iclient-components-core/core/utils/util';
+import drawEvent from '@supermapgis/iclient-components-core/mapboxgl/src/types/DrawEvent';
 
 export type Units = AreaUnits | LengthUnits
 

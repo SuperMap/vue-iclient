@@ -1,5 +1,5 @@
 import type { Map, MapLayerEventType } from 'mapbox-gl';
-import { Events } from 'vue-iclient-core/types/event/Events';
+import { Events } from '@supermapgis/iclient-components-core/core/types/event/Events';
 
 export const MAP_EVENT_NAMES = [
   'resize',

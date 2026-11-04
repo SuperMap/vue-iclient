@@ -1,5 +1,5 @@
-import { Events } from 'vue-iclient-core/types/event/Events';
-import mapEvent from 'vue-iclient-core/types/map-event';
+import { Events } from '@supermapgis/iclient-components-core/core/types/event/Events';
+import mapEvent from '@supermapgis/iclient-components-core/core/types/map-event';
 
 interface SetMapParams {
   map: Record<string, any>;

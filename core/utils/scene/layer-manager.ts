@@ -1,8 +1,8 @@
 import { FeatureService } from '@supermapgis/iclient-common/iServer/FeatureService'
 import { GetFeaturesBySQLParameters } from '@supermapgis/iclient-common/iServer/GetFeaturesBySQLParameters'
-import getFeatures from 'vue-iclient-core/utils/get-features'
-import { filterFeaturesByAttributeFilter, ensureJsonSql } from 'vue-iclient-core/utils/json-sql-filter'
-import { toAttributeFilter } from 'vue-iclient-core/utils/attribute-filter'
+import getFeatures from '@supermapgis/iclient-components-core/core/utils/get-features'
+import { filterFeaturesByAttributeFilter, ensureJsonSql } from '@supermapgis/iclient-components-core/core/utils/json-sql-filter'
+import { toAttributeFilter } from '@supermapgis/iclient-components-core/core/utils/attribute-filter'
 import { flyToCamera, getSuperMap3DCartesian3, type FlyToOptions, type ScenePosition } from './fly-to-camera'
 import { prepareSuperMap3DServiceAuth } from './supermap3d-credential'
 

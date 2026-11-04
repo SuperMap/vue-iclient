@@ -1,8 +1,8 @@
 import mapboxgl from 'mapbox-gl';
 import isEqual from 'lodash.isequal';
-import { loadSecureScript, loadLink } from 'vue-iclient-core/utils/util';
-import sceneEvent from 'vue-iclient-core/types/scene-event';
-import { isSceneEntityDataLayer, prepareSuperMap3DServiceAuth } from 'vue-iclient-core/utils/scene';
+import { loadSecureScript, loadLink } from '@supermapgis/iclient-components-core/core/utils/util';
+import sceneEvent from '@supermapgis/iclient-components-core/core/types/scene-event';
+import { isSceneEntityDataLayer, prepareSuperMap3DServiceAuth } from '@supermapgis/iclient-components-core/core/utils/scene';
 
 declare global {
   interface Window {

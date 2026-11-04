@@ -1,6 +1,6 @@
 import type { PropType } from 'vue'
 import type { ShortEmits, ThemeProps } from '@supermapgis/common/utils/index.common'
-import type { ControlPosition } from 'vue-iclient-controllers-mapboxgl/src/utils/MapControl'
+import type { ControlPosition } from '@supermapgis/iclient-components-core/mapboxgl/src/utils/MapControl'
 import { getPropsDefaults, themeProps } from '@supermapgis/common/utils/index.common'
 
 export const DIRECTORY_TREE_SCHEMA_VERSION = '1.0.0' as const

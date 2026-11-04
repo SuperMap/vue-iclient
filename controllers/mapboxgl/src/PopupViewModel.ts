@@ -2,9 +2,9 @@ import type mapboxglTypes from 'mapbox-gl'
 import type {
   HighlightLayerOptions,
   CreateRelatedDatasParams
-} from 'vue-iclient-controllers-mapboxgl/src/LayerHighlightViewModel'
-import LayerHighlightViewModel from 'vue-iclient-controllers-mapboxgl/src/LayerHighlightViewModel'
-import { DataSelectorMode } from 'vue-iclient-controllers-mapboxgl/src/LayerHighlightViewModel'
+} from '@supermapgis/iclient-components-core/mapboxgl/src/LayerHighlightViewModel'
+import LayerHighlightViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/LayerHighlightViewModel'
+import { DataSelectorMode } from '@supermapgis/iclient-components-core/mapboxgl/src/LayerHighlightViewModel'
 import uniqBy from 'lodash.uniqby'
 
 export default class PopupLayerHighlightViewModel extends LayerHighlightViewModel {

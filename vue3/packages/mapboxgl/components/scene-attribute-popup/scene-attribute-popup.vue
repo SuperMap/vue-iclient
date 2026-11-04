@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import type { SceneAttributePopupProps } from './types'
-import type { SceneHighlightResult } from 'vue-iclient-controllers-mapboxgl/src/SceneHighlightViewModel'
+import type { SceneHighlightResult } from '@supermapgis/iclient-components-core/mapboxgl/src/SceneHighlightViewModel'
 import { computed } from 'vue'
 import BaseAttributePopup from '@supermapgis/mapboxgl/components/base-attribute-popup/base-attribute-popup.vue'
 import { useLayerHighlightHooks } from './hooks/use-highlight'

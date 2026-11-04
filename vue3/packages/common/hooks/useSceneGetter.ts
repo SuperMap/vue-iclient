@@ -1,6 +1,6 @@
 import { watch, onMounted, onBeforeUnmount, getCurrentInstance } from 'vue';
-import sceneEvent from 'vue-iclient-core/types/scene-event';
-import WebSceneViewModel from 'vue-iclient-controllers-mapboxgl/src/WebSceneViewModel';
+import sceneEvent from '@supermapgis/iclient-components-core/core/types/scene-event';
+import WebSceneViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/WebSceneViewModel';
 interface SceneGetterProps {
   sceneTarget: string;
 }

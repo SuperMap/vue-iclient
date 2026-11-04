@@ -12,24 +12,25 @@ export default defineConfig({
     alias: {
       '@supermapgis/mapboxgl': fileURLToPath(new URL('./packages/mapboxgl', import.meta.url)),
       '@supermapgis/common': fileURLToPath(new URL('./packages/common', import.meta.url)),
-      'vue-iclient-core': fileURLToPath(new URL('../core', import.meta.url)),
-      'vue-iclient-static': fileURLToPath(new URL('../static', import.meta.url)),
-      'vue-iclient-controllers-mapboxgl': fileURLToPath(
+      '@supermapgis/iclient-components-core/mapboxgl': fileURLToPath(
         new URL('../controllers/mapboxgl', import.meta.url)
-      )
+      ),
+      '@supermapgis/iclient-components-core/core': fileURLToPath(new URL('../core', import.meta.url)),
+      '@supermapgis/iclient-components-core/static': fileURLToPath(new URL('../static', import.meta.url)),
+      '@supermapgis/iclient-components-core': fileURLToPath(new URL('../core', import.meta.url))
     }
   },
   optimizeDeps: {
     include: [
-      'vue-iclient-static/libs/echarts-layer/EchartsLayer',
-      'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw'
+      '@supermapgis/iclient-components-core/static/libs/echarts-layer/EchartsLayer',
+      '@supermapgis/iclient-components-core/static/libs/mapbox-gl-draw/mapbox-gl-draw'
     ]
   },
   build: {
     commonjsOptions: {
       include: [
-        'vue-iclient-static/libs/echarts-layer/EchartsLayer',
-        'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw'
+        '@supermapgis/iclient-components-core/static/libs/echarts-layer/EchartsLayer',
+        '@supermapgis/iclient-components-core/static/libs/mapbox-gl-draw/mapbox-gl-draw'
       ]
     }
   },

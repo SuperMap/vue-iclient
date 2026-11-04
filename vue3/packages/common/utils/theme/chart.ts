@@ -1,4 +1,4 @@
-import { getColorWithOpacity } from 'vue-iclient-core/utils/util';
+import { getColorWithOpacity } from '@supermapgis/iclient-components-core/core/utils/util';
 import cloneDeep from 'lodash.clonedeep';
 import { ColorsPickerUtil } from '@supermapgis/iclient-common/util/ColorsPickerUtil';
 

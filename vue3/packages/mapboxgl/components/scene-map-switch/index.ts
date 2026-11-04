@@ -14,4 +14,4 @@ export {
   isIportalProxyUrl,
   prepareSuperMap3DServiceAuth,
   registerSuperMap3DIportalKey
-} from 'vue-iclient-core/utils/scene/supermap3d-credential'
+} from '@supermapgis/iclient-components-core/core/utils/scene/supermap3d-credential'

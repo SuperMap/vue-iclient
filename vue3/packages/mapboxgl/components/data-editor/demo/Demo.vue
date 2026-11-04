@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import DataEditor from '../data-editor.vue'
 import WebMap from '@supermapgis/mapboxgl/components/web-map/webmap.vue'
-import { mapEvent } from 'vue-iclient-core'
+import { mapEvent } from '@supermapgis/iclient-components-core'
 import { getDatasetUrl, isRestDataLayer, isStructuredDataLayer } from '../utils'
 import type { DataEditorLayer } from '../types'
 import '../style'

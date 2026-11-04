@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { LayerCheckData } from 'vue-iclient-core/utils/scene'
+import type { LayerCheckData } from '@supermapgis/iclient-components-core/core/utils/scene'
 import WebScene from '../webscene.vue'
-import sceneEvent from 'vue-iclient-core/types/scene-event'
+import sceneEvent from '@supermapgis/iclient-components-core/core/types/scene-event'
 import '../style'
 import '../../scene-layer-list/style'
 import { ref, computed, nextTick, onMounted, onBeforeUnmount } from 'vue'

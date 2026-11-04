@@ -1,6 +1,6 @@
 import type { PropType, CSSProperties } from 'vue'
 import type { MapGetterProps, MapGetterEvents, ShortEmits, ThemeProps } from '@supermapgis/common/utils/index.common'
-import type { ControlPosition } from 'vue-iclient-controllers-mapboxgl/src/utils/MapControl'
+import type { ControlPosition } from '@supermapgis/iclient-components-core/mapboxgl/src/utils/MapControl'
 import type {
   PaginationParams,
   FieldConfigParams,

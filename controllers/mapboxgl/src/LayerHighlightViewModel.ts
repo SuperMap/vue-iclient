@@ -1,17 +1,17 @@
 import type mapboxglTypes from 'mapbox-gl';
 import mapboxgl from 'mapbox-gl';
-import CircleStyle from 'vue-iclient-controllers-mapboxgl/src/types/CircleStyle';
-import LineStyle from 'vue-iclient-controllers-mapboxgl/src/types/LineStyle';
-import FillStyle from 'vue-iclient-controllers-mapboxgl/src/types/FillStyle';
-import WebMapViewModel from 'vue-iclient-controllers-mapboxgl/src/WebMapViewModel';
-import { getFeatureCenter, getValueCaseInsensitive } from 'vue-iclient-core/utils/util';
+import CircleStyle from '@supermapgis/iclient-components-core/mapboxgl/src/types/CircleStyle';
+import LineStyle from '@supermapgis/iclient-components-core/mapboxgl/src/types/LineStyle';
+import FillStyle from '@supermapgis/iclient-components-core/mapboxgl/src/types/FillStyle';
+import WebMapViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/WebMapViewModel';
+import { getFeatureCenter, getValueCaseInsensitive } from '@supermapgis/iclient-components-core/core/utils/util';
 import isEqual from 'lodash.isequal';
 import WFS from 'ol/format/WFS';
 import GML32 from 'ol/format/GML32';
 import GeoJSON from 'ol/format/GeoJSON';
 import UniqueId from 'lodash.uniqueid';
 import { XMLParser } from 'fast-xml-parser';
-import { transformCoodinates } from 'vue-iclient-core/utils/epsg-define';
+import { transformCoodinates } from '@supermapgis/iclient-components-core/core/utils/epsg-define';
 import { FetchRequest } from '@supermapgis/iclient-common/util/FetchRequest';
 interface SetMapParams {
   map: mapboxglTypes.Map;

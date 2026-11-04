@@ -93,8 +93,8 @@ import {
   shouldTransformArabicNumbers,
   toArabicNumber
 } from '@supermapgis/common/utils/index.common'
-import MapPopupViewModel from 'vue-iclient-controllers-mapboxgl/src/MapPopupViewModel'
-import { setPopupArrowStyle } from 'vue-iclient-core/utils/util'
+import MapPopupViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/MapPopupViewModel'
+import { setPopupArrowStyle } from '@supermapgis/iclient-components-core/core/utils/util'
 import { omit } from 'lodash-es'
 import { mapPopupPropsDefault } from './types'
 

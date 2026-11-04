@@ -13,10 +13,7 @@ import {
   excludeFiles,
   getPkgRoot,
   getPkgByCommand,
-  rootDir,
-  getEpOutput,
-  getPKG_NAME,
-  PKG_PREFIX
+  getEpOutput
 } from '@supermapgis/build-utils'
 import { generateExternal, withTaskName, writeBundles } from '../utils'
 import { Alias } from '../plugins/alias'
@@ -92,7 +89,6 @@ const plugins: Plugin[] = [
         .replaceAll('./common/', './')
         .replaceAll(`./${pkgName}/`, './')
         .replaceAll('.scss', '.css')
-        .replaceAll('vue-iclient-static/', `${PKG_PREFIX}/${getPKG_NAME(pkgName)}/static/`)
     }
   },
   vue({
@@ -219,11 +215,6 @@ async function buildModulesStyles(rootDir, folder = 'components') {
   )
 }
 
-async function copyStatic() {
-  await copy(path.resolve(rootDir, 'static'), path.resolve(epOutput, 'static'))
-  await remove(path.join(epOutput, 'static', 'package.json'))
-}
-
 /** 将 components 下 assets 目录中的静态资源同步到 es / lib，供 import.meta.url / 相对路径引用 */
 async function copyComponentAssets(root: string) {
   const assetFiles = await glob(['**/assets/**/*'], {
@@ -262,7 +253,6 @@ export const buildModules: TaskFunction = parallel(
     removeMoreModules,
     withTaskName('copyPkgComponentAssets', () => copyComponentAssets(pkgRoot)),
     withTaskName('copyCommonComponentAssets', () => copyComponentAssets(pkgCommonRoot)),
-    copyStatic,
     buildStyles
   )
 )

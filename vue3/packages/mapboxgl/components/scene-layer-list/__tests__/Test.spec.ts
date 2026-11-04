@@ -1,7 +1,7 @@
 import { defineComponent, h, nextTick, type PropType } from 'vue'
 import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import sceneEvent from 'vue-iclient-core/types/scene-event'
+import sceneEvent from '@supermapgis/iclient-components-core/core/types/scene-event'
 import SceneLayerList from '../scene-layer-list.vue'
 
 vi.mock('@supermapgis/mapboxgl/hooks', () => ({

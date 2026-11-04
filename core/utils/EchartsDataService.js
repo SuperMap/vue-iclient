@@ -1,9 +1,9 @@
-import getFeatures from 'vue-iclient-core/utils/get-features';
+import getFeatures from '@supermapgis/iclient-components-core/core/utils/get-features';
 import tonumber from 'lodash.tonumber';
 import max from 'lodash.max';
 import orderBy from 'lodash.orderby';
-import { clearNumberComma, filterInvalidData, statisticFunctions } from 'vue-iclient-core/utils/util';
-import { statisticsFeatures } from 'vue-iclient-core/utils/statistics';
+import { clearNumberComma, filterInvalidData, statisticFunctions } from '@supermapgis/iclient-components-core/core/utils/util';
+import { statisticsFeatures } from '@supermapgis/iclient-components-core/core/utils/statistics';
 
 // 三方服务请求的结果为单对象的时候，是否要转成多个features
 export function tranformSingleToMulti(data) {

@@ -1,6 +1,6 @@
 import type mapboxglTypes from 'mapbox-gl';
 import mapboxgl from 'mapbox-gl';
-import WebMapViewModel from 'vue-iclient-controllers-mapboxgl/src/WebMapViewModel';
+import WebMapViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/WebMapViewModel';
 
 // 轮廓相关的图例样式字段。这些字段被数据驱动时，旧版 iClient 不会额外产出「面」的图例项，
 // 导致「面 + 轮廓色/轮廓宽度专题图」的图例只剩下轮廓相关分组

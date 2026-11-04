@@ -1,26 +1,9 @@
 {
   "name": "@supermapgis/vue-iclient",
-  "version": "12.1.0-dev",
+  "version": "12.1.2",
   "description": "SuperMap iClient for Vue.js",
   "homepage": "https://iclient.supermap.io",
   "scripts": {
-    "install:vue2": "npm install --legacy-peer-deps --prefix vue2",
-    "dev:vue2": "npm run dev --prefix vue2 --",
-    "build:vue2": "npm run build --prefix vue2 --",
-    "docs:dev:vue2": "npm run docs:dev --prefix vue2",
-    "docs:build:vue2": "npm run docs:build --prefix vue2",
-    "storybook:dev:vue2": "npm run storybook:dev --prefix vue2",
-    "storybook:build:vue2": "npm run storybook:build --prefix vue2",
-    "lib:vue2": "npm run lib --prefix vue2",
-    "lib:mapboxgl:vue2": "npm run lib:mapboxgl --prefix vue2",
-    "lib:leaflet:vue2": "npm run lib:leaflet --prefix vue2",
-    "publish:all:vue2": "npm run publish:all --prefix vue2 --",
-    "publish:mapboxgl:vue2": "npm run publish:mapboxgl --prefix vue2 --",
-    "publish:leaflet:vue2": "npm run publish:leaflet --prefix vue2 --",
-    "unit:vue2": "npm run unit --prefix vue2",
-    "test:vue2": "npm run test --prefix vue2",
-    "lint:vue2": "npm run lint --prefix vue2",
-    "lint:fix:vue2": "npm run lint:fix --prefix vue2",
     "prepare": "husky install",
     "test:vue3": "pnpm --dir ./vue3 test:unit",
     "dev:vue3": "pnpm --dir ./vue3 dev",
@@ -28,7 +11,9 @@
     "lint:vue3": "pnpm --dir ./vue3 lint",
     "stylelint:vue3": "pnpm --dir ./vue3 stylelint",
     "build-mapboxgl:vue3": "pnpm --dir ./vue3 build-mapboxgl",
-    "publish-mapboxgl:vue3": "pnpm publish ./vue3/dist/vue3-iclient-mapboxgl"
+    "publish-mapboxgl:vue3": "pnpm publish ./vue3/dist/vue3-iclient-mapboxgl",
+    "build:iclient-components-core": "pnpm --dir controllers/mapboxgl run build",
+    "publish:iclient-components-core": "pnpm run build:iclient-components-core && pnpm publish ./controllers/mapboxgl/dist --no-git-checks"
   },
   "browserslist": [
     "> 1%",
@@ -68,9 +53,7 @@
     "rollup-plugin-esbuild": "^6.1.1",
     "source-map-js": "1.0.2",
     "vue": "^3.5.26",
-    "vue-iclient-controllers-mapboxgl": "workspace:*",
-    "vue-iclient-core": "workspace:*",
-    "vue-iclient-static": "workspace:*"
+    "@supermapgis/iclient-components-core": "workspace:*"
   },
   "lint-staged": {
     "vue3/**/*.{vue,ts,tsx}": "pnpm typecheck:vue3",

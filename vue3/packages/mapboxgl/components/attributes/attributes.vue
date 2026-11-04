@@ -131,7 +131,7 @@ import type {
 } from './types'
 import { attributesPropsDefault } from './types'
 import { isEqual, cloneDeep } from 'lodash-es'
-import AttributesViewModel from 'vue-iclient-controllers-mapboxgl/src/AttributesViewModel'
+import AttributesViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/AttributesViewModel'
 import { useTheme, useMapGetter, useVmProps, useLocale } from '@supermapgis/common/hooks/index.common'
 import { MenuOutlined, SearchOutlined, FilterOutlined } from '@ant-design/icons-vue'
 import SmTable from '@supermapgis/common/components/table/Table'

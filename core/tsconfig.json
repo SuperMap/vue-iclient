@@ -31,8 +31,8 @@
     // 是相对于"baseUrl"进行解析
     "paths": {
       // 解决ts文件中的别名问题
-      "vue-iclient-core/*": ["./*"],
-      "vue-iclient-controllers-mapboxgl/*": ["../controllers/mapboxgl/*"],
+      "@supermapgis/iclient-components-core/static/*": ["../static/*"],
+      "@supermapgis/iclient-components-core/core/*": ["./*"],
       "*.json": ["*.json"]
     }
   },

@@ -1,11 +1,11 @@
 import { FetchRequest } from '@supermapgis/iclient-common/util/FetchRequest';
 import { Util } from '@supermapgis/iclient-common/commontypes/Util';
-import iServerRestService, { vertifyEpsgCode, transformFeatures } from 'vue-iclient-core/utils/iServerRestService';
-import { isXField, isYField, handleWithCredentials, handleDataParentRes } from 'vue-iclient-core/utils/util';
-import { createAttributeFilterPredicate, ensureJsonSql, filterFeaturesByAttributeFilter } from 'vue-iclient-core/utils/json-sql-filter';
-import { toAttributeFilter, mapFilterFieldNames } from 'vue-iclient-core/utils/attribute-filter';
-import { getStructuredDataFieldMap } from 'vue-iclient-core/utils/structured-data-field-map';
-import { Events } from 'vue-iclient-core/types/event/Events';
+import iServerRestService, { vertifyEpsgCode, transformFeatures } from '@supermapgis/iclient-components-core/core/utils/iServerRestService';
+import { isXField, isYField, handleWithCredentials, handleDataParentRes } from '@supermapgis/iclient-components-core/core/utils/util';
+import { createAttributeFilterPredicate, ensureJsonSql, filterFeaturesByAttributeFilter } from '@supermapgis/iclient-components-core/core/utils/json-sql-filter';
+import { toAttributeFilter, mapFilterFieldNames } from '@supermapgis/iclient-components-core/core/utils/attribute-filter';
+import { getStructuredDataFieldMap } from '@supermapgis/iclient-components-core/core/utils/structured-data-field-map';
+import { Events } from '@supermapgis/iclient-components-core/core/types/event/Events';
 
 /** 结构化数据 OGC API Features 单次请求的要素数上限 */
 const STRUCTURED_DATA_PAGE_SIZE = 5000;

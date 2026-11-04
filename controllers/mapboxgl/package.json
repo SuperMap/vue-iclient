@@ -1,37 +1,149 @@
 {
-  "name": "vue-iclient-controllers-mapboxgl",
-  "private": true,
-  "license": "MIT",
+  "name": "@supermapgis/iclient-components-core",
+  "version": "12.1.2",
+  "description": "MapboxGL component controllers, shared core modules, and runtime assets for SuperMap iClient.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/core/index.js",
+  "module": "./dist/core/index.js",
+  "types": "./dist/core/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js"
+    },
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js"
+    },
+    "./core/utils/scene": {
+      "types": "./dist/core/utils/scene/index.d.ts",
+      "import": "./dist/core/utils/scene/index.js"
+    },
+    "./core/utils/scene/*": {
+      "types": "./dist/core/utils/scene/*.d.ts",
+      "import": "./dist/core/utils/scene/*.js"
+    },
+    "./core/*": {
+      "types": "./dist/core/*.d.ts",
+      "import": "./dist/core/*.js"
+    },
+    "./mapboxgl": {
+      "types": "./dist/mapboxgl/index.d.ts",
+      "import": "./dist/mapboxgl/index.js"
+    },
+    "./mapboxgl/src": {
+      "types": "./dist/mapboxgl/index.d.ts",
+      "import": "./dist/mapboxgl/src/index.js"
+    },
+    "./mapboxgl/src/types": {
+      "types": "./dist/mapboxgl/src/types/index.d.ts",
+      "import": "./dist/mapboxgl/src/types/index.js"
+    },
+    "./mapboxgl/src/*": {
+      "types": "./dist/mapboxgl/src/*.d.ts",
+      "import": "./dist/mapboxgl/src/*.js"
+    },
+    "./static/libs/geostats/geostats": {
+      "types": "./dist/static/libs/geostats/geostats.d.ts",
+      "default": "./dist/static/libs/geostats/geostats.js"
+    },
+    "./static/libs/json-sql/jsonsql": {
+      "types": "./dist/static/libs/json-sql/jsonsql.d.ts",
+      "default": "./dist/static/libs/json-sql/jsonsql.js"
+    },
+    "./static/libs/echarts-layer/EchartsLayer": {
+      "types": "./dist/static/libs/echarts-layer/EchartsLayer.d.ts",
+      "default": "./dist/static/libs/echarts-layer/EchartsLayer.js"
+    },
+    "./static/libs/mapbox-gl-draw/mapbox-gl-draw": {
+      "types": "./dist/static/libs/mapbox-gl-draw/mapbox-gl-draw.d.ts",
+      "default": "./dist/static/libs/mapbox-gl-draw/mapbox-gl-draw.js"
+    },
+    "./static/*": "./dist/static/*",
+    "./package.json": "./dist/package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "core/utils/scene": [
+        "dist/core/utils/scene/index.d.ts"
+      ],
+      "core/utils/scene/*": [
+        "dist/core/utils/scene/*"
+      ],
+      "core/*": [
+        "dist/core/*"
+      ],
+      "mapboxgl": [
+        "dist/mapboxgl/index.d.ts"
+      ],
+      "mapboxgl/src": [
+        "dist/mapboxgl/index.d.ts"
+      ],
+      "mapboxgl/src/types": [
+        "dist/mapboxgl/src/types/index.d.ts"
+      ],
+      "mapboxgl/src/*": [
+        "dist/mapboxgl/src/*"
+      ],
+      "static/*": [
+        "dist/static/*"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "node ./scripts/build.mjs",
+    "test:package": "pnpm run build && node --test ./test/package-build.test.mjs"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
     "@supermapgis/iclient-common": "^12.1.0-r",
     "@supermapgis/iclient-mapboxgl": "^12.1.0-r",
+    "echarts": ">=6.0.0",
+    "mapbox-gl": "<2.0.0",
+    "proj4": ">=2.15.0"
+  },
+  "dependencies": {
     "@turf/area": ">=5.1.5",
     "@turf/bbox": ">=5.1.5",
+    "@turf/circle": ">=7.3.4",
     "@turf/center": ">=5.1.5",
     "@turf/envelope": ">=5.1.5",
     "@turf/helpers": ">=5.1.5",
+    "@turf/length": "^7.2.0",
     "@turf/transform-scale": ">=5.1.5",
-    "echarts": ">=6.0.0",
-    "geojson": ">=0.5.0",
+    "@types/geojson": "^7946.0.16",
+    "@types/lodash": "^4.17.15",
+    "@types/mapbox-gl": "^1.12.1",
+    "fast-xml-parser": "^5.2.5",
     "lodash.assignin": ">=4.0.1",
     "lodash.clonedeep": ">=4.0.1",
     "lodash.debounce": ">=4.0.1",
-    "lodash.isequal": ">=4.0.1",
-    "lodash.mergewith": ">=4.0.1",
     "lodash.difference": ">=4.0.1",
+    "lodash.isequal": ">=4.0.1",
+    "lodash.max": ">=4.0.1",
+    "lodash.mergewith": ">=4.0.1",
+    "lodash.orderby": ">=4.0.1",
+    "lodash.tonumber": ">=4.0.1",
     "lodash.uniqueid": ">=4.0.1",
-    "mapbox-gl": "<2.0.0",
+    "lodash.uniqby": "^4.7.0",
     "mapbox-gl-compare-enhanced": ">=1.0.0",
-    "proj4": ">=2.15.0"
+    "omit.js": ">=2.0.2",
+    "ol": "^6.15.1",
+    "simple-statistics": ">=7.8.3",
+    "tinycolor2": ">=1.6.0"
   },
   "devDependencies": {
-    "@types/lodash": "^4.17.15",
-    "@types/mapbox-gl": "^1.12.1"
-  },
-  "dependencies": {
-    "@turf/length": "^7.2.0",
-    "lodash.uniqby": "^4.7.0",
-    "fast-xml-parser": "^5.2.5",
-    "ol": "^6.15.1"
+    "@rollup/plugin-commonjs": "^22.0.1",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "fast-glob": "^3.2.11",
+    "rollup": "4.34.6",
+    "typescript": "~5.6.3"
   }
 }

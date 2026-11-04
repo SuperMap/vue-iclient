@@ -54,13 +54,13 @@
 </template>
 
 <script setup lang="ts">
-import type { MapSwitchChangeEvent } from 'vue-iclient-core/utils/scene/map-switch'
+import type { MapSwitchChangeEvent } from '@supermapgis/iclient-components-core/core/utils/scene/map-switch'
 import type { BaseMapLayerConfig, SceneMapSwitchProps } from './types'
 import { computed, useTemplateRef, ref, onBeforeUnmount, watch } from 'vue'
 import { useLocale, useSceneGetter, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useSceneControl } from '@supermapgis/mapboxgl/hooks'
 import { sceneMapSwitchPropsDefault } from './types'
-import { MapSwitch } from 'vue-iclient-core/utils/scene/map-switch'
+import { MapSwitch } from '@supermapgis/iclient-components-core/core/utils/scene/map-switch'
 import SmCard from '@supermapgis/common/components/card/Card'
 import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'
 import SmSwitch from '@supermapgis/common/components/switch/Switch'

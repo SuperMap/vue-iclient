@@ -42,7 +42,7 @@ import type { IndicatorProps, IndicatorEvents } from './types'
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { indicatorPropsDefault } from './types'
 import { useLocale, useTimer, useTheme } from '@supermapgis/common/hooks/index.common'
-import RestService from 'vue-iclient-core/utils/RestService'
+import RestService from '@supermapgis/iclient-components-core/core/utils/RestService'
 import CountTo from './count-to.vue'
 
 defineOptions({

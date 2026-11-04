@@ -9,8 +9,6 @@ const pkgName = getPkgByCommand(process.argv)
 export const generateTypesDefinitions = async () => {
   await generateTypes(`tsconfig.${pkgName}.json`, `packages/${pkgName}`)
   await generateTypes('tsconfig.common.json', 'packages/common')
-  await generateTypes('tsconfig.core.json', 'core')
-  await generateTypes('tsconfig.controllers.mapboxgl.json', 'controllers')
   const distPackage = `${getPKG_NAME(pkgName)}`
   const typesDir = path.join(buildOutput, 'types', 'packages', `${distPackage}`)
   const moveTo = async (pkg = 'packages/common', targetDir = typesDir) => {
@@ -20,8 +18,6 @@ export const generateTypesDefinitions = async () => {
   }
   await moveTo(`packages/${pkgName}`)
   await moveTo('packages/common')
-  await moveTo('core', path.join(typesDir, 'core'))
-  await moveTo('controllers', path.join(typesDir, 'controllers'))
 }
 export const generateTypes = async (tsconfig, pkgRoot) => {
   await run(

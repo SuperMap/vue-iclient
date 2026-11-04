@@ -1,7 +1,7 @@
 import type mapboxglTypes from 'mapbox-gl'
 import mapboxgl from 'mapbox-gl';
-import WebMapViewModel from 'vue-iclient-controllers-mapboxgl/src/WebMapViewModel';
-import { findLayerCatalog } from 'vue-iclient-core/utils/layerCatalogGroupUtil';
+import WebMapViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/WebMapViewModel';
+import { findLayerCatalog } from '@supermapgis/iclient-components-core/core/utils/layerCatalogGroupUtil';
 
 /**
  * @class LayerListViewModel

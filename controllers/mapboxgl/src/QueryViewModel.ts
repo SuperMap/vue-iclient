@@ -1,10 +1,10 @@
 import type { CircleLayer, FillLayer, GeoJSONSourceRaw, LineLayer, LngLatBounds, Map } from 'mapbox-gl';
-import type { HighlightStyle } from 'vue-iclient-controllers-mapboxgl/src/LayerHighlightViewModel'
+import type { HighlightStyle } from '@supermapgis/iclient-components-core/mapboxgl/src/LayerHighlightViewModel'
 import mapboxgl from 'mapbox-gl';
 import bbox from '@turf/bbox';
 import envelope from '@turf/envelope';
 import transformScale from '@turf/transform-scale';
-import getFeatures from 'vue-iclient-core/utils/get-features';
+import getFeatures from '@supermapgis/iclient-components-core/core/utils/get-features';
 import { getDefaultLayerStyle } from './types';
 
 export interface QueryOptions {

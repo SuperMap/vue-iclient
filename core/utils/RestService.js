@@ -1,7 +1,7 @@
 import { FetchRequest } from '@supermapgis/iclient-common/util/FetchRequest';
-import { Events } from 'vue-iclient-core/types/event/Events';
-import { getDataType } from 'vue-iclient-core/utils/util';
-import { statisticsFeatures } from 'vue-iclient-core/utils/statistics';
+import { Events } from '@supermapgis/iclient-components-core/core/types/event/Events';
+import { getDataType } from '@supermapgis/iclient-components-core/core/utils/util';
+import { statisticsFeatures } from '@supermapgis/iclient-components-core/core/utils/statistics';
 
 export default class RestService extends Events {
   constructor(options) {

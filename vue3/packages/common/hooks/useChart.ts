@@ -11,13 +11,13 @@ import {
 } from '@supermapgis/common/utils/theme/chart'
 import { fitChartAxisLayout } from '../utils/chart-axis-layout'
 import { applyArabicDigitsToChartOptions } from '../utils/chart-arabic-number'
-import EchartsDataService from 'vue-iclient-core/utils/EchartsDataService'
+import EchartsDataService from '@supermapgis/iclient-components-core/core/utils/EchartsDataService'
 import {
   getFeatureCenter,
   setPopupArrowStyle,
   getColorWithOpacity,
   getDecimalsFormatterVal
-} from 'vue-iclient-core/utils/util'
+} from '@supermapgis/iclient-components-core/core/utils/util'
 import { ColorsPickerUtil } from '@supermapgis/iclient-common/util/ColorsPickerUtil';
 import { message as Message } from 'ant-design-vue'
 import * as ECharts from 'echarts'

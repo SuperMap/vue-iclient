@@ -1,7 +1,7 @@
 import type { AliasToken, ThemeProps, ThemeMapping } from '../utils/theme/interface'
 import { ref, reactive, watch, computed, onMounted, onBeforeUnmount } from 'vue'
 import { pick, isEqual } from 'lodash-es'
-import { getDerivedColorsByTextColor } from 'vue-iclient-core/utils/util';
+import { getDerivedColorsByTextColor } from '@supermapgis/iclient-components-core/core/utils/util';
 import globalEvent from '../utils/theme/global-event'
 import { themeTokenMapping } from '../utils/theme/colors'
 

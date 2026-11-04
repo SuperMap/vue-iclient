@@ -66,11 +66,11 @@ import { useMapControl } from '@supermapgis/mapboxgl/hooks'
 import SmAttributes from '@supermapgis/mapboxgl/components/attributes/attributes.vue'
 import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'
 import SmCard from '@supermapgis/common/components/card/Card'
-import LayerListViewModel from 'vue-iclient-controllers-mapboxgl/src/LayerListViewModel'
+import LayerListViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/LayerListViewModel'
 import LayerGroup from './layer-group.vue'
 import { isEqual } from 'lodash-es'
 import omit from 'omit.js'
-import mapEvent from 'vue-iclient-core/types/map-event'
+import mapEvent from '@supermapgis/iclient-components-core/core/types/map-event'
 import { layerListPropsDefault } from './types'
 
 defineOptions({

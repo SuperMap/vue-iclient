@@ -1,6 +1,6 @@
 // 定义一个可复用的逻辑钩子
 import { onMounted, onUnmounted, watch, nextTick, getCurrentInstance } from 'vue'
-import MapWatcher from 'vue-iclient-core/mixin/MapWatcher'
+import MapWatcher from '@supermapgis/iclient-components-core/core/mixin/MapWatcher'
 import { message } from 'ant-design-vue'
 import { useLocale } from './useLocale'
 import type { MapGetterProps } from '@supermapgis/common/utils/index.common'

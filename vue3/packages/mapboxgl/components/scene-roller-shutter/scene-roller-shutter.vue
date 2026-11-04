@@ -89,7 +89,7 @@ import {
   SceneRollerShutter,
   type RollerShutterLayerDisplay,
   type RollerShutterMode
-} from 'vue-iclient-core/utils/scene/roller-shutter'
+} from '@supermapgis/iclient-components-core/core/utils/scene/roller-shutter'
 import { useLocale, useSceneGetter, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useSceneControl } from '@supermapgis/mapboxgl/hooks'
 import { getImageryLayerName } from '@supermapgis/mapboxgl/utils'

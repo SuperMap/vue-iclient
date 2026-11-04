@@ -1,10 +1,10 @@
 import type { Map} from 'mapbox-gl';
-import type { DrawGetOptions } from 'vue-iclient-controllers-mapboxgl/src/types/DrawEvent';
+import type { DrawGetOptions } from '@supermapgis/iclient-components-core/mapboxgl/src/types/DrawEvent';
 import turfLength from '@turf/length';
 import turfArea from '@turf/area';
 import { convertArea } from '@turf/helpers';
 import mapboxgl from 'mapbox-gl';
-import drawEvent from 'vue-iclient-controllers-mapboxgl/src/types/DrawEvent';
+import drawEvent from '@supermapgis/iclient-components-core/mapboxgl/src/types/DrawEvent';
 
 /**
  * @class DrawViewModel

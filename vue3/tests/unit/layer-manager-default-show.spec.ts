@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import LayerManager from 'vue-iclient-core/utils/scene/layer-manager'
+import LayerManager from '@supermapgis/iclient-components-core/core/utils/scene/layer-manager'
 
 function createEntityCollection() {
   return {

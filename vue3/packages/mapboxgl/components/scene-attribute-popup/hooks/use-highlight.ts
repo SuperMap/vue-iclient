@@ -3,16 +3,16 @@ import type {
   AttributePopupInteraction,
   PopupFieldItem
 } from '@supermapgis/mapboxgl/components/base-attribute-popup/types'
-import type { HighlightStyle } from 'vue-iclient-controllers-mapboxgl/src/LayerHighlightViewModel'
+import type { HighlightStyle } from '@supermapgis/iclient-components-core/mapboxgl/src/LayerHighlightViewModel'
 import type { ScenePopupInfo } from '../types'
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useSceneGetter } from '@supermapgis/common/hooks/index.common'
-import SceneHighlightViewModel from 'vue-iclient-controllers-mapboxgl/src/SceneHighlightViewModel'
+import SceneHighlightViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/SceneHighlightViewModel'
 import {
   popupInfosToQueryLayers,
   toInternalLayerId
 } from '../types'
-import WebSceneViewModel from 'vue-iclient-controllers-mapboxgl/src/WebSceneViewModel'
+import WebSceneViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/WebSceneViewModel'
 
 interface UseSceneHighlightOptions {
   props: {

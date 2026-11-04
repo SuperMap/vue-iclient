@@ -1,5 +1,5 @@
 import { set, uniqBy } from 'lodash-es'
-import getFeatures from 'vue-iclient-core/utils/get-features'
+import getFeatures from '@supermapgis/iclient-components-core/core/utils/get-features'
 import { watch, ref } from 'vue'
 
 export interface TreeData {

@@ -14,7 +14,7 @@ import type { ResetViewProps, ResetViewEvents } from './types'
 import { resetViewPropsDefault } from './types'
 import { useLocale, useMapGetter, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useMapControl } from '@supermapgis/mapboxgl/hooks'
-import ResetViewModel from 'vue-iclient-controllers-mapboxgl/src/ResetViewModel'
+import ResetViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/ResetViewModel'
 import SmButton from '@supermapgis/common/components/button/Button'
 
 defineOptions({

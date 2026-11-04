@@ -29,7 +29,7 @@
 import { computed, onBeforeUnmount, onMounted } from 'vue'
 import uniqueId from 'lodash.uniqueid'
 import omit from 'omit.js'
-import { formatFontSize, hexToRgba, getColorWithOpacity } from 'vue-iclient-core/utils/util'
+import { formatFontSize, hexToRgba, getColorWithOpacity } from '@supermapgis/iclient-components-core/core/utils/util'
 import { useLocale } from '@supermapgis/common/hooks/index.common'
 import type { LegendStyleGroupItem } from '../types'
 import {

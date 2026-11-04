@@ -61,7 +61,7 @@ import { useMapControl } from '@supermapgis/mapboxgl/hooks'
 import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'
 import SmCard from '@supermapgis/common/components/card/Card'
 import { SmCollapse, SmCollapsePanel } from '@supermapgis/common/components/collapse/Collapse'
-import LegendViewModel from 'vue-iclient-controllers-mapboxgl/src/LegendViewModel'
+import LegendViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/LegendViewModel'
 import LayerContent from './subs/layer-content.vue'
 import { legendPropsDefault } from './types'
 

@@ -1,7 +1,7 @@
 import {
   ViewShedAnalysis,
   type ViewShedInstance
-} from 'vue-iclient-core/utils/scene/viewshed-analysis'
+} from '@supermapgis/iclient-components-core/core/utils/scene/viewshed-analysis'
 
 function createViewShed(viewPosition: [number, number, number]) {
   const positions: Array<[number, number, number]> = []

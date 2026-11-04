@@ -8,9 +8,9 @@ import type {
 import type { MapSelectionChangedEvent } from '@supermapgis/mapboxgl/components/layer-highlight/types'
 import { computed, onBeforeMount, onUnmounted, reactive, ref, watch } from 'vue'
 import { useMapGetter } from '@supermapgis/common/hooks/index.common'
-import PopupViewModel from 'vue-iclient-controllers-mapboxgl/src/PopupViewModel'
-import MapPopupViewModel from 'vue-iclient-controllers-mapboxgl/src/MapPopupViewModel'
-import { setPopupArrowStyle } from 'vue-iclient-core/utils/util'
+import PopupViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/PopupViewModel'
+import MapPopupViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/MapPopupViewModel'
+import { setPopupArrowStyle } from '@supermapgis/iclient-components-core/core/utils/util'
 import { isEqual } from 'lodash-es'
 
 interface UseMapAttributePopupInteractionOptions {

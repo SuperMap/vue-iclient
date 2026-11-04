@@ -18,7 +18,7 @@ import { sceneFlyToPropsDefault } from './types'
 import { useSceneGetter, useLocale, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useSceneControl } from '@supermapgis/mapboxgl/hooks'
 import SmButton from '@supermapgis/common/components/button/Button'
-import { flyToCamera } from 'vue-iclient-core/utils/scene'
+import { flyToCamera } from '@supermapgis/iclient-components-core/core/utils/scene'
 
 defineOptions({
   name: 'SmSceneFlyTo'

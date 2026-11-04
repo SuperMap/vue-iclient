@@ -199,16 +199,16 @@ import type {
   FetchDataBase,
   OnlineLocalSearch,
   LayerSearchInfo
-} from 'vue-iclient-controllers-mapboxgl/src/SearchViewModel'
+} from '@supermapgis/iclient-components-core/mapboxgl/src/SearchViewModel'
 import { useTheme,useMapGetter, useLocale } from '@supermapgis/common/hooks/index.common'
 import { useMapControl } from '@supermapgis/mapboxgl/hooks'
-import SearchViewModel from 'vue-iclient-controllers-mapboxgl/src/SearchViewModel'
+import SearchViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/SearchViewModel'
 import { SearchOutlined, LoadingOutlined } from '@ant-design/icons-vue'
 import SmInput from '@supermapgis/common/components/input/Input'
 import SmCheckbox from '@supermapgis/common/components/checkbox/Checkbox'
 import { message as Message } from 'ant-design-vue'
 import TablePopup from '@supermapgis/common/components/table-popup/table-popup.vue'
-import { setPopupArrowStyle } from 'vue-iclient-core/utils/util'
+import { setPopupArrowStyle } from '@supermapgis/iclient-components-core/core/utils/util'
 import { isEqual } from 'lodash-es'
 import { getDisplayedHistory, HISTORY_MAX_COUNT_MAX, normalizeHistoryMaxCount } from './history'
 import { searchPropsDefault } from './types'

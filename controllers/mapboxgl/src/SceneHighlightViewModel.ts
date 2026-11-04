@@ -1,8 +1,8 @@
 import mapboxgl from 'mapbox-gl';
 import turfCenter from '@turf/center';
 import { GeometryPolygon, GeometryLinearRing, GeometryPoint } from '@supermapgis/iclient-common/commontypes';
-import iServerRestService from 'vue-iclient-core/utils/iServerRestService';
-import { isSceneEntityDataLayer } from 'vue-iclient-core/utils/scene';
+import iServerRestService from '@supermapgis/iclient-components-core/core/utils/iServerRestService';
+import { isSceneEntityDataLayer } from '@supermapgis/iclient-components-core/core/utils/scene';
 import WebSceneViewModel, { type SceneAppreciableLayer } from './WebSceneViewModel';
 import type { HighlightStyle } from './LayerHighlightViewModel';
 import { getDefaultLayerStyle } from './types';

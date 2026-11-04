@@ -15,7 +15,7 @@ const mocks = vi.hoisted(() => ({
   }>
 }));
 
-vi.mock('vue-iclient-core/utils/scene', () => {
+vi.mock('@supermapgis/iclient-components-core/core/utils/scene', () => {
   class LayerManager {
     check = vi.fn().mockResolvedValue(undefined);
     handleDataChange = vi.fn().mockResolvedValue(undefined);
@@ -33,7 +33,7 @@ vi.mock('vue-iclient-core/utils/scene', () => {
   };
 });
 
-vi.mock('vue-iclient-controllers-mapboxgl/src/WebSceneViewModel', () => {
+vi.mock('@supermapgis/iclient-components-core/mapboxgl/src/WebSceneViewModel', () => {
   class WebSceneViewModel {
     private listeners = new Map<string, Array<(event: unknown) => void>>();
     off = vi.fn((event: string, listener: (event: unknown) => void) => {
@@ -61,7 +61,7 @@ vi.mock('vue-iclient-controllers-mapboxgl/src/WebSceneViewModel', () => {
   return { default: WebSceneViewModel };
 });
 
-vi.mock('vue-iclient-core/types/scene-event', () => ({
+vi.mock('@supermapgis/iclient-components-core/core/types/scene-event', () => ({
   default: {
     setScene: vi.fn(),
     deleteScene: vi.fn()

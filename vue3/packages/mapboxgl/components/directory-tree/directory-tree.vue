@@ -73,7 +73,7 @@ import SmCollapseCard from '@supermapgis/common/components/collapse-card/collaps
 import SmEmpty from '@supermapgis/common/components/empty/Empty'
 import SmTree from '@supermapgis/common/components/tree/Tree'
 import { useLocale, useTheme } from '@supermapgis/common/hooks/index.common'
-import mapEvent from 'vue-iclient-core/types/map-event'
+import mapEvent from '@supermapgis/iclient-components-core/core/types/map-event'
 import type { DirectoryTreeProps, ResourceDescriptor, RuntimeTreeNode } from './types'
 import { DEFAULT_DIRECTORY_TREE_TITLE, directoryTreePropsDefault } from './types'
 import { createDirectoryTreeFetcher } from './utils/fetcher'

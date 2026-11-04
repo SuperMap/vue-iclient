@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "../controllers/mapboxgl/dist/core",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    // 发布构建只负责发射声明；旧源码与手写类型中仍有历史诊断。
+    "noCheck": true,
+    "types": ["geojson"],
+    "paths": {
+      "@supermapgis/iclient-components-core/static/*": ["../static/*"],
+      "@supermapgis/iclient-components-core/core/*": ["./*"],
+      "*.json": ["*.json"]
+    }
+  },
+  "include": ["index.ts", "mixin/**/*", "types/**/*", "utils/**/*"],
+  "exclude": ["**/__tests__/**/*"]
+}

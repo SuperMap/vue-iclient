@@ -1,5 +1,5 @@
 import { ref, watch } from 'vue';
-import RestService from 'vue-iclient-core/utils/RestService';
+import RestService from '@supermapgis/iclient-components-core/core/utils/RestService';
 
 export function useThirdService(props: {
   url: string;

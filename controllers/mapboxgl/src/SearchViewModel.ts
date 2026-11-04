@@ -5,9 +5,9 @@ import turfCenter from '@turf/center';
 import { AddressMatchService } from '@supermapgis/iclient-mapboxgl';
 import { FetchRequest } from '@supermapgis/iclient-common/util/FetchRequest';
 import { GeoCodingParameter } from '@supermapgis/iclient-common/iServer/GeoCodingParameter';
-import iServerRestService from 'vue-iclient-core/utils/iServerRestService';
-import getFeatures from 'vue-iclient-core/utils/get-features';
-import { getFeatureCenter } from 'vue-iclient-core/utils/util';
+import iServerRestService from '@supermapgis/iclient-components-core/core/utils/iServerRestService';
+import getFeatures from '@supermapgis/iclient-components-core/core/utils/get-features';
+import { getFeatureCenter } from '@supermapgis/iclient-components-core/core/utils/util';
 
 export interface SearchOptions {
   maxFeatures?: number | string;

@@ -16,10 +16,10 @@
 <script setup lang="ts">
 import type { WebSceneProps, WebSceneEvents } from './types'
 import { webScenePropsDefault } from './types'
-import WebSceneViewModel from 'vue-iclient-controllers-mapboxgl/src/WebSceneViewModel';
+import WebSceneViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/WebSceneViewModel';
 import { cloneDeep, isEqual } from 'lodash-es';
-import sceneEvent from 'vue-iclient-core/types/scene-event';
-import { LayerManager, getSceneDataLayerConfigIssue, isDataLayerMissingCoordinates, type LayerCheckData } from 'vue-iclient-core/utils/scene';
+import sceneEvent from '@supermapgis/iclient-components-core/core/types/scene-event';
+import { LayerManager, getSceneDataLayerConfigIssue, isDataLayerMissingCoordinates, type LayerCheckData } from '@supermapgis/iclient-components-core/core/utils/scene';
 import { watch, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLocale } from '@supermapgis/common/hooks/index.common'
 import SmMessage from '@supermapgis/common/components/message/Message'

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref } from 'vue'
 import type { Map } from 'mapbox-gl'
-import type { MapOptions } from 'vue-iclient-controllers-mapboxgl/src/WebMapViewModel'
+import type { MapOptions } from '@supermapgis/iclient-components-core/mapboxgl/src/WebMapViewModel'
 import type { ControlProps } from '@supermapgis/mapboxgl/utils'
 import { SmResetView } from '../index'
 import WebMap from '@supermapgis/mapboxgl/components/web-map/webmap.vue'

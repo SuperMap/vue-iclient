@@ -15,6 +15,9 @@ importers:
         specifier: ^12.1.0-r
         version: 12.1.0-r(ol@6.15.1)
     devDependencies:
+      '@supermapgis/iclient-components-core':
+        specifier: workspace:*
+        version: link:controllers/mapboxgl
       '@types/geojson':
         specifier: ^7946.0.16
         version: 7946.0.16
@@ -39,15 +42,6 @@ importers:
       vue:
         specifier: ^3.5.26
         version: 3.5.27(typescript@5.6.3)
-      vue-iclient-controllers-mapboxgl:
-        specifier: workspace:*
-        version: link:controllers/mapboxgl
-      vue-iclient-core:
-        specifier: workspace:*
-        version: link:core
-      vue-iclient-static:
-        specifier: workspace:*
-        version: link:static
 
   controllers/mapboxgl:
     dependencies:
@@ -66,6 +60,9 @@ importers:
       '@turf/center':
         specifier: '>=5.1.5'
         version: 7.3.2
+      '@turf/circle':
+        specifier: '>=7.3.4'
+        version: 7.4.0
       '@turf/envelope':
         specifier: '>=5.1.5'
         version: 7.3.2
@@ -78,15 +75,21 @@ importers:
       '@turf/transform-scale':
         specifier: '>=5.1.5'
         version: 7.3.2
+      '@types/geojson':
+        specifier: ^7946.0.16
+        version: 7946.0.16
+      '@types/lodash':
+        specifier: ^4.17.15
+        version: 4.17.23
+      '@types/mapbox-gl':
+        specifier: ^1.12.1
+        version: 1.13.10
       echarts:
         specifier: '>=6.0.0'
         version: 6.0.0
       fast-xml-parser:
         specifier: ^5.2.5
         version: 5.3.3
-      geojson:
-        specifier: '>=0.5.0'
-        version: 0.5.0
       lodash.assignin:
         specifier: '>=4.0.1'
         version: 4.2.0
@@ -102,9 +105,18 @@ importers:
       lodash.isequal:
         specifier: '>=4.0.1'
         version: 4.5.0
+      lodash.max:
+        specifier: '>=4.0.1'
+        version: 4.0.1
       lodash.mergewith:
         specifier: '>=4.0.1'
         version: 4.6.2
+      lodash.orderby:
+        specifier: '>=4.0.1'
+        version: 4.6.0
+      lodash.tonumber:
+        specifier: '>=4.0.1'
+        version: 4.0.3
       lodash.uniqby:
         specifier: ^4.7.0
         version: 4.7.0
@@ -120,16 +132,37 @@ importers:
       ol:
         specifier: ^6.15.1
         version: 6.15.1
+      omit.js:
+        specifier: '>=2.0.2'
+        version: 2.0.2
       proj4:
         specifier: '>=2.15.0'
         version: 2.20.2
+      simple-statistics:
+        specifier: '>=7.8.3'
+        version: 7.8.8
+      tinycolor2:
+        specifier: '>=1.6.0'
+        version: 1.6.0
     devDependencies:
-      '@types/lodash':
-        specifier: ^4.17.15
-        version: 4.17.23
-      '@types/mapbox-gl':
-        specifier: ^1.12.1
-        version: 1.13.10
+      '@rollup/plugin-commonjs':
+        specifier: ^22.0.1
+        version: 22.0.2(rollup@4.34.6)
+      '@rollup/plugin-json':
+        specifier: ^6.1.0
+        version: 6.1.0(rollup@4.34.6)
+      '@rollup/plugin-node-resolve':
+        specifier: ^13.3.0
+        version: 13.3.0(rollup@4.34.6)
+      fast-glob:
+        specifier: ^3.2.11
+        version: 3.3.3
+      rollup:
+        specifier: 4.34.6
+        version: 4.34.6
+      typescript:
+        specifier: ~5.6.3
+        version: 5.6.3
 
   core:
     dependencies:
@@ -167,12 +200,30 @@ importers:
         specifier: '>=1.6.0'
         version: 1.6.0
     devDependencies:
+      '@rollup/plugin-commonjs':
+        specifier: ^22.0.1
+        version: 22.0.2(rollup@4.34.6)
+      '@rollup/plugin-json':
+        specifier: ^6.1.0
+        version: 6.1.0(rollup@4.34.6)
+      '@rollup/plugin-node-resolve':
+        specifier: ^13.3.0
+        version: 13.3.0(rollup@4.34.6)
+      '@types/geojson':
+        specifier: ^7946.0.16
+        version: 7946.0.16
       '@types/lodash':
         specifier: ^4.17.15
         version: 4.17.23
-      '@types/mapbox-gl':
-        specifier: ^1.12.1
-        version: 1.13.10
+      fast-glob:
+        specifier: ^3.2.11
+        version: 3.3.3
+      rollup:
+        specifier: 4.34.6
+        version: 4.34.6
+      typescript:
+        specifier: ~5.6.3
+        version: 5.6.3
 
   static: {}
 
@@ -187,6 +238,9 @@ importers:
       '@supermapgis/common/components':
         specifier: workspace:*
         version: link:packages/common/components
+      '@supermapgis/data-edit':
+        specifier: ^1.0.150
+        version: 1.0.150(ol@6.15.1)
       '@supermapgis/iclient-common':
         specifier: ^12.1.0-r
         version: 12.1.0-r(ol@6.15.1)
@@ -196,6 +250,9 @@ importers:
       '@supermapgis/mapboxgl/components':
         specifier: workspace:*
         version: link:packages/mapboxgl/components
+      '@turf/distance':
+        specifier: ^7.3.5
+        version: 7.4.0
       '@types/geojson':
         specifier: ^7946.0.16
         version: 7946.0.16
@@ -214,6 +271,9 @@ importers:
       ant-design-vue:
         specifier: ^4.2.6
         version: 4.2.6(vue@3.5.27(typescript@5.6.3))
+      axios:
+        specifier: ^1.13.2
+        version: 1.21.0
       dayjs:
         specifier: ^1.11.13
         version: 1.11.19
@@ -296,6 +356,9 @@ importers:
       '@supermapgis/common/utils':
         specifier: workspace:*
         version: link:packages/common/utils
+      '@supermapgis/iclient-components-core':
+        specifier: workspace:*
+        version: link:../controllers/mapboxgl
       '@supermapgis/mapboxgl/hooks':
         specifier: workspace:*
         version: link:packages/mapboxgl/hooks
@@ -395,15 +458,6 @@ importers:
       vitest-sonar-reporter:
         specifier: ^2.0.0
         version: 2.0.4(vitest@3.2.4(@types/node@22.19.7)(jiti@2.6.1)(jsdom@25.0.1)(sass@1.97.2)(yaml@2.8.2))
-      vue-iclient-controllers-mapboxgl:
-        specifier: workspace:*
-        version: link:../controllers/mapboxgl
-      vue-iclient-core:
-        specifier: workspace:*
-        version: link:../core
-      vue-iclient-static:
-        specifier: workspace:*
-        version: link:../static
       vue-tsc:
         specifier: ^2.2.2
         version: 2.2.12(typescript@5.6.3)
@@ -1777,6 +1831,13 @@ packages:
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
 
+  '@mapbox/geojson-area@0.2.2':
+    resolution: {integrity: sha512-bBqqFn1kIbLBfn7Yq1PzzwVkPYQr9lVUeT8Dhd0NL5n76PBuXzOcuLV7GOSbEB1ia8qWxH4COCvFpziEu/yReA==}
+
+  '@mapbox/geojson-normalize@0.0.1':
+    resolution: {integrity: sha512-82V7YHcle8lhgIGqEWwtXYN5cy0QM/OHq3ypGhQTbvHR57DF0vMHMjjVSQKFfVXBe/yWCBZTyOuzvK7DFFnx5Q==}
+    hasBin: true
+
   '@mapbox/geojson-rewind@0.5.2':
     resolution: {integrity: sha512-tJaT+RbYGJYStt7wI3cq4Nl4SXxG8W7JDG5DMJu97V25RnbNg3QtQtf+KD+VLjNpWKYsRvXDNmNrBgEETr1ifA==}
     hasBin: true
@@ -1787,6 +1848,10 @@ packages:
   '@mapbox/jsonlint-lines-primitives@2.0.2':
     resolution: {integrity: sha512-rY0o9A5ECsTQRVhv7tL/OyDpGAoUB4tTvLiW1DSzQGq4bvTPhNw1VpSNjDJc5GFZ2XuyOtSWSVN05qOtcD71qQ==}
     engines: {node: '>= 0.6'}
+
+  '@mapbox/mapbox-gl-draw@1.5.2':
+    resolution: {integrity: sha512-JOmAHnhx9JlLDnZw25fikmVMFiRPjLlDNAOqQJKfz8uIqHy9Qnd+NzgTQijNa4lKFLiToGUJGKhsGPezNAmCzA==}
+    engines: {node: ^18.0.0 || >=20.0.0}
 
   '@mapbox/mapbox-gl-style-spec@13.28.0':
     resolution: {integrity: sha512-B8xM7Fp1nh5kejfIl4SWeY0gtIeewbuRencqO3cJDrCHZpaPg7uY+V8abuR+esMeuOjRl5cLhVTP40v+1ywxbg==}
@@ -1879,36 +1944,42 @@ packages:
     engines: {node: '>= 10.0.0'}
     cpu: [arm]
     os: [linux]
+    libc: [glibc]
 
   '@parcel/watcher-linux-arm-musl@2.5.4':
     resolution: {integrity: sha512-kGO8RPvVrcAotV4QcWh8kZuHr9bXi9a3bSZw7kFarYR0+fGliU7hd/zevhjw8fnvIKG3J9EO5G6sXNGCSNMYPQ==}
     engines: {node: '>= 10.0.0'}
     cpu: [arm]
     os: [linux]
+    libc: [musl]
 
   '@parcel/watcher-linux-arm64-glibc@2.5.4':
     resolution: {integrity: sha512-KU75aooXhqGFY2W5/p8DYYHt4hrjHZod8AhcGAmhzPn/etTa+lYCDB2b1sJy3sWJ8ahFVTdy+EbqSBvMx3iFlw==}
     engines: {node: '>= 10.0.0'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@parcel/watcher-linux-arm64-musl@2.5.4':
     resolution: {integrity: sha512-Qx8uNiIekVutnzbVdrgSanM+cbpDD3boB1f8vMtnuG5Zau4/bdDbXyKwIn0ToqFhIuob73bcxV9NwRm04/hzHQ==}
     engines: {node: '>= 10.0.0'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@parcel/watcher-linux-x64-glibc@2.5.4':
     resolution: {integrity: sha512-UYBQvhYmgAv61LNUn24qGQdjtycFBKSK3EXr72DbJqX9aaLbtCOO8+1SkKhD/GNiJ97ExgcHBrukcYhVjrnogA==}
     engines: {node: '>= 10.0.0'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@parcel/watcher-linux-x64-musl@2.5.4':
     resolution: {integrity: sha512-YoRWCVgxv8akZrMhdyVi6/TyoeeMkQ0PGGOf2E4omODrvd1wxniXP+DBynKoHryStks7l+fDAMUBRzqNHrVOpg==}
     engines: {node: '>= 10.0.0'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@parcel/watcher-win32-arm64@2.5.4':
     resolution: {integrity: sha512-iby+D/YNXWkiQNYcIhg8P5hSjzXEHaQrk2SLrWOUD7VeC4Ohu0WQvmV+HDJokZVJ2UjJ4AGXW3bx7Lls9Ln4TQ==}
@@ -2427,116 +2498,139 @@ packages:
     resolution: {integrity: sha512-88fSzjC5xeH9S2Vg3rPgXJULkHcLYMkh8faix8DX4h4TIAL65ekwuQMA/g2CXq8W+NJC43V6fUpYZNjaX3+IIg==}
     cpu: [arm]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-arm-gnueabihf@4.55.3':
     resolution: {integrity: sha512-YeGUhkN1oA+iSPzzhEjVPS29YbViOr8s4lSsFaZKLHswgqP911xx25fPOyE9+khmN6W4VeM0aevbDp4kkEoHiA==}
     cpu: [arm]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-arm-musleabihf@4.34.6':
     resolution: {integrity: sha512-wM4ztnutBqYFyvNeR7Av+reWI/enK9tDOTKNF+6Kk2Q96k9bwhDDOlnCUNRPvromlVXo04riSliMBs/Z7RteEg==}
     cpu: [arm]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-arm-musleabihf@4.55.3':
     resolution: {integrity: sha512-eo0iOIOvcAlWB3Z3eh8pVM8hZ0oVkK3AjEM9nSrkSug2l15qHzF3TOwT0747omI6+CJJvl7drwZepT+re6Fy/w==}
     cpu: [arm]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-arm64-gnu@4.34.6':
     resolution: {integrity: sha512-9RyprECbRa9zEjXLtvvshhw4CMrRa3K+0wcp3KME0zmBe1ILmvcVHnypZ/aIDXpRyfhSYSuN4EPdCCj5Du8FIA==}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-arm64-gnu@4.55.3':
     resolution: {integrity: sha512-DJay3ep76bKUDImmn//W5SvpjRN5LmK/ntWyeJs/dcnwiiHESd3N4uteK9FDLf0S0W8E6Y0sVRXpOCoQclQqNg==}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-arm64-musl@4.34.6':
     resolution: {integrity: sha512-qTmklhCTyaJSB05S+iSovfo++EwnIEZxHkzv5dep4qoszUMX5Ca4WM4zAVUMbfdviLgCSQOu5oU8YoGk1s6M9Q==}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-arm64-musl@4.55.3':
     resolution: {integrity: sha512-BKKWQkY2WgJ5MC/ayvIJTHjy0JUGb5efaHCUiG/39sSUvAYRBaO3+/EK0AZT1RF3pSj86O24GLLik9mAYu0IJg==}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-loong64-gnu@4.55.3':
     resolution: {integrity: sha512-Q9nVlWtKAG7ISW80OiZGxTr6rYtyDSkauHUtvkQI6TNOJjFvpj4gcH+KaJihqYInnAzEEUetPQubRwHef4exVg==}
     cpu: [loong64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-loong64-musl@4.55.3':
     resolution: {integrity: sha512-2H5LmhzrpC4fFRNwknzmmTvvyJPHwESoJgyReXeFoYYuIDfBhP29TEXOkCJE/KxHi27mj7wDUClNq78ue3QEBQ==}
     cpu: [loong64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-loongarch64-gnu@4.34.6':
     resolution: {integrity: sha512-4Qmkaps9yqmpjY5pvpkfOerYgKNUGzQpFxV6rnS7c/JfYbDSU0y6WpbbredB5cCpLFGJEqYX40WUmxMkwhWCjw==}
     cpu: [loong64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-powerpc64le-gnu@4.34.6':
     resolution: {integrity: sha512-Zsrtux3PuaxuBTX/zHdLaFmcofWGzaWW1scwLU3ZbW/X+hSsFbz9wDIp6XvnT7pzYRl9MezWqEqKy7ssmDEnuQ==}
     cpu: [ppc64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-ppc64-gnu@4.55.3':
     resolution: {integrity: sha512-9S542V0ie9LCTznPYlvaeySwBeIEa7rDBgLHKZ5S9DBgcqdJYburabm8TqiqG6mrdTzfV5uttQRHcbKff9lWtA==}
     cpu: [ppc64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-ppc64-musl@4.55.3':
     resolution: {integrity: sha512-ukxw+YH3XXpcezLgbJeasgxyTbdpnNAkrIlFGDl7t+pgCxZ89/6n1a+MxlY7CegU+nDgrgdqDelPRNQ/47zs0g==}
     cpu: [ppc64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-riscv64-gnu@4.34.6':
     resolution: {integrity: sha512-aK+Zp+CRM55iPrlyKiU3/zyhgzWBxLVrw2mwiQSYJRobCURb781+XstzvA8Gkjg/hbdQFuDw44aUOxVQFycrAg==}
     cpu: [riscv64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-riscv64-gnu@4.55.3':
     resolution: {integrity: sha512-Iauw9UsTTvlF++FhghFJjqYxyXdggXsOqGpFBylaRopVpcbfyIIsNvkf9oGwfgIcf57z3m8+/oSYTo6HutBFNw==}
     cpu: [riscv64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-riscv64-musl@4.55.3':
     resolution: {integrity: sha512-3OqKAHSEQXKdq9mQ4eajqUgNIK27VZPW3I26EP8miIzuKzCJ3aW3oEn2pzF+4/Hj/Moc0YDsOtBgT5bZ56/vcA==}
     cpu: [riscv64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-s390x-gnu@4.34.6':
     resolution: {integrity: sha512-WoKLVrY9ogmaYPXwTH326+ErlCIgMmsoRSx6bO+l68YgJnlOXhygDYSZe/qbUJCSiCiZAQ+tKm88NcWuUXqOzw==}
     cpu: [s390x]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-s390x-gnu@4.55.3':
     resolution: {integrity: sha512-0CM8dSVzVIaqMcXIFej8zZrSFLnGrAE8qlNbbHfTw1EEPnFTg1U1ekI0JdzjPyzSfUsHWtodilQQG/RA55berA==}
     cpu: [s390x]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-x64-gnu@4.34.6':
     resolution: {integrity: sha512-Sht4aFvmA4ToHd2vFzwMFaQCiYm2lDFho5rPcvPBT5pCdC+GwHG6CMch4GQfmWTQ1SwRKS0dhDYb54khSrjDWw==}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-x64-gnu@4.55.3':
     resolution: {integrity: sha512-+fgJE12FZMIgBaKIAGd45rxf+5ftcycANJRWk8Vz0NnMTM5rADPGuRFTYar+Mqs560xuART7XsX2lSACa1iOmQ==}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-x64-musl@4.34.6':
     resolution: {integrity: sha512-zmmpOQh8vXc2QITsnCiODCDGXFC8LMi64+/oPpPx5qz3pqv0s6x46ps4xoycfUiVZps5PFn1gksZzo4RGTKT+A==}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-x64-musl@4.55.3':
     resolution: {integrity: sha512-tMD7NnbAolWPzQlJQJjVFh/fNH3K/KnA7K8gv2dJWCwwnaK6DFCYST1QXYWfu5V0cDwarWC8Sf/cfMHniNq21A==}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-openbsd-x64@4.55.3':
     resolution: {integrity: sha512-u5KsqxOxjEeIbn7bUK1MPM34jrnPwjeqgyin4/N6e/KzXKfpE9Mi0nCxcQjaM9lLmPcHmn/xx1yOjgTMtu1jWQ==}
@@ -2600,8 +2694,14 @@ packages:
     resolution: {integrity: sha512-tlqY9xq5ukxTUZBmoOp+m61cqwQD5pHJtFY3Mn8CA8ps6yghLH/Hw8UPdqg4OLmFW3IFlcXnQNmo/dh8HzXYIQ==}
     engines: {node: '>=18'}
 
+  '@supermapgis/data-edit@1.0.150':
+    resolution: {integrity: sha512-DUr4nBhC+ns2q2WHVNw1H/QMQy6gKJ3gjOV1Sezt4WS01FBvNO6M4drIThzk0Rm00UuoNI6IGLCh7QngfRDZKQ==, tarball: https://packages.aliyun.com/5fed4c09f6558cb57ed8ac6b/npm/npm-registry/@supermapgis/data-edit/-/@supermapgis/data-edit-1.0.150.tgz}
+
   '@supermapgis/iclient-common@12.1.0-r':
     resolution: {integrity: sha512-cHnavULfDkbCazSgsFoReK2gpvoin4/zElZNlBdCNtGkBUKdyhw+6musVZ/xC3WLoDrlfh2i9l9RfXPwxD+4Nw==}
+
+  '@supermapgis/iclient-common@12.2.1014':
+    resolution: {integrity: sha512-A5AUtrS007eVfmRdK3IPjhqaaOQec2COEh9gKZ2QyAEO+658Em9kHtqWLb9OLW0vpvzm61Aw1++TSRPQKXgsHg==, tarball: https://packages.aliyun.com/5fed4c09f6558cb57ed8ac6b/npm/npm-registry/@supermapgis/iclient-common/-/@supermapgis/iclient-common-12.2.1014.tgz}
 
   '@supermapgis/iclient-mapboxgl@12.1.0-r':
     resolution: {integrity: sha512-URoX5YvPm0M1IpUXdLc/NFGtpPdxA10QQHfN2VKdvd6gXFjm83ogpQX8m085dMS10aoBxg29o37CtqmErAS6lg==}
@@ -2642,6 +2742,9 @@ packages:
   '@turf/bbox@7.3.2':
     resolution: {integrity: sha512-iohGIDVqi8Ck7VQY2Emp490BShWKixG8wkVPQ7qO4fXRqJwrWO7ntU9XPB+r0qs6Y8kaSd+nDnvG3VFfKDb+Vg==}
 
+  '@turf/bbox@7.3.5':
+    resolution: {integrity: sha512-oG1ya/HtBjAIg4TimbWx+nOYPbY0bCvt82Bq8tm6sBw3qqtbOyRSfDz79Sq90TnH7DXJprJ1qnVGKNtZ6jemfw==}
+
   '@turf/bearing@7.3.2':
     resolution: {integrity: sha512-Gh6GLcR3oeORPvGuDkp5jS774KQkZEVMmmYjYFod8akZNhALlM82hHHWpeqI2M/GsmhIdeMw1qNDzY3n8i+7dA==}
 
@@ -2678,6 +2781,9 @@ packages:
   '@turf/boolean-point-in-polygon@7.3.2':
     resolution: {integrity: sha512-PAfPDQ0TW1+VLgZ7tReTSyZ/X41AW7/nMRQxVpY+h/aG7JomZJ779lojnODT4dWCn3IMTA3xD2dDDfVYBAQMYg==}
 
+  '@turf/boolean-point-in-polygon@7.3.5':
+    resolution: {integrity: sha512-ba7+B0wzaS9GtERZOoXUZ6oW8IcIJHNQZf3c+tiD9ESjcsPO1Q/4qIJGTKl92nBLhhracHJxMWBM/U6hAVkaRg==}
+
   '@turf/boolean-point-on-line@7.3.2':
     resolution: {integrity: sha512-1hDfbdBgX9qpMmCnBqeNgRC3Bl/hlNGR42SvGmejXCjaZmheP+V8pXWJgF0WDxAzYkb7opqS8Vta4+EymUU5GQ==}
 
@@ -2705,8 +2811,14 @@ packages:
   '@turf/center@7.3.2':
     resolution: {integrity: sha512-QOAdTaJStVkSx0a3pJ03UWZqIGzgh3gCZisNp/3PcTSZmf5I/KAmZh5IxUGb5+9J6l6zHRPRaDeWVTGWXexR2A==}
 
+  '@turf/center@7.3.5':
+    resolution: {integrity: sha512-eub5/Kfdmn89ZqwCONHI7astmTDEtN5M6+JfOkgoSyhKKFhUJYNxUyH1F/vCtIP7j1K369Vs4L9TYiuGapvIKQ==}
+
   '@turf/centroid@7.3.2':
     resolution: {integrity: sha512-zWlX/t7goUx+FqCYzyscO7muXPSADb5nTGXWAbRR51P3Zsdx24P5tJshJhrHwIb3OR9a+YE4ig568Clex6tc2g==}
+
+  '@turf/centroid@7.3.5':
+    resolution: {integrity: sha512-hkWaqwGFdOn6Tf0EWfn2yn1XZ1FWE1h2C5ZWstDMu/FxYO5DB+YjlmOFPl4K6SmSOEgdV07eK2vDCyPeTHqKGA==}
 
   '@turf/circle@7.3.2':
     resolution: {integrity: sha512-LeVWEacd9PZEgnmUA1ICZ9VabAXXJFbiX6AOWXs/AW0yNhTlrjRwZUOKOQxfde/kc/R8MAoELnKHEEAEEfnPng==}
@@ -2719,6 +2831,9 @@ packages:
 
   '@turf/clone@7.3.2':
     resolution: {integrity: sha512-ET6EqfEbDq4EsvyhC5Fwyg5hkkRGcHUM7v63sqbLtz4bY2cSAZ1gGcgmBQdztSXQyKqSsFkIXpp1amfrLATNOQ==}
+
+  '@turf/clone@7.3.5':
+    resolution: {integrity: sha512-qfIaHj3410QEcTpiCRnTzhq8YrUp2gWrUIPLBAEFykopNxJkq1du1VrRzvuAo36ap2UV7KppkS6wGNypbcxswQ==}
 
   '@turf/clusters-dbscan@7.3.2':
     resolution: {integrity: sha512-g6gnzeoDmwwf/GSkf+c0svMpFPgjRcJAEifQig73Q5gNPOrhcHoA8gsRe1PxJrVgkYytB2QWYlZXfkQQG3BmCg==}
@@ -2759,6 +2874,12 @@ packages:
   '@turf/distance@7.3.2':
     resolution: {integrity: sha512-aY2HQDZpu/doKRUTEcBKdV2olNOD1x0wKR6ujzC+D1EZLKWOEmTJRR+6OjzB+xuv5zZbhFPe9f0MXEuNDxzwfQ==}
 
+  '@turf/distance@7.3.5':
+    resolution: {integrity: sha512-uQAC63zg/l91KUxzfhqio7Ii3+UXTrPOVJScIdRj6EO6+9XHI4kC+AdyIS4cPAv14sZfJLIBxzMnzcGrss+kEA==}
+
+  '@turf/distance@7.4.0':
+    resolution: {integrity: sha512-ODkopQDG1m/U6Mx7OMmShncaCvneomwX3lZY1CDA7x40bhDdTTRYP/n/6LicZVyIO4/oK+aXkov4NOtWYthA2g==}
+
   '@turf/ellipse@7.3.2':
     resolution: {integrity: sha512-ZFxSeG2yKTxwG2gbQuwUYVF31wIAxDYSDp3/PQtbWlsY/wMLLv4z+JE7Kc4mHSkkEyJxbfSOJHf0AASuPBrtkA==}
 
@@ -2767,6 +2888,9 @@ packages:
 
   '@turf/explode@7.3.2':
     resolution: {integrity: sha512-qLskLlqfbsSFkCL4KqGP7t4HQ/5oYrVtNp00xBxMq1y/9hszdKjQO3qtaf3eGVosFVyQc1lff0KsdhTYOHKZ8g==}
+
+  '@turf/explode@7.3.5':
+    resolution: {integrity: sha512-Qdd7ehX5AF0DdpJl+JJyxws7jEmsZBRV35wTm+Lyhapuc3yLHU7tN5EqJ+2lVV7RkUgBXEFQV+34pmPLPGQn+w==}
 
   '@turf/flatten@7.3.2':
     resolution: {integrity: sha512-HKFnrcMDaymgvyibNql1KtLOSUXj/5clo61ybtdch+tI1o9fE5/XyAj5ZcRSAfa7Gslbk2zs2LkBKnUa6+YRng==}
@@ -2783,6 +2907,9 @@ packages:
   '@turf/helpers@7.3.2':
     resolution: {integrity: sha512-5HFN42rgWjSobdTMxbuq+ZdXPcqp1IbMgFYULTLCplEQM3dXhsyRFe7DCss4Eiw12iW3q6Z5UeTNVfITsE5lgA==}
 
+  '@turf/helpers@7.3.5':
+    resolution: {integrity: sha512-E/NMGV5MwbjjP7AJXBtsanC3yY8N2MQ87IGdIgkB2ji5AtBpwnH4L3gEqpYN4RlCJJWbLbzO91BbKv2waUd0eg==}
+
   '@turf/helpers@7.4.0':
     resolution: {integrity: sha512-7PAwLZqOdRzTI5g9bHvUwlloAXPDH/mlajtryk0tw4ZwGMtmXsAyF4QundsAMfy4u48Fyd3AUqMXY0SMxqJGWg==}
 
@@ -2797,6 +2924,9 @@ packages:
 
   '@turf/invariant@7.3.2':
     resolution: {integrity: sha512-brGmL1EFhZH/YNXhq6S+8sPWBEnmvEyxMWJO8bUNOFZyWHYiRTwxQHZM+An1blkbQ77PiEzsdNAspZqE1j7YKA==}
+
+  '@turf/invariant@7.3.5':
+    resolution: {integrity: sha512-ZVIvsBvjr8lO7WxC5zYNjRsjSDvyGvWkJMjuWaJjTU8x+1tmfNnw3gDX/TI2Sit83gcRYLYkNo23lB/udqx/Hg==}
 
   '@turf/invariant@7.4.0':
     resolution: {integrity: sha512-OAsc3qdNx+tRqzWmMNFMnVlWWACIqnYqIejZKvb2oKkKPYJJrURPXZ6OdrGD58ljJMolLoqwIZGSx3VndaEjxg==}
@@ -2852,6 +2982,9 @@ packages:
   '@turf/meta@7.3.2':
     resolution: {integrity: sha512-FIcIY+ZsAe9QV4fHciTXeuRz2TKIVaEjivkl4vMFCibdj7FUkWDofqOncbIre1xPrgktQeh20ZrmD+p0kf3n4Q==}
 
+  '@turf/meta@7.3.5':
+    resolution: {integrity: sha512-r+ohqxoyqeigFB0oFrQx/YEHIkOKqcKpCjvZkvZs7Tkv+IFco5MezAd2zd4rzK+0DfFgDP3KpJc7HqrYjvEjhg==}
+
   '@turf/midpoint@7.3.2':
     resolution: {integrity: sha512-ZyJZ/qR7yA7+jmzcP7T7xH2B3vDu1MhnfDLk1CSr7S/oh5fA3GKCfcaJtyURu8H3e+JF66ZDMRkhR1aNK7li/A==}
 
@@ -2870,6 +3003,9 @@ packages:
   '@turf/nearest-point@7.3.2':
     resolution: {integrity: sha512-+uMmQVYldH/g8WL4B7k2UtZ7AwSO5IMpt56dLxd/e2dvyFL/dPcoR4gJQP/aBQ/NkjmGw5LDAjePk4vAunO34A==}
 
+  '@turf/nearest-point@7.3.5':
+    resolution: {integrity: sha512-qcsbj9fo5CYhGeIDaJORoqiZyjNGu2+Te31MVaFoTTxqqkXypxp9e6HJGvUi2zPd1Zk3oAWXhvm1a+UXw2G56w==}
+
   '@turf/planepoint@7.3.2':
     resolution: {integrity: sha512-PKkzHNSiTEzhllwede6eX8fBwO278Hs+tXWseDCqOVa30lXax2yce7600HWpgx6LHMIkiW86QFeMnMH1rmr2sQ==}
 
@@ -2878,6 +3014,9 @@ packages:
 
   '@turf/point-on-feature@7.3.2':
     resolution: {integrity: sha512-dtP/Ky95SPJUvzvM2Wy81jNiT/8YurpuJPq86jbixseS3ILv1EoVENPozzK0vpEHtgn3K6fC9vjFuF18rTda0A==}
+
+  '@turf/point-on-feature@7.3.5':
+    resolution: {integrity: sha512-Y7W+JZJCmm9Qq93NHpk4dVhzAtAk2Uyau2Uk1ttCJ2Jsnuu4dwSjOurpmgDmMUe7yPmzihAUYhMFDumpAja8ZA==}
 
   '@turf/point-to-line-distance@7.3.2':
     resolution: {integrity: sha512-fDJ0SJw++Wx6YrRHya5fY7LCAmGctabKmFuCpzACr3R7+d35wnJw9qv1QvXfjmaP4PBOAy3yKEABFh0oPS7RpQ==}
@@ -3706,6 +3845,9 @@ packages:
   available-typed-arrays@1.0.7:
     resolution: {integrity: sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==}
     engines: {node: '>= 0.4'}
+
+  axios@1.21.0:
+    resolution: {integrity: sha512-YCzXMB53Q9PZBsh7yN7wtapit4WepwcHS2fP8QhGsBxSz5YtgYobV7GGlWlAJi+RxfU77GQTQi2DSLUma42EYA==}
 
   babel-plugin-external-helpers@6.22.0:
     resolution: {integrity: sha512-TdAMiM6MzLokhk3yCA0KCctmivVZ/mmCwbp7YPmRGkqh2KkcNuxE3R0jxuYU+4xmvfMZx4p4uo8d1cT9t5BLxA==}
@@ -4982,6 +5124,15 @@ packages:
   flv.js@1.6.2:
     resolution: {integrity: sha512-xre4gUbX1MPtgQRKj2pxJENp/RnaHaxYvy3YToVVCrSmAWUu85b9mug6pTXF6zakUjNP2lFWZ1rkSX7gxhB/2A==}
 
+  follow-redirects@1.16.2:
+    resolution: {integrity: sha512-/kVP2U8z596Ia0gwFrwyIeo74ta5aVmSeU1FfAUMAmcEP5EP7zydmag3SLiN64NaRKef3lxsq7i/g7ltJQDGow==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+
   for-each@0.3.5:
     resolution: {integrity: sha512-dKx12eRCVIzqCxFGplyFKJMPvLEWgmNtUrpTiJIR5u97zEhRG8ySrtboPHZXx7daLxQVrl643cTzbab2tkQjxg==}
     engines: {node: '>= 0.4'}
@@ -5000,6 +5151,10 @@ packages:
 
   form-data@4.0.5:
     resolution: {integrity: sha512-8RipRLol37bNs2bhoV67fiTEvdTrbMUYcFTiy3+wuuOnUog2QBHCZWXDRijWQfAkhBj2Uf5UnVaiWwA5vdd82w==}
+    engines: {node: '>= 6'}
+
+  form-data@4.0.6:
+    resolution: {integrity: sha512-vKatAh4SlVfgbv+YtmhiRjhEMJsYpsG1Y2rMQtR+SVSbytsSD1YGzDIcrAJmdFec88u/+VoGmxnl+80gL1tRCQ==}
     engines: {node: '>= 6'}
 
   fraction.js@5.3.4:
@@ -5351,6 +5506,10 @@ packages:
 
   hasown@2.0.2:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
+    engines: {node: '>= 0.4'}
+
+  hasown@2.0.4:
+    resolution: {integrity: sha512-T2UbfbBEF32wiepXIsMlTW9+dDYC6wMh/t/vYA4tuOMKqWz/n3vr1NFSxQiyP+zk2mXsoMA/i/7qV6LKut1t1A==}
     engines: {node: '>= 0.4'}
 
   he@1.2.0:
@@ -6481,6 +6640,11 @@ packages:
     engines: {node: ^18 || >=20}
     hasBin: true
 
+  nanoid@6.0.2:
+    resolution: {integrity: sha512-hIvVOb9Qr1p/9CNNLOe0OlWvgx/ziTsVwKN/GDSsuArN2K0wDiafP3s0SWmsm7o2BdnyS8Z9Z64NFBUbn6ziBg==}
+    engines: {node: ^22 || ^24 || >=26}
+    hasBin: true
+
   nanomatch@1.2.13:
     resolution: {integrity: sha512-fpoe2T0RbHwBTBUOftAfBPaDEi06ufaUai0mE6Yn1kacc3SnTErfb/h+X94VXzI64rKFHYImXSvdwGGCmwOqCA==}
     engines: {node: '>=0.10.0'}
@@ -6515,6 +6679,10 @@ packages:
 
   node-forge@1.3.3:
     resolution: {integrity: sha512-rLvcdSyRCyouf6jcOIPe/BgwG/d7hKjzMKOas33/pHEr6gbq18IK9zV7DiPvzsz0oBJPme6qr6H6kGZuI9/DZg==}
+    engines: {node: '>= 6.13.0'}
+
+  node-forge@1.4.2:
+    resolution: {integrity: sha512-rRtAR5XLJ8gCKd9du4qrKAsgCG1ObGP4gLeNJMa4vYSeq4bmBMOJk5IHkrviBV0q7uoAJlVd8HEQYQSVUb4FGQ==}
     engines: {node: '>= 6.13.0'}
 
   node-gyp@9.4.1:
@@ -7454,6 +7622,10 @@ packages:
 
   protocol-buffers-schema@3.6.0:
     resolution: {integrity: sha512-TdDRD+/QNdrCGCE7v8340QyuXd4kIWIgapsE2+n/SaGiSSbomYl4TjHlvIoCWRpE7wFt02EpB35VVA2ImcBVqw==}
+
+  proxy-from-env@2.1.0:
+    resolution: {integrity: sha512-cJ+oHTW1VAEa8cJslgmUZrc+sjRKgAKl3Zyse6+PV38hZe/V6Z14TbCuXcan9F9ghlz4QrFr2c92TNF82UkYHA==}
+    engines: {node: '>=10'}
 
   pump@2.0.1:
     resolution: {integrity: sha512-ruPMNRkN3MHP1cWJc9OWr+T/xDP0jhXYCLfJcBuX54hhfIBnaQmAUMfDcG4DM5UMWByBbJY69QSphm3jtDKIkA==}
@@ -8922,6 +9094,9 @@ packages:
   webworkify-webpack@2.1.5:
     resolution: {integrity: sha512-2akF8FIyUvbiBBdD+RoHpoTbHMQF2HwjcxfDvgztAX5YwbZNyrtfUMgvfgFVsgDhDPVTlkbb5vyasqDHfIDPQw==}
 
+  wgs84@0.0.0:
+    resolution: {integrity: sha512-ANHlY4Rb5kHw40D0NJ6moaVfOCMrp9Gpd1R/AIQYg2ko4/jzcJ+TVXYYF6kXJqQwITvEZP4yEthjM7U6rYlljQ==}
+
   whatwg-encoding@3.1.1:
     resolution: {integrity: sha512-6qN4hJdMwfYBtE3YBTTHhoeuUrDBPZmbQaxWAqSALV/MeEnR5z1xd8UKud2RAkFoPkmB+hli1TZSnyi84xz1vQ==}
     engines: {node: '>=18'}
@@ -9045,6 +9220,12 @@ packages:
   xlsx@https://cdn.sheetjs.com/xlsx-0.19.3/xlsx-0.19.3.tgz:
     resolution: {tarball: https://cdn.sheetjs.com/xlsx-0.19.3/xlsx-0.19.3.tgz}
     version: 0.19.3
+    engines: {node: '>=0.8'}
+    hasBin: true
+
+  xlsx@https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz:
+    resolution: {tarball: https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz}
+    version: 0.20.3
     engines: {node: '>=0.8'}
     hasBin: true
 
@@ -10250,6 +10431,12 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
+  '@mapbox/geojson-area@0.2.2':
+    dependencies:
+      wgs84: 0.0.0
+
+  '@mapbox/geojson-normalize@0.0.1': {}
+
   '@mapbox/geojson-rewind@0.5.2':
     dependencies:
       get-stream: 6.0.1
@@ -10258,6 +10445,15 @@ snapshots:
   '@mapbox/geojson-types@1.0.2': {}
 
   '@mapbox/jsonlint-lines-primitives@2.0.2': {}
+
+  '@mapbox/mapbox-gl-draw@1.5.2':
+    dependencies:
+      '@mapbox/geojson-area': 0.2.2
+      '@mapbox/geojson-normalize': 0.0.1
+      '@mapbox/point-geometry': 1.1.0
+      '@turf/projection': 7.3.2
+      fast-deep-equal: 3.1.3
+      nanoid: 6.0.2
 
   '@mapbox/mapbox-gl-style-spec@13.28.0':
     dependencies:
@@ -11434,6 +11630,17 @@ snapshots:
 
   '@sindresorhus/merge-streams@4.0.0': {}
 
+  '@supermapgis/data-edit@1.0.150(ol@6.15.1)':
+    dependencies:
+      '@mapbox/mapbox-gl-draw': 1.5.2
+      '@supermapgis/iclient-common': 12.2.1014(ol@6.15.1)
+      '@turf/boolean-point-in-polygon': 7.3.5
+      '@turf/centroid': 7.3.5
+      '@turf/circle': 7.4.0
+      '@turf/point-on-feature': 7.3.5
+    transitivePeerDependencies:
+      - ol
+
   '@supermapgis/iclient-common@12.1.0-r(ol@6.15.1)':
     dependencies:
       '@antv/g2': 4.2.12
@@ -11466,6 +11673,41 @@ snapshots:
       video.js: 7.20.3
       videojs-flvjs-es6: 1.0.1
       xlsx: https://cdn.sheetjs.com/xlsx-0.19.3/xlsx-0.19.3.tgz
+    transitivePeerDependencies:
+      - ol
+
+  '@supermapgis/iclient-common@12.2.1014(ol@6.15.1)':
+    dependencies:
+      '@antv/g2': 4.2.12
+      '@antv/g6': 4.8.25
+      '@supermapgis/tile-decryptor': 1.0.0
+      '@turf/center': 7.3.2
+      '@turf/distance': 7.4.0
+      '@turf/meta': 7.3.2
+      canvg: 4.0.3
+      echarts: 5.5.1
+      fast-xml-parser: 5.5.9
+      fetch-ie8: 1.5.0
+      fetch-jsonp: 1.1.3
+      flatgeobuf: 3.31.1(ol@6.15.1)
+      flv.js: 1.6.2
+      insert-css: 2.0.0
+      lodash.clonedeep: 4.5.0
+      lodash.debounce: 4.0.8
+      lodash.difference: 4.5.0
+      lodash.throttle: 4.1.1
+      lodash.topairs: 4.3.0
+      lodash.uniqby: 4.7.0
+      mapv: 2.0.62
+      node-forge: 1.4.2
+      proj4: 2.17.0
+      promise-polyfill: 8.2.3
+      rbush: 2.0.2
+      three: 0.150.1
+      urijs: 1.19.11
+      video.js: 7.20.3
+      videojs-flvjs-es6: 1.0.1
+      xlsx: https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
     transitivePeerDependencies:
       - ol
 
@@ -11537,6 +11779,13 @@ snapshots:
     dependencies:
       '@turf/helpers': 7.3.2
       '@turf/meta': 7.3.2
+      '@types/geojson': 7946.0.16
+      tslib: 2.8.1
+
+  '@turf/bbox@7.3.5':
+    dependencies:
+      '@turf/helpers': 7.3.5
+      '@turf/meta': 7.3.5
       '@types/geojson': 7946.0.16
       tslib: 2.8.1
 
@@ -11645,6 +11894,14 @@ snapshots:
       point-in-polygon-hao: 1.2.4
       tslib: 2.8.1
 
+  '@turf/boolean-point-in-polygon@7.3.5':
+    dependencies:
+      '@turf/helpers': 7.3.5
+      '@turf/invariant': 7.3.5
+      '@types/geojson': 7946.0.16
+      point-in-polygon-hao: 1.2.4
+      tslib: 2.8.1
+
   '@turf/boolean-point-on-line@7.3.2':
     dependencies:
       '@turf/helpers': 7.3.2
@@ -11733,10 +11990,24 @@ snapshots:
       '@types/geojson': 7946.0.16
       tslib: 2.8.1
 
+  '@turf/center@7.3.5':
+    dependencies:
+      '@turf/bbox': 7.3.5
+      '@turf/helpers': 7.3.5
+      '@types/geojson': 7946.0.16
+      tslib: 2.8.1
+
   '@turf/centroid@7.3.2':
     dependencies:
       '@turf/helpers': 7.3.2
       '@turf/meta': 7.3.2
+      '@types/geojson': 7946.0.16
+      tslib: 2.8.1
+
+  '@turf/centroid@7.3.5':
+    dependencies:
+      '@turf/helpers': 7.3.5
+      '@turf/meta': 7.3.5
       '@types/geojson': 7946.0.16
       tslib: 2.8.1
 
@@ -11765,6 +12036,12 @@ snapshots:
   '@turf/clone@7.3.2':
     dependencies:
       '@turf/helpers': 7.3.2
+      '@types/geojson': 7946.0.16
+      tslib: 2.8.1
+
+  '@turf/clone@7.3.5':
+    dependencies:
+      '@turf/helpers': 7.3.5
       '@types/geojson': 7946.0.16
       tslib: 2.8.1
 
@@ -11881,6 +12158,20 @@ snapshots:
       '@types/geojson': 7946.0.16
       tslib: 2.8.1
 
+  '@turf/distance@7.3.5':
+    dependencies:
+      '@turf/helpers': 7.3.5
+      '@turf/invariant': 7.3.5
+      '@types/geojson': 7946.0.16
+      tslib: 2.8.1
+
+  '@turf/distance@7.4.0':
+    dependencies:
+      '@turf/helpers': 7.4.0
+      '@turf/invariant': 7.4.0
+      '@types/geojson': 7946.0.16
+      tslib: 2.8.1
+
   '@turf/ellipse@7.3.2':
     dependencies:
       '@turf/destination': 7.3.2
@@ -11903,6 +12194,13 @@ snapshots:
     dependencies:
       '@turf/helpers': 7.3.2
       '@turf/meta': 7.3.2
+      '@types/geojson': 7946.0.16
+      tslib: 2.8.1
+
+  '@turf/explode@7.3.5':
+    dependencies:
+      '@turf/helpers': 7.3.5
+      '@turf/meta': 7.3.5
       '@types/geojson': 7946.0.16
       tslib: 2.8.1
 
@@ -11939,6 +12237,11 @@ snapshots:
       tslib: 2.8.1
 
   '@turf/helpers@7.3.2':
+    dependencies:
+      '@types/geojson': 7946.0.16
+      tslib: 2.8.1
+
+  '@turf/helpers@7.3.5':
     dependencies:
       '@types/geojson': 7946.0.16
       tslib: 2.8.1
@@ -11984,6 +12287,12 @@ snapshots:
   '@turf/invariant@7.3.2':
     dependencies:
       '@turf/helpers': 7.3.2
+      '@types/geojson': 7946.0.16
+      tslib: 2.8.1
+
+  '@turf/invariant@7.3.5':
+    dependencies:
+      '@turf/helpers': 7.3.5
       '@types/geojson': 7946.0.16
       tslib: 2.8.1
 
@@ -12139,6 +12448,12 @@ snapshots:
       '@types/geojson': 7946.0.16
       tslib: 2.8.1
 
+  '@turf/meta@7.3.5':
+    dependencies:
+      '@turf/helpers': 7.3.5
+      '@types/geojson': 7946.0.16
+      tslib: 2.8.1
+
   '@turf/midpoint@7.3.2':
     dependencies:
       '@turf/bearing': 7.3.2
@@ -12196,6 +12511,15 @@ snapshots:
       '@types/geojson': 7946.0.16
       tslib: 2.8.1
 
+  '@turf/nearest-point@7.3.5':
+    dependencies:
+      '@turf/clone': 7.3.5
+      '@turf/distance': 7.3.5
+      '@turf/helpers': 7.3.5
+      '@turf/meta': 7.3.5
+      '@types/geojson': 7946.0.16
+      tslib: 2.8.1
+
   '@turf/planepoint@7.3.2':
     dependencies:
       '@turf/helpers': 7.3.2
@@ -12219,6 +12543,16 @@ snapshots:
       '@turf/explode': 7.3.2
       '@turf/helpers': 7.3.2
       '@turf/nearest-point': 7.3.2
+      '@types/geojson': 7946.0.16
+      tslib: 2.8.1
+
+  '@turf/point-on-feature@7.3.5':
+    dependencies:
+      '@turf/boolean-point-in-polygon': 7.3.5
+      '@turf/center': 7.3.5
+      '@turf/explode': 7.3.5
+      '@turf/helpers': 7.3.5
+      '@turf/nearest-point': 7.3.5
       '@types/geojson': 7946.0.16
       tslib: 2.8.1
 
@@ -12526,7 +12860,7 @@ snapshots:
       '@turf/center-median': 7.3.2
       '@turf/center-of-mass': 7.3.2
       '@turf/centroid': 7.3.2
-      '@turf/circle': 7.3.2
+      '@turf/circle': 7.4.0
       '@turf/clean-coords': 7.3.2
       '@turf/clone': 7.3.2
       '@turf/clusters': 7.3.2
@@ -12539,7 +12873,7 @@ snapshots:
       '@turf/destination': 7.3.2
       '@turf/difference': 7.3.2
       '@turf/dissolve': 7.3.2
-      '@turf/distance': 7.3.2
+      '@turf/distance': 7.4.0
       '@turf/distance-weight': 7.3.2
       '@turf/ellipse': 7.3.2
       '@turf/envelope': 7.3.2
@@ -12548,11 +12882,11 @@ snapshots:
       '@turf/flip': 7.3.2
       '@turf/geojson-rbush': 7.3.2
       '@turf/great-circle': 7.3.2
-      '@turf/helpers': 7.3.2
+      '@turf/helpers': 7.4.0
       '@turf/hex-grid': 7.3.2
       '@turf/interpolate': 7.3.2
       '@turf/intersect': 7.3.2
-      '@turf/invariant': 7.3.2
+      '@turf/invariant': 7.4.0
       '@turf/isobands': 7.3.2
       '@turf/isolines': 7.3.2
       '@turf/kinks': 7.3.2
@@ -13574,6 +13908,16 @@ snapshots:
   available-typed-arrays@1.0.7:
     dependencies:
       possible-typed-array-names: 1.1.0
+
+  axios@1.21.0:
+    dependencies:
+      follow-redirects: 1.16.2
+      form-data: 4.0.6
+      https-proxy-agent: 5.0.1
+      proxy-from-env: 2.1.0
+    transitivePeerDependencies:
+      - debug
+      - supports-color
 
   babel-plugin-external-helpers@6.22.0:
     dependencies:
@@ -14627,7 +14971,7 @@ snapshots:
       es-errors: 1.3.0
       get-intrinsic: 1.3.0
       has-tostringtag: 1.0.2
-      hasown: 2.0.2
+      hasown: 2.0.4
 
   es-to-primitive@1.3.0:
     dependencies:
@@ -15189,6 +15533,8 @@ snapshots:
       es6-promise: 4.2.8
       webworkify-webpack: 2.1.5
 
+  follow-redirects@1.16.2: {}
+
   for-each@0.3.5:
     dependencies:
       is-callable: 1.2.7
@@ -15210,6 +15556,14 @@ snapshots:
       combined-stream: 1.0.8
       es-set-tostringtag: 2.1.0
       hasown: 2.0.2
+      mime-types: 2.1.35
+
+  form-data@4.0.6:
+    dependencies:
+      asynckit: 0.4.0
+      combined-stream: 1.0.8
+      es-set-tostringtag: 2.1.0
+      hasown: 2.0.4
       mime-types: 2.1.35
 
   fraction.js@5.3.4: {}
@@ -15333,7 +15687,7 @@ snapshots:
       get-proto: 1.0.1
       gopd: 1.2.0
       has-symbols: 1.1.0
-      hasown: 2.0.2
+      hasown: 2.0.4
       math-intrinsics: 1.1.0
 
   get-npm-tarball-url@2.1.0: {}
@@ -15661,6 +16015,10 @@ snapshots:
       hookified: 1.15.1
 
   hasown@2.0.2:
+    dependencies:
+      function-bind: 1.1.2
+
+  hasown@2.0.4:
     dependencies:
       function-bind: 1.1.2
 
@@ -16810,6 +17168,8 @@ snapshots:
 
   nanoid@5.1.6: {}
 
+  nanoid@6.0.2: {}
+
   nanomatch@1.2.13:
     dependencies:
       arr-diff: 4.0.0
@@ -16855,6 +17215,8 @@ snapshots:
       - domexception
 
   node-forge@1.3.3: {}
+
+  node-forge@1.4.2: {}
 
   node-gyp@9.4.1:
     dependencies:
@@ -17761,6 +18123,8 @@ snapshots:
 
   protocol-buffers-schema@3.6.0: {}
 
+  proxy-from-env@2.1.0: {}
+
   pump@2.0.1:
     dependencies:
       end-of-stream: 1.4.5
@@ -18042,6 +18406,17 @@ snapshots:
       debug: 4.4.3
       es-module-lexer: 1.7.0
       esbuild: 0.19.12
+      get-tsconfig: 4.13.0
+      rollup: 4.34.6
+    transitivePeerDependencies:
+      - supports-color
+
+  rollup-plugin-esbuild@6.1.1(esbuild@0.25.12)(rollup@4.34.6):
+    dependencies:
+      '@rollup/pluginutils': 5.3.0(rollup@4.34.6)
+      debug: 4.4.3
+      es-module-lexer: 1.7.0
+      esbuild: 0.25.12
       get-tsconfig: 4.13.0
       rollup: 4.34.6
     transitivePeerDependencies:
@@ -19479,6 +19854,8 @@ snapshots:
 
   webworkify-webpack@2.1.5: {}
 
+  wgs84@0.0.0: {}
+
   whatwg-encoding@3.1.1:
     dependencies:
       iconv-lite: 0.6.3
@@ -19619,6 +19996,8 @@ snapshots:
       is-wsl: 3.1.0
 
   xlsx@https://cdn.sheetjs.com/xlsx-0.19.3/xlsx-0.19.3.tgz: {}
+
+  xlsx@https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz: {}
 
   xml-name-validator@4.0.0: {}
 

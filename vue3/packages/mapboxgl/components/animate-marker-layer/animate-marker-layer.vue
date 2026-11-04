@@ -3,7 +3,7 @@ import type { Map } from 'mapbox-gl'
 import type { AnimateMarkerLayerProps, AnimateMarkerLayerEvents } from './types' 
 import { useMapGetter, useVmProps } from '@supermapgis/common/hooks/index.common';
 import { useMapLayer, createDefaultLayerId } from '@supermapgis/mapboxgl/hooks'
-import AnimateMarkerLayerViewModel from 'vue-iclient-controllers-mapboxgl/src/AnimateMarkerLayerViewModel';
+import AnimateMarkerLayerViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/AnimateMarkerLayerViewModel';
 import { animateMarkerLayerPropsDefault } from './types' 
 
 const componentName = 'SmAnimateMarkerLayer'

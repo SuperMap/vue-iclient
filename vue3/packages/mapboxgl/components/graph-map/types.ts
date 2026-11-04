@@ -1,7 +1,7 @@
 import type {
   GraphConfig,
   EmitParams
-} from 'vue-iclient-controllers-mapboxgl/src/GraphMapViewModel'
+} from '@supermapgis/iclient-components-core/mapboxgl/src/GraphMapViewModel'
 
 import { getPropsDefaults } from '@supermapgis/common/utils/index.common'
 import type { PropType } from 'vue'

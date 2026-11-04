@@ -85,13 +85,12 @@ async function buildFullEntry(minify: boolean, banner: string) {
       sourceMap: false,
       transformMixedEsModules: false,
       exclude: [
-        'vue-iclient-static/libs/deckgl/deck.gl.min',
-        'vue-iclient-static/libs/echarts-layer/EchartsLayer',
-        'vue-iclient-static/libs/geostats/geostats',
-        'vue-iclient-static/libs/geostats/geostats',
-        'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw',
-        'vue-iclient-static/libs/json-sql/json-sql',
-        'vue-iclient-static/libs/Cesium/*/*.js'
+        '@supermapgis/iclient-components-core/static/libs/deckgl/deck.gl.min',
+        '@supermapgis/iclient-components-core/static/libs/echarts-layer/EchartsLayer',
+        '@supermapgis/iclient-components-core/static/libs/geostats/geostats',
+        '@supermapgis/iclient-components-core/static/libs/mapbox-gl-draw/mapbox-gl-draw',
+        '@supermapgis/iclient-components-core/static/libs/json-sql/jsonsql',
+        '@supermapgis/iclient-components-core/static/libs/Cesium/*/*.js'
       ]
     }),
     esbuild({

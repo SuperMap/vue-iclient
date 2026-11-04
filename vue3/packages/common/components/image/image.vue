@@ -46,7 +46,7 @@
 import { computed, ref } from 'vue'
 import { imagePropsDefault } from './types'
 import type { ImageProps } from './types'
-import { parseUrl } from 'vue-iclient-core/utils/util'
+import { parseUrl } from '@supermapgis/iclient-components-core/core/utils/util'
 import { useTheme, useLocale, useNoReferrerImageUrl } from '@supermapgis/common/hooks/index.common'
 import { toLatinNumber } from '@supermapgis/common/utils/index.common'
 import { Modal, message } from 'ant-design-vue'

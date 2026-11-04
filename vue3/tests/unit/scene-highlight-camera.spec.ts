@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import SceneHighlightViewModel from 'vue-iclient-controllers-mapboxgl/src/SceneHighlightViewModel'
+import SceneHighlightViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/SceneHighlightViewModel'
 
 describe('SceneHighlightViewModel entity navigation', () => {
   it('cancels default entity navigation and restores the pre-click camera view', () => {

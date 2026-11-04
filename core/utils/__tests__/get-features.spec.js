@@ -1,6 +1,6 @@
 import getFeatures from '../get-features';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
-import iServerRestService from 'vue-iclient-core/utils/iServerRestService';
+import iServerRestService from '@supermapgis/iclient-components-core/core/utils/iServerRestService';
 import { FetchRequest } from '@supermapgis/iclient-common';
 
 describe('getFeatures test', () => {

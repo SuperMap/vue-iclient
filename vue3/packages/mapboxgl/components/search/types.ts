@@ -7,7 +7,7 @@ import type {
   FetchDataBase,
   OnlineLocalSearch,
   LayerSearchInfo
-} from 'vue-iclient-controllers-mapboxgl/src/SearchViewModel'
+} from '@supermapgis/iclient-components-core/mapboxgl/src/SearchViewModel'
 import { getPropsDefaults, mapGetterProps, themeProps } from '@supermapgis/common/utils/index.common'
 import { controlProps } from '@supermapgis/mapboxgl/utils'
 import { HISTORY_MAX_COUNT_MAX, isValidHistoryMaxCount } from './history'

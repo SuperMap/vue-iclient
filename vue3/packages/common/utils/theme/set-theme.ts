@@ -1,7 +1,7 @@
 import type { AliasToken, SetThemeOptions, RootStyleOptions } from './interface'
 import { themeTokenMapping, themeConfig } from './colors'
 import globalEvent from './global-event'
-import { toStyleVariable, getRootStyleSelector } from 'vue-iclient-core/utils/style/theme/set-theme'
+import { toStyleVariable, getRootStyleSelector } from '@supermapgis/iclient-components-core/core/utils/style/theme/set-theme'
 
 export const setTheme = (options: SetThemeOptions) => {
   const { themeStyle, triggerEvent, ignoreExtras = true } = options;

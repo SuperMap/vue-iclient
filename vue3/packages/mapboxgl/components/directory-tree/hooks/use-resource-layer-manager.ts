@@ -1,5 +1,5 @@
-import WebMapViewModel from 'vue-iclient-controllers-mapboxgl/src/WebMapViewModel'
-import mapEvent from 'vue-iclient-core/types/map-event'
+import WebMapViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/WebMapViewModel'
+import mapEvent from '@supermapgis/iclient-components-core/core/types/map-event'
 import proj4 from 'proj4'
 import type { DisabledReasonCode, ResourceDescriptor, ResourceLoadPlan } from '../types'
 import {

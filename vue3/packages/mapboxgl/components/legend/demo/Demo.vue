@@ -2,7 +2,7 @@
 import Legend from '../legend.vue'
 import WebMap from '@supermapgis/mapboxgl/components/web-map/webmap.vue'
 import Button from '@supermapgis/common/components/button/Button'
-import { mapEvent } from 'vue-iclient-core'
+import { mapEvent } from '@supermapgis/iclient-components-core'
 import { ref } from 'vue'
 import type { LegendMode } from '../types'
 import '../style'

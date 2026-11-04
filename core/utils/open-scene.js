@@ -1,5 +1,5 @@
-import sceneEvent from 'vue-iclient-core/types/scene-event';
-import { prepareSuperMap3DServiceAuth } from 'vue-iclient-core/utils/scene/supermap3d-credential';
+import sceneEvent from '@supermapgis/iclient-components-core/core/types/scene-event';
+import { prepareSuperMap3DServiceAuth } from '@supermapgis/iclient-components-core/core/utils/scene/supermap3d-credential';
 
 var bingMapkey = '';
 var terrainToken = '';

@@ -5,7 +5,7 @@ import type {
   ShortEmits,
   ThemeProps
 } from '@supermapgis/common/utils/index.common'
-import type { ControlPosition } from 'vue-iclient-controllers-mapboxgl/src/utils/MapControl'
+import type { ControlPosition } from '@supermapgis/iclient-components-core/mapboxgl/src/utils/MapControl'
 import type { CardProps, ControlProps } from '@supermapgis/mapboxgl/utils'
 import { getPropsDefaults, mapGetterProps, themeProps } from '@supermapgis/common/utils/index.common'
 import { cardProps, controlProps } from '@supermapgis/mapboxgl/utils'

@@ -1,7 +1,7 @@
 import type { ShortEmits } from '@supermapgis/common/utils/index.common'
 import { getPropsDefaults } from '@supermapgis/common/utils/index.common'
 import type { PropType } from 'vue'
-import type { LayerCheckData } from 'vue-iclient-core/utils/scene'
+import type { LayerCheckData } from '@supermapgis/iclient-components-core/core/utils/scene'
 
 interface scanEffect {
   status?: boolean;

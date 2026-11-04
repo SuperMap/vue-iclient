@@ -1,10 +1,10 @@
 /* Copyright© 2000 - 2024 SuperMap Software Co.Ltd. All rights reserved.
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html. */
-import { Pixel } from 'vue-iclient-core/types/event/Pixel';
-import { Event } from 'vue-iclient-core/types/event/Event';
-import { FunctionExt } from 'vue-iclient-core/types/event/BaseTypes';
-import { Util } from 'vue-iclient-core/types/event/Util';
+import { Pixel } from '@supermapgis/iclient-components-core/core/types/event/Pixel';
+import { Event } from '@supermapgis/iclient-components-core/core/types/event/Event';
+import { FunctionExt } from '@supermapgis/iclient-components-core/core/types/event/BaseTypes';
+import { Util } from '@supermapgis/iclient-components-core/core/types/event/Util';
 
 // 定义 Listener 接口
 interface Listener {

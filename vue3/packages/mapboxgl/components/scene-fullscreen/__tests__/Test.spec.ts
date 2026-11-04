@@ -1,4 +1,4 @@
-import { statisticsFeatures } from 'vue-iclient-core/utils/statistics';
+import { statisticsFeatures } from '@supermapgis/iclient-components-core/core/utils/statistics';
 
 describe('SceneFullscreen', () => {
   it('should work with core module', () => {

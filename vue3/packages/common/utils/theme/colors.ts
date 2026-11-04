@@ -1,6 +1,6 @@
 import type { ThemeMapping, CustonAliasToken } from './interface'
 import { theme } from 'ant-design-vue'
-import { toHex8String } from 'vue-iclient-core/utils/util'
+import { toHex8String } from '@supermapgis/iclient-components-core/core/utils/util'
 
 const { defaultAlgorithm, darkAlgorithm, defaultSeed } = theme
 
@@ -14,7 +14,7 @@ export const themeConfig = theme
 export const themeTokenMapping: ThemeMapping = {
   dark: {
     // antd
-    // 如果想要和vue2计算主题色的算法保持一致，就用 defaultAlgorithm，否则采用最新算法 darkAlgorithm
+    // 暗色主题使用 darkAlgorithm；需要默认主题算法时改用 defaultAlgorithm。
     ...darkAlgorithm({
       ...defaultSeed,
       blue: '#3499E5',

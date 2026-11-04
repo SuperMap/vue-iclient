@@ -85,7 +85,7 @@ import SmTree from '@supermapgis/common/components/tree/Tree'
 import { sceneLayerListPropsDefault } from './types'
 import { message } from 'ant-design-vue'
 import { getImageryLayerName } from '@supermapgis/mapboxgl/utils'
-import { isSceneEntityDataLayer } from 'vue-iclient-core/utils/scene'
+import { isSceneEntityDataLayer } from '@supermapgis/iclient-components-core/core/utils/scene'
 
 defineOptions({
   name: 'SmSceneLayerList'

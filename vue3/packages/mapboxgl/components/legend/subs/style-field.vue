@@ -6,7 +6,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { getDerivedColorsByTextColor } from 'vue-iclient-core/utils/util'
+import { getDerivedColorsByTextColor } from '@supermapgis/iclient-components-core/core/utils/util'
 import { useLocale, useTheme } from '@supermapgis/common/hooks/index.common'
 
 const props = withDefaults(
@@ -20,7 +20,7 @@ const props = withDefaults(
 const { t } = useLocale()
 const { textColorStyle } = useTheme({})
 
-// vue3 的 useTheme 未提供 secondaryTextColorStyle，按 vue2 的取色规则（文字色 45% 透明度）保持一致
+// useTheme 未提供 secondaryTextColorStyle 时，以主文字色 45% 透明度生成二级文字色。
 const secondaryTextColorStyle = computed(() => ({
   color: getDerivedColorsByTextColor(textColorStyle.value.color as string, 0.45)
 }))

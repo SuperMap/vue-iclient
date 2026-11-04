@@ -2,15 +2,15 @@
 * This program are made available under the terms of the Apache License, Version 2.0
 * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html. */
 import type mapboxglTypes from 'mapbox-gl'
-import { Events } from 'vue-iclient-core/types/event/Events';
+import { Events } from '@supermapgis/iclient-components-core/core/types/event/Events';
 import mapboxgl from 'mapbox-gl';
-import 'vue-iclient-static/libs/geostats/geostats';
-import 'vue-iclient-static/libs/json-sql/jsonsql';
+import '@supermapgis/iclient-components-core/static/libs/geostats/geostats';
+import '@supermapgis/iclient-components-core/static/libs/json-sql/jsonsql';
 import { WebMap } from '@supermapgis/iclient-mapboxgl';
-import EchartsLayer from 'vue-iclient-static/libs/echarts-layer/EchartsLayer';
-import iPortalDataService from 'vue-iclient-core/utils/iPortalDataService';
+import EchartsLayer from '@supermapgis/iclient-components-core/static/libs/echarts-layer/EchartsLayer';
+import iPortalDataService from '@supermapgis/iclient-components-core/core/utils/iPortalDataService';
 import proj4 from 'proj4';
-import { getLayerCatalogIds, getGroupChildrenLayers, findLayerCatalog } from 'vue-iclient-core/utils/layerCatalogGroupUtil';
+import { getLayerCatalogIds, getGroupChildrenLayers, findLayerCatalog } from '@supermapgis/iclient-components-core/core/utils/layerCatalogGroupUtil';
 import bbox from '@turf/bbox';
 import { points } from '@turf/helpers';
 import * as echarts from 'echarts';

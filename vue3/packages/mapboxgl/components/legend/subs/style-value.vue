@@ -7,7 +7,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { formatFontSize } from 'vue-iclient-core/utils/util'
+import { formatFontSize } from '@supermapgis/iclient-components-core/core/utils/util'
 import { useLocale } from '@supermapgis/common/hooks/index.common'
 import type { LegendStyleGroupItem } from '../types'
 

@@ -1,1 +1,0 @@
-This template is based on the [jaguarjs-jsdoc](https://github.com/davidshimjs/jaguarjs-jsdoc) template which under the MIT License and  refered by default template for JSDoc 3.

@@ -1,5 +1,5 @@
-import { flattenLayerCatalog, getGroupChildrenLayers, removeLayersByIds, sortLayerCatalog } from 'vue-iclient-core/utils/layerCatalogGroupUtil';
-import { Events } from 'vue-iclient-core/types/event/Events';
+import { flattenLayerCatalog, getGroupChildrenLayers, removeLayersByIds, sortLayerCatalog } from '@supermapgis/iclient-components-core/core/utils/layerCatalogGroupUtil';
+import { Events } from '@supermapgis/iclient-components-core/core/types/event/Events';
 
 export class MapEvent extends Events {
   customLayerCatalogCache: Record<string, Array<Record<string, any>>> = {};

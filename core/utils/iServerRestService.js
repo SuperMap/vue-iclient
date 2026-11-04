@@ -10,11 +10,11 @@ import { GetFeaturesByBoundsParameters } from '@supermapgis/iclient-common/iServ
 import { GetFeaturesByGeometryParameters } from '@supermapgis/iclient-common/iServer/GetFeaturesByGeometryParameters';
 import { Util } from '@supermapgis/iclient-common/commontypes/Util';
 import { GeometryPolygon, GeometryLinearRing, GeometryPoint } from '@supermapgis/iclient-common/commontypes';
-import { Events } from 'vue-iclient-core/types/event/Events';
-import { getProjection } from 'vue-iclient-core/utils/epsg-define';
+import { Events } from '@supermapgis/iclient-components-core/core/types/event/Events';
+import { getProjection } from '@supermapgis/iclient-components-core/core/utils/epsg-define';
 import proj4 from 'proj4';
-import { isMatchUrl } from 'vue-iclient-core/utils/util';
-import { statisticsFeatures } from 'vue-iclient-core/utils/statistics';
+import { isMatchUrl } from '@supermapgis/iclient-components-core/core/utils/util';
+import { statisticsFeatures } from '@supermapgis/iclient-components-core/core/utils/statistics';
 import cloneDeep from 'lodash.clonedeep';
 
 export function _getValueOfEpsgCode(epsgCode) {

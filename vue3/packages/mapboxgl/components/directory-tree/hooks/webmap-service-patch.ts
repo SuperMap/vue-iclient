@@ -1,5 +1,5 @@
 import { FetchRequest } from '@supermapgis/iclient-common/util/FetchRequest'
-import { vertifyEpsgCode } from 'vue-iclient-core/utils/iServerRestService'
+import { vertifyEpsgCode } from '@supermapgis/iclient-components-core/core/utils/iServerRestService'
 
 const STRUCTURED_DATA_REQUEST_LIMIT = 5000
 const STRUCTURED_DATA_ITEMS_URL_PATTERN = /\/structureddata\/ogc-features\/collections\/all\/items\.json(?:\?|$)/i

@@ -1,4 +1,4 @@
-import { Events } from 'vue-iclient-core/types/event/Events';
+import { Events } from '@supermapgis/iclient-components-core/core/types/event/Events';
 
 export class SceneEvent extends Events {
   sceneCache: Record<string, Record<string, any>> = {};

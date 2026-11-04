@@ -5,7 +5,7 @@ export * from '@supermapgis/mapboxgl/utils'
 export * from '@supermapgis/common/components/index.common'
 export * from '@supermapgis/common/hooks/index.common'
 export * from '@supermapgis/common/utils/index.common'
-export * from 'vue-iclient-core/index'
+export * from '@supermapgis/iclient-components-core/core'
 
 export * from './make-installer'
 

@@ -1,0 +1,32 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./dist/mapboxgl",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    // 发布构建只负责发射声明；旧控制器源码与外部类型中仍有历史诊断。
+    "noCheck": true,
+    "types": ["mapbox-gl", "geojson"],
+    "paths": {
+      "@supermapgis/iclient-components-core/mapboxgl": ["./index.ts"],
+      "@supermapgis/iclient-components-core/mapboxgl/*": ["./*"],
+      "@supermapgis/iclient-components-core/static/libs/geostats/geostats": [
+        "../../static/libs/geostats/geostats.d.ts"
+      ],
+      "@supermapgis/iclient-components-core/static/libs/json-sql/jsonsql": [
+        "../../static/libs/json-sql/jsonsql.d.ts"
+      ],
+      "@supermapgis/iclient-components-core/static/libs/echarts-layer/EchartsLayer": [
+        "../../static/libs/echarts-layer/EchartsLayer.d.ts"
+      ],
+      "@supermapgis/iclient-components-core/static/libs/mapbox-gl-draw/mapbox-gl-draw": [
+        "../../static/libs/mapbox-gl-draw/mapbox-gl-draw.d.ts"
+      ],
+      "@supermapgis/iclient-components-core/core/*": ["./dist/core/*"],
+      "*.json": ["*.json"]
+    }
+  },
+  "include": ["index.ts", "src/**/*", "typings/**/*"],
+  "exclude": ["**/__tests__/**/*"]
+}
