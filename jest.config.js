@@ -45,7 +45,7 @@ module.exports = {
     '!mapboxgl/*/__tests__/**/type.{js,jsx}'
   ],
   transformIgnorePatterns: [
-    'node_modules/(?!(ol|mapbox-gl|axios|element-ui|ant-design-vue|geographic-coordinate-converter|videojs-flvjs-es6|vue-videojs7|three)/)'
+    'node_modules/(?!(ol|mapbox-gl|axios|element-ui|ant-design-vue|geographic-coordinate-converter|videojs-flvjs-es6|vue-videojs7|three|@supermapgis/iclient-components-core)/)'
   ],
   modulePaths: ['src', 'node_modules'],
   reporters: ["default", "jest-teamcity"],

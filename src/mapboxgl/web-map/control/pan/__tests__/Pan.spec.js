@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 import SmWebMap from '../../../WebMap';
 import SmPan from '../Pan.vue';
 import Pan from '../index';
+import PanViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/PanViewModel';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import iportal_serviceProxy from 'vue-iclient/test/unit/mocks/data/iportal_serviceProxy.json';
 import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_point.json';
@@ -10,7 +11,23 @@ import mapWrapperLoaded from 'vue-iclient/test/unit/mapWrapperLoaded.js';
 import flushPromises from 'flush-promises';
 import mapLoaded from 'vue-iclient/test/unit/mapLoaded.js';
 
+jest.mock('mapbox-gl', () => ({
+  Evented: class Evented {}
+}));
+
 describe('Pan.vue', () => {
+  it('uses the shared components-core PanViewModel', () => {
+    const map = { panTo: jest.fn(), panBy: jest.fn() };
+    const viewModel = new PanViewModel();
+    const location = { lng: 120, lat: 30 };
+
+    viewModel.setMap({ map });
+    viewModel.panTo(location);
+    viewModel.panBy([-200, 0]);
+
+    expect(map.panTo).toHaveBeenCalledWith(location);
+    expect(map.panBy).toHaveBeenCalledWith([-200, 0]);
+  });
   let wrapper;
   let mapWrapper;
   beforeEach(() => {
