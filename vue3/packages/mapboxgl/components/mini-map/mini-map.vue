@@ -12,7 +12,7 @@
     class="sm-component-minimap"
     @content-show-state="handleMinimapResize"
   >
-    <div id="miniMap" class="miniMap">
+    <div id="miniMap" class="miniMap" ref="containerRef">
       <sm-spin v-if="spinning" size="small" :tip="t('info.loading')" :spinning="spinning" />
     </div>
   </sm-collapse-card>
@@ -38,7 +38,9 @@ defineEmits<MiniMapEvents>()
 const miniMapRef = ref(null);
 const spinning = ref(true);
 const miniMap = ref(null);
+const containerRef = ref<HTMLElement | null>(null);
 const viewModel = new MiniMapViewModel();
+let resizeObserver: ResizeObserver | undefined;
 
 useTheme(props)
 const { t } = useLocale()
@@ -67,9 +69,22 @@ function loaded() {
 onMounted(() => {
   miniMap.value?.remove();
   viewModel.on('minimaploaded', minimapLoadedFn);
+
+  // 容器尺寸变化时重新测量地图，否则显示区域会停留在旧尺寸
+  const el = containerRef.value;
+  if (!el || typeof ResizeObserver === 'undefined') {
+    return;
+  }
+  resizeObserver = new ResizeObserver(() => {
+    if (el.clientWidth > 0 && el.clientHeight > 0) {
+      resize();
+    }
+  });
+  resizeObserver.observe(el);
 });
 
 onBeforeUnmount(() => {
   viewModel.off('minimaploaded', minimapLoadedFn);
+  resizeObserver?.disconnect();
 });
 </script>
