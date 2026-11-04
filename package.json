@@ -13,7 +13,7 @@
     "build-mapboxgl:vue3": "pnpm --dir ./vue3 build-mapboxgl",
     "publish-mapboxgl:vue3": "pnpm publish ./vue3/dist/vue3-iclient-mapboxgl",
     "build:iclient-components-core": "pnpm --dir controllers/mapboxgl run build",
-    "publish:iclient-components-core": "pnpm run build:iclient-components-core && pnpm publish ./controllers/mapboxgl/dist --no-git-checks"
+    "publish:iclient-components-core": "pnpm run build:iclient-components-core && pnpm publish ./controllers/mapboxgl/dist"
   },
   "browserslist": [
     "> 1%",
