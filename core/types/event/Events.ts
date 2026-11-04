@@ -342,7 +342,10 @@ export class Events {
     if (this.element) {
       // @ts-ignore
       if (!this.element.scrolls) {
-        let viewportElement = Util.getViewportElement();
+        let viewportElement =
+          document.compatMode === 'CSS1Compat'
+            ? document.documentElement
+            : document.body || document.documentElement;
         // @ts-ignore
         this.element.scrolls = [viewportElement.scrollLeft, viewportElement.scrollTop];
       }
@@ -357,8 +360,14 @@ export class Events {
       }
       // @ts-ignore
       if (!this.element.offsets) {
+        // getBoundingClientRect 返回视口坐标，这里加上滚动量后与后续的页面坐标计算保持一致。
+        const rect = this.element.getBoundingClientRect();
+        const scrolls = (this.element as any).scrolls as [number, number];
         // @ts-ignore
-        this.element.offsets = Util.pagePosition(this.element);
+        this.element.offsets = [
+          rect.left + scrolls[0],
+          rect.top + scrolls[1]
+        ];
       }
 
       return new Pixel(

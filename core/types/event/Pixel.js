@@ -13,6 +13,11 @@
  *  var offset = new Pixel(-(size.w/2), -size.h);
  */
 export class Pixel {
+  /**
+   * @param {any} x 横坐标。
+   * @param {any} y 纵坐标。
+   * @param {any} [mode] 坐标模式。
+   */
   constructor(x, y, mode) {
     /**
      * @member {number} [Pixel.prototype.x=0.0]
