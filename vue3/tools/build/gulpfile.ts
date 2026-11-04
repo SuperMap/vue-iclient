@@ -1,5 +1,5 @@
 import path from 'path'
-import { copyFile, mkdir } from 'fs/promises'
+import { copyFile, mkdir, readFile, writeFile } from 'fs/promises'
 import { copy, remove } from 'fs-extra'
 import { parallel, series } from 'gulp'
 import {
@@ -18,15 +18,33 @@ const pkgName = getPkgByCommand(process.argv)
 const epOutput = getEpOutput(pkgName)
 const epPackage = getPackage(pkgName)
 export const copyFiles = () =>
-  Promise.all([
-    copyFile(epPackage, path.join(epOutput, 'package.json')),
-    copyFile(path.resolve(projRoot, 'README.md'), path.resolve(epOutput, 'README.md')),
-    // TODO: global.d.ts
-    copyFile(
-      path.resolve(projRoot, 'typings', `${pkgName}-global.d.ts`),
-      path.resolve(epOutput, 'global.d.ts')
-    )
-  ])
+  (async () => {
+    const manifest = JSON.parse(await readFile(epPackage, 'utf8'))
+    for (const field of ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies']) {
+      for (const [name, range] of Object.entries(manifest[field] || {})) {
+        if (!range.startsWith('workspace:')) continue
+        // dist 不是 workspace 包，发布清单需把 workspace 协议替换成依赖包的实际版本范围。
+        const dependencyPackage = path.resolve(projRoot, 'node_modules', ...name.split('/'), 'package.json')
+        const { version } = JSON.parse(await readFile(dependencyPackage, 'utf8'))
+        const workspaceRange = range.slice('workspace:'.length)
+        manifest[field][name] =
+          workspaceRange === '^' || workspaceRange === '~'
+            ? `${workspaceRange}${version}`
+            : workspaceRange && workspaceRange !== '*'
+              ? workspaceRange
+              : version
+      }
+    }
+    await Promise.all([
+      writeFile(path.join(epOutput, 'package.json'), `${JSON.stringify(manifest, null, 2)}\n`),
+      copyFile(path.resolve(projRoot, 'README.md'), path.resolve(epOutput, 'README.md')),
+      // TODO: global.d.ts
+      copyFile(
+        path.resolve(projRoot, 'typings', `${pkgName}-global.d.ts`),
+        path.resolve(epOutput, 'global.d.ts')
+      )
+    ])
+  })()
 
 export const copyTypesDefinitions: TaskFunction = done => {
   const src = path.resolve(buildOutput, 'types', 'packages', `${getPKG_NAME(pkgName)}`)

@@ -186,7 +186,7 @@ const fetchData = ({ features }) => {
   }
 }
 const getData = () => {
-  getRestService().getData(props.url)
+  getRestService().getData(props.url, {})
 }
 const changeNumData = newData => {
   const newStartData = props.animated ? +numData.value : +newData

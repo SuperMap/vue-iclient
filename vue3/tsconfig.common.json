@@ -3,6 +3,11 @@
   "compilerOptions": {
     "composite": true,
     "jsx": "preserve",
+    "paths": {
+      "*": ["node_modules/*", ".pnpm/*"],
+      "@supermapgis/common/": ["packages/common/"],
+      "@supermapgis/mapboxgl/": ["packages/mapboxgl/"]
+    },
     "lib": [
       "ES2018",
       "DOM",
