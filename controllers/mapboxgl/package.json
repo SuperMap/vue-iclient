@@ -1,6 +1,6 @@
 {
   "name": "@supermapgis/iclient-components-core",
-  "version": "12.1.2",
+  "version": "12.2.0",
   "description": "MapboxGL component controllers, shared core modules, and runtime assets for SuperMap iClient.",
   "license": "Apache-2.0",
   "type": "module",

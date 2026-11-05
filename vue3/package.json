@@ -1,6 +1,6 @@
 {
   "name": "vue3",
-  "version": "12.1.2",
+  "version": "12.2.0",
   "private": true,
   "type": "module",
   "main": "lib/index.js",
