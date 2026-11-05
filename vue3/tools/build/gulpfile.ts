@@ -72,9 +72,10 @@ export default series(
 
   parallel(
     runTask(`buildModules`, pkgName),
-    runTask('buildFullBundle', pkgName),
+    // 暂停生成全量 dist 包，保留按模块构建及类型、主题产物。
+    // runTask('buildFullBundle', pkgName),
     runTask('generateTypesDefinitions', pkgName),
-    series(runTask('buildThemeChalk', pkgName), copyFullStyle, removeCommonIndexThemeChalk)
+    series(runTask('buildThemeChalk', pkgName), removeCommonIndexThemeChalk)
   ),
 
   parallel(copyTypesDefinitions, copyFiles)
