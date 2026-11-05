@@ -73,7 +73,7 @@ import drawEvent from 'vue-iclient/src/mapboxgl/_types/draw-event';
 import uniqueId from 'lodash.uniqueid';
 import { setPopupArrowStyle } from 'vue-iclient/src/common/_utils/util';
 import Message from 'vue-iclient/src/common/message/Message.js';
-import 'vue-iclient/static/libs/mapbox-gl-draw/mapbox-gl-draw.css';
+import '@supermapgis/iclient-components-core/static/libs/mapbox-gl-draw/mapbox-gl-draw.css';
 import MeasureViewModel from './MeasureViewModel';
 import {
   ensureMeasureDefaultUnit,

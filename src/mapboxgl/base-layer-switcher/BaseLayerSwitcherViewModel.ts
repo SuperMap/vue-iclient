@@ -1,5 +1,5 @@
 import cloneDeep from 'lodash.clonedeep';
-import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance';
 
 interface LayerEnhance extends mapboxglTypes.Layer {
   serialize?: () => mapboxglTypes.Layer;

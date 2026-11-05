@@ -1,5 +1,5 @@
 import { mount, createLocalVue } from '@vue/test-utils';
-import '@libs/mapboxgl/mapbox-gl-enhance.js';
+import '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js';
 import SmVideoPlus from '../VideoPlus.vue';
 import mockVideo from 'video.js';
 

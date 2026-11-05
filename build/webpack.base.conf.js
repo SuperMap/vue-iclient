@@ -113,7 +113,6 @@ module.exports = {
         include: [
           resolve('src'),
           resolve('test'),
-          resolve('static/libs/json-sql'),
           ...nodeModulesParse.map(item => resolve(item))
         ]
       },

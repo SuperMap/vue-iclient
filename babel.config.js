@@ -47,6 +47,5 @@ module.exports = function (api) {
   return {
     presets,
     plugins,
-    ignore: ['./static/libs/mapboxgl']
   };
 };

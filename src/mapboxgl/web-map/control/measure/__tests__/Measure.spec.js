@@ -5,7 +5,7 @@ import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLay
 import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.js';
 import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap';
 
-jest.mock('@libs/mapbox-gl-draw/mapbox-gl-draw', () => require('@mocks/mapboxgl_draw').MapboxDraw);
+jest.mock('@supermapgis/iclient-components-core/static/libs/mapbox-gl-draw/mapbox-gl-draw', () => require('@mocks/mapboxgl_draw').MapboxDraw);
 
 function getWatcher(vm, name) {
   const watcher = vm.$options.watch[name];

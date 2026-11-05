@@ -1,1 +1,1 @@
-import 'vue-iclient/static/libs/mapbox-gl-draw/mapbox-gl-draw.css';
+import '@supermapgis/iclient-components-core/static/libs/mapbox-gl-draw/mapbox-gl-draw.css';

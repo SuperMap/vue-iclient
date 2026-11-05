@@ -1,6 +1,6 @@
 import { mount, config } from '@vue/test-utils';
 import SmNcpMap from '../NcpMap.vue';
-import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance.js';
+import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_point';
 import layerData from 'vue-iclient/test/unit/mocks/data/layerData';

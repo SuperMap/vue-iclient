@@ -10,7 +10,7 @@ import wmtsLayer from 'vue-iclient/test/unit/mocks/data/WebMap/wmtsLayer.json';
 import restmapLayer from 'vue-iclient/test/unit/mocks/data/WebMap/restmapLayer.json';
 import webmap3Datas from 'vue-iclient/test/unit/mocks/data/WebMap/webmap3.json';
 import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
-import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance.js';
+import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js';
 import * as getFeaturesUtil from 'vue-iclient/src/common/_utils/get-features';
 
 const CRS = require('vue-iclient/test/unit/mocks/crs');

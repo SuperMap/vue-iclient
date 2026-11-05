@@ -1,4 +1,4 @@
-import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance';
 import WebMapViewModel from 'vue-iclient/src/mapboxgl/web-map/WebMapViewModel';
 import { findLayerCatalog } from '../../GroupUtil';
 import debounce from 'lodash.debounce';

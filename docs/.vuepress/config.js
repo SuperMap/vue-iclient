@@ -26,25 +26,25 @@ module.exports = {
         if (/\/static\/libs\/mapboxgl\/mapbox-gl-enhance/.test(request)) {
           return callback(null, {
             root: 'mapboxgl',
-            commonjs: '../../static/libs/mapboxgl/mapbox-gl-enhance.js',
-            commonjs2: '../../static/libs/mapboxgl/mapbox-gl-enhance.js',
-            amd: '../../static/libs/mapboxgl/mapbox-gl-enhance.js'
+            commonjs: '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js',
+            commonjs2: '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js',
+            amd: '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js'
           });
         }
         if (/\/static\/libs\/deckgl\/deck.gl/.test(request)) {
           return callback(null, {
             root: 'DeckGL',
-            commonjs: '../../static/libs/deckgl/deck.gl.min.js',
-            commonjs2: '../../static/libs/deckgl/deck.gl.min.js',
-            amd: '../../static/libs/deckgl/deck.gl.min.js'
+            commonjs: '@supermapgis/iclient-components-core/static/libs/deckgl/deck.gl.min.js',
+            commonjs2: '@supermapgis/iclient-components-core/static/libs/deckgl/deck.gl.min.js',
+            amd: '@supermapgis/iclient-components-core/static/libs/deckgl/deck.gl.min.js'
           });
         }
         if (/\/static\/libs\/echarts-layer\/EchartsLayer/.test(request)) {
           return callback(null, {
             root: 'EchartsLayer',
-            commonjs: '../../static/libs/echarts-layer/EchartsLayer.js',
-            commonjs2: '../../static/libs/echarts-layer/EchartsLayer.js',
-            amd: '../../static/libs/echarts-layer/EchartsLayer.js'
+            commonjs: '@supermapgis/iclient-components-core/static/libs/echarts-layer/EchartsLayer.js',
+            commonjs2: '@supermapgis/iclient-components-core/static/libs/echarts-layer/EchartsLayer.js',
+            amd: '@supermapgis/iclient-components-core/static/libs/echarts-layer/EchartsLayer.js'
           });
         }
         if (/\/static\/libs\/iclient-mapboxgl\/iclient-mapboxgl/.test(request)) {
@@ -70,7 +70,6 @@ module.exports = {
                 babelrc: false,
                 configFile: false,
                 presets: ['@vue/babel-preset-jsx'],
-                ignore: ['../../static/libs/json-sql/jsonsql.js']
               }
             },
             {

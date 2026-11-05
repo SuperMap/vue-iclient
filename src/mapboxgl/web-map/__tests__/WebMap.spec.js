@@ -1,6 +1,6 @@
 import { mount, createLocalVue, config } from '@vue/test-utils';
 import SmWebMap from '../WebMap.vue';
-import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance.js';
+import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js';
 import { message } from 'ant-design-vue';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import iportal_serviceProxy from 'vue-iclient/test/unit/mocks/data/iportal_serviceProxy';

@@ -137,9 +137,9 @@ const leafletExternalsFun = function (context, request, callback) {
   if (/\/static\/libs\/deckgl\/deck.gl/.test(request)) {
     return callback(null, {
       root: 'DeckGL',
-      commonjs: '@supermapgis/vue-iclient-leaflet/static/libs/deckgl/deck.gl.min.js',
-      commonjs2: '@supermapgis/vue-iclient-leaflet/static/libs/deckgl/deck.gl.min.js',
-      amd: '@supermapgis/vue-iclient-leaflet/static/libs/deckgl/deck.gl.min.js'
+      commonjs: '@supermapgis/iclient-components-core/static/libs/deckgl/deck.gl.min.js',
+      commonjs2: '@supermapgis/iclient-components-core/static/libs/deckgl/deck.gl.min.js',
+      amd: '@supermapgis/iclient-components-core/static/libs/deckgl/deck.gl.min.js'
     });
   }
   if (/\/static\/libs\/iclient-leaflet\/iclient-leaflet/.test(request)) {
@@ -153,6 +153,7 @@ const leafletExternalsFun = function (context, request, callback) {
   callback();
 };
 
+// core 包提供组件端共享静态资源，构建产物保留外部引用以复用同一份资源。
 const mapboxglExteranlsFun = function (context, request, callback) {
   if (/three\/examples\/jsm\/loaders\/GLTFLoader/.test(request)) {
     return callback(null, {
@@ -163,27 +164,30 @@ const mapboxglExteranlsFun = function (context, request, callback) {
     });
   }
   if (/\/static\/libs\/mapboxgl\/mapbox-gl-enhance/.test(request)) {
+    const assetPath =
+      '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance' +
+      (request.endsWith('.css') ? '.css' : '.js');
     return callback(null, {
       root: 'mapboxgl',
-      commonjs: '@supermapgis/vue-iclient-mapboxgl/static/libs/mapboxgl/mapbox-gl-enhance.js',
-      commonjs2: '@supermapgis/vue-iclient-mapboxgl/static/libs/mapboxgl/mapbox-gl-enhance.js',
-      amd: '@supermapgis/vue-iclient-mapboxgl/static/libs/mapboxgl/mapbox-gl-enhance.js'
+      commonjs: assetPath,
+      commonjs2: assetPath,
+      amd: assetPath
     });
   }
   if (/\/static\/libs\/deckgl\/deck.gl/.test(request)) {
     return callback(null, {
       root: 'DeckGL',
-      commonjs: '@supermapgis/vue-iclient-mapboxgl/static/libs/deckgl/deck.gl.min.js',
-      commonjs2: '@supermapgis/vue-iclient-mapboxgl/static/libs/deckgl/deck.gl.min.js',
-      amd: '@supermapgis/vue-iclient-mapboxgl/static/libs/deckgl/deck.gl.min.js'
+      commonjs: '@supermapgis/iclient-components-core/static/libs/deckgl/deck.gl.min.js',
+      commonjs2: '@supermapgis/iclient-components-core/static/libs/deckgl/deck.gl.min.js',
+      amd: '@supermapgis/iclient-components-core/static/libs/deckgl/deck.gl.min.js'
     });
   }
   if (/\/static\/libs\/echarts-layer\/EchartsLayer/.test(request)) {
     return callback(null, {
       root: 'EchartsLayer',
-      commonjs: '@supermapgis/vue-iclient-mapboxgl/static/libs/echarts-layer/EchartsLayer.js',
-      commonjs2: '@supermapgis/vue-iclient-mapboxgl/static/libs/echarts-layer/EchartsLayer.js',
-      amd: '@supermapgis/vue-iclient-mapboxgl/static/libs/echarts-layer/EchartsLayer.js'
+      commonjs: '@supermapgis/iclient-components-core/static/libs/echarts-layer/EchartsLayer.js',
+      commonjs2: '@supermapgis/iclient-components-core/static/libs/echarts-layer/EchartsLayer.js',
+      amd: '@supermapgis/iclient-components-core/static/libs/echarts-layer/EchartsLayer.js'
     });
   }
   if (/\/static\/libs\/iclient-mapboxgl\/iclient-mapboxgl/.test(request)) {
@@ -195,11 +199,14 @@ const mapboxglExteranlsFun = function (context, request, callback) {
     });
   }
   if (/\/static\/libs\/mapbox-gl-draw\/mapbox-gl-draw/.test(request)) {
+    const assetPath =
+      '@supermapgis/iclient-components-core/static/libs/mapbox-gl-draw/mapbox-gl-draw' +
+      (request.endsWith('.css') ? '.css' : '.js');
     return callback(null, {
       root: 'MapboxDraw',
-      commonjs: '@supermapgis/vue-iclient-mapboxgl/static/libs/mapbox-gl-draw/mapbox-gl-draw.js',
-      commonjs2: '@supermapgis/vue-iclient-mapboxgl/static/libs/mapbox-gl-draw/mapbox-gl-draw.js',
-      amd: '@supermapgis/vue-iclient-mapboxgl/static/libs/mapbox-gl-draw/mapbox-gl-draw.js'
+      commonjs: assetPath,
+      commonjs2: assetPath,
+      amd: assetPath
     });
   }
   if (/\/static\/libs\/g6\/g6/.test(request)) {
@@ -214,8 +221,6 @@ const mapboxglExteranlsFun = function (context, request, callback) {
 };
 
 const libExtral = {
-  'vue-iclient/static/libs/geostats/geostats': `@supermapgis/vue-iclient-${type}/static/libs/geostats/geostats`,
-  'vue-iclient/static/libs/json-sql/jsonsql': `@supermapgis/vue-iclient-${type}/static/libs/json-sql/jsonsql`,
   'vue-iclient/src/common/_utils/style/theme/theme.json': `@supermapgis/vue-iclient-${type}/lib/_utils/style/theme/theme.json`,
   [`vue-iclient/src/${type}/style`]: `@supermapgis/vue-iclient-${type}/lib/style.js`,
   'vue-iclient/src/init': `@supermapgis/vue-iclient-${type}/lib/init.js`

@@ -6,7 +6,7 @@
   "main": "lib/index",
   "dependencies": {
     "@mapbox/point-geometry": "^0.1.0",
-    "@supermapgis/iclient-components-core": "^12.1.2",
+    "@supermapgis/iclient-components-core": "^12.2.0",
     "@turf/area": "^6.0.1",
     "@turf/bbox": "^6.0.1",
     "@turf/center": "^6.0.1",

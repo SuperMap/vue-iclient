@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import '@libs/mapboxgl/mapbox-gl-enhance.js';
+import '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js';
 import SmVideoLayer from '../VideoLayer.vue';
 import CircleStyle from '../../../_types/CircleStyle';
 import createEmptyVideoPlus from 'vue-iclient/test/unit/createEmptyVideoPlus.js';
