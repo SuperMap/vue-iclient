@@ -122,6 +122,11 @@ await mkdir(staticOutputRoot, { recursive: true })
 for (const directory of ['assets', 'libs']) {
   await cp(path.join(staticRoot, directory), path.join(staticOutputRoot, directory), { recursive: true })
 }
+// 类型增强必须在控制器源码旁解析其 mapbox-gl 依赖，发布时再复制到静态资源的公开路径。
+await cp(
+  path.join(packageRoot, 'typings', 'mapbox-gl-enhance.d.ts'),
+  path.join(staticOutputRoot, 'libs', 'mapboxgl', 'mapbox-gl-enhance.d.ts')
+)
 
 const publishedManifest = JSON.parse(JSON.stringify(manifest))
 const rewritePublishedPaths = value => {

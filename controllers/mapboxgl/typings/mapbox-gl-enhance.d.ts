@@ -1,12 +1,12 @@
-import type mapboxgl from 'mapbox-gl'
+import mapboxgl = require('mapbox-gl')
 
 declare module 'mapbox-gl' {
-  interface LngLatBounds extends mapboxgl.LngLatBounds {
+  interface LngLatBounds {
     _sw: mapboxgl.LngLat;
     _ne: mapboxgl.LngLat;
   }
 
-  interface Map extends mapboxgl.Map {
+  interface Map {
     style: mapboxgl.Style & {
       _layers: Record<string, any>
     }
@@ -14,7 +14,7 @@ declare module 'mapbox-gl' {
     getCRS(): CRS
   }
 
-  interface GeoJSONSource extends mapboxgl.GeoJSONSource {
+  interface GeoJSONSource {
     _data: GeoJSON.FeatureCollection<GeoJSON.Geometry>
     getData: () => GeoJSON.FeatureCollection<GeoJSON.Geometry>
   }
@@ -22,6 +22,10 @@ declare module 'mapbox-gl' {
   interface MapboxOptions {
     crs?: string
   }
+
+  // iClient MapboxGL 运行时会把 SuperMap API 挂载到该命名空间下。
+  export const supermap: Record<string, any>
+
   export class CRS {
     constructor(
       name: string,

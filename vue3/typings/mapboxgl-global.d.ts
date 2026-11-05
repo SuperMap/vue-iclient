@@ -1,4 +1,4 @@
-/// <reference types="../../controllers/mapboxgl/typings/mapbox-gl-enhance.d.ts" />
+import '../../controllers/mapboxgl/typings/mapbox-gl-enhance'
 
 declare module 'vue' {
   // GlobalComponents for Volar

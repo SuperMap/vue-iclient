@@ -16,8 +16,7 @@
     "types": ["geojson"],
   },
   "include": [
-    "../controllers/mapboxgl/**/*",
-    "../controllers/mapboxgl/typings/mapboxgl-global.d.ts"
+    "../controllers/mapboxgl/**/*"
   ],
   "exclude": [
     "../controllers/mapboxgl/node_modules"

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import { access, readdir, readFile } from 'node:fs/promises'
+import { createRequire } from 'node:module'
 import path from 'node:path'
 import test from 'node:test'
 import { fileURLToPath } from 'node:url'
@@ -8,6 +9,8 @@ const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '
 const distRoot = path.join(packageRoot, 'dist')
 const packageName = '@supermapgis/iclient-components-core'
 const publishedDirectories = ['mapboxgl', 'core', 'static']
+const require = createRequire(import.meta.url)
+const ts = require('typescript')
 
 test('runtime dependencies are declared according to package ownership', async () => {
   const manifest = JSON.parse(await readFile(path.join(packageRoot, 'package.json'), 'utf8'))
@@ -114,6 +117,37 @@ test('MapboxGL controllers use the enhanced runtime shipped in this package', as
   assert.equal(
     fileURLToPath(import.meta.resolve(`${packageName}/static/libs/mapboxgl/mapbox-gl-enhance.js`)),
     enhancedModulePath
+  )
+})
+
+test('enhanced MapboxGL declarations expose runtime values to TypeScript consumers', async () => {
+  const fixturePath = path.join(packageRoot, 'test', 'mapbox-gl-enhance-consumer.ts')
+  const sourceDeclarationPath = path.join(packageRoot, 'typings', 'mapbox-gl-enhance.d.ts')
+  const publishedDeclarationPath = path.join(distRoot, 'static', 'libs', 'mapboxgl', 'mapbox-gl-enhance.d.ts')
+  const options = {
+    allowSyntheticDefaultImports: true,
+    baseUrl: packageRoot,
+    module: ts.ModuleKind.CommonJS,
+    moduleResolution: ts.ModuleResolutionKind.NodeJs,
+    noEmit: true,
+    paths: {
+      [`${packageName}/static/libs/mapboxgl/mapbox-gl-enhance`]: [
+        'dist/static/libs/mapboxgl/mapbox-gl-enhance.d.ts'
+      ]
+    },
+    target: ts.ScriptTarget.ES2015,
+    skipLibCheck: false,
+    typeRoots: [path.join(packageRoot, 'node_modules', '@types')],
+    types: ['mapbox-gl', 'geojson']
+  }
+  assert.equal(await readFile(publishedDeclarationPath, 'utf8'), await readFile(sourceDeclarationPath, 'utf8'))
+
+  const program = ts.createProgram([fixturePath], options)
+  const diagnostics = ts.getPreEmitDiagnostics(program)
+
+  assert.deepEqual(
+    diagnostics.map(diagnostic => ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n')),
+    []
   )
 })
 
