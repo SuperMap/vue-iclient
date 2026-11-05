@@ -80,12 +80,27 @@ const transpileSource = {
     return { code: result.outputText, map: null }
   }
 }
+const mapboxglRuntimeAlias = {
+  name: 'mapboxgl-runtime-alias',
+  transform(code, id) {
+    if (!/\.[jt]s$/.test(id) || id.endsWith('.d.ts')) {
+      return null
+    }
+    // 发布包自带增强版 MapboxGL，运行时代码应从同包 static 目录加载；类型声明仍使用 mapbox-gl 类型。
+    const enhancedMapboxglPath = `${publishedPackageName}/static/libs/mapboxgl/mapbox-gl-enhance.js`
+    const rewrittenCode = code
+      .replace(/(\bfrom\s*)(['"])mapbox-gl\2/g, `$1'${enhancedMapboxglPath}'`)
+      .replace(/(\bimport\s*)(['"])mapbox-gl\2/g, `$1'${enhancedMapboxglPath}'`)
+    return rewrittenCode === code ? null : { code: rewrittenCode, map: null }
+  }
+}
 const bundle = await rollup({
   input,
   external,
   treeshake: false,
   plugins: [
     transpileSource,
+    mapboxglRuntimeAlias,
     nodeResolve({ extensions: ['.mjs', '.js', '.json', '.ts'] }),
     commonjs(),
     json()

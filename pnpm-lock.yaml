@@ -123,9 +123,6 @@ importers:
       lodash.uniqueid:
         specifier: '>=4.0.1'
         version: 4.0.1
-      mapbox-gl:
-        specifier: <2.0.0
-        version: 1.13.3
       mapbox-gl-compare-enhanced:
         specifier: '>=1.0.0'
         version: 1.0.0

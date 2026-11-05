@@ -44,7 +44,6 @@ test('runtime dependencies are declared according to package ownership', async (
     '@supermapgis/iclient-common',
     '@supermapgis/iclient-mapboxgl',
     'echarts',
-    'mapbox-gl',
     'proj4'
   ].sort())
   for (const dependency of implementationDependencies) {
@@ -71,12 +70,51 @@ async function findNestedPackageJson(directory) {
   return matches
 }
 
+async function findFiles(directory, extension) {
+  const matches = []
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const entryPath = path.join(directory, entry.name)
+    if (entry.isDirectory()) {
+      matches.push(...(await findFiles(entryPath, extension)))
+    } else if (entry.isFile() && path.extname(entry.name) === extension) {
+      matches.push(entryPath)
+    }
+  }
+  return matches
+}
+
 test('published controller paths contain usable ESM modules', async () => {
   const modulePath = path.join(distRoot, 'mapboxgl', 'src', 'types', 'CircleStyle.js')
   assert.equal(fileURLToPath(import.meta.resolve(`${packageName}/mapboxgl/src/types/CircleStyle`)), modulePath)
   const esmModule = await import(`${packageName}/mapboxgl/src/types/CircleStyle`)
   assert.equal(typeof esmModule.default, 'function')
   assert.equal(new esmModule.default().paint['circle-radius'], 6)
+})
+
+test('MapboxGL controllers use the enhanced runtime shipped in this package', async () => {
+  const enhancedModulePath = path.join(distRoot, 'static', 'libs', 'mapboxgl', 'mapbox-gl-enhance.js')
+  const panModulePath = path.join(distRoot, 'mapboxgl', 'src', 'PanViewModel.js')
+  const panModule = await readFile(panModulePath, 'utf8')
+  const mapboxglModules = await findFiles(path.join(distRoot, 'mapboxgl'), '.js')
+  const modulesWithExternalMapboxImports = []
+
+  for (const modulePath of mapboxglModules) {
+    const source = await readFile(modulePath, 'utf8')
+    if (/(?:from\s*|import\s*)['"]mapbox-gl['"]/.test(source)) {
+      modulesWithExternalMapboxImports.push(path.relative(distRoot, modulePath))
+    }
+  }
+
+  assert.match(
+    panModule,
+    new RegExp(`${packageName.replaceAll('/', '\\/')}\\/static\\/libs\\/mapboxgl\\/mapbox-gl-enhance\\.js`)
+  )
+  assert.deepEqual(modulesWithExternalMapboxImports, [])
+  await access(enhancedModulePath)
+  assert.equal(
+    fileURLToPath(import.meta.resolve(`${packageName}/static/libs/mapboxgl/mapbox-gl-enhance.js`)),
+    enhancedModulePath
+  )
 })
 
 test('package contains only direct ESM paths for mapboxgl, core, and static', async () => {

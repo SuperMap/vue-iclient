@@ -105,7 +105,6 @@
     "@supermapgis/iclient-common": "^12.1.0-r",
     "@supermapgis/iclient-mapboxgl": "^12.1.0-r",
     "echarts": ">=6.0.0",
-    "mapbox-gl": "<2.0.0",
     "proj4": ">=2.15.0"
   },
   "dependencies": {
