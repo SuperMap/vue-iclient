@@ -1,7 +1,7 @@
 <template>
   <SmCollapseCard
     ref="sceneFlyRouteRef"
-    icon-class="sm-components-icon-feihangdingwei"
+    icon-class="sm-components-icon-feihangmanyou"
     :icon-position="position"
     :header-name="t('sceneFlyRoute.title')"
     :auto-rotate="autoRotate"

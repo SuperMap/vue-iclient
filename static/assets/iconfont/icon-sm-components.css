@@ -13,6 +13,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.sm-components-icon-feihangmanyou:before {
+  content: "\e933";
+}
+
 .sm-components-icon-shujufenping:before {
   content: "\e92d";
 }
