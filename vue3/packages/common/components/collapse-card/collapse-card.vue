@@ -1,5 +1,10 @@
 <template>
-  <div class="sm-component-collapse-card" :style="[textColorStyle, incomingTextStyle]" ref="el">
+  <div
+    ref="el"
+    class="sm-component-collapse-card"
+    :style="textColorStyle"
+    v-bind="rootAttrs"
+  >
     <div
       v-if="iconClass"
       :class="{
@@ -53,19 +58,21 @@ import type { CSSProperties } from 'vue'
 import type { CollapseCardProps } from './types'
 import { ref, computed, watch, onMounted, nextTick, useAttrs, useTemplateRef } from 'vue'
 import { useTheme } from '@supermapgis/common/hooks/index.common'
+import { splitControlStyle } from '@supermapgis/common/utils/theme/control-style'
 import { collapaseCardPropsDefault } from './types'
 
-const BACKGROUND_IMAGE_STYLE_KEYS = [
-  'backgroundImage',
-  'backgroundSize',
-  'backgroundRepeat',
-  'backgroundPosition'
-] as const
+defineOptions({
+  name: 'SmCollapseCard',
+  inheritAttrs: false
+})
 
 const TEXT_STYLE_KEYS = ['fontSize', 'fontFamily'] as const
 
 const props = withDefaults(defineProps<CollapseCardProps>(), collapaseCardPropsDefault)
 const attrs = useAttrs()
+
+const controlStyle = computed(() => splitControlStyle(attrs.style))
+const rootAttrs = computed(() => ({ ...attrs, style: controlStyle.value.rootStyle }))
 
 const { textColorStyle, textColorHeadingStyle, gisControlHeaderBgStyle, gisControlBgStyle } =
   useTheme(props)
@@ -75,10 +82,7 @@ const transform = ref(null)
 const el = useTemplateRef('el')
 
 function pickIncomingStyle(keys: readonly string[]) {
-  const style = attrs.style
-  if (!style || typeof style !== 'object' || Array.isArray(style)) {
-    return {}
-  }
+  const style = controlStyle.value.rootStyle
   const nextStyle: CSSProperties = {}
   for (const key of keys) {
     const value = (style as CSSProperties)[key as keyof CSSProperties]
@@ -89,21 +93,25 @@ function pickIncomingStyle(keys: readonly string[]) {
   return nextStyle
 }
 
-const incomingBackgroundImageStyle = computed<CSSProperties>(() => {
-  return pickIncomingStyle(BACKGROUND_IMAGE_STYLE_KEYS)
-})
-
 const incomingTextStyle = computed<CSSProperties>(() => {
   return pickIncomingStyle(TEXT_STYLE_KEYS)
 })
 
 const getCardStyle = computed(() => {
-  const backgroundImageStyle = incomingBackgroundImageStyle.value
+  const backgroundStyle = controlStyle.value.backgroundStyle
   const textStyle = incomingTextStyle.value
   if (!props.iconClass && !props.headerName) {
-    return { background: 'transparent', ...backgroundImageStyle, ...textStyle }
+    return {
+      background: 'transparent',
+      ...backgroundStyle,
+      ...textStyle
+    }
   }
-  return { ...gisControlBgStyle.value, ...backgroundImageStyle, ...textStyle }
+  return {
+    ...gisControlBgStyle.value,
+    ...backgroundStyle,
+    ...textStyle
+  }
 })
 
 const getBodyStyle = computed(() => ({

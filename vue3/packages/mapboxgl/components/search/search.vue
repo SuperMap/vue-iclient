@@ -4,6 +4,7 @@
     ref="searchRoot"
     class="sm-component-search"
     :style="textColorHeadingStyle"
+    v-bind="rootAttrs"
   >
     <div
       v-if="showIcon && mode === 'control'"
@@ -20,13 +21,14 @@
         :style="[
           { 'transform-origin': position.includes('left') ? 'top left' : 'top right' },
           gisControlHeaderBgStyle,
+          controlStyle.backgroundStyle,
           contentWidthStyle
         ]"
       >
         <div
           :class="{ 'sm-component-search__input': true, 'with-split-line': splitLine }"
           :aria-position="position.includes('left') ? 'left' : 'right'"
-          :style="gisControlHeaderBgStyle"
+          :style="hasBackgroundStyle ? { backgroundColor: 'transparent' } : gisControlHeaderBgStyle"
         >
           <div
             v-if="mode === 'control'"
@@ -75,7 +77,10 @@
         <div
           v-show="panelVisible"
           class="sm-component-search__result"
-          :style="[gisControlBgStyle, resultPanelStyle]"
+          :style="[
+            hasBackgroundStyle ? { backgroundColor: 'transparent' } : gisControlBgStyle,
+            resultPanelStyle
+          ]"
         >
           <template v-if="datasourcePanelVisible">
             <ul class="sm-component-search__datasource-list" :style="textColorStyle">
@@ -190,7 +195,8 @@ import {
   nextTick,
   useTemplateRef,
   onMounted,
-  onBeforeUnmount
+  onBeforeUnmount,
+  useAttrs
 } from 'vue'
 import type {
   FeatureResult,
@@ -212,12 +218,18 @@ import { setPopupArrowStyle } from '@supermapgis/iclient-components-core/core/ut
 import { isEqual } from 'lodash-es'
 import { getDisplayedHistory, HISTORY_MAX_COUNT_MAX, normalizeHistoryMaxCount } from './history'
 import { searchPropsDefault } from './types'
+import { splitControlStyle } from '@supermapgis/common/utils/theme/control-style'
 
 defineOptions({
-  name: 'SmSearch'
+  name: 'SmSearch',
+  inheritAttrs: false
 })
 
 const props = withDefaults(defineProps<SearchProps>(), searchPropsDefault)
+const attrs = useAttrs()
+const controlStyle = computed(() => splitControlStyle(attrs.style))
+const rootAttrs = computed(() => ({ ...attrs, style: controlStyle.value.rootStyle }))
+const hasBackgroundStyle = computed(() => Object.keys(controlStyle.value.backgroundStyle).length > 0)
 
 const emit = defineEmits<SearchEvents>()
 
