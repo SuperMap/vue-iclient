@@ -84,10 +84,6 @@ export default class GraphMapViewModel extends mapboxgl.Evented {
   private serviceUrl: string;
   private graphConfig: GraphConfig;
   private _handleGraphMapLoadedFn: () => void;
-  // 兼容旧版 MapboxGL 类型，同时保持 Evented 的链式调用返回类型。
-  declare fire: (event: string, params?: any) => this;
-  declare on: (event: string, callback: (evt: EmitParams) => void) => this;
-  declare off: (event: string, callback: (evt: EmitParams) => void) => this;
 
   constructor(serviceUrl: string, graphConfig: GraphConfig) {
     super();

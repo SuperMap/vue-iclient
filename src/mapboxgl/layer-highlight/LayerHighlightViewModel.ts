@@ -196,9 +196,6 @@ export default class HighlightLayer extends mapboxgl.Evented {
   highlightOptions: HighlightLayerOptions;
   map: mapboxglTypes.Map;
   webmap: InstanceType<typeof WebMapViewModel>;
-  // 兼容旧版 MapboxGL 类型，同时保持 Evented 的链式调用返回类型。
-  declare fire: (type: string, params?: any) => this;
-  declare on: (type: string, callback: (params?: any) => void) => this;
   handleMapClick: any;
 
   constructor(options: HighlightLayerOptions) {
@@ -429,7 +426,6 @@ export default class HighlightLayer extends mapboxgl.Evented {
   }
 
   removeHighlightLayers() {
-    // @ts-expect-error
     if (!this.map || !this.map.style) {
       return;
     }

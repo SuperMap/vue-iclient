@@ -27,9 +27,6 @@ export default class BaseLayerSwitcherViewModel extends mapboxgl.Evented {
   private webmap: mapInfoType['webmap'];
   private baseLayer?: LayerItem;
   private _currentBaseLayerInfo: LayerOnMapItem | null = null;
-  // 兼容旧版 MapboxGL 类型，同时保持 Evented 的链式调用返回类型。
-  declare fire: (type: string, params?: any) => this;
-  declare on: (type: string, callback: () => void) => this;
 
   constructor() {
     super();
