@@ -109,8 +109,8 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@supermapgis/iclient-common": "^12.1.0-r",
-    "@supermapgis/iclient-mapboxgl": "^12.1.0-r",
+    "@supermapgis/iclient-common": "^12.2.0",
+    "@supermapgis/iclient-mapboxgl": "^12.2.0",
     "echarts": ">=6.0.0",
     "proj4": ">=2.15.0"
   },

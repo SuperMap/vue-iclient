@@ -28,8 +28,8 @@
     "postinstall": "pnpm stub"
   },
   "peerDependencies": {
-    "@supermapgis/iclient-common": "^12.1.0-r",
-    "@supermapgis/iclient-mapboxgl": "^12.1.0-r",
+    "@supermapgis/iclient-common": "^12.2.0",
+    "@supermapgis/iclient-mapboxgl": "^12.2.0",
     "vue": ">=3.5.26"
   },
   "dependencies": {
