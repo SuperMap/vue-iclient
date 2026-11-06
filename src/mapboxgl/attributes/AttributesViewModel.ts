@@ -1,4 +1,4 @@
-import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js';
 import bbox from '@turf/bbox';
 import transformScale from '@turf/transform-scale';
 import clonedeep from 'lodash.clonedeep';

@@ -1,4 +1,4 @@
-import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js';
 import clonedeep from 'lodash.clonedeep';
 import turfCenter from '@turf/center';
 import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';

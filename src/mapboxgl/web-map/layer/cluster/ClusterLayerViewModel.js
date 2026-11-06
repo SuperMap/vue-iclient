@@ -1,4 +1,4 @@
-import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js';
 /**
  * @class ClusterLayerViewModel
  * @param {mapboxgl.map} map - mapboxgl map 对象。

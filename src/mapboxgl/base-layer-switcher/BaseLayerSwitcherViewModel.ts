@@ -1,5 +1,5 @@
 import cloneDeep from 'lodash.clonedeep';
-import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js';
 
 interface LayerEnhance extends mapboxglTypes.Layer {
   serialize?: () => mapboxglTypes.Layer;
@@ -27,8 +27,9 @@ export default class BaseLayerSwitcherViewModel extends mapboxgl.Evented {
   private webmap: mapInfoType['webmap'];
   private baseLayer?: LayerItem;
   private _currentBaseLayerInfo: LayerOnMapItem | null = null;
-  fire: (type: string, params?: any) => void;
-  on: (type: string, callback: () => void) => void;
+  // 兼容旧版 MapboxGL 类型，同时保持 Evented 的链式调用返回类型。
+  declare fire: (type: string, params?: any) => this;
+  declare on: (type: string, callback: () => void) => this;
 
   constructor() {
     super();

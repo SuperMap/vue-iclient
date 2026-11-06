@@ -1,4 +1,4 @@
-import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js';
 import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 export interface GraphNodeStyle {
@@ -83,10 +83,11 @@ export default class GraphMapViewModel extends mapboxgl.Evented {
   private graphMap: GraphMap;
   private serviceUrl: string;
   private graphConfig: GraphConfig;
-  private fire: (event: string, e: EmitParams) => void;
   private _handleGraphMapLoadedFn: () => void;
-  on: (event: string, cb: (evt: EmitParams) => void) => void;
-  off: (event: string, cb: (evt: EmitParams) => void) => void;
+  // 兼容旧版 MapboxGL 类型，同时保持 Evented 的链式调用返回类型。
+  declare fire: (event: string, params?: any) => this;
+  declare on: (event: string, callback: (evt: EmitParams) => void) => this;
+  declare off: (event: string, callback: (evt: EmitParams) => void) => this;
 
   constructor(serviceUrl: string, graphConfig: GraphConfig) {
     super();

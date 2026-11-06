@@ -1,5 +1,5 @@
-import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance';
-import MapboxDraw from '@supermapgis/iclient-components-core/static/libs/mapbox-gl-draw/mapbox-gl-draw';
+import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js';
+import MapboxDraw from '@supermapgis/iclient-components-core/static/libs/mapbox-gl-draw/mapbox-gl-draw.js';
 
 export default class DrawViewModel extends mapboxgl.Evented {
   fire: any;

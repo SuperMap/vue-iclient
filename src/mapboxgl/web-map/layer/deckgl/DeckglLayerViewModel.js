@@ -1,6 +1,6 @@
-import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js';
 import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
-import '@supermapgis/iclient-components-core/static/libs/deckgl/deck.gl.min';
+import '@supermapgis/iclient-components-core/static/libs/deckgl/deck.gl.min.js';
 
 export default class DeckglLayerViewModel extends mapboxgl.Evented {
   constructor(deckglProps) {

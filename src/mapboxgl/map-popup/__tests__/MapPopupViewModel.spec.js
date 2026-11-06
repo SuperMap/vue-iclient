@@ -1,6 +1,6 @@
 import MapPopupViewModel from '../MapPopupViewModel';
 import Map from '@mocks/map';
-import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js';
 
 const mockPopup = {
   setLngLat: jest.fn().mockReturnThis(),

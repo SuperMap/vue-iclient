@@ -1,4 +1,5 @@
 import NcpMapViewModel from '../NcpMapViewModel.ts';
+import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import flushPromises from 'flush-promises';
 import iportal_serviceProxy from '../../../../test/unit/mocks/data/iportal_serviceProxy.json';
@@ -291,6 +292,7 @@ describe('NcpMapViewModel.spec', () => {
     const viewModel = new NcpMapViewModel('', dataOptions, mapOptions);
     
     expect(viewModel.centerValid([104, 33])).toBeTruthy();
+    expect(viewModel.centerValid(new mapboxgl.LngLat(104, 33))).toBeTruthy();
     expect(viewModel.centerValid({lng: 104, lat: 33})).toBeTruthy();
     expect(viewModel.centerValid(null)).toBeFalsy();
     expect(viewModel.centerValid([])).toBeFalsy();

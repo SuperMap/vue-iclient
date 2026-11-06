@@ -2,7 +2,7 @@ import L from '../leaflet-wrapper';
 import { Events } from 'vue-iclient/src/common/_types/event/Events';
 import 'vue-iclient/static/libs/iclient-leaflet/iclient-leaflet.min';
 // import echarts from 'echarts';  // TODO iclient 拿不到 echarts ???
-import '@supermapgis/iclient-components-core/static/libs/geostats/geostats';
+import '@supermapgis/iclient-components-core/static/libs/geostats/geostats.js';
 import getCenter from '@turf/center';
 import proj4 from 'proj4';
 import { getProjection, toEpsgCode } from 'vue-iclient/src/common/_utils/epsg-define';

@@ -1,4 +1,4 @@
-import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js';
 import { handleMultyPolygon } from 'vue-iclient/src/mapboxgl/_utils/geometry-util';
 import labelPoints from './config/label-points.json';
 import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
@@ -471,7 +471,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
     if (
       center &&
       ((<[number, number]>center).length > 0 ||
-        typeof center === mapboxgl.LngLat ||
+        center instanceof mapboxgl.LngLat ||
         (<{ lng: number; lat: number }>center).lng)
     ) {
       return true;

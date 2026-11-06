@@ -1,4 +1,4 @@
-import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js';
 import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 export default class GraphThemeLayerViewModel extends mapboxgl.Evented {

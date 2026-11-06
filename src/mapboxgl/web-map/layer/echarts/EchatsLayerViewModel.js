@@ -1,5 +1,5 @@
-import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance';
-import EchartsLayer from '@supermapgis/iclient-components-core/static/libs/echarts-layer/EchartsLayer';
+import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js';
+import EchartsLayer from '@supermapgis/iclient-components-core/static/libs/echarts-layer/EchartsLayer.js';
 /**
  * @class EchatsLayerViewModel
  * @param {mapboxgl.map} map - mapboxgl map 对象。

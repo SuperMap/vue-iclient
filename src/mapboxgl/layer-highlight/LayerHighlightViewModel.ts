@@ -1,4 +1,4 @@
-import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js';
 import CircleStyle from 'vue-iclient/src/mapboxgl/_types/CircleStyle';
 import LineStyle from 'vue-iclient/src/mapboxgl/_types/LineStyle';
 import FillStyle from 'vue-iclient/src/mapboxgl/_types/FillStyle';
@@ -196,8 +196,9 @@ export default class HighlightLayer extends mapboxgl.Evented {
   highlightOptions: HighlightLayerOptions;
   map: mapboxglTypes.Map;
   webmap: InstanceType<typeof WebMapViewModel>;
-  fire: (type: string, params?: any) => void;
-  on: (type: string, callback: (params?: any) => void) => void;
+  // 兼容旧版 MapboxGL 类型，同时保持 Evented 的链式调用返回类型。
+  declare fire: (type: string, params?: any) => this;
+  declare on: (type: string, callback: (params?: any) => void) => this;
   handleMapClick: any;
 
   constructor(options: HighlightLayerOptions) {

@@ -1,6 +1,6 @@
 import LayerHighlightViewModel from '../LayerHighlightViewModel';
 import Map from '@mocks/map';
-import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js';
 
 jest.mock('fast-xml-parser', () => ({
   XMLParser: jest.fn().mockImplementation(() => ({

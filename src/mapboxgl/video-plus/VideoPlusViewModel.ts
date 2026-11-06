@@ -1,4 +1,4 @@
-import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js';
 import uniqueId from 'lodash.uniqueid';
 import cloneDeep from 'lodash.clonedeep';
 import videojs from 'video.js';

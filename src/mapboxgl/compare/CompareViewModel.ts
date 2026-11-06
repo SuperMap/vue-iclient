@@ -1,4 +1,4 @@
-import '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance';
+import '@supermapgis/iclient-components-core/static/libs/mapboxgl/mapbox-gl-enhance.js';
 import 'mapbox-gl-compare';
 
 export type mapType = mapboxglTypes.Map;
