@@ -60,6 +60,10 @@
       "types": "./dist/static/libs/mapbox-gl-draw/mapbox-gl-draw.d.ts",
       "default": "./dist/static/libs/mapbox-gl-draw/mapbox-gl-draw.js"
     },
+    "./static/libs/mapboxgl/mapbox-gl-enhance.js": {
+      "types": "./dist/static/libs/mapboxgl/mapbox-gl-enhance.d.ts",
+      "default": "./dist/static/libs/mapboxgl/mapbox-gl-enhance.js"
+    },
     "./static/*": "./dist/static/*",
     "./package.json": "./dist/package.json"
   },
@@ -85,6 +89,9 @@
       ],
       "mapboxgl/src/*": [
         "dist/mapboxgl/src/*"
+      ],
+      "static/libs/mapboxgl/mapbox-gl-enhance.js": [
+        "dist/static/libs/mapboxgl/mapbox-gl-enhance.d.ts"
       ],
       "static/*": [
         "dist/static/*"

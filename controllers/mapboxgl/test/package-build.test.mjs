@@ -124,23 +124,34 @@ test('enhanced MapboxGL declarations expose runtime values to TypeScript consume
   const fixturePath = path.join(packageRoot, 'test', 'mapbox-gl-enhance-consumer.ts')
   const sourceDeclarationPath = path.join(packageRoot, 'typings', 'mapbox-gl-enhance.d.ts')
   const publishedDeclarationPath = path.join(distRoot, 'static', 'libs', 'mapboxgl', 'mapbox-gl-enhance.d.ts')
+  const publishedManifest = JSON.parse(await readFile(path.join(distRoot, 'package.json'), 'utf8'))
+  // 显式 .js 导入必须在旧版 TypeScript 中也解析到声明文件，避免 Evented 退化为 any。
+  assert.deepEqual(publishedManifest.typesVersions['*']['static/libs/mapboxgl/mapbox-gl-enhance.js'], [
+    'static/libs/mapboxgl/mapbox-gl-enhance.d.ts'
+  ])
+  assert.equal(
+    publishedManifest.exports['./static/libs/mapboxgl/mapbox-gl-enhance.js'].types,
+    './static/libs/mapboxgl/mapbox-gl-enhance.d.ts'
+  )
   const options = {
     allowSyntheticDefaultImports: true,
     baseUrl: packageRoot,
     module: ts.ModuleKind.CommonJS,
     moduleResolution: ts.ModuleResolutionKind.NodeJs,
     noEmit: true,
-    paths: {
-      [`${packageName}/static/libs/mapboxgl/mapbox-gl-enhance`]: [
-        'dist/static/libs/mapboxgl/mapbox-gl-enhance.d.ts'
-      ]
-    },
     target: ts.ScriptTarget.ES2015,
     skipLibCheck: false,
     typeRoots: [path.join(packageRoot, 'node_modules', '@types')],
     types: ['mapbox-gl', 'geojson']
   }
   assert.equal(await readFile(publishedDeclarationPath, 'utf8'), await readFile(sourceDeclarationPath, 'utf8'))
+  const resolvedModule = ts.resolveModuleName(
+    `${packageName}/static/libs/mapboxgl/mapbox-gl-enhance.js`,
+    fixturePath,
+    options,
+    ts.sys
+  ).resolvedModule
+  assert.equal(resolvedModule?.resolvedFileName.replaceAll('\\', '/'), publishedDeclarationPath.replaceAll('\\', '/'))
 
   const program = ts.createProgram([fixturePath], options)
   const diagnostics = ts.getPreEmitDiagnostics(program)
