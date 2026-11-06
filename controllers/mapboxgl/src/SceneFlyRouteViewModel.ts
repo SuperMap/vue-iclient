@@ -53,6 +53,14 @@ export default class SceneFlyRouteViewModel extends mapboxgl.Evented {
 
   private stopArrivedHandler: ((routeStop: any) => void) | null = null
 
+  private routeEntityCollection: any = null
+
+  private routeEntitySnapshot: Set<any> | null = null
+
+  private routeEntities: any[] = []
+
+  private routeEntitiesCaptured = false
+
   constructor(options?: Partial<SceneFlyRouteOptions>) {
     super()
     this.options = { ...defaultOptions, ...(options || {}) }
@@ -127,6 +135,10 @@ export default class SceneFlyRouteViewModel extends mapboxgl.Evented {
     this.stops = []
     this.setStatus('loading')
     try {
+      this.routeEntityCollection = this.viewer.entities
+      this.routeEntitySnapshot = new Set(this.routeEntityCollection?.values || [])
+      this.routeEntities = []
+      this.routeEntitiesCaptured = false
       this.routes = new SuperMap3D.RouteCollection(this.viewer.entities)
       const fromFile = this.routes.fromFile(url)
       if (fromFile && typeof fromFile.then === 'function') {
@@ -146,6 +158,7 @@ export default class SceneFlyRouteViewModel extends mapboxgl.Evented {
         return
       }
       this.applyRouteOptions()
+      this.captureRouteEntities()
       this.syncStops()
       if (!this.stops.length) {
         throw new Error(`No flight stops were found in "${url}"`)
@@ -433,6 +446,7 @@ export default class SceneFlyRouteViewModel extends mapboxgl.Evented {
         this.reportError(error)
       }
     }
+    this.captureRouteEntities()
     this.stopArrivedHandler = null
     this.flyManager = null
     if (this.routes) {
@@ -442,10 +456,44 @@ export default class SceneFlyRouteViewModel extends mapboxgl.Evented {
         } else if (typeof this.routes.clear === 'function') {
           this.routes.clear()
         }
-      } catch {
-        // ignore
+      } catch (error) {
+        this.reportError(error)
       }
     }
+    if (
+      this.routeEntities.length &&
+      typeof this.routeEntityCollection?.remove !== 'function'
+    ) {
+      this.reportError(new Error('The scene entity collection cannot remove flight route entities'))
+    } else {
+      this.routeEntities.forEach(entity => {
+        try {
+          this.routeEntityCollection.remove(entity)
+        } catch (error) {
+          this.reportError(error)
+        }
+      })
+    }
+    this.routeEntities = []
+    this.routeEntitySnapshot = null
+    this.routeEntityCollection = null
+    this.routeEntitiesCaptured = false
     this.routes = null
+  }
+
+  private captureRouteEntities() {
+    if (
+      this.routeEntitiesCaptured ||
+      !this.routeEntityCollection ||
+      !this.routeEntitySnapshot
+    ) {
+      return
+    }
+    const entities = this.routeEntityCollection.values
+    if (!Array.isArray(entities)) {
+      return
+    }
+    this.routeEntities = entities.filter(entity => !this.routeEntitySnapshot?.has(entity))
+    this.routeEntitiesCaptured = true
   }
 }

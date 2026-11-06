@@ -39,9 +39,23 @@
             >
               <span class="sm-component-scene-fly-route__stop-icon" />
             </button>
-            <span class="sm-component-scene-fly-route__speed">
-              {{ t('sceneFlyRoute.speed', { rate: playRate }) }}
-            </span>
+            <SmSelect
+              v-model:value="playRate"
+              class="sm-component-scene-fly-route__speed-select"
+              :aria-label="t('sceneFlyRoute.speed')"
+              :get-popup-container="getPopupContainer"
+              placement="bottomLeft"
+              :dropdown-align="{ overflow: { adjustX: true, adjustY: false } }"
+              :disabled="!canOperate"
+            >
+              <SmSelectOption
+                v-for="option in playRateOptions"
+                :key="option.value"
+                :value="option.value"
+              >
+                {{ option.label }}
+              </SmSelectOption>
+            </SmSelect>
           </div>
         </div>
 
@@ -61,9 +75,10 @@
               v-for="stop in stops"
               :key="stop.index"
               :value="stop.index"
-              :label="stop.name"
               :title="stop.name"
-            />
+            >
+              {{ stop.name }}
+            </SmSelectOption>
           </SmSelect>
         </div>
 
@@ -133,7 +148,6 @@ function getPopupContainer(triggerNode: HTMLElement) {
 function getOptions() {
   return {
     fpfUrl: props.options?.fpfUrl ?? props.fpfUrl,
-    playRate: props.options?.playRate ?? props.playRate,
     isLineVisible: props.options?.isLineVisible ?? props.isLineVisible,
     isStopVisible: props.options?.isStopVisible ?? props.isStopVisible,
   }
@@ -141,13 +155,21 @@ function getOptions() {
 
 const viewModel = new SceneFlyRouteViewModel(getOptions())
 
+const playRateOptions = [
+  { value: 0.5, label: '0.5x' },
+  { value: 1, label: '1.0x' },
+  { value: 1.5, label: '1.5x' },
+  { value: 2, label: '2.0x' },
+  { value: 3, label: '3.0x' },
+  { value: 5, label: '5.0x' }
+]
 const isPlaying = ref(viewModel.isPlaying)
 const status = ref<SceneFlyRouteStatus>(viewModel.status)
 const stops = ref(viewModel.getStops())
 const isReady = ref(viewModel.isReady)
 const currentStopIndex = ref<number | undefined>(undefined)
 const errorMessage = ref('')
-const playRate = computed(() => getOptions().playRate)
+const playRate = ref(1)
 const isLineVisible = ref(getOptions().isLineVisible)
 const isStopVisible = ref(getOptions().isStopVisible)
 const fpfUrl = computed(() => getOptions().fpfUrl)
@@ -195,6 +217,15 @@ useSceneGetter({
   }
 })
 
+watch(
+  () => props.sceneTarget,
+  () => {
+    viewModel.exit()
+    viewModel.setViewer(null)
+  },
+  { flush: 'sync' }
+)
+
 watch(fpfUrl, value => {
   if (value) {
     viewModel.load(value)
@@ -211,13 +242,16 @@ watch(isStopVisible, value => {
   viewModel.setStopVisible(value)
 })
 
+watch(playRate, value => {
+  viewModel.setPlayRate(value)
+})
+
 watch(
   () => getOptions(),
   options => {
     isLineVisible.value = options.isLineVisible
     isStopVisible.value = options.isStopVisible
     viewModel.updateOptions({
-      playRate: options.playRate,
       isLineVisible: options.isLineVisible,
       isStopVisible: options.isStopVisible,
     })

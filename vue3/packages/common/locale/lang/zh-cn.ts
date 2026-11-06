@@ -363,7 +363,7 @@ export default {
     stop: '停止并退出漫游',
     stopLabel: '飞行站点',
     stopPlaceholder: '请选择站点',
-    speed: '飞行速度：{rate}x',
+    speed: '飞行速度',
     loading: '飞行路线加载中…',
     showLine: '显示飞行路线',
     showStop: '显示飞行站点',

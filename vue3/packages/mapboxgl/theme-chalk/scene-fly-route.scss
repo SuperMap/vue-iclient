@@ -20,7 +20,7 @@
 
     .sm-component-card-body {
       padding: 12px 14px 14px;
-      overflow: auto;
+      overflow: visible;
       box-sizing: border-box;
     }
   }
@@ -50,13 +50,10 @@
     gap: 8px;
   }
 
-  @include e(speed) {
+  @include e(speed-select) {
     margin-left: auto;
-    white-space: nowrap;
-    /* stylelint-disable-next-line declaration-property-value-allowed-list */
-    color: $text-color-tertiary;
-    /* stylelint-disable-next-line declaration-property-value-allowed-list */
-    font-size: 10px;
+    flex: 0 0 84px;
+    width: 84px;
   }
 
   @include e(button) {

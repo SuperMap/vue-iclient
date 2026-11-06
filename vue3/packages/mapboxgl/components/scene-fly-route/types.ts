@@ -20,24 +20,18 @@ export interface SceneFlyRouteProps
     SceneGetterProps {
   /** fpf 飞行文件地址（由 SuperMap iDesktop 生成） */
   fpfUrl?: string
-  /** 飞行速度倍率，默认 1 */
-  playRate?: number
   /** 是否显示飞行路线，默认 true */
   isLineVisible?: boolean
   /** 是否显示飞行站点，默认 true */
   isStopVisible?: boolean
   /** 兼容整体配置的写法 */
-  options?: Partial<SceneFlyRouteOptions>
+  options?: Partial<Omit<SceneFlyRouteOptions, 'playRate'>>
 }
 
 export const sceneFlyRouteProps = () => ({
   fpfUrl: {
     type: String,
     default: ''
-  },
-  playRate: {
-    type: Number,
-    default: 1
   },
   isLineVisible: {
     type: Boolean,
@@ -48,7 +42,7 @@ export const sceneFlyRouteProps = () => ({
     default: true
   },
   options: {
-    type: Object as PropType<Partial<SceneFlyRouteOptions>>,
+    type: Object as PropType<Partial<Omit<SceneFlyRouteOptions, 'playRate'>>>,
     default: () => ({})
   }
 })

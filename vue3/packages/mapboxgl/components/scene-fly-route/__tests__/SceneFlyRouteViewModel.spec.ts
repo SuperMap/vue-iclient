@@ -121,4 +121,82 @@ describe('SceneFlyRouteViewModel', () => {
     expect(viewModel.status).toBe('idle')
     expect(viewModel.getStops()).toEqual([])
   })
+
+  it('removes route and stop entities when switching scenes, exiting and destroying', async () => {
+    const stops = [{ name: 'Stop 1' }, { name: 'Stop 2' }]
+    const route = {
+      get: vi.fn((index: number) => stops[index]),
+      isLineVisible: true,
+      isStopVisible: true
+    }
+
+    class RouteCollection {
+      routes = [route]
+      removeAll = vi.fn()
+
+      constructor(private entities: { add: (entity: object) => object }) {}
+
+      fromFile() {
+        this.entities.add({ id: 'route-line' })
+        this.entities.add({ id: 'route-stop-1' })
+        this.entities.add({ id: 'route-stop-2' })
+      }
+    }
+
+    class FlyManager {
+      currentRoute = route
+      stopArrived = {
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn()
+      }
+      stop = vi.fn()
+      getAllRouteStops = () => stops
+    }
+
+    function createViewer() {
+      const baseEntity = { id: 'scene-entity' }
+      const entities = {
+        values: [baseEntity],
+        add(entity: object) {
+          this.values.push(entity)
+          return entity
+        },
+        remove(entity: object) {
+          const index = this.values.indexOf(entity)
+          if (index < 0) {
+            return false
+          }
+          this.values.splice(index, 1)
+          return true
+        }
+      }
+      return { entities, scene: {} }
+    }
+
+    vi.stubGlobal('window', {
+      SuperMap3D: { RouteCollection, FlyManager }
+    })
+
+    const firstViewer = createViewer()
+    const secondViewer = createViewer()
+    const viewModel = new SceneFlyRouteViewModel({ fpfUrl: 'route.fpf' })
+
+    viewModel.setViewer(firstViewer)
+    await viewModel.load()
+    expect(firstViewer.entities.values).toHaveLength(4)
+
+    viewModel.setViewer(secondViewer)
+    expect(firstViewer.entities.values).toEqual([{ id: 'scene-entity' }])
+
+    await viewModel.load()
+    expect(secondViewer.entities.values).toHaveLength(4)
+
+    viewModel.exit()
+    expect(secondViewer.entities.values).toEqual([{ id: 'scene-entity' }])
+
+    await viewModel.load()
+    expect(secondViewer.entities.values).toHaveLength(4)
+    viewModel.destroy()
+    expect(secondViewer.entities.values).toEqual([{ id: 'scene-entity' }])
+  })
 })

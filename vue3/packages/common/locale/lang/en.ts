@@ -467,7 +467,7 @@ export default {
     stop: 'Stop and exit roaming',
     stopLabel: 'Flight stop',
     stopPlaceholder: 'Select a stop',
-    speed: 'Flight speed: {rate}x',
+    speed: 'Flight speed',
     loading: 'Loading flight route…',
     showLine: 'Show flight route',
     showStop: 'Show flight stops',
