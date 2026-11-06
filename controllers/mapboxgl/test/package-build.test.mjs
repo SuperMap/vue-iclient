@@ -3,7 +3,7 @@ import { access, readdir, readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import path from 'node:path'
 import test from 'node:test'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const distRoot = path.join(packageRoot, 'dist')
@@ -95,7 +95,7 @@ test('published controller paths contain usable ESM modules', async () => {
 })
 
 test('MapboxGL controllers use the enhanced runtime shipped in this package', async () => {
-  const enhancedModulePath = path.join(distRoot, 'static', 'libs', 'mapboxgl', 'mapbox-gl-enhance.js')
+  const enhancedModulePath = path.join(distRoot, 'static', 'libs', 'mapboxgl', 'mapbox-gl-enhance.module.js')
   const panModulePath = path.join(distRoot, 'mapboxgl', 'src', 'PanViewModel.js')
   const panModule = await readFile(panModulePath, 'utf8')
   const mapboxglModules = await findFiles(path.join(distRoot, 'mapboxgl'), '.js')
@@ -114,10 +114,28 @@ test('MapboxGL controllers use the enhanced runtime shipped in this package', as
   )
   assert.deepEqual(modulesWithExternalMapboxImports, [])
   await access(enhancedModulePath)
+  const publishedManifest = JSON.parse(await readFile(path.join(distRoot, 'package.json'), 'utf8'))
+  assert.equal(
+    publishedManifest.exports['./static/libs/mapboxgl/mapbox-gl-enhance.js'].default,
+    './static/libs/mapboxgl/mapbox-gl-enhance.module.js'
+  )
   assert.equal(
     fileURLToPath(import.meta.resolve(`${packageName}/static/libs/mapboxgl/mapbox-gl-enhance.js`)),
-    enhancedModulePath
+    path.join(distRoot, 'static', 'libs', 'mapboxgl', 'mapbox-gl-enhance.js')
   )
+})
+
+test('static side-effect imports retain their browser globals', async () => {
+  const previousWindow = globalThis.window
+  globalThis.window = {}
+  try {
+    await import(pathToFileURL(path.join(distRoot, 'static', 'libs', 'json-sql', 'jsonsql.module.js')))
+    await import(pathToFileURL(path.join(distRoot, 'static', 'libs', 'geostats', 'geostats.module.js')))
+    assert.equal(typeof globalThis.window.jsonsql.query, 'function')
+    assert.equal(typeof globalThis.window.geostats, 'function')
+  } finally {
+    globalThis.window = previousWindow
+  }
 })
 
 test('enhanced MapboxGL declarations expose runtime values to TypeScript consumers', async () => {
@@ -181,7 +199,7 @@ test('package contains only direct ESM paths for mapboxgl, core, and static', as
   assert.equal(manifest.exports['./mapboxgl/src'].types, './mapboxgl/index.d.ts')
   assert.equal(manifest.exports['./mapboxgl/src/types'].import, './mapboxgl/src/types/index.js')
   assert.equal(manifest.exports['./core/utils/scene'].import, './core/utils/scene/index.js')
-  assert.equal(manifest.exports['./static/libs/json-sql/jsonsql'].default, './static/libs/json-sql/jsonsql.js')
+  assert.equal(manifest.exports['./static/libs/json-sql/jsonsql'].default, './static/libs/json-sql/jsonsql.module.js')
   assert.deepEqual(
     Object.values(manifest.files).filter(entry => publishedDirectories.includes(entry)),
     publishedDirectories
@@ -214,6 +232,19 @@ test('package contains only direct ESM paths for mapboxgl, core, and static', as
   await access(path.join(distRoot, 'static', 'libs', 'json-sql', 'jsonsql.js'))
   await access(path.join(distRoot, 'static', 'libs', 'Cesium', 'Workers'))
   assert.deepEqual(await findNestedPackageJson(distRoot), [path.join(distRoot, 'package.json')])
+  for (const entry of Object.values(manifest.exports)) {
+    if (entry && typeof entry === 'object' && typeof entry.default === 'string' && entry.default.startsWith('./static/libs/')) {
+      assert.match(entry.default, /\.module\.js$/)
+      await access(path.join(distRoot, entry.default))
+      await access(path.join(distRoot, entry.default.replace(/\.module\.js$/, '.js')))
+    }
+  }
+  for (const [key, entry] of Object.entries(workspaceManifest.exports)) {
+    if (entry && typeof entry === 'object' && typeof entry.default === 'string' && entry.default.startsWith('./dist/static/libs/') && !key.endsWith('.js')) {
+      assert.deepEqual(manifest.exports[`${key}.js`], manifest.exports[key])
+      assert.deepEqual(manifest.typesVersions['*'][`${key.slice(2)}.js`], manifest.typesVersions['*'][key.slice(2)])
+    }
+  }
   assert.equal(
     fileURLToPath(import.meta.resolve(`${packageName}/core/utils/scene`)),
     path.join(distRoot, 'core', 'utils', 'scene', 'index.js')

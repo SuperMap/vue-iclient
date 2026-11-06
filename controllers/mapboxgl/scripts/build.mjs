@@ -122,6 +122,23 @@ await mkdir(staticOutputRoot, { recursive: true })
 for (const directory of ['assets', 'libs']) {
   await cp(path.join(staticRoot, directory), path.join(staticOutputRoot, directory), { recursive: true })
 }
+// 保留原始 UMD 静态文件供脚本直链使用，同时为包导入生成 ESM，避免宿主按 ESM 解析 UMD 时丢失默认导出。
+const staticLibraryExports = Object.values(manifest.exports)
+  .map(entry => entry?.default)
+  .filter(target => typeof target === 'string' && target.startsWith('./dist/static/libs/') && target.endsWith('.js'))
+for (const target of staticLibraryExports) {
+  const relativePath = path.relative('./dist/static/libs', target)
+  const staticBundle = await rollup({
+    input: path.join(staticRoot, 'libs', relativePath),
+    external,
+    plugins: [commonjs({ esmExternals: true, requireReturnsDefault: 'namespace' })]
+  })
+  await staticBundle.write({
+    file: path.join(staticOutputRoot, 'libs', relativePath.replace(/\.js$/, '.module.js')),
+    format: 'es'
+  })
+  await staticBundle.close()
+}
 // 类型增强必须在控制器源码旁解析其 mapbox-gl 依赖，发布时再复制到静态资源的公开路径。
 await cp(
   path.join(packageRoot, 'typings', 'mapbox-gl-enhance.d.ts'),
@@ -147,6 +164,16 @@ publishedManifest.module = rewritePublishedPaths(publishedManifest.module)
 publishedManifest.types = rewritePublishedPaths(publishedManifest.types)
 publishedManifest.exports = rewritePublishedPaths(publishedManifest.exports)
 publishedManifest.typesVersions = rewritePublishedPaths(publishedManifest.typesVersions)
+for (const [key, entry] of Object.entries(publishedManifest.exports)) {
+  if (entry && typeof entry === 'object' && typeof entry.default === 'string' && entry.default.startsWith('./static/libs/')) {
+    entry.default = entry.default.replace(/\.js$/, '.module.js')
+    if (!key.endsWith('.js')) {
+      // Vue2 使用显式 .js 路径；两种导入写法必须命中同一模块和声明文件。
+      publishedManifest.exports[`${key}.js`] = { ...entry }
+      publishedManifest.typesVersions['*'][`${key.slice(2)}.js`] = publishedManifest.typesVersions['*'][key.slice(2)]
+    }
+  }
+}
 publishedManifest.files = ['mapboxgl', 'core', 'static', 'README.md']
 delete publishedManifest.scripts
 delete publishedManifest.devDependencies
