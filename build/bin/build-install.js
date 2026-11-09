@@ -89,13 +89,13 @@ var INDEX_LESS_TEMPLATE = `@import 'ant-design-vue/es/{{component}}/style/index.
 @import '../../_utils/style/theme/antdVar.less';
 `;
 
-var ANTD_CSS_JS_TEMPLATE = `import 'vue-iclient/src/common/_assets/iconfont/icon-sm-components.css';
+var ANTD_CSS_JS_TEMPLATE = `import '@supermapgis/iclient-components-core/static/assets/iconfont/icon-sm-components.css';
 import 'vue-iclient/src/common/_utils/style/common/common.scss';
 import './index.less';
 import './{{component}}.scss';
 `;
 
-var COMP_CSS_JS_TEMPLATE = `import 'vue-iclient/src/common/_assets/iconfont/icon-sm-components.css';
+var COMP_CSS_JS_TEMPLATE = `import '@supermapgis/iclient-components-core/static/assets/iconfont/icon-sm-components.css';
 import 'vue-iclient/src/common/_utils/style/common/common.scss';
 {{antdLessList}}
 {{cardCss}}{{mapCss}}

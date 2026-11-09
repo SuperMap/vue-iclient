@@ -230,8 +230,8 @@ function compileCopy() {
   });
   // 全局配置组件没有style 生成config-provider/style/index.js css.js
   // []
-  // 拷贝theme.json和_assets和tdt
-  let gulpFile = ['../src/common/_utils*/style/**/*.json', '../src/common/_assets*/iconfont*/*'];
+  // 字体由 core 提供，避免在 Vue2 产物中维护第二份资源。
+  let gulpFile = ['../src/common/_utils*/style/**/*.json'];
   type === 'mapboxgl' && gulpFile.push('../src/mapboxgl/tdt/_assets*/sprite*');
   return gulp.src(gulpFile).pipe(gulp.dest(output_path));
 }
