@@ -114,6 +114,11 @@
     "echarts": ">=6.0.0",
     "proj4": ">=2.15.0"
   },
+  "peerDependenciesMeta": {
+    "@supermapgis/iclient-mapboxgl": {
+      "optional": true
+    }
+  },
   "dependencies": {
     "@turf/area": ">=5.1.5",
     "@turf/bbox": ">=5.1.5",

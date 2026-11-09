@@ -49,6 +49,10 @@ test('runtime dependencies are declared according to package ownership', async (
     'echarts',
     'proj4'
   ].sort())
+  // Leaflet 只使用 core 的静态资源，安装时不应被迫安装 MapboxGL 运行时。
+  assert.deepEqual(manifest.peerDependenciesMeta, {
+    '@supermapgis/iclient-mapboxgl': { optional: true }
+  })
   for (const dependency of implementationDependencies) {
     assert.ok(manifest.dependencies[dependency], `${dependency} must be installed with the package`)
   }
@@ -193,6 +197,7 @@ test('package contains only direct ESM paths for mapboxgl, core, and static', as
   assert.equal(manifest.scripts, undefined)
   assert.equal(manifest.devDependencies, undefined)
   assert.equal(manifest.dependencies[packageName], undefined)
+  assert.deepEqual(manifest.peerDependenciesMeta, workspaceManifest.peerDependenciesMeta)
   assert.equal(manifest.main, './core/index.js')
   assert.equal(manifest.module, './core/index.js')
   assert.equal(manifest.types, './core/index.d.ts')
