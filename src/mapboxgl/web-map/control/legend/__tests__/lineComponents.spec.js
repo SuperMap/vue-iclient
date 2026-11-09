@@ -58,6 +58,23 @@ function mountStyleRenderer(style) {
 
 describe('legend line components', () => {
   describe('StyleRenderer.drawDashedLine', () => {
+    it.each([1, 10, 30])('3D 等值线宽度为 %s 时保留设置的虚线间隔', lineWidth => {
+      const { wrapper, ctx, strokes } = mountStyleRenderer({
+        type: 'style',
+        shape: 'line',
+        width: 100,
+        height: lineWidth,
+        lineWidth,
+        lineDasharray: [10, 5, 2, 5],
+        color: '#FF0000'
+      });
+
+      expect(ctx.setLineDash).toHaveBeenCalledWith([10, 5, 2, 5]);
+      expect(strokes[0].lineWidth).toBe(lineWidth);
+
+      wrapper.destroy();
+    });
+
     it('按 style.opacity 设置描边不透明度', () => {
       const { wrapper, strokes } = mountStyleRenderer({
         type: 'style',

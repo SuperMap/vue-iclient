@@ -348,7 +348,8 @@ export default {
       ctx.strokeStyle = color;
 
       ctx.beginPath();
-      ctx.setLineDash(pattern.map(x => x * lineWidth));
+      // 与 MS 一致：虚线间隔直接使用设置值，不随线宽再次放大。
+      ctx.setLineDash(pattern);
       const y = 0 + ctx.lineWidth / 2;
       ctx.moveTo(0, y);
       ctx.lineTo(width, y);
