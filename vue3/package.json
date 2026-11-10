@@ -17,7 +17,7 @@
     "clean": "pnpm run clean:dist && pnpm run -r --parallel clean",
     "clean:dist": "rimraf dist",
     "build-routes": "pnpm --dir tools/build build-routes --pkg mapboxgl",
-    "build-mapboxgl": "pnpm --dir tools/build start --pkg mapboxgl",
+    "build-mapboxgl": "cross-env NODE_OPTIONS=--max-old-space-size=8192 pnpm --dir tools/build start --pkg mapboxgl",
     "build-mapboxgl:theme": "pnpm --dir packages/mapboxgl/theme-chalk build",
     "stub": "pnpm run -r --parallel stub",
     "typecheck": "run-p typecheck:web typecheck:core typecheck:controllers-mapboxgl",
