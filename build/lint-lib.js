@@ -1,11 +1,15 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
-let argv = JSON.parse(process.env['npm_config_argv']);
-let origin = argv.original;
+const getOriginArgs = require('./get-origin-args');
+const origin = getOriginArgs();
 const type = origin[2].substring(1);
 
 const filePath = `../lib/${type}`;
+// 包的 main 指向 lib/index，入口缺失时必须阻止发布，不能只检查按需组件。
+if (!fs.existsSync(path.resolve(__dirname, filePath, 'index.js'))) {
+  throw new Error(`lib 包入口 ${type}/index.js 不存在`);
+}
 const compFiles = fs.readdirSync(path.resolve(__dirname, filePath));
 compFiles.forEach(compName => {
   if (['index.js', 'init.js', 'style.js'].includes(compName) || compName.startsWith('_')) return;

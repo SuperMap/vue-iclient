@@ -13,8 +13,8 @@ const fileSave = require('file-save');
 const fs = require('fs');
 const path = require('path');
 
-let argv = JSON.parse(process.env['npm_config_argv']);
-let origin = argv.original;
+const getOriginArgs = require('./get-origin-args');
+const origin = getOriginArgs();
 let type = 'mapboxgl';
 if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {
   type = origin[2].replace('-', '');
