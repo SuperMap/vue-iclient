@@ -49,3 +49,5 @@ coverage
 *.sln
 *.sw?
 *.tsbuildinfo
+
+.npmrc
