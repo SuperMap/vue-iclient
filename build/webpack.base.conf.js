@@ -20,8 +20,8 @@ const createLintingRule = () => ({
   }
 });
 
-let argv = JSON.parse(process.env['npm_config_argv']);
-let origin = argv.original;
+const getOriginArgs = require('./get-origin-args');
+const origin = getOriginArgs();
 let entry = './demo/mapboxgl/main.ts';
 
 if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {

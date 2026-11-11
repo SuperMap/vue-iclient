@@ -3,8 +3,8 @@ const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const utils = require('./utils');
 
-const argv = JSON.parse(process.env['npm_config_argv']);
-const origin = argv.original;
+const getOriginArgs = require('./get-origin-args');
+const origin = getOriginArgs();
 let type = 'mapboxgl';
 let entry;
 if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {

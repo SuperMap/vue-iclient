@@ -1,8 +1,8 @@
 const fs = require('fs-extra');
 const path = require('path');
 
-let argv = JSON.parse(process.env['npm_config_argv']);
-let origin = argv.original;
+const getOriginArgs = require('./get-origin-args');
+const origin = getOriginArgs();
 let key = origin[1] ? origin[1].replace('-', '') : 'mapboxgl';
 
 let fileNames = ['package.json', '.npmignore', 'tsconfig.json', 'README.md'];

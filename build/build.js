@@ -11,8 +11,8 @@ const webpack = require('webpack');
 const config = require('../config');
 let webpackConfig = require('./webpack.mapboxgl.conf');
 
-let argv = JSON.parse(process.env['npm_config_argv']);
-let origin = argv.original;
+const getOriginArgs = require('./get-origin-args');
+const origin = getOriginArgs();
 
 if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {
   let type = origin[2].replace("-", "");
