@@ -7,6 +7,10 @@ const engineArg = origin.find(arg => ['-mapboxgl', '-leaflet'].includes(arg));
 const type = engineArg ? engineArg.substring(1) : 'mapboxgl';
 
 const filePath = `../lib/${type}`;
+// 包的 main 指向 lib/index，入口缺失时必须阻止发布，不能只检查按需组件。
+if (!fs.existsSync(path.resolve(__dirname, filePath, 'index.js'))) {
+  throw new Error(`lib 包入口 ${type}/index.js 不存在`);
+}
 const compFiles = fs.readdirSync(path.resolve(__dirname, filePath));
 compFiles.forEach(compName => {
   if (['index.js', 'init.js', 'style.js'].includes(compName) || compName.startsWith('_')) return;

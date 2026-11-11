@@ -18,5 +18,13 @@ module.exports = function getOriginArgs() {
     origin = process.argv.slice(2);
   }
 
+  // 发布脚本通过显式环境变量传递目标，避免 npm 版本改变时吞掉 -leaflet/-index 参数。
+  if (['mapboxgl', 'leaflet'].includes(process.env.ICLIENT_ENGINE)) {
+    origin.push(`-${process.env.ICLIENT_ENGINE}`);
+  }
+  if (process.env.ICLIENT_BUILD_INDEX === '1') {
+    origin.push('-index');
+  }
+
   return origin;
 };
