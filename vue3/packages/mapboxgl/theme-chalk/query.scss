@@ -58,7 +58,7 @@
     .#{$ant-prefix}-input {
       /* stylelint-disable-next-line */
       font-size: 12px;
-      background: $color-bg-container;
+      background: transparent;
     }
     .#{$ant-prefix}-input,
     .#{$ant-prefix}-input-suffix {

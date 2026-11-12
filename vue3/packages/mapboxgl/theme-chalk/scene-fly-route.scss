@@ -7,6 +7,10 @@
 @include b(scene-fly-route) {
   z-index: 1;
 
+  &.is-dropdown-open {
+    z-index: 1000;
+  }
+
   .sm-component-select,
   .sm-component-select-selector {
     color: inherit;

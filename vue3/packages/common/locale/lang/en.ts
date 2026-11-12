@@ -471,7 +471,11 @@ export default {
     loading: 'Loading flight route…',
     showLine: 'Show flight route',
     showStop: 'Show flight stops',
-    emptyTip: 'Configure an FPF flight file URL'
+    emptyTip: 'Configure an FPF flight file URL',
+    viewerRequired: 'Bind a scene viewer before loading a flight route',
+    loadTimeout: 'Timed out while loading the flight route. Check that the FPF URL is valid and accessible',
+    engineUnavailable: 'The 3D scene engine is not available, so the flight route cannot be loaded',
+    noStopsFound: 'No flight stops were found in the FPF file. Check the file contents'
   },
   sceneFullscreen: {
     title: 'Fullscreen'

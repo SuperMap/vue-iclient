@@ -9,6 +9,7 @@
     :background="background"
     :textColor="textColor"
     :split-line="splitLine"
+    :class="{ 'is-dropdown-open': hasOpenDropdown }"
     class="sm-component-scene-fly-route"
   >
     <SmCard
@@ -45,8 +46,9 @@
               :aria-label="t('sceneFlyRoute.speed')"
               :get-popup-container="getPopupContainer"
               placement="bottomLeft"
-              :dropdown-align="{ overflow: { adjustX: true, adjustY: false } }"
+              :dropdown-align="{ overflow: { adjustX: true, adjustY: true } }"
               :disabled="!canOperate"
+              @dropdown-visible-change="isPlayRateDropdownOpen = $event"
             >
               <SmSelectOption
                 v-for="option in playRateOptions"
@@ -66,9 +68,10 @@
             class="sm-component-scene-fly-route__select"
             :get-popup-container="getPopupContainer"
             placement="bottomLeft"
-            :dropdown-align="{ overflow: { adjustX: true, adjustY: false } }"
+            :dropdown-align="{ overflow: { adjustX: true, adjustY: true } }"
             :placeholder="t('sceneFlyRoute.stopPlaceholder')"
             :disabled="!stops.length"
+            @dropdown-visible-change="isStopDropdownOpen = $event"
             @change="handleStopChange"
           >
             <SmSelectOption
@@ -170,6 +173,11 @@ const isReady = ref(viewModel.isReady)
 const currentStopIndex = ref<number | undefined>(undefined)
 const errorMessage = ref('')
 const playRate = ref(1)
+const isPlayRateDropdownOpen = ref(false)
+const isStopDropdownOpen = ref(false)
+const hasOpenDropdown = computed(
+  () => isPlayRateDropdownOpen.value || isStopDropdownOpen.value
+)
 const isLineVisible = ref(getOptions().isLineVisible)
 const isStopVisible = ref(getOptions().isStopVisible)
 const fpfUrl = computed(() => getOptions().fpfUrl)
@@ -200,7 +208,18 @@ viewModel.on('stoparrived', (payload: { index: number; stop: SceneFlyRouteStop }
   emit('stopArrived', payload)
 })
 viewModel.on('error', (payload: { error: unknown }) => {
-  errorMessage.value = payload.error instanceof Error ? payload.error.message : String(payload.error)
+  const message = payload.error instanceof Error ? payload.error.message : String(payload.error)
+  const errorTranslations: Record<string, string> = {
+    'A scene viewer must be set before loading a flight route': 'sceneFlyRoute.viewerRequired',
+    'Timed out while loading flight route data': 'sceneFlyRoute.loadTimeout',
+    'SuperMap3D is not available': 'sceneFlyRoute.engineUnavailable'
+  }
+  const translationKey = errorTranslations[message]
+  errorMessage.value = translationKey
+    ? t(translationKey)
+    : message.startsWith('No flight stops were found in "')
+      ? t('sceneFlyRoute.noStopsFound')
+      : message
   emit('error', payload)
 })
 

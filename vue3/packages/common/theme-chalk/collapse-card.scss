@@ -33,6 +33,20 @@
     font-family: inherit;
   }
 
+  .sm-component-collapse-card__content {
+    .sm-component-input,
+    .sm-component-input-affix-wrapper,
+    .sm-component-input-number,
+    .sm-component-input-number-input,
+    .sm-component-select {
+      background-color: transparent;
+    }
+
+    .sm-component-select:not(.sm-component-select-customize-input) .sm-component-select-selector {
+      background-color: transparent;
+    }
+  }
+
   .sm-component-input,
   .sm-component-input-affix-wrapper,
   .sm-component-select,

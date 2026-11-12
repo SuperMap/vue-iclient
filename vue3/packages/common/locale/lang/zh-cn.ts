@@ -367,7 +367,11 @@ export default {
     loading: '飞行路线加载中…',
     showLine: '显示飞行路线',
     showStop: '显示飞行站点',
-    emptyTip: '请配置 FPF 飞行文件地址'
+    emptyTip: '请配置 FPF 飞行文件地址',
+    viewerRequired: '请先绑定三维场景，再加载飞行路线',
+    loadTimeout: '飞行路线加载超时，请检查 FPF 地址是否有效及文件是否可访问',
+    engineUnavailable: '三维场景引擎尚未加载，无法加载飞行路线',
+    noStopsFound: '未能从 FPF 文件中读取飞行站点，请检查文件内容'
   },
   sceneFullscreen: {
     title: '全屏'
