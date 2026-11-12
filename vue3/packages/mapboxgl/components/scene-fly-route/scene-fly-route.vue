@@ -143,9 +143,10 @@ const { textColorHeadingStyle, textColorStyle, gisControlHeaderBgStyle } = useTh
 const rootEl = useTemplateRef('sceneFlyRouteRef')
 useSceneControl(() => rootEl.value?.$el)
 
-// 下拉浮层默认挂载到 body，场景全屏后 body 不在全屏元素内会导致下拉框不可见
+// 跳出布局容器的层叠和裁剪范围，同时保证浮层位于浏览器全屏元素内。
 function getPopupContainer(triggerNode: HTMLElement) {
-  return triggerNode.parentNode as HTMLElement
+  const ownerDocument = triggerNode.ownerDocument
+  return (ownerDocument.fullscreenElement || ownerDocument.body) as HTMLElement
 }
 
 function getOptions() {
