@@ -31,7 +31,8 @@ var nodeModulesParse = [
   'node_modules/strnum',
   'node_modules/xml-naming',
   'node_modules/@vue/compiler-sfc',
-  'node_modules/vue-docgen-api'
+  'node_modules/vue-docgen-api',
+  'node_modules/vue-docgen-api/node_modules/@vue/compiler-sfc'
 ];
 const createLintingRule = () => ({
   test: /\.(js|vue)$/,
