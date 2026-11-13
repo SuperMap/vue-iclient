@@ -29,7 +29,8 @@ var nodeModulesParse = [
   'node_modules/@nodable/entities',
   'node_modules/is-unsafe',
   'node_modules/strnum',
-  'node_modules/xml-naming'
+  'node_modules/xml-naming',
+  'node_modules/@vue/compiler-sfc'
 ];
 const createLintingRule = () => ({
   test: /\.(js|vue)$/,
