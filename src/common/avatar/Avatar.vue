@@ -1,5 +1,5 @@
 <script lang="ts">
-import { VNode } from 'vue';
+import type { VNode } from 'vue';
 import Avatar from 'ant-design-vue/es/avatar/Avatar';
 import VueTypes from 'vue-iclient/src/common/_utils/vue-types';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';

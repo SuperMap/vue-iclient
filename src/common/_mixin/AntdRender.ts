@@ -1,4 +1,5 @@
-import Vue, { VNode, CreateElement } from 'vue';
+import Vue from 'vue';
+import type { VNode, CreateElement } from 'vue';
 import { Component, Prop, Provide } from 'vue-property-decorator';
 import defaultRenderEmpty from 'vue-iclient/src/common/empty/RenderEmpty';
 import { getOptionProps, getComponentFromProp } from 'ant-design-vue/es/_util/props-util';

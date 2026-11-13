@@ -1,5 +1,5 @@
 <script lang="ts">
-import { VNode, CreateElement } from 'vue';
+import type { VNode, CreateElement } from 'vue';
 import Icon from 'ant-design-vue/es/icon';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import AntdRender from 'vue-iclient/src/common/_mixin/AntdRender';

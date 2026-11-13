@@ -13,13 +13,17 @@ module.exports = {
       '@typescript-eslint/parser': ['.ts', '.tsx']
     },
     'import/resolver': {
-      alias: {
-        map: [['vue-iclient', './']],
-        extensions: ['.js', '.ts', '.vue', '.json']
-      },
+      // node 必须放在 alias 前面：alias 解析器底层用 Node 的 Module._findPath，
+      // 在 Node 14 上会读取依赖的 exports 字段，遇到只声明 import/types（无 require/default）
+      // 的子路径（如 @supermapgis/iclient-components-core/mapboxgl/src/*）会直接抛
+      // ERR_PACKAGE_PATH_NOT_EXPORTED；node 解析器（resolve 包）不读 exports，能正常解析。
       node: {
         paths: ['node_modules', 'src'],
         extensions: ['.js', '.jsx', '.ts', '.tsx']
+      },
+      alias: {
+        map: [['vue-iclient', './']],
+        extensions: ['.js', '.ts', '.vue', '.json']
       }
     }
   },

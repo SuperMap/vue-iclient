@@ -1,4 +1,4 @@
-import { CreateElement, VNode } from 'vue';
+import type { CreateElement, VNode } from 'vue';
 import Empty from 'ant-design-vue/es/empty';
 import VueTypes from 'vue-iclient/src/common/_utils/vue-types';
 

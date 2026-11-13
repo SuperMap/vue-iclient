@@ -1,5 +1,6 @@
 <script lang="ts">
-import Vue, { VNode } from 'vue';
+import Vue from 'vue';
+import type { VNode } from 'vue';
 import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import CompareViewModel, { mapType, orientationTypes, compareOptions } from './CompareViewModel';

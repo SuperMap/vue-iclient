@@ -80,7 +80,9 @@ module.exports = {
       }
     ];
     config.module.rules.push({
-      test: /\.mjs$/,
+      // fast-xml-parser 5.x 等依赖发布的是未转译的 ESM 源码（含 ?? / ?.），
+      // webpack 4 内置 acorn 无法解析，必须交给 babel 处理（.js 与 .mjs 都要）
+      test: /\.(mjs|js)$/,
       include: [
         resolve('./node_modules/ssr-window'),
         ...nodeModulesParse.map(item => resolve(item))

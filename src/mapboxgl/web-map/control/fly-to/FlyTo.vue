@@ -1,5 +1,5 @@
 <script lang="ts">
-import { CreateElement, VNode } from 'vue';
+import type { CreateElement, VNode } from 'vue';
 import { Component, Mixins, Prop, Emit, Watch } from 'vue-property-decorator';
 import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
 import Control from 'vue-iclient/src/mapboxgl/_mixin/control';

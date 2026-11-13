@@ -1,5 +1,6 @@
 import type { ThemeStyleParams } from 'vue-iclient/src/common/_utils/style/color/serialColors';
-import Vue, { VNode, CreateElement } from 'vue';
+import Vue from 'vue';
+import type { VNode, CreateElement } from 'vue';
 import { Component, Prop, Emit } from 'vue-property-decorator';
 import globalEvent from 'vue-iclient/src/common/_utils/global-event';
 import { getDerivedColorsByTextColor } from 'vue-iclient/src/common/_utils/util';

@@ -1,6 +1,6 @@
 <script lang="ts">
 import ConfigProvider from 'ant-design-vue/es/config-provider';
-import { CreateElement } from 'vue';
+import type { CreateElement } from 'vue';
 import { getComponentFromProp } from 'ant-design-vue/es/_util/props-util';
 import defaultRenderEmpty from 'vue-iclient/src/common/empty/RenderEmpty';
 
