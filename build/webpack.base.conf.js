@@ -31,7 +31,6 @@ var nodeModulesParse = [
   'node_modules/strnum',
   'node_modules/xml-naming'
 ];
-exports.nodeModulesParse = nodeModulesParse;
 const createLintingRule = () => ({
   test: /\.(js|vue)$/,
   loader: 'eslint-loader',
@@ -52,6 +51,7 @@ if (engineArg) {
   entry = `./demo/${type}/main.ts`;
 }
 module.exports = {
+  nodeModulesParse,
   context: path.resolve(__dirname, '../'),
   entry: {
     app: entry
