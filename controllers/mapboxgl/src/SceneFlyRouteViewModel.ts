@@ -386,12 +386,17 @@ export default class SceneFlyRouteViewModel extends mapboxgl.Evented {
       const isLastStop = stopIndex >= 0
         ? stopIndex === rawStops.length - 1
         : index === this.stops.length - 1
-      if (this.status === 'playing' && isLastStop) {
+      // 循环飞行（fpf 的 flycircle）到达末站后会回到首站继续飞，此时不能算飞行结束
+      if (this.status === 'playing' && isLastStop && !this.isFlyLoop()) {
         this.setStatus('ready')
       }
       this.fire('stoparrived', { index, stop })
     }
     this.flyManager.stopArrived.addEventListener(this.stopArrivedHandler)
+  }
+
+  private isFlyLoop(): boolean {
+    return this.flyManager?.currentRoute?.isFlyLoop === true
   }
 
   private applyRouteOptions() {

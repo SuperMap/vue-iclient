@@ -199,4 +199,53 @@ describe('SceneFlyRouteViewModel', () => {
     viewModel.destroy()
     expect(secondViewer.entities.values).toEqual([{ id: 'scene-entity' }])
   })
+
+  it('keeps playing after the last stop when the route flies in a loop', async () => {
+    const stops = [{ name: 'Stop 1' }, { name: 'Stop 2' }]
+    const route = {
+      get: vi.fn((index: number) => stops[index]),
+      isFlyLoop: true
+    }
+    let stopArrivedHandler: ((routeStop: unknown) => void) | undefined
+
+    class RouteCollection {
+      ready = true
+      routes = [route]
+      fromFile = vi.fn()
+    }
+
+    class FlyManager {
+      currentRoute = route
+      currentStopIndex = 0
+      playRate = 1
+      stopArrived = {
+        addEventListener: vi.fn((handler: (routeStop: unknown) => void) => {
+          stopArrivedHandler = handler
+        }),
+        removeEventListener: vi.fn()
+      }
+      play = vi.fn()
+      stop = vi.fn()
+      getAllRouteStops = () => stops
+    }
+
+    vi.stubGlobal('window', {
+      SuperMap3D: {
+        RouteCollection,
+        FlyManager,
+        Cartesian3: { clone: (value: object) => ({ ...value }) }
+      }
+    })
+
+    const viewModel = new SceneFlyRouteViewModel({ fpfUrl: 'loop.fpf' })
+    viewModel.setViewer({ entities: {}, scene: { camera: {} } })
+    await viewModel.load()
+
+    viewModel.play()
+    stopArrivedHandler?.(stops[1])
+    expect(viewModel.status).toBe('playing')
+
+    viewModel.stop()
+    expect(viewModel.status).toBe('stopped')
+  })
 })
