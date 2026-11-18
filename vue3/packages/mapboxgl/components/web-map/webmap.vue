@@ -14,6 +14,7 @@ import { webMapPropsDefault } from './types'
 import SmZoom from '@supermapgis/mapboxgl/components/zoom/zoom.vue'
 import SmResetView from '@supermapgis/mapboxgl/components/reset-view/reset-view.vue'
 import SmCompass from '@supermapgis/mapboxgl/components/compass/compass.vue'
+import SmCoordinateConversion from '@supermapgis/mapboxgl/components/coordinate-conversion/coordinate-conversion.vue'
 import SmDraw from '@supermapgis/mapboxgl/components/draw/draw.vue'
 import SmIdentify from '@supermapgis/mapboxgl/components/identify/identify.vue'
 import SmPan from '@supermapgis/mapboxgl/components/pan/pan.vue'
@@ -61,6 +62,7 @@ const componentMap: Record<string, any> = {
   SmZoom,
   SmResetView,
   SmCompass,
+  SmCoordinateConversion,
   SmDraw,
   SmIdentify,
   SmPan,

@@ -13,6 +13,7 @@ export { default as AttributesViewModel } from './src/AttributesViewModel';
 export { default as ChartViewModel } from './src/ChartViewModel';
 export { default as CompareViewModel } from './src/CompareViewModel';
 export { default as CompassViewModel } from './src/CompassViewModel';
+export { default as CoordinateConversionViewModel } from './src/CoordinateConversionViewModel';
 export { default as DrawViewModel } from './src/DrawViewModel';
 export { default as GraphMapViewModel } from './src/GraphMapViewModel';
 export { default as LayerHighlightViewModel } from './src/LayerHighlightViewModel';

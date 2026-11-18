@@ -104,6 +104,10 @@ export interface CompassControlParam extends CommonControlParam {
   visualizePitch?: boolean
 }
 
+export interface CoordinateConversionControlParam extends CardCommonParam {
+  showLocation?: boolean
+}
+
 export interface Control {
   panControl?: CommonControlParam
   scaleControl?: CommonControlParam
@@ -111,6 +115,7 @@ export interface Control {
   resetViewControl?: ResetViewParam
   miniMapControl?: CardCommonParam
   compassControl?: CompassControlParam
+  coordinateConversionControl?: CoordinateConversionControlParam
   layerListControl?: CardCommonParam
   measureControl?: MeasureParam
   legendControl?: LegendParam
@@ -242,6 +247,16 @@ export const webMapProps = () => ({
     default: (): CompassControlParam => {
       return { show: false, position: 'top-left', visualizePitch: false }
     }
+  },
+  coordinateConversionControl: {
+    type: Object,
+    default: (): CoordinateConversionControlParam => ({
+      headerName: '',
+      show: false,
+      showLocation: true,
+      position: 'top-right',
+      collapsed: true
+    })
   },
   layerListControl: {
     type: Object,
@@ -387,6 +402,7 @@ export type WebMapProps = {
   resetViewControl?: ResetViewParam
   miniMapControl?: CardCommonParam
   compassControl?: CompassControlParam
+  coordinateConversionControl?: CoordinateConversionControlParam
   layerListControl?: CardCommonParam
   measureControl?: MeasureParam
   legendControl?: LegendParam

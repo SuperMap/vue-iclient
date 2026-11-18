@@ -1,0 +1,12 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins.scss' as *;
+
+@include b(progress) {
+  text-align: center;
+  width: 100%;
+
+  // 圆环有独立的文本 token 规则；与 Vue2 一样继承文本色，异常状态保留错误提示色。
+  .sm-component-progress-text,
+  &.sm-component-progress-circle:not(.sm-component-progress-status-exception) .sm-component-progress-text {
+    color: inherit;
+  }
+}

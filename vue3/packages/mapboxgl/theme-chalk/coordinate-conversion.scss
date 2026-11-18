@@ -1,0 +1,215 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+@use '@supermapgis/common/theme-chalk/card';
+@use '@supermapgis/common/theme-chalk/collapse-card';
+@use '@supermapgis/common/theme-chalk/input';
+@use '@supermapgis/common/theme-chalk/select';
+
+@include b(coordinate-conversion) {
+  z-index: 10;
+  width: 389px;
+  height: 32px;
+  border-radius: 4px;
+  box-sizing: border-box;
+
+  @include e(content) {
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+
+    .sm-component-collapse {
+      background: transparent;
+      border-radius: 0;
+      color: inherit;
+    }
+  }
+
+  .sm-component-collapse-card__content {
+    width: 100%;
+  }
+
+  .sm-component-card-body {
+    height: 32px;
+    padding: 0;
+  }
+
+  .sm-component-collapse-card__body {
+    width: 100%;
+  }
+
+  .is-bottom-right,
+  .is-top-right {
+    .sm-component-coordinate-conversion__auto-width {
+      @include spacing-margin(9px, left, false);
+    }
+
+    .sm-component-collapse-card__body {
+      @include spacing-padding(36px, right, false);
+    }
+  }
+
+  .is-bottom-left,
+  .is-top-left {
+    .sm-component-coordinate-conversion__icons {
+      @include spacing-padding(9px, right, false);
+    }
+
+    .sm-component-collapse-card__body {
+      @include spacing-padding(36px, left, false);
+    }
+  }
+
+  .sm-component-card-bordered {
+    height: 32px;
+  }
+
+  .sm-component-card-body::before,
+  .sm-component-card-body::after {
+    display: none;
+  }
+
+  @include e(auto-width) {
+    display: inline-flex;
+    width: calc(100% - 86px);
+  }
+
+  .not-show-location {
+    .sm-component-coordinate-conversion__auto-width {
+      display: inline-flex;
+      width: calc(100% - 53px);
+    }
+  }
+
+  @include e(a-select) {
+    width: 36.3%;
+    height: 24px;
+    color: inherit;
+  }
+
+  .sm-component-select-sm .sm-component-select-selection__rendered {
+    font-size: 12px;
+    @include spacing-margin(7px, left, false);
+    line-height: 24px;
+  }
+
+  .sm-component-select-sm .sm-component-select-selection--single {
+    height: 24px;
+  }
+
+  .sm-component-select-dropdown-menu-item {
+    padding: 5px 12px;
+    line-height: 24px;
+  }
+
+  .sm-component-select,
+  .sm-component-select-dropdown-menu-item,
+  .sm-component-input,
+  .sm-component-input-affix-wrapper {
+    font-size: 12px;
+  }
+
+  .sm-component-input-sm {
+    height: 24px;
+    padding: 1px 7px;
+  }
+
+  .sm-component-input-affix-wrapper .sm-component-input:not(:last-child) {
+    @include spacing-padding(30px, right, false);
+  }
+
+  .sm-component-input-affix-wrapper .sm-component-input-suffix {
+    @include position-row(right, 12px, false, false);
+  }
+
+  @include e(a-input) {
+    width: 78%;
+    height: 24px;
+    @include spacing-margin(4px, left, false);
+    @include spacing-margin(8px, right, false);
+    color: inherit;
+    background: $color-bg-container;
+
+    .sm-component-input-suffix {
+      color: $icon-color-secondary;
+    }
+  }
+
+  .sm-component-input-affix-wrapper .sm-component-input {
+    color: inherit;
+  }
+
+  @include e(not-enable) {
+    color: $text-color-quaternary;
+    background-color: $color-fill-secondary;
+    border-color: $border-color-split;
+    cursor: not-allowed;
+  }
+
+  @include e(location) {
+    color: inherit;
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+
+  @include e(copyed) {
+    color: inherit;
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+
+  @include e(icons) {
+    display: inline-flex;
+
+    div {
+      position: relative;
+      width: 24px;
+      height: 24px;
+      font-size: 15px;
+      cursor: pointer;
+      background: $color-fill-secondary;
+    }
+
+    div:before {
+      display: block;
+      width: 100%;
+      height: 24px;
+      line-height: 24px;
+      position: absolute;
+      top: 0;
+      @include position-row(left, 0, false, false);
+      @include text-align-transform(center, false);
+    }
+
+    div:nth-child(1) {
+      @include border-corner-radius(top, left, 4px, false);
+      @include border-corner-radius(bottom, left, 4px, false);
+      @include spacing-margin(1px, left, false);
+    }
+
+    div:nth-child(2) {
+      @include border-corner-radius(top, right, 4px, false);
+      @include border-corner-radius(bottom, right, 4px, false);
+      @include spacing-margin(1px, left, false);
+    }
+
+    div:nth-child(3) {
+      @include spacing-margin(4px, left, false);
+      border-radius: 4px;
+    }
+
+    .sm-component-coordinate-conversion__captured {
+      color: #fff;
+      background: $primary-color;
+    }
+
+    .sm-component-coordinate-conversion__not-captured {
+      color: $text-color;
+      background: $color-fill-secondary;
+    }
+  }
+}

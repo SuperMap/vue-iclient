@@ -3,6 +3,7 @@ import { SmTimeSlider } from '@supermapgis/common/components/time-slider'
 import { SmTimeText } from '@supermapgis/common/components/time-text'
 import { SmAttributePanel } from '@supermapgis/common/components/attribute-panel'
 import { SmIndicator } from '@supermapgis/common/components/indicator'
+import { SmProgress } from '@supermapgis/common/components/progress'
 import { SmText } from '@supermapgis/common/components/text'
 import { SmImage } from '@supermapgis/common/components/image'
 import { SmBorder } from '@supermapgis/common/components/border'
@@ -25,6 +26,7 @@ import { SmZoom } from '@supermapgis/mapboxgl/components/zoom'
 import { SmResetView } from '@supermapgis/mapboxgl/components/reset-view'
 import { SmDraw } from '@supermapgis/mapboxgl/components/draw'
 import { SmCompass } from '@supermapgis/mapboxgl/components/compass'
+import { SmCoordinateConversion } from '@supermapgis/mapboxgl/components/coordinate-conversion'
 import { SmMiniMap } from '@supermapgis/mapboxgl/components/mini-map'
 import { SmPan } from '@supermapgis/mapboxgl/components/pan'
 import { SmScale } from '@supermapgis/mapboxgl/components/scale'
@@ -72,11 +74,13 @@ export default [
   SmSearch,
   SmAttributePanel,
   SmIndicator,
+  SmProgress,
   SmText,
   SmZoom,
   SmResetView,
   SmDraw,
   SmCompass,
+  SmCoordinateConversion,
   SmMiniMap,
   SmPan,
   SmScale,
