@@ -24,8 +24,9 @@ const getOriginArgs = require('./get-origin-args');
 const origin = getOriginArgs();
 let entry = './demo/mapboxgl/main.ts';
 
-if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {
-  let type = origin[2].replace('-', '');
+const engineArg = origin.find(arg => ['-mapboxgl', '-leaflet'].includes(arg));
+if (engineArg) {
+  let type = engineArg.replace('-', '');
   entry = `./demo/${type}/main.ts`;
 }
 module.exports = {

@@ -3,7 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const getOriginArgs = require('./get-origin-args');
 const origin = getOriginArgs();
-const type = origin[2].substring(1);
+const engineArg = origin.find(arg => ['-mapboxgl', '-leaflet'].includes(arg));
+const type = engineArg ? engineArg.substring(1) : 'mapboxgl';
 
 const filePath = `../lib/${type}`;
 // 包的 main 指向 lib/index，入口缺失时必须阻止发布，不能只检查按需组件。

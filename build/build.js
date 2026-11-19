@@ -14,8 +14,9 @@ let webpackConfig = require('./webpack.mapboxgl.conf');
 const getOriginArgs = require('./get-origin-args');
 const origin = getOriginArgs();
 
-if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {
-  let type = origin[2].replace("-", "");
+const engineArg = origin.find(arg => ['-mapboxgl', '-leaflet'].includes(arg));
+if (engineArg) {
+  let type = engineArg.replace("-", "");
   webpackConfig = require(`./webpack.${type}.conf`);
 }
 
