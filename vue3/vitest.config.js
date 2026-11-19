@@ -38,8 +38,11 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: [relativePath('./tests/unit/setup.ts')],
-    // include: ['**/*.spec.[jt]s?(x)'],
-    include: ['./tests/unit/iclient-version.spec.ts'],
+    include: [
+      './tests/unit/**/*.spec.[jt]s?(x)',
+      './packages/common/{utils,hooks}/**/*.spec.[jt]s?(x)',
+      './packages/{common,mapboxgl}/components/**/*.spec.[jt]s?(x)'
+    ],
     coverage: {
       all: true,
       reportsDirectory: relativePath('./tests/unit/coverage'),

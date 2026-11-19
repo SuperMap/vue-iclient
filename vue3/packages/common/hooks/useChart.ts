@@ -11,6 +11,7 @@ import {
 } from '@supermapgis/common/utils/theme/chart'
 import { fitChartAxisLayout } from '../utils/chart-axis-layout'
 import { applyArabicDigitsToChartOptions } from '../utils/chart-arabic-number'
+import { withRadarTooltipDimensions } from '@supermapgis/common/utils/chart-tooltip'
 import EchartsDataService from '@supermapgis/iclient-components-core/core/utils/EchartsDataService'
 import {
   getFeatureCenter,
@@ -169,7 +170,9 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
       } else if (endNormalLabel.originFormatter) {
         formatMode = endNormalLabel.originFormatter
       }
-      endNormalLabel.formatter = function ({ dataIndex, value, name, percent }: any) {
+      endNormalLabel.formatter = function (params: any) {
+        const { dataIndex, dimensionIndex } = params
+        let { value, name, percent } = params
         name = getDecimalsFormatterVal(name, normalLabel.xFieldDecimals)
         value = getDecimalsFormatterVal(value, normalLabel.decimals)
         percent = getDecimalsFormatterVal(percent, normalLabel.decimals)
@@ -180,8 +183,11 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
           '{d}%': `${percent}%`
         }
         let result = ''
-        if (dataIndex < maxLabels) {
-          result = FORMATTER_MAP[formatMode || '{c}']
+        // 雷达图的每个顶点共享 dataIndex，展示数量应按维度索引限制。
+        if ((dimensionIndex ?? dataIndex) < maxLabels) {
+          result = typeof normalLabel.formatter === 'function'
+            ? normalLabel.formatter(params)
+            : FORMATTER_MAP[formatMode || '{c}']
         }
         return result
       }
@@ -674,7 +680,9 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
 
   const _chartOptions = computed(() => {
     const options = (_isRequestData.value && echartOptions.value) || parseOptions.value
-    return applyArabicDigitsToChartOptions(fitChartAxisLayout(options, chartSize.value))
+    return withRadarTooltipDimensions(
+      applyArabicDigitsToChartOptions(fitChartAxisLayout(options, chartSize.value))
+    )
   })
 
   const chartUpdateOptions = ref({
@@ -915,7 +923,10 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
         }
       })
       serie.itemStyle = serie.itemStyle || { color: '' }
-      serie.itemStyle.color = ({ dataIndex, color }: any) => {
+      // 高亮只覆盖命中的数据；普通色从原始配置读取，避免清除高亮后丢失自定义色或嵌套旧回调。
+      const normalColor = props.options?.series?.[seriesIndex]?.itemStyle?.color
+      serie.itemStyle.color = (params: any) => {
+        const { dataIndex, color } = params
         const index = dataIndexs?.indexOf(dataIndex)
         if (index > -1) {
           return colors[index]
@@ -923,7 +934,7 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
           const colorGroup = _handlerColorGroup(serie.data.length)
           return colorGroup[dataIndex]
         } else {
-          return color
+          return typeof normalColor === 'function' ? normalColor(params) : normalColor || color
         }
       }
     })

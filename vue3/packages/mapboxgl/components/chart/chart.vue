@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import 'echarts'
+import { use as useECharts } from 'echarts'
 import VChart from 'vue-echarts'
 import UniqueId from 'lodash.uniqueid'
 import { useTemplateRef } from 'vue'
@@ -45,6 +45,9 @@ import ChartViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/Ch
 import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'
 import TablePopup from '@supermapgis/common/components/table-popup/table-popup.vue'
 import type { Map } from 'mapbox-gl'
+import { radarNodeStyleExtension } from '@supermapgis/common/utils/chart-radar-view'
+
+useECharts(radarNodeStyleExtension)
 
 const name = 'SmChart'
 defineOptions({

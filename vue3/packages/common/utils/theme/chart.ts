@@ -52,7 +52,8 @@ export const chartThemeUtil = (
   let chartTheme = {
     color: colorGroup,
     backgroundColor: background,
-    textStyle: {},
+    // 图例清空局部颜色时，ECharts 会回退到全局文字色。
+    textStyle: { color: textColor },
     title: {
       textStyle: {
         color: textColor
@@ -77,8 +78,7 @@ export const chartThemeUtil = (
         color: textColor
       },
       lineStyle: {
-        width: '3',
-        color: textColor
+        width: '3'
       },
       splitLine: {
         lineStyle: {

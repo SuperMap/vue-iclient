@@ -286,14 +286,15 @@ export default class EchartsDataService {
         });
       });
     } else if (chartType === 'radar') {
-      let yData = [...YData];
-      serieData.data.push({
-        value: [...YData],
-        name: datasetOption.yField
-      });
-      // 获取雷达图的max最大值
-      let maxValue = max(yData);
-      this.radarMax = Math.max(maxValue, this.radarMax);
+      // 空数据没有雷达指标，不能创建多边形，否则 ECharts 无法计算其顶点。
+      if (YData.length) {
+        serieData.data.push({
+          value: [...YData],
+          name: datasetOption.yField
+        });
+        let maxValue = max(YData);
+        this.radarMax = Math.max(maxValue, this.radarMax);
+      }
     } else {
       // line bar scatter gauge
       serieData.data = [...YData];
