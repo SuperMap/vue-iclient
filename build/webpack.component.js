@@ -7,8 +7,9 @@ const getOriginArgs = require('./get-origin-args');
 const origin = getOriginArgs();
 let type = 'mapboxgl';
 let entry;
-if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {
-  type = origin[2].replace('-', '');
+const engineArg = origin.find(arg => ['-mapboxgl', '-leaflet'].includes(arg));
+if (engineArg) {
+  type = engineArg.replace('-', '');
 }
 if (origin.includes('-index')) {
   entry = { index: `vue-iclient/src/${type}/index.ts` };

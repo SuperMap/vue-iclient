@@ -4,8 +4,9 @@ const uppercamelcase = require('uppercamelcase');
 const getOriginArgs = require('../build/get-origin-args');
 const origin = getOriginArgs();
 let type = 'mapboxgl';
-if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {
-  type = origin[2].replace('-', '');
+const engineArg = origin.find(arg => ['-mapboxgl', '-leaflet'].includes(arg));
+if (engineArg) {
+  type = engineArg.replace('-', '');
 }
 
 const commonFiles = require(`../src/${type}/entrys.json`);

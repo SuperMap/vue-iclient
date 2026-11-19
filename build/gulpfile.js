@@ -16,8 +16,9 @@ const path = require('path');
 const getOriginArgs = require('./get-origin-args');
 const origin = getOriginArgs();
 let type = 'mapboxgl';
-if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {
-  type = origin[2].replace('-', '');
+const engineArg = origin.find(arg => ['-mapboxgl', '-leaflet'].includes(arg));
+if (engineArg) {
+  type = engineArg.replace('-', '');
 }
 
 const NO_STYLE_COMPONENTS = {

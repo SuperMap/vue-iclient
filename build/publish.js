@@ -3,7 +3,8 @@ const path = require('path');
 
 const getOriginArgs = require('./get-origin-args');
 const origin = getOriginArgs();
-let key = origin[1] ? origin[1].replace('-', '') : 'mapboxgl';
+const engineArg = origin.find(arg => ['-mapboxgl', '-leaflet'].includes(arg));
+let key = engineArg ? engineArg.replace('-', '') : 'mapboxgl';
 
 let fileNames = ['package.json', '.npmignore', 'tsconfig.json', 'README.md'];
 key === 'leaflet' && fileNames.push('sfc.d.ts');
