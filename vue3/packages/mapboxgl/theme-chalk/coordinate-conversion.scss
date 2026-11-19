@@ -88,8 +88,12 @@
   }
 
   .sm-component-select-sm .sm-component-select-selection__rendered {
+    /* stylelint-disable-next-line declaration-property-value-allowed-list -- 小尺寸选择框保留与 24px 控件高度匹配的字号。 */
     font-size: 12px;
+
     @include spacing-margin(7px, left, false);
+
+    /* stylelint-disable-next-line declaration-property-value-allowed-list -- 选择文本需在 24px 控件内垂直居中。 */
     line-height: 24px;
   }
 
@@ -99,6 +103,7 @@
 
   .sm-component-select-dropdown-menu-item {
     padding: 5px 12px;
+    /* stylelint-disable-next-line declaration-property-value-allowed-list -- 下拉选项与小尺寸选择框保持相同行高。 */
     line-height: 24px;
   }
 
@@ -106,6 +111,7 @@
   .sm-component-select-dropdown-menu-item,
   .sm-component-input,
   .sm-component-input-affix-wrapper {
+    /* stylelint-disable-next-line declaration-property-value-allowed-list -- 坐标输入与格式选项统一使用小尺寸控件字号。 */
     font-size: 12px;
   }
 
@@ -125,12 +131,15 @@
   @include e(a-input) {
     width: 78%;
     height: 24px;
+
     @include spacing-margin(4px, left, false);
     @include spacing-margin(8px, right, false);
+
     color: inherit;
     background: $color-bg-container;
 
     .sm-component-input-suffix {
+      /* stylelint-disable-next-line declaration-property-value-allowed-list -- 输入辅助图标使用主题次级图标色。 */
       color: $icon-color-secondary;
     }
   }
@@ -140,6 +149,7 @@
   }
 
   @include e(not-enable) {
+    /* stylelint-disable-next-line declaration-property-value-allowed-list -- 禁用操作需使用主题禁用色，避免误认为可交互。 */
     color: $text-color-quaternary;
     background-color: $color-fill-secondary;
     border-color: $border-color-split;
@@ -150,6 +160,7 @@
     color: inherit;
 
     &:hover {
+      /* stylelint-disable-next-line declaration-property-value-allowed-list -- 定位按钮悬停时使用主题主色提示可交互。 */
       color: $primary-color;
     }
   }
@@ -158,6 +169,7 @@
     color: inherit;
 
     &:hover {
+      /* stylelint-disable-next-line declaration-property-value-allowed-list -- 复制按钮悬停时使用主题主色提示可交互。 */
       color: $primary-color;
     }
   }
@@ -169,18 +181,21 @@
       position: relative;
       width: 24px;
       height: 24px;
+      /* stylelint-disable-next-line declaration-property-value-allowed-list -- 图标字号需与 24px 工具按钮匹配。 */
       font-size: 15px;
       cursor: pointer;
       background: $color-fill-secondary;
     }
 
-    div:before {
+    div::before {
       display: block;
       width: 100%;
       height: 24px;
+      /* stylelint-disable-next-line declaration-property-value-allowed-list -- 字体图标需在 24px 工具按钮内垂直居中。 */
       line-height: 24px;
       position: absolute;
       top: 0;
+
       @include position-row(left, 0, false, false);
       @include text-align-transform(center, false);
     }
@@ -199,15 +214,18 @@
 
     div:nth-child(3) {
       @include spacing-margin(4px, left, false);
+
       border-radius: 4px;
     }
 
     .sm-component-coordinate-conversion__captured {
+      /* stylelint-disable-next-line declaration-property-value-allowed-list -- 捕获态图标需在主题主色背景上保持清晰对比。 */
       color: #fff;
       background: $primary-color;
     }
 
     .sm-component-coordinate-conversion__not-captured {
+      /* stylelint-disable-next-line declaration-property-value-allowed-list -- 未捕获态恢复主题文本色，与捕获态区分。 */
       color: $text-color;
       background: $color-fill-secondary;
     }
