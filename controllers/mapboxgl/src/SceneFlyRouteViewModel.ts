@@ -361,7 +361,7 @@ export default class SceneFlyRouteViewModel extends mapboxgl.Evented {
     const raw = this.readRawStops()
     this.stops = raw.map((stop: any, index: number) => ({
       index,
-      name: stop?.name || `Stop ${index + 1}`
+      name: stop?.stopName || `Stop ${index + 1}`
     }))
     this.fire('stopschange', { stops: this.getStops() })
     if (this.stops.length) {
