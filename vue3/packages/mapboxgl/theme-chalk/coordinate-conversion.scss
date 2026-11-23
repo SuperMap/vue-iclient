@@ -87,6 +87,19 @@
     color: inherit;
   }
 
+  .sm-component-coordinate-conversion__a-select.sm-component-select {
+    .sm-component-select-selector,
+    .sm-component-select-selection-item {
+      color: inherit;
+    }
+  }
+
+  // 弹层挂在当前组件内部，AntD 4 的选项节点也应继承宿主文字色。
+  .sm-component-select-dropdown,
+  .sm-component-select-item-option:not(.sm-component-select-item-option-disabled) {
+    color: inherit;
+  }
+
   .sm-component-select-sm .sm-component-select-selection__rendered {
     /* stylelint-disable-next-line declaration-property-value-allowed-list -- 小尺寸选择框保留与 24px 控件高度匹配的字号。 */
     font-size: 12px;

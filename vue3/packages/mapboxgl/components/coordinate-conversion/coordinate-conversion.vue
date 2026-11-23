@@ -135,8 +135,8 @@ const defaultFormats: FormatOption[] = [
     display: 'X Y',
     fromWGS84: getBaseMapCoordinate,
     toWGS84: value => {
-      const coor: Array<string | number> = value.split(' ')
-      const coordinate: Coordinate = { lng: (coor[0] as number) * 1, lat: (coor[1] as number) * 1 }
+      const [lng, lat] = parseCoordinatePair(value, /\s+/)
+      const coordinate: Coordinate = { lng, lat }
       return getEpsgCoordinate(coordinate, 'EPSG:4326', getEpsgCode())
     }
   },
@@ -152,8 +152,8 @@ const defaultFormats: FormatOption[] = [
     display: 'X Y',
     fromWGS84: getMercatorCoordinate,
     toWGS84: value => {
-      const coor: Array<string | number> = value.split(' ')
-      const coordinate: Coordinate = { lng: (coor[0] as number) * 1, lat: (coor[1] as number) * 1 }
+      const [lng, lat] = parseCoordinatePair(value, /\s+/)
+      const coordinate: Coordinate = { lng, lat }
       return getEpsgCoordinate(coordinate, 'EPSG:4326', 'EPSG:3857')
     }
   },
@@ -254,12 +254,15 @@ function handleInput(e: any) {
     handleCapture()
   }
   inputValue.value = e.target.value
+  coordinate.value = null
   enableLocation.value = true
 }
 
 function handleBlur(e: any) {
-  const formatOption = formatOptions.value.find(item => item.title === activeFormat.value)
-  coordinate.value = reverseCoordinateFormat(e.target.value, formatOption)
+  if (!coordinate.value) {
+    const formatOption = formatOptions.value.find(item => item.title === activeFormat.value)
+    coordinate.value = reverseCoordinateFormat(e.target.value, formatOption)
+  }
 }
 
 function handleChange(e: any) {
@@ -270,6 +273,11 @@ function handleChange(e: any) {
 }
 
 function handleLocation() {
+  // 输入修改时已清除旧坐标；未编辑时保留捕捉精度，避免从舍入后的显示文本反算定位。
+  if (!coordinate.value) {
+    const formatOption = formatOptions.value.find(item => item.title === activeFormat.value)
+    coordinate.value = reverseCoordinateFormat(inputValue.value, formatOption)
+  }
   if (!coordinate.value) {
     return
   }
@@ -298,13 +306,32 @@ function formatCoordinate(coordinate: Coordinate | null, formatOption?: FormatOp
 }
 
 function reverseCoordinateFormat(value: string = inputValue.value, formatOption?: FormatOption, format?: string) {
-  value = value.replace(/^(?:\s+|\s+)$ /, '')
+  value = value.trim()
   if (!value || !formatOption) {
     viewModel._clearMarker()
     return null
   }
   const toWGS84 = formatOption.toWGS84 || getCoorByXY
-  return toWGS84(value, format)
+  try {
+    const result = toWGS84(value, format)
+    if (!Number.isFinite(result?.lng) || !Number.isFinite(result?.lat) || Math.abs(result.lat) > 90) {
+      throw new Error('Invalid coordinate')
+    }
+    return result
+  } catch {
+    // 各格式转换器可能抛错或返回 NaN，统一在进入地图引擎前拦截并提示。
+    viewModel._clearMarker()
+    Message.error({ key: `${copyTargetId}-invalid-coordinate`, content: t('coordinateConversion.errorCoordinate') })
+    return null
+  }
+}
+
+function parseCoordinatePair(value: string, separator: string | RegExp) {
+  const parts = value.split(separator)
+  if (parts.length !== 2 || parts.some(part => !part.trim() || !Number.isFinite(Number(part)))) {
+    throw new Error('Invalid coordinate pair')
+  }
+  return parts.map(Number)
 }
 
 function getUtm(coordinate: Coordinate) {
@@ -409,16 +436,16 @@ function getDMS(coordinate: Coordinate) {
 function getCoorByXY(value?: string) {
   value = replaceUnit(value)
   value = value.replace(/‎|°|\s+/g, '')
-  const coordinates = value.split(',')
-  return { lng: (coordinates[0] as any) * 1, lat: (coordinates[1] as any) * 1 }
+  const [lng, lat] = parseCoordinatePair(value, ',')
+  return { lng, lat }
 }
 
 function getCoorByDD(value?: string) {
   value = replaceUnit(value)
   value = value.replace(/‎|°|\s+/g, '')
   value = value.replace(/E|N|W|S/gi, '')
-  const coordinates = value.split(',')
-  return { lng: (coordinates[1] as any) * 1, lat: (coordinates[0] as any) * 1 }
+  const [lat, lng] = parseCoordinatePair(value, ',')
+  return { lng, lat }
 }
 
 function getCoorByDOM(value?: string) {

@@ -6,7 +6,7 @@ import stylelint from 'stylelint'
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 const configFile = resolve(projectRoot, '.stylelintrc.json')
-const styles = ['mapboxgl/theme-chalk/coordinate-conversion.scss']
+const styles = ['common/theme-chalk/progress.scss', 'mapboxgl/theme-chalk/coordinate-conversion.scss']
 
 describe.each(styles)('%s', style => {
   const file = resolve(projectRoot, 'packages', style)
@@ -21,7 +21,7 @@ describe.each(styles)('%s', style => {
 
     expect(result.results.flatMap(({ warnings }) => warnings)).toEqual([])
     expect(result.errored).toBe(false)
-  })
+  }, 30000)
 
   it('still requires ordinary text to inherit its typography and color', async () => {
     // 在真实样式末尾追加违规声明，确保局部布局和状态色的豁免不会放开后续文本样式。

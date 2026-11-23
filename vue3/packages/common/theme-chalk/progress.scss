@@ -4,6 +4,45 @@
   text-align: center;
   width: 100%;
 
+  &.sm-component-progress-line {
+    // 文字独占其实际宽度，首行缩进不再挤占 AntD 固定预留的 2em 导致换行。
+    display: inline-grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    align-content: start;
+
+    .sm-component-progress-outer {
+      // 去除条形的行内基线空白，并让实际线宽决定最小高度，保持与文字中心对齐。
+      display: flex;
+      align-items: center;
+      min-height: min-content;
+      width: auto;
+      min-width: 0;
+      /* stylelint-disable-next-line declaration-property-value-allowed-list -- 进度图形不参与文字缩进，缩进只作用于数值文本。 */
+      text-indent: 0;
+    }
+
+    &.sm-component-progress-show-info .sm-component-progress-outer {
+      margin-inline-end: 0;
+      padding-inline-end: 0;
+    }
+
+    .sm-component-progress-text {
+      width: auto;
+    }
+  }
+
+  &.sm-component-progress-circle .sm-component-progress-inner {
+    // 小内容区域也从内边距边缘开始排版，避免文字行高把圆环向下挤出。
+    vertical-align: top;
+
+    .sm-component-progress-text {
+      /* stylelint-disable-next-line declaration-property-value-allowed-list -- 优先使用宿主字号，缺省仍继承圆环按直径计算的字号。 */
+      font-size: var(--sm-progress-font-size, inherit);
+      text-align: inherit;
+    }
+  }
+
   // 圆环有独立的文本 token 规则；与 Vue2 一样继承文本色，异常状态保留错误提示色。
   .sm-component-progress-text,
   &.sm-component-progress-circle:not(.sm-component-progress-status-exception) .sm-component-progress-text {

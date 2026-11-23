@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import type { VueWrapper } from '@vue/test-utils'
-import type { CSSProperties, VNode } from 'vue'
-import { isVNode } from 'vue'
+import type { CSSProperties, StyleValue, VNode } from 'vue'
+import { defineComponent, h, isVNode, nextTick, reactive } from 'vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import RestService from '@supermapgis/iclient-components-core/core/utils/RestService'
 import { SmProgress } from '@supermapgis/common/components/progress'
@@ -21,8 +21,30 @@ function getLineBackgroundStyle(wrapper: VueWrapper): CSSProperties {
   throw new Error('Missing rendered progress background')
 }
 
+function mockProgressResizeObserver() {
+  const observe = vi.fn()
+  const disconnect = vi.fn()
+  let notify: (entries: ResizeObserverEntry[]) => void = () => {}
+  vi.stubGlobal('ResizeObserver', class {
+    constructor(callback: (entries: ResizeObserverEntry[]) => void) {
+      notify = callback
+    }
+
+    observe = observe
+    disconnect = disconnect
+  })
+  return {
+    observe,
+    disconnect,
+    resize: (target: Element, width: number, height: number) => {
+      notify([{ target, contentRect: new DOMRect(0, 0, width, height) } as ResizeObserverEntry])
+    }
+  }
+}
+
 describe('Progress', () => {
   afterEach(() => {
+    vi.restoreAllMocks()
     vi.unstubAllGlobals()
   })
 
@@ -103,6 +125,73 @@ describe('Progress', () => {
     wrapper.unmount()
   })
 
+  it.each([20, 120])('uses the native circle stroke width when set to zero at size %s', async size => {
+    const wrapper = mount(SmProgress, { props: { type: 'circle', size, percent: 80, strokeWidth: 0 } })
+    const reference = mount(SmProgress, { props: { type: 'circle', size, percent: 80 } })
+    const getStrokeWidth = (control: VueWrapper) =>
+      Number(control.find('.sm-component-progress-circle-path').attributes('stroke-width'))
+    try {
+      expect(getStrokeWidth(wrapper)).toBe(getStrokeWidth(reference))
+      expect(getStrokeWidth(wrapper)).toBeGreaterThan(0)
+      await wrapper.setProps({ strokeWidth: 12 })
+      expect(getStrokeWidth(wrapper)).toBe(12)
+      await wrapper.setProps({ strokeWidth: 0 })
+      expect(getStrokeWidth(wrapper)).toBe(getStrokeWidth(reference))
+    } finally {
+      wrapper.unmount()
+      reference.unmount()
+    }
+  })
+
+  it.each(['line', 'circle'] as const)('preserves status and native state colors for %s', async type => {
+    const wrapper = mount(SmProgress, { props: { type, percent: 20, status: 'active' } })
+    try {
+      await wrapper.setProps({ status: 'normal' })
+      await wrapper.setProps({ strokeWidth: 12, style: { width: '280px' } })
+      expect(wrapper.classes()).toContain('sm-component-progress-status-normal')
+      for (const status of ['success', 'exception'] as const) {
+        await wrapper.setProps({ status })
+        expect(wrapper.classes()).toContain(`sm-component-progress-status-${status}`)
+        if (type === 'line') {
+          expect(getLineBackgroundStyle(wrapper).backgroundColor).toBeUndefined()
+        } else {
+          expect((wrapper.find('.sm-component-progress-circle-path').element as SVGElement).style.stroke).toBe('')
+        }
+        await wrapper.setProps({ strokeColor: '#112233' })
+        if (type === 'line') {
+          expect(getLineBackgroundStyle(wrapper).backgroundColor).toBe('#112233')
+        } else {
+          expect((wrapper.find('.sm-component-progress-circle-path').element as SVGElement).style.stroke).toBe('#112233')
+        }
+        await wrapper.setProps({ strokeColor: undefined })
+      }
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
+  it('updates the host font size override and restores automatic circle typography when removed', async () => {
+    const state = reactive({ style: { fontSize: '2px', textAlign: 'left' } as StyleValue })
+    const wrapper = mount(defineComponent({ setup: () => () => h(SmProgress, { type: 'circle', ...state }) }))
+    const root = wrapper.find('.sm-component-progress').element as HTMLElement
+    try {
+      expect(root.style.getPropertyValue('--sm-progress-font-size')).toBe('2px')
+      state.style = [{ fontSize: 40 }, { textAlign: 'right' }]
+      await nextTick()
+      expect(root.style.getPropertyValue('--sm-progress-font-size')).toBe('40px')
+      expect(root.style.textAlign).toBe('right')
+      state.style = 'font-size: 18px; text-align: center'
+      await nextTick()
+      expect(root.style.getPropertyValue('--sm-progress-font-size')).toBe('18px')
+      state.style = {}
+      await nextTick()
+      expect(root.style.getPropertyValue('--sm-progress-font-size')).toBe('')
+      expect((wrapper.find('.sm-component-progress-inner').element as HTMLElement).style.fontSize).not.toBe('')
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
   it.each([
     {
       name: 'percentage color stops',
@@ -178,36 +267,98 @@ describe('Progress', () => {
   })
 
   it('observes the progress root for circle resizing and releases it on unmount', async () => {
-    const observe = vi.fn()
-    const disconnect = vi.fn()
-    let resize = () => {}
-    vi.stubGlobal(
-      'ResizeObserver',
-      class {
-        constructor(callback: () => void) {
-          resize = callback
-        }
-
-        observe = observe
-        disconnect = disconnect
-      }
-    )
+    const { observe, disconnect, resize } = mockProgressResizeObserver()
     const wrapper = mount(SmProgress, { props: { type: 'circle', percent: 80 } })
-    Object.defineProperties(wrapper.element, {
-      offsetWidth: { value: 240 },
-      offsetHeight: { value: 96 }
-    })
 
     expect(observe).toHaveBeenCalledWith(wrapper.element)
-    resize()
+    resize(wrapper.element, 240, 96)
     await wrapper.vm.$nextTick()
     const circle = wrapper.find('.sm-component-progress-inner').element as HTMLElement
     expect(circle.style.width).toBe('96px')
     expect(circle.style.height).toBe('96px')
     await wrapper.setProps({ size: 72 })
     expect(circle.style.width).toBe('72px')
+    resize(wrapper.element, 40, 50)
+    await nextTick()
+    expect(circle.style.width).toBe('72px')
     wrapper.unmount()
     expect(disconnect).toHaveBeenCalledOnce()
+  })
+
+  it.each([
+    { name: 'padding', padding: '30px', border: '0', width: 225, height: 225, expected: 165 },
+    { name: 'padding and border', padding: '30px', border: '5px solid', width: 215, height: 215, expected: 155 },
+    { name: 'asymmetric padding', padding: '10px 20px 30px 40px', border: '0', width: 240, height: 180, expected: 140 },
+    { name: 'fractional padding', padding: '10.5px 20.25px', border: '0', width: 200, height: 120, expected: 99 },
+    { name: 'no drawable space', padding: '120px', border: '0', width: 240, height: 240, expected: 0 }
+  ])('subtracts $name when initially measuring the circle without ResizeObserver', async ({ padding, border, width, height, expected }) => {
+    vi.stubGlobal('ResizeObserver', undefined)
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(width)
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(height)
+    vi.spyOn(HTMLElement.prototype, 'getClientRects').mockReturnValue(
+      [new DOMRect(0, 0, width, height)] as unknown as DOMRectList
+    )
+    const wrapper = mount(SmProgress, {
+      props: { type: 'circle', percent: 80 },
+      attrs: { style: { padding, border, boxSizing: 'border-box' } }
+    })
+    try {
+      await nextTick()
+      const circle = wrapper.find('.sm-component-progress-inner').element as HTMLElement
+      expect(circle.style.width).toBe(`${expected}px`)
+      expect(circle.style.height).toBe(`${expected}px`)
+      expect(wrapper.find('svg').html()).not.toMatch(/NaN|Infinity/)
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
+  it.each([undefined, 0, 12])('uses content-box resize notifications after padding changes, including zero sizes, strokeWidth=%s', async strokeWidth => {
+    const { resize } = mockProgressResizeObserver()
+    const wrapper = mount(SmProgress, {
+      props: { type: 'circle', percent: 80, strokeWidth },
+      attrs: { style: { width: '225px', height: '225px', padding: '30px' } }
+    })
+    try {
+      const circle = wrapper.find('.sm-component-progress-inner').element as HTMLElement
+      vi.spyOn(wrapper.element, 'getClientRects').mockReturnValue([new DOMRect()] as unknown as DOMRectList)
+      resize(wrapper.element, 165, 165)
+      await nextTick()
+      expect(circle.style.width).toBe('165px')
+      await wrapper.setProps({ style: { width: '225px', height: '225px', padding: '40px' } })
+      resize(wrapper.element, 143.5, 105.25)
+      await nextTick()
+      expect(circle.style.width).toBe('105.25px')
+      resize(wrapper.element, 0, 0)
+      await nextTick()
+      expect(circle.style.width).toBe('0px')
+      expect(wrapper.find('svg').html()).not.toMatch(/NaN|Infinity/)
+      resize(wrapper.element, 180, 140)
+      await nextTick()
+      expect(circle.style.width).toBe('140px')
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
+  it('keeps the last diameter while hidden and resumes sizing after becoming visible', async () => {
+    const { resize } = mockProgressResizeObserver()
+    const wrapper = mount(SmProgress, { props: { type: 'circle', percent: 80 } })
+    try {
+      const circle = wrapper.find('.sm-component-progress-inner').element as HTMLElement
+      resize(wrapper.element, 165, 165)
+      await nextTick()
+      await wrapper.setProps({ style: { display: 'none' } })
+      resize(wrapper.element, 0, 0)
+      await nextTick()
+      expect(circle.style.width).toBe('165px')
+      await wrapper.setProps({ style: { display: 'block' } })
+      resize(wrapper.element, 200, 130)
+      await nextTick()
+      expect(circle.style.width).toBe('130px')
+    } finally {
+      wrapper.unmount()
+    }
   })
 
   it('loads the configured URL', () => {
