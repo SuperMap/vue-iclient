@@ -43,9 +43,9 @@
     }
   }
 
-  // 圆环有独立的文本 token 规则；与 Vue2 一样继承文本色，异常状态保留错误提示色。
-  .sm-component-progress-text,
-  &.sm-component-progress-circle:not(.sm-component-progress-status-exception) .sm-component-progress-text {
+  // 显式文本颜色优先；未配置时成功、异常沿用状态色，其余状态继承宿主文字色。
+  &:not(.sm-component-progress-status-success, .sm-component-progress-status-exception) .sm-component-progress-text,
+  &.sm-component-progress-custom-text-color .sm-component-progress-text {
     color: inherit;
   }
 }

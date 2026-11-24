@@ -1,6 +1,7 @@
 <template>
   <sm-progress-control
     ref="progressRef"
+    :class="{ 'sm-component-progress-custom-text-color': !!textColor }"
     :style="rootStyle"
     :percent="runtimePercent"
     :type="type"
