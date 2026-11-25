@@ -93,9 +93,8 @@
           </sm-button>
         </div>
       </template>
-      <template #customFilterIcon="{ column }">
-        <SearchOutlined v-if="column.customFilterDropdown" />
-        <FilterOutlined v-else />
+      <template #customFilterIcon>
+        <SearchOutlined />
       </template>
       <template #bodyCell="{ text, column }">
         <span v-if="searchText && searchedColumn === column.dataIndex">
@@ -133,7 +132,7 @@ import { attributesPropsDefault } from './types'
 import { isEqual, cloneDeep } from 'lodash-es'
 import AttributesViewModel from '@supermapgis/iclient-components-core/mapboxgl/src/AttributesViewModel'
 import { useTheme, useMapGetter, useVmProps, useLocale } from '@supermapgis/common/hooks/index.common'
-import { MenuOutlined, SearchOutlined, FilterOutlined } from '@ant-design/icons-vue'
+import { MenuOutlined, SearchOutlined } from '@ant-design/icons-vue'
 import SmTable from '@supermapgis/common/components/table/Table'
 import SmDropdown from '@supermapgis/common/components/dropdown/Dropdown'
 import SmButton from '@supermapgis/common/components/button/Button'
@@ -193,13 +192,22 @@ const allCount = computed(() => {
   return totalCount.value
 })
 
-const compColumns = computed(() => {
-  return cloneDeep(columns.value)
+// antd-vue 4 只有在列上声明 customFilterDropdown（或 slots.filterDropdown）时才渲染表头筛选，
+// 所以 ViewModel 里 Vue2 的 scopedSlots 写法要在列上换成这个标记。
+const createVisibleTableColumns = (columns: ColoumParams[] = []) => {
+  return cloneDeep(columns)
     .filter(column => column.visible)
     .map(column => {
       delete column.visible
+      if (column.search) {
+        column.customFilterDropdown = true
+      }
       return column
     })
+}
+
+const compColumns = computed(() => {
+  return createVisibleTableColumns(columns.value)
 })
 
 let viewModel: InstanceType<typeof AttributesViewModel>

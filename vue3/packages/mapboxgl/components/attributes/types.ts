@@ -61,6 +61,8 @@ export interface ColoumParams {
   title?: string
   visible?: boolean
   dataIndex?: string
+  search?: boolean
+  customFilterDropdown?: boolean
 }
 
 export const attributesProps = () => ({

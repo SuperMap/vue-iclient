@@ -1,6 +1,7 @@
 import type { ComponentObjectPropsOptions } from 'vue'
 import type { ConfigProviderProps } from 'ant-design-vue'
-import { defineComponent, h, computed } from 'vue'
+import type { Locale } from 'ant-design-vue/es/locale'
+import { defineComponent, h, computed, inject } from 'vue'
 import { ConfigProvider } from 'ant-design-vue'
 import { useTheme } from '../../hooks/useTheme'
 
@@ -32,6 +33,21 @@ const ConfigProviderStyle = {
   display: 'none'
 }
 
+/**
+ * 取宿主的 antd locale。
+ *
+ * antd 的 ConfigProvider 上下文以 Symbol 为 key，组件库与宿主各带一份 antd 副本时无法继承；
+ * 而 LocaleProvider 是用字符串 key 'localeData' 暴露的，据此可以拿回宿主当前语言，
+ * 供内层 ConfigProvider 使用，避免表格排序提示等 antd 内建文案固定为英文。
+ */
+export function resolveHostAntLocale(localeData?: { antLocale?: Record<string, unknown> }) {
+  const antLocale = localeData?.antLocale
+  if (!antLocale || !Object.keys(antLocale).some(key => key !== 'exist')) {
+    return undefined
+  }
+  return antLocale as unknown as Locale
+}
+
 const getConfigProviderWrapper = (name: string) =>
   defineComponent({
     ...(ConfigProvider as ReturnType<typeof defineComponent>),
@@ -59,6 +75,8 @@ export const createWrappedComponent = <
     setup(props, ctx) {
       const prefixCls = 'sm-component'
       const { themeToken, specifiedToken } = useTheme(props)
+      const hostLocaleData = inject<{ antLocale?: Record<string, unknown> } | undefined>('localeData', undefined)
+      const hostLocale = computed(() => resolveHostAntLocale(hostLocaleData))
 
       const comptsTheme = computed<ConfigProviderProps['theme']>(() => {
         if (specifiedToken.value) {
@@ -98,6 +116,7 @@ export const createWrappedComponent = <
               ctx.slots.default?.(),
               h(getConfigProviderWrapper(componentName), {
                 ...themeConfig.value,
+                ...(hostLocale.value ? { locale: hostLocale.value } : {}),
                 style: ConfigProviderStyle
               })
             ]

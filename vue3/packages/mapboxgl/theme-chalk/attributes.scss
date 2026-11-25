@@ -54,6 +54,10 @@
         color: inherit;
         background: inherit;
         padding: 6px;
+
+        .#{$ant-prefix}-table-filter-trigger {
+          margin-inline: 4px 9px;
+        }
         &.#{$ant-prefix}-table-column-sort {
           background: $gis-control-item-bg-hover;
         }
