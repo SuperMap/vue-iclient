@@ -188,7 +188,7 @@ const tableInstance = ref()
 const associateMap = computed(() => props.associateWithMap.enabled)
 
 const allCount = computed(() => {
-  if ('total' in paginationOptions) {
+  if ('total' in paginationOptions.value) {
     return paginationOptions.value.total
   }
   return totalCount.value
@@ -330,7 +330,7 @@ const handleChange = (
 const bindEvents = () => {
   viewModel.on('dataChanged', (datas: { content: any; totalCount: any; columns: any }) => {
     const { content, totalCount: newTotalCount, columns: newColumns } = datas
-    if (newTotalCount) {
+    if (newTotalCount !== undefined && newTotalCount !== null) {
       totalCount.value = newTotalCount
       paginationOptions.value.total = newTotalCount
     }
