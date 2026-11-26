@@ -105,13 +105,28 @@
   }
   @include e(count) {
     @include spacing-margin(15px, left, false);
+    // 标题过长时只压缩标题、统计信息保持完整；flex 不生成 span 之间的空白文本节点，用 gap 补回原有间距
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    overflow: hidden;
+    column-gap: 0.3em;
     > span {
       @include spacing-margin(8px, right, false);
       font-size: 16px;
       font-weight: 500;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    > .layer-name {
+      flex-shrink: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
   @include e(menu) {
+    flex-shrink: 0;
     .sm-component-icon:hover {
       color: $primary-color !important;
     }

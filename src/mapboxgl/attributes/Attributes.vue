@@ -2,7 +2,7 @@
   <div class="sm-component-attributes" :style="[getTextColorStyle, getBackgroundStyle]">
     <div class="sm-component-attributes__header">
       <div class="sm-component-attributes__count">
-        <span v-if="title" class="layer-name">{{ title }}</span>
+        <span v-if="title" class="layer-name" :title="title">{{ title }}</span>
         <span v-if="statistics.showTotal || statistics.showSelect">（</span>
         <span v-if="statistics.showTotal" class="total-numbers"
           >{{ this.$t('attributes.feature') }}：{{ allCount}}</span
@@ -34,8 +34,11 @@
               :title="this.$t('attributes.columnsControl')"
             >
               <sm-menu-item v-for="(column, index) in columns" :key="index">
-                <sm-checkbox :checked="column.visible" @change="handleColumnVisible(column)" />
-                {{ column.title }}
+                <!-- 阻止冒泡到 menu-item，否则勾选列后整个下拉会被 antd 的菜单点击关闭 -->
+                <div @click.stop>
+                  <sm-checkbox :checked="column.visible" @change="handleColumnVisible(column)" />
+                  {{ column.title }}
+                </div>
               </sm-menu-item>
             </sm-sub-menu>
           </sm-menu>
