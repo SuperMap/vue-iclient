@@ -356,6 +356,34 @@ describe('Attributes.vue', () => {
     expect(wrapper.vm.searchText).toBe('');
     done();
   });
+  it('updates the feature count when the dataset becomes empty', async done => {
+    wrapper = mount(SmAttributes, {
+      propsData: {
+        fieldConfigs: fieldConfigs,
+        dataset: testData
+      }
+    });
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.allCount).toBe(10);
+
+    [undefined, null].forEach(totalCount => {
+      wrapper.vm.viewModel.fire('dataChanged', {
+        content: [],
+        totalCount,
+        columns: []
+      });
+      expect(wrapper.vm.allCount).toBe(10);
+    });
+
+    wrapper.vm.viewModel.fire('dataChanged', {
+      content: [],
+      totalCount: 0,
+      columns: []
+    });
+
+    expect(wrapper.vm.allCount).toBe(0);
+    done();
+  });
   it('handleChange', async done => {
     wrapper = mount(SmAttributes, {
       propsData: {

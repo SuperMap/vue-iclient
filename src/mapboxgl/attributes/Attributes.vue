@@ -453,8 +453,8 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   bindEvents() {
     this.viewModel.on('dataChanged', datas => {
       const { content, totalCount, columns } = datas;
-      if (totalCount) {
-        // @ts-ignore
+      // 零也是有效总数，数据切换为空时必须覆盖上一次的计数。
+      if (totalCount !== undefined && totalCount !== null) {
         this.totalCount = totalCount;
         this.$set(this.paginationOptions, 'total', totalCount);
       }
