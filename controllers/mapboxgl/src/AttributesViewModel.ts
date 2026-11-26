@@ -59,6 +59,17 @@ const defaultPaintTypes = {
   fill: ['line-width']
 };
 
+// 面边框样式的键：MapDashboard 存量数据是 stokeLine，组件类型也允许 strokeLine。
+const STROKE_LINE_KEYS = ['stokeLine', 'strokeLine'];
+
+/**
+ * 取面边框样式键。已有哪种拼写就用哪种写回，都没有时按存量数据用 stokeLine，
+ * 避免宿主只提供 strokeLine 时读写键不一致。
+ */
+export function resolveStrokeLineKey(layerStyle?: any) {
+  return STROKE_LINE_KEYS.find(key => Boolean(layerStyle?.[key])) || 'stokeLine';
+}
+
 const defaultHighlightStyle = getDefaultLayerStyle(HIGHLIGHT_COLOR);
 const mbglStyle = {
   circle: defaultHighlightStyle.circle.paint,
@@ -384,7 +395,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
       if (this.map.getLayer(this.strokeLayerID)) {
         this.map.setFilter(this.strokeLayerID, filter);
       } else {
-        let stokeLineStyle = layerStyle.strokeLine || layerStyle.stokeLine || {};
+        const stokeLineStyle = layerStyle[resolveStrokeLineKey(layerStyle)] || {};
         let lineStyle = (stokeLineStyle && stokeLineStyle.paint) || defaultHighlightStyle.strokeLine.paint;
         let highlightLayer = {
           id: this.strokeLayerID,
@@ -410,11 +421,17 @@ class FeatureTableViewModel extends mapboxgl.Evented {
       if (type !== 'fill') {
         mapPaintProperty = this.map.getLayer(layerId) && this.map.getPaintProperty(layerId, paintType);
       } else {
-        type = 'stokeLine';
+        // 面边框按已有键写回，宿主用 strokeLine 时不再因为缺 stokeLine 抛错。
+        type = resolveStrokeLineKey(layerStyle);
       }
+      if (!layerStyle[type]) {
+        layerStyle[type] = { paint: {} };
+      }
+      layerStyle[type].paint = layerStyle[type].paint || {};
       layerStyle[type].paint[paintType] = layerStyle[type].paint[paintType] || mapPaintProperty;
       if (layerStyle[type].paint[paintType] === void 0 || layerStyle[type].paint[paintType] === '') {
-        layerStyle[type].paint[paintType] = paintType === 'circle-stroke-width' || type === 'stokeLine' ? 2 : 8;
+        layerStyle[type].paint[paintType] =
+          paintType === 'circle-stroke-width' || STROKE_LINE_KEYS.includes(type) ? 2 : 8;
       }
     });
     return layerStyle;

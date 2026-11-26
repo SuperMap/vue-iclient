@@ -8,6 +8,56 @@
   height: 100%;
   width: 100%;
   overflow: hidden;
+  /* stylelint-disable-next-line */
+  font-size: 14px;
+
+  // 样式面板把字体、字号写在组件根节点上，而 antd 给表格、分页以及包在表格外层的 Spin
+  // 都声明了 font-family / font-size，继承链被截断，这里逐层交还给根节点；
+  // 排序、筛选图标靠 antd 自己的字号排版（0 字号用于消除行内间隙），单独排除。
+  [class^='#{$ant-prefix}-table'],
+  [class*=' #{$ant-prefix}-table'] {
+    &:not(
+      .#{$ant-prefix}-table-custom-filter-dropdown,
+      .#{$ant-prefix}-table-column-sorter,
+      .#{$ant-prefix}-table-column-sorter-up,
+      .#{$ant-prefix}-table-column-sorter-down,
+      .#{$ant-prefix}-table-filter-trigger
+    ) {
+      font-family: inherit;
+      font-size: inherit;
+    }
+  }
+
+  // 表格和分页都套在 Spin 里，这层 Spin 用的是 antd 默认前缀（ant-spin-*），
+  // 同样用自身字号截断继承，两种前缀都覆盖。
+  .#{$ant-prefix}-spin-nested-loading,
+  .#{$ant-prefix}-spin-container,
+  .ant-spin-nested-loading,
+  .ant-spin-container {
+    font-family: inherit;
+    font-size: inherit;
+  }
+  .#{$ant-prefix}-table-pagination {
+    /* stylelint-disable-next-line */
+    text-indent: 0;
+
+    .#{$ant-prefix}-pagination-item,
+    .#{$ant-prefix}-pagination-total-text {
+      font-family: inherit;
+      font-size: inherit;
+    }
+
+    // 分页由 antd 内部渲染，用的是 ant 前缀；激活项用主色底 + 白字，和 Vue2 版保持一致
+    .ant-pagination-item-active {
+      background: $primary-color;
+      border-color: $primary-color;
+
+      a {
+        /* stylelint-disable-next-line */
+        color: #fff;
+      }
+    }
+  }
   .#{$ant-prefix}-table {
     color: inherit;
     background: inherit;
@@ -108,8 +158,11 @@
         }
       }
     }
-    .#{$ant-prefix}-checkbox-inner {
-      background-color: inherit;
+
+    // 行首复选框由 antd 内部渲染（ant 前缀），默认白底要跟面板背景一致；勾选态仍保持主色填充
+    .#{$ant-prefix}-checkbox:not(.#{$ant-prefix}-checkbox-checked) .#{$ant-prefix}-checkbox-inner,
+    .ant-checkbox:not(.ant-checkbox-checked) .ant-checkbox-inner {
+      background-color: transparent;
     }
   }
   .#{$ant-prefix}-table-custom-filter-dropdown {
@@ -143,16 +196,35 @@
   @include e(count) {
     @include spacing-margin(15px, left, false);
 
+    // 标题过长时只压缩标题、统计信息保持完整；flex 不生成 span 之间的空白文本节点，用 gap 补回原有间距
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    overflow: hidden;
+    column-gap: 0.3em;
+
     > span {
       @include spacing-margin(8px, right, false);
+
+      // 标题比正文大一号，字号仍跟随根节点（面板字号）缩放
       /* stylelint-disable-next-line */
-      font-size: 16px;
-      /* stylelint-disable-next-line */
-      font-weight: 500;
+      font-size: calc(1em + 2px);
+      font-weight: inherit;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    > .layer-name {
+      flex-shrink: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 
   @include e(menu) {
+    flex-shrink: 0;
+
     .#{$ant-prefix}-icon:hover {
       /* stylelint-disable-next-line */
       color: $primary-color !important;
@@ -167,5 +239,14 @@
   }
   .#{$ant-prefix}-dropdown-link {
     cursor: pointer;
+  }
+}
+
+// 「显示/隐藏列」下拉是挂到 body 上的浮层，规则不能写在 .sm-component-attributes 里
+.sm-component-attribute__dropdown-menu {
+  .#{$ant-prefix}-checkbox:not(.#{$ant-prefix}-checkbox-checked) {
+    .#{$ant-prefix}-checkbox-inner {
+      background-color: transparent;
+    }
   }
 }

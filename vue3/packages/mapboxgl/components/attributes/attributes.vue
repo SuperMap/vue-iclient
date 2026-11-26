@@ -2,7 +2,7 @@
   <div class="sm-component-attributes" :style="[textColorStyle, gisControlBgStyle]">
     <div class="sm-component-attributes__header">
       <div class="sm-component-attributes__count">
-        <span v-if="title" class="layer-name">{{ title }}</span>
+        <span v-if="title" class="layer-name" :title="title">{{ title }}</span>
         <span v-if="statistics.showTotal || statistics.showSelect">（</span>
         <span v-if="statistics.showTotal" class="total-numbers">
           {{ t('attributes.feature') }}：{{ allCount }}
@@ -37,8 +37,11 @@
                 :title="t('attributes.columnsControl')"
               >
                 <sm-menu-item v-for="(column, index) in columns" :key="index">
-                  <sm-checkbox :checked="column.visible" @change="handleColumnVisible(column)" />
-                  {{ column.title }}
+                  <!-- 阻止冒泡到 menu-item，否则勾选列后整个下拉会被 antd 的菜单点击关闭 -->
+                  <div @click.stop>
+                    <sm-checkbox :checked="column.visible" @change="handleColumnVisible(column)" />
+                    {{ column.title }}
+                  </div>
                 </sm-menu-item>
               </sm-sub-menu>
             </sm-menu>
@@ -56,7 +59,7 @@
           ? { selectedRowKeys: selectedRowKeys, onChange: changeSelectedRows }
           : null
       "
-      :pagination="paginationOptions"
+      :pagination="tablePagination"
       :bordered="tableOptions.showBorder"
       :showHeader="tableOptions.showHeader"
       :customHeaderRow="customHeaderRow"
@@ -174,7 +177,6 @@ const loading = ref<boolean>(false)
 const searchText = ref<string>('')
 const searchedColumn = ref<string>('')
 const fieldInfo = ref<Array<FieldConfigParams>>([])
-const xScrollWidth = ref<number>(0)
 let tableOptions = ref<TableParams>({
   showHeader: true,
   showBorder: true,
@@ -191,6 +193,25 @@ const allCount = computed(() => {
   }
   return totalCount.value
 })
+
+// 表格总宽度要跟着可见列走：隐藏列后必须变窄，否则 scroll.x 会把剩余列拉宽并一直留出横向滚动条
+const xScrollWidth = computed(() => {
+  const sourceColumns: Array<{ visible?: boolean; width?: string | number }> = columns.value.length
+    ? columns.value
+    : fieldInfo.value
+  if (!sourceColumns.length) {
+    return 0
+  }
+  const visibleColumns = sourceColumns.filter(column => column.visible !== false)
+  return visibleColumns.reduce((total, column) => {
+    const width = typeof column.width === 'number' ? column.width : Number.parseFloat(column.width as string)
+    return total + (Number.isFinite(width) && width > 0 ? width : 128)
+  }, 0)
+})
+
+// 每页条数由 table.pagination.pageSize 决定，条数切换器默认关闭；
+// 需要时可通过 table.pagination.showSizeChanger 打开
+const tablePagination = computed(() => ({ showSizeChanger: false, ...paginationOptions.value }))
 
 // antd-vue 4 只有在列上声明 customFilterDropdown（或 slots.filterDropdown）时才渲染表头筛选，
 // 所以 ViewModel 里 Vue2 的 scopedSlots 写法要在列上换成这个标记。
@@ -347,8 +368,9 @@ const handleSearch = (selectedKeys: string[], confirm: () => void, dataIndex: st
   confirm()
 }
 
-const handleSearchReset = (clearFilters: () => void) => {
-  clearFilters()
+const handleSearchReset = (clearFilters: (params?: { confirm?: boolean; closeDropdown?: boolean }) => void) => {
+  // antd 4 的 clearFilters 默认只清内部已选键，不重算过滤，需要显式 confirm 才会清掉表格结果。
+  clearFilters({ confirm: true, closeDropdown: true })
   searchText.value = ''
   viewModel.setSearchText()
 }
@@ -390,11 +412,6 @@ watch(
   () => props.fieldConfigs,
   newVal => {
     if (!isEqual(newVal, fieldInfo.value)) {
-      let total = 0
-      newVal.forEach(item => {
-        total += +item.width || 128
-      })
-      xScrollWidth.value = total
       fieldInfo.value = newVal
     }
   },

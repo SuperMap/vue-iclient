@@ -12,6 +12,7 @@ export interface PaginationParams {
   current?: number
   pageSize?: number
   total?: number
+  showSizeChanger?: boolean
 }
 
 export interface FieldConfigParams {
