@@ -477,4 +477,5 @@ describe('EchartsDataService aggregate values', () => {
     expect(() => service._processValue([10, 30], 'unknown', [])).toThrow('Unsupported aggregate');
     expect(service._processValue([10, 30], undefined, [])).toBe(40);
   });
+
 });

@@ -295,6 +295,11 @@ export default class EchartsDataService {
         let maxValue = max(YData);
         this.radarMax = Math.max(maxValue, this.radarMax);
       }
+    } else if (chartType === 'gauge') {
+      serieData.data = YData.map((value, index) => ({
+        value,
+        name: XData[index] === undefined ? datasetOption.yField : XData[index]
+      }));
     } else {
       // line bar scatter gauge
       serieData.data = [...YData];

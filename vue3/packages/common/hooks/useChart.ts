@@ -99,6 +99,15 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
   useTimer(props, { timing })
   const { textColorStyle, containerBgStyle, colorGroup: colorGroupsData } = useTheme(props)
 
+  const getGaugeColor = (index: number) => {
+    const color = colorGroupsData.value[index]
+    if (typeof color === 'string' && color !== '') {
+      return color
+    }
+    const fallback = color?.colorStops?.[0]?.color
+    return typeof fallback === 'string' && fallback !== '' ? fallback : index === 0 ? '#3fb1e3' : '#6be6c1'
+  }
+
   const _optionsHandler = (options: any, dataOptions: any, dataZoomChanged: boolean = false) => {
     dataOptions = dataOptions && cloneDeep(dataOptions)
     options = options && cloneDeep(options)
@@ -113,6 +122,14 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
 
     if (xAxis && dataOptions.xAxis) {
       handleAxis(options, dataOptions, xAxis, yAxis)
+    }
+
+    if (props.seriesType === 'gauge') {
+      const configuredTitle = options.series?.[0]?.data?.[0]?.name
+      const dataItem = dataOptions.series?.[0]?.data?.[0]
+      if (dataItem && typeof dataItem === 'object') {
+        dataItem.name = typeof configuredTitle === 'string' ? configuredTitle : ''
+      }
     }
 
     if (options && options.series && dataOptions.series) {
@@ -640,6 +657,249 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
     if (thresholdNodeOverlays.length > 0) {
       nextOptions.series.push(...thresholdNodeOverlays)
     }
+    if (props.seriesType === 'gauge') {
+      const thresholdConfig = props.thresholdConfig
+      const selectedSeriesIndex = Number.isInteger(thresholdConfig?.seriesIndex)
+        ? thresholdConfig.seriesIndex
+        : 0
+      const thresholdPalette = colorGroupsData.value
+        .map((color: any) => typeof color === 'string' ? color : color?.colorStops?.[0]?.color)
+        .filter((color: any): color is string => typeof color === 'string' && color !== '')
+      const fallbackPalette = thresholdPalette.length ? thresholdPalette : ['#3fb1e3']
+      nextOptions.series = nextOptions.series.map((series: any, seriesIndex: number) => {
+        const nextSeries = { ...series }
+        if (nextSeries.detail && typeof props.decimals === 'number') {
+          nextSeries.detail = {
+            ...nextSeries.detail,
+            formatter: (value: number | string) => getDecimalsFormatterVal(value, props.decimals)
+          }
+        }
+
+        if (
+          seriesIndex !== selectedSeriesIndex ||
+          ((props.gaugeVariant && props.gaugeVariant !== 'base') && thresholdConfig?.show !== true) ||
+          nextSeries.axisLine?.show === false ||
+          !Array.isArray(thresholdConfig?.pieces) ||
+          !thresholdConfig.pieces.length
+        ) {
+          return nextSeries
+        }
+
+        const min = typeof nextSeries.min === 'number' ? nextSeries.min : 0
+        const max = typeof nextSeries.max === 'number' ? nextSeries.max : 100
+        if (!Number.isFinite(min) || !Number.isFinite(max) || max <= min) {
+          return nextSeries
+        }
+        const pieces = thresholdConfig.pieces
+          .filter((piece: any) => piece && typeof piece.color === 'string' && piece.color !== '')
+          .map((piece: any) => ({
+            min: Math.min(max, Math.max(min, typeof piece.min === 'number' ? piece.min : min)),
+            max: Math.min(max, Math.max(min, typeof piece.max === 'number' ? piece.max : max)),
+            color: piece.color as string
+          }))
+          .filter((piece: any) => piece.max >= piece.min)
+          .sort((left: any, right: any) => left.min - right.min)
+        if (!pieces.length) {
+          return nextSeries
+        }
+
+        const stops: Array<[number, string]> = []
+        let cursor = min
+        let paletteIndex = 0
+        const pushStop = (value: number, color: string) => {
+          stops.push([Math.min(1, Math.max(0, (value - min) / (max - min))), color])
+        }
+        for (const piece of pieces) {
+          if (piece.max < cursor) {
+            continue
+          }
+          if (piece.min > cursor) {
+            pushStop(piece.min, fallbackPalette[paletteIndex % fallbackPalette.length])
+            paletteIndex += 1
+          }
+          pushStop(piece.max, piece.color)
+          cursor = Math.max(cursor, piece.max)
+        }
+        if (cursor < max) {
+          pushStop(max, fallbackPalette[paletteIndex % fallbackPalette.length])
+        }
+        nextSeries.axisLine = {
+          ...nextSeries.axisLine,
+          lineStyle: {
+            ...nextSeries.axisLine?.lineStyle,
+            color: stops
+          }
+        }
+        return nextSeries
+      })
+
+      const getGaugeValue = (series: any) => {
+        const item = series?.data?.[0]
+        const value = Number(item && typeof item === 'object' ? item.value : item)
+        return Number.isFinite(value) ? value : 0
+      }
+
+      if (props.gaugeVariant === 'mark' || props.gaugeVariant === 'shine') {
+        const gaugeSeries = nextOptions.series[0]
+        const scaleSeries = nextOptions.series[1]
+        if (gaugeSeries && scaleSeries) {
+          const min = typeof scaleSeries.min === 'number' ? scaleSeries.min : 0
+          const max = typeof scaleSeries.max === 'number' ? scaleSeries.max : 100
+          if (Number.isFinite(min) && Number.isFinite(max) && max > min) {
+            const valueRatio = Math.min(1, Math.max(0, (getGaugeValue(gaugeSeries) - min) / (max - min)))
+            const axisLine = gaugeSeries.axisLine || {}
+            const lineStyle = axisLine.lineStyle || {}
+            const stops = Array.isArray(lineStyle.color) ? [...lineStyle.color] : []
+            const firstStop = Array.isArray(stops[0]) ? stops[0] : []
+            const secondStop = Array.isArray(stops[1]) ? stops[1] : []
+            stops[0] = [
+              valueRatio,
+              typeof firstStop[1] === 'string' && firstStop[1] !== '' ? firstStop[1] : getGaugeColor(0)
+            ]
+            stops[1] = [
+              1,
+              typeof secondStop[1] === 'string' && secondStop[1] !== '' ? secondStop[1] : getGaugeColor(1)
+            ]
+            nextOptions.series[0] = {
+              ...gaugeSeries,
+              min,
+              max,
+              axisLine: {
+                ...axisLine,
+                lineStyle: { ...lineStyle, color: stops }
+              }
+            }
+          }
+
+          nextOptions.series[1] = {
+            ...scaleSeries,
+            axisTick: {
+              ...scaleSeries.axisTick,
+              lineStyle: {
+                ...scaleSeries.axisTick?.lineStyle,
+                color: scaleSeries.axisTick?.lineStyle?.color || getGaugeColor(0)
+              }
+            },
+            splitLine: {
+              ...scaleSeries.splitLine,
+              lineStyle: {
+                ...scaleSeries.splitLine?.lineStyle,
+                color: scaleSeries.splitLine?.lineStyle?.color || getGaugeColor(0)
+              }
+            },
+            axisLabel: {
+              ...scaleSeries.axisLabel,
+              color: scaleSeries.axisLabel?.color || 'auto'
+            }
+          }
+        }
+
+        if (props.gaugeVariant === 'shine') {
+          const setPieGradient = (seriesIndex: number, colors: string[]) => {
+            const pieSeries = nextOptions.series[seriesIndex]
+            const itemStyle = pieSeries?.itemStyle || {}
+            const normal = itemStyle.normal || {}
+            const color = normal.color || {}
+            if (!Array.isArray(color.colorStops)) {
+              return
+            }
+            nextOptions.series[seriesIndex] = {
+              ...pieSeries,
+              itemStyle: {
+                ...itemStyle,
+                normal: {
+                  ...normal,
+                  color: {
+                    ...color,
+                    colorStops: color.colorStops.map((stop: any, index: number) => ({
+                      ...stop,
+                      color: colors[index] || stop.color
+                    }))
+                  }
+                }
+              }
+            }
+          }
+          const primaryColor = getGaugeColor(0)
+          setPieGradient(2, [primaryColor, getGaugeColor(1)])
+          setPieGradient(3, [
+            getColorWithOpacity(primaryColor, 0.8),
+            getColorWithOpacity(primaryColor, 0.5)
+          ])
+          setPieGradient(4, [
+            getColorWithOpacity(primaryColor, 0.5),
+            getColorWithOpacity(primaryColor, 0.3)
+          ])
+          setPieGradient(5, [
+            getColorWithOpacity(primaryColor, 0.3),
+            getColorWithOpacity(primaryColor, 0)
+          ])
+        }
+      }
+
+      if (props.gaugeVariant === 'spin') {
+        const gaugeSeries = nextOptions.series[0]
+        const pieSeries = nextOptions.series[1]
+        if (gaugeSeries && pieSeries) {
+          const radii = Array.isArray(pieSeries.radius) ? pieSeries.radius : []
+          const radius = radii[0] || gaugeSeries.radius
+          const radiusValue = Number.parseFloat(String(radius))
+          const innerRadiusValue = Number.parseFloat(String(radii[1] || '0'))
+          const value = getGaugeValue(gaugeSeries)
+          const gaugeData = Array.isArray(gaugeSeries.data) ? [...gaugeSeries.data] : []
+          const pieData = Array.isArray(pieSeries.data) ? [...pieSeries.data] : []
+          const currentPieItem = (item: any, nextValue: number) => ({
+            ...(item && typeof item === 'object' ? item : {}),
+            value: nextValue
+          })
+          const currentPieSegment = (item: unknown, nextValue: number, index: number) => {
+            const nextItem = currentPieItem(item, nextValue)
+            const itemStyle = nextItem.itemStyle || {}
+            const normal = itemStyle.normal || {}
+            if (!itemStyle.color && !normal.color) {
+              nextItem.itemStyle = {
+                ...itemStyle,
+                normal: { ...normal, color: getGaugeColor(index) }
+              }
+            }
+            return nextItem
+          }
+          const customOptions = gaugeSeries.customOptions || {}
+          const splitLine = gaugeSeries.splitLine || {}
+          const splitLineStyle = splitLine.lineStyle || {}
+          const nextGaugeSeries = {
+            ...gaugeSeries,
+            ...(radius ? { radius } : {}),
+            data: gaugeData.map((item: any, index: number) => index === 0
+              ? currentPieItem(item, value)
+              : item),
+            splitLine: {
+              ...splitLine,
+              length: Number.isFinite(radiusValue) && radiusValue > 0 && Number.isFinite(innerRadiusValue)
+                ? `${Number(((radiusValue - innerRadiusValue) / radiusValue).toFixed(2)) * 100}%`
+                : splitLine.length,
+              lineStyle: {
+                ...splitLineStyle,
+                color: splitLineStyle.color || getColorWithOpacity(props.background || '#fff', 1)
+              }
+            },
+            customOptions: {
+              ...customOptions,
+              color: customOptions.color || getGaugeColor(0)
+            }
+          }
+          const nextPieData = pieData.length >= 2
+            ? [
+                currentPieSegment(pieData[0], value, 0),
+                currentPieSegment(pieData[1], 100 - value > 0 ? 100 - value : 0, 1),
+                ...pieData.slice(2)
+              ]
+            : pieData
+          nextOptions.series[0] = nextGaugeSeries
+          nextOptions.series[1] = { ...pieSeries, data: nextPieData }
+        }
+      }
+    }
     return nextOptions
   }
 
@@ -659,10 +919,7 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
       }
     }
     if (props.options.series[0] && props.options.series[0].customType === 'customRingsSeries') {
-      return {
-        ...props.options,
-        series: [...props.options.series, ...customSeries.value]
-      }
+      return normalizeChartOptions(props.options)
     }
     const series = props.options.series.map((serie: any) => {
       if (serie.label) {
@@ -679,13 +936,19 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
   })
 
   const _chartOptions = computed(() => {
-    const options = (_isRequestData.value && echartOptions.value) || parseOptions.value
+    const currentOptions = (_isRequestData.value && echartOptions.value) || parseOptions.value
+    const options = props.options?.series?.[0]?.customType === 'customRingsSeries'
+      ? {
+          ...currentOptions,
+          series: [...(currentOptions?.series || []), ...customSeries.value]
+        }
+      : currentOptions
     return withRadarTooltipDimensions(
       applyArabicDigitsToChartOptions(fitChartAxisLayout(options, chartSize.value))
     )
   })
 
-  const chartUpdateOptions = ref({
+  const chartUpdateOptions = ref<{ replaceMerge: string[]; notMerge?: boolean }>({
     replaceMerge: ['series', 'visualMap']
   })
 
@@ -756,6 +1019,9 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
     (newVal, oldVal) => {
       if (!isEqual(newVal, oldVal)) {
         _setChartTheme()
+        if (props.seriesType === 'gauge' && _isRequestData.value && dataSeriesCache.value) {
+          echartOptions.value = _optionsHandler(props.options, dataSeriesCache.value)
+        }
       }
     }
   )
@@ -825,6 +1091,17 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
   )
 
   watch(
+    () => [props.thresholdConfig, props.decimals],
+    () => {
+      if (_isRequestData.value && dataSeriesCache.value) {
+        echartOptions.value = _optionsHandler(props.options, dataSeriesCache.value)
+      }
+      _queueChartResize()
+    },
+    { deep: true }
+  )
+
+  watch(
     _chartOptions,
     (next, prev) => {
       const replaceMerge = ['visualMap']
@@ -840,7 +1117,12 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
       ) {
         replaceMerge.unshift('dataZoom')
       }
-      chartUpdateOptions.value = { replaceMerge }
+      const previousColor = prev?.series?.[0]?.axisLine?.lineStyle?.color
+      const nextColor = next?.series?.[0]?.axisLine?.lineStyle?.color
+      const resetGaugeColor = props.seriesType === 'gauge' &&
+        (!props.gaugeVariant || props.gaugeVariant === 'base') &&
+        previousColor !== undefined && nextColor === undefined
+      chartUpdateOptions.value = { replaceMerge, ...(resetGaugeColor ? { notMerge: true } : {}) }
     },
     { immediate: true }
   )
@@ -1728,12 +2010,22 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
       })
     }
 
-    echartsDataService = new EchartsDataService(dataset, datasetOptions)
-    echartsDataService.getDataOption(dataset, xBar.value).then((options: any) => {
+    const requestService = new EchartsDataService(dataset, datasetOptions)
+    echartsDataService = requestService
+    requestService.getDataOption(dataset, xBar.value).then((options: any) => {
+      if (props.seriesType === 'gauge') {
+        if (requestService !== echartsDataService) {
+          return
+        }
+        if (!_isRequestData.value) {
+          hideLoading()
+          return
+        }
+      }
       hideLoading()
       dataSeriesCache.value = Object.assign({}, options)
       datasetChange.value = false
-      echartOptions.value = _optionsHandler(echartOptionsParam, options)
+      echartOptions.value = _optionsHandler(props.seriesType === 'gauge' ? props.options : echartOptionsParam, options)
       _queueChartResize()
     })
   }
@@ -2197,7 +2489,7 @@ export function useChart({ props, emit, viewModel, chartRef, mapNotLoadedTip }: 
 
   function addEffect(angle: number) {
     angle = angle || 0
-    const effectColor = props.options?.series?.[0]?.customOptions?.color
+    const effectColor = props.options?.series?.[0]?.customOptions?.color || getGaugeColor(0)
     const effectRadius = props.options?.series?.[0]?.customOptions?.radius
     const outEffectRadius = effectRadius + 0.1
     // customRightBottomLine

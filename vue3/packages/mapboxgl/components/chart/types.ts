@@ -10,10 +10,12 @@ export interface ChartProps extends CardProps, ControlProps, ThemeProps, MapGett
   dataset?: any
   datasetOptions?: any[]
   colorGroup?: any[]
-  thresholdConfig?: any[]
+  thresholdConfig?: any
   options?: any
   seriesType?: string
+  gaugeVariant?: 'base' | 'mark' | 'shine' | 'spin'
   xFieldDecimals?: number
+  decimals?: number
   isGradient?: boolean
   background?: string
   autoresize?: boolean
@@ -46,7 +48,7 @@ export const chartProps = () => ({
     default: () => []
   },
   thresholdConfig: {
-    type: Array as PropType<any[]>,
+    type: [Array, Object] as PropType<any[] | Record<string, any>>,
     default: () => []
   },
   options: {
@@ -57,7 +59,15 @@ export const chartProps = () => ({
     type: String,
     default: ''
   },
+  gaugeVariant: {
+    type: String as PropType<ChartProps['gaugeVariant']>,
+    default: 'base'
+  },
   xFieldDecimals: {
+    type: Number,
+    default: -1
+  },
+  decimals: {
     type: Number,
     default: -1
   },
@@ -195,5 +205,3 @@ export const chartEmits = [
 ]
 
 export default chartProps
-
-
