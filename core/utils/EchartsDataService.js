@@ -151,6 +151,10 @@ export default class EchartsDataService {
   _createStatisticData(data, datasetOptions, xBar) {
     const sortMatchItem = datasetOptions.find(item => item.sort && item.sort !== 'unsort');
     const statisticFunction = datasetOptions[0].statisticFunction;
+    const statisticOption = datasetOptions[0];
+    if (statisticOption && statisticOption.seriesType === 'gauge') {
+      return this._createGaugeStatisticData(data, statisticOption, statisticFunction);
+    }
     const xField = datasetOptions[0].xField;
     const yFields = datasetOptions.map(item => item.yField);
     const fields = data.fields; // 所有字段
@@ -184,6 +188,35 @@ export default class EchartsDataService {
       features.reverse();
     }
     return features;
+  }
+
+  /**
+   * @function EchartsDataService.prototype._createGaugeStatisticData
+   * @description 对仪表盘选中的数据项按全量记录聚合，生成单值结果。
+   * @param {Object} data - 从superMap的iserver,iportal中请求返回的数据
+   * @param {datasetOption} datasetOption - 仪表盘数据配置
+   * @param {string|function} statisticFunction - 统计方式
+   * @returns {Array}  单值统计结果
+   */
+  _createGaugeStatisticData(data, datasetOption, statisticFunction) {
+    const yField = datasetOption.yField;
+    if (!yField) {
+      return [];
+    }
+    const fields = data.fields || [];
+    const allFeatures = data.features || [];
+    const yFieldIndex = fields.indexOf(yField);
+    const fieldValues = yFieldIndex < 0 ? [] : data.fieldValues[yFieldIndex];
+    const valueArr = [];
+    const featuresArr = [];
+    allFeatures.forEach((feature, index) => {
+      const value = fieldValues[index];
+      const numeric = typeof value === 'number' || (typeof value === 'string' && value.trim() !== '');
+      valueArr.push(numeric ? tonumber(clearNumberComma(value)) : NaN);
+      featuresArr.push(feature);
+    });
+    const aggregateValue = this._processValue(valueArr, statisticFunction, featuresArr);
+    return [{ [yField]: aggregateValue }];
   }
 
   /**
@@ -296,10 +329,11 @@ export default class EchartsDataService {
         this.radarMax = Math.max(maxValue, this.radarMax);
       }
     } else if (chartType === 'gauge') {
-      serieData.data = YData.map((value, index) => ({
+      const value = YData[0];
+      serieData.data = [{
         value,
-        name: XData[index] === undefined ? datasetOption.yField : XData[index]
-      }));
+        name: XData?.[0] === undefined ? datasetOption.yField : XData[0]
+      }];
     } else {
       // line bar scatter gauge
       serieData.data = [...YData];
@@ -418,6 +452,11 @@ export default class EchartsDataService {
   _fieldsDataStatistic(features, datasetOption) {
     let xData, yData, result;
     const { xField, yField } = datasetOption;
+    if (datasetOption.seriesType === 'gauge') {
+      // Gauge 统计语义是单值聚合（全量记录 -> 一个结果），因此只读取聚合结果本身。
+      const value = features.length ? features[0][yField] : 0;
+      return { xData: [], yData: [value] };
+    }
     xData = features.map(obj => obj[xField]);
     yData = features.map(obj => obj[yField]);
     result = { xData, yData };

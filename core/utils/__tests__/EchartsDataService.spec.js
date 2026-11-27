@@ -9,6 +9,30 @@ describe('EchartsDataService', () => {
   afterEach(() => {
     echartsDataService = null;
   })
+
+  it('keeps a gauge to one value when statistic mode is disabled', async () => {
+    const dataset = {
+      maxFeatures: 20,
+      url: '',
+      type: 'geoJSON',
+      geoJSON: {
+        type: 'FeatureCollection',
+        features: [
+          { properties: { amount: 12 } },
+          { properties: { amount: 34 } }
+        ]
+      }
+    };
+    const datasetOptions = [{
+      xField: 'amount',
+      yField: 'amount',
+      seriesType: 'gauge',
+      isStastic: false
+    }];
+    const options = await new EchartsDataService(dataset, datasetOptions).getDataOption(dataset);
+    expect(options.series[0].data).toEqual([{ value: 12, name: 12 }]);
+  });
+
   it('test radar', async () => {
     const dataset = {
       maxFeatures: 20,
@@ -478,4 +502,27 @@ describe('EchartsDataService aggregate values', () => {
     expect(service._processValue([10, 30], undefined, [])).toBe(40);
   });
 
+});
+
+describe('EchartsDataService gauge statistic values', () => {
+  it.each([
+    ['sum', 40],
+    ['mean', 20],
+    ['max', 30],
+    ['count', 5]
+  ])('aggregates gauge statisticFunction=%s across all rows', (aggregate, expected) => {
+    const data = statisticsFeatures(
+      [10, '30', null, '', 'invalid'].map(value => ({ properties: { amount: value } }))
+    );
+    const datasetOptions = [{
+      xField: 'amount',
+      yField: 'amount',
+      seriesType: 'gauge',
+      isStastic: true,
+      statisticFunction: aggregate
+    }];
+    const service = new EchartsDataService({ type: 'geoJSON' }, datasetOptions);
+    const options = service.formatChartData(datasetOptions, false, data);
+    expect(options.series[0].data).toEqual([{ value: expected, name: 'amount' }]);
+  });
 });
